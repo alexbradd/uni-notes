@@ -1,0 +1,96 @@
+\documentclass[a4paper,12pt,oneside]{article}
+\usepackage[a4paper,margin=1.5cm]{geometry}
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[normalem]{ulem}
+
+% Uncomment based on usage
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+%\usepackage{enumerate}
+%\usepackage{graphicx}
+%\usepackage{wrapfig}
+%\usepackage{xcolor}
+
+\title{Appunti Analisi 1}
+\author{Alexandru Gabriel Bradatan}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Insiemi}
+Non viene definito (\textbf{concetto primitivo}): una collezione, famiglia,
+classe di oggetti (non necessariamente numeri). Indicato solitamente con una
+lettera maiuscola.
+
+\textbf{Rappresentati per}:
+\begin{itemize}
+    \item elencazione: \(A = \{a, b, c\}\)
+    \item condizione: \(A = \{lettere alfabeto\}\)
+\end{itemize}
+
+Un oggetto può appartenere ($\in$) o non appartenere ($\notin$) ad un insieme.
+
+\subsection{Uguaglianza}
+A e B sono uguali ($A = B$) se hanno gli stessi elementi.
+\textit{Osserva: $A = B \iff \subseteq B \wedge B \subseteq A$}
+
+\subsection{Inclusione}
+A può essere contenuto o uguale in B ($A \subseteq B or A \subset B$).
+A è un sotto insieme di B se $\forall a \in A a \in B$. Il simbolo è detto
+\textbf{inclusione. L'inclusione è una relazione d'ordine}.
+
+\subsection{Operazioni sugli insiemi}
+Le operazioni sono unione, intersezione, differenza, prodotto cartesiano,
+insieme complementare.
+
+\begin{description}
+    \item[Unione]: $A \cup B = \{ x \in U | x \in A \vee x \in B \}$
+    \item[Intersezione]: $A \cap B = \{ x \in U | x \in A \wedge x \in B \}$
+    \item[Complementare]: $A^c = \bar{A} = \{ x \in U | x \notin A \}$
+    \item[Differenza]: $A \setminus B = \{ x \in U | x \in A \wedge x \notin B \}$
+    \item[Prodotto cartesiano]: $A \times B = \{ (x,y) | x \in A \wedge x \in B \}$
+\end{description}
+
+\textbf{Intersezione e unione sono commutative e associative.}
+
+\subsection{Insiemi particolari}
+\begin{itemize}
+    \item \textbf{Insieme vuoto}: $\emptyset$
+    \item \textbf{Insieme universo}: $U$, contiene tutto
+\end{itemize}
+
+\section{Numeri}
+\subsection{Numeri naturali}
+Sono tutti i numeri \textbf{interi positivi incluso lo 0}.
+\[
+    \mathbb{N} = \{0, 1, 2, 3, \dots \}
+\]
+Può \textbf{essere costruito a partire da un solo numero}: basta aggiungere un'unità
+ogni volta.
+
+Ha la \textbf{proprietà di contenere sempre il successore a un numero}: ci
+permette di usare il \textbf{principio di induzione}. \textbf{Tutti i
+sottoinsiemi di $\mathbb{N}$ godono del principio del minimo intero. Poiché è
+valido il principio del minimo intero, $\mathbb{N}$ è un insieme ben ordinato}.
+
+\subsubsection{Il principio di induzione}
+Sia $S \subseteq \mathbb{N}$ un sottoinsieme tale che:
+\begin{itemize}
+    \item $0 \in S$
+    \item $\forall n \in S \implies n+1 \in S$ (S ha sempre un successore)
+\end{itemize}
+
+Allora S coincide con N.
+
+Il \textbf{principio di induzione ha una traduzione in termini logici}. Il
+principio di induzione può essere usato per dimostrare teoremi in N.
+
+
+\end{document}
