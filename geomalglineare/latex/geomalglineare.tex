@@ -11,6 +11,7 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{float}
+\usepackage{soulutf8}
 %\usepackage{enumerate}
 %\usepackage{graphicx}
 %\usepackage{wrapfig}
@@ -18,110 +19,130 @@
 
 \title{Appunti Geometria e algebra lineare}
 \author{Alexandru Gabriel Bradatan}
-\date{}
+\date{Data di compilazione: \today}
 
 \begin{document}
 
 \maketitle
 
 \section{Insiemi}
-\textbf{Un insieme è una collezione di oggetti}. Tutta la matematica si basa 
-sulla teoria assiomatica degli insiemi.
+\hl{Un insieme è una collezione di oggetti}. Tutta la matematica si basa 
+sulla teoria assiomatica degli insiemi. \hl{Un insieme A si può indicare
+per elencazione ($A = \{a_1, \dots, a_n\}$) o con una condizione 
+($A = \{x|\textit{condizione}\}$)}. La \hl{cardinalità di $A$ è il numero di 
+oggetti: $|A| = n$}. La cardinalità dell'insieme vuoto è 0.
 
-\textbf{Un insieme A si indica}: \( A = {a1,..., an} \). La \textbf{cardinalità di 
-A è il numero di oggetti}: \(|A| = n\). La cardinalità dell'insieme vuoto è 0.
+\paragraph{Esempi} $\mathbb{N} = \{0, 1, 2,\dots\}$, 
+$\mathbb{Q} = \{q = \frac{m}{n} | m,n \in \mathbb{Z}, n \neq 0\}$, 
+$\mathbb{R} = \{\text{x numeri decimali}\}$.
 
-Esempi di insiemi:
-\begin{itemize}
-    \item \( \mathbb{N} = \{0, 1, 2,\dots\} \)
-    \item \( \mathbb{Z} = \{\dots, -1, 0, 1,\dots\} \)
-    \item \( \mathbb{Q} = \{q = \frac{m}{n} \: | \: m,n \in \mathbb{Z}, n \neq 0\} \) 
-        (costruzione con condizione)
-    \item \( \mathbb{R} = \{\text{x numeri decimali}\} \)
-    \item \( \mathbb{C} = \{z = x + iy \: | \: x,y \in \mathbb{R}, i^2 = -1\} \)
-\end{itemize}
+Un \hl{insieme particolare è l'insieme con nessun elemento detto vuoto, indicato 
+con $\emptyset$}. Un altro insieme particolare è \hl{l'insieme di tutti gli tutto
+detto insieme universo $U$}.
 
-\subsection{Operazioni tra insiemi}
-Ci sono \textbf{unione} (\(\cup\)), \textbf{intersezione} (\(\cap\)) e 
-\textbf{differenza} (\(\backslash\)) e \textbf{prodotto cartesiano} (\(\times\)).
+\subsection{Sottoinsiemi}
+Un insieme può essere sottoinsieme di un altro, ossia contenere una parte degli
+elementi dell'insieme più grande. Formalizzando si può dire che:
+\[
+    A \subset B \implies \forall a \in A, a \in B
+\]
 
+\subsection{Insiemi numerici}
+Trattati nel dettaglio negli appunti di \hl{Analisi 1}.
+
+\subsection{Operazioni}
+Le operazioni più usate sono:
 \begin{description}
-    \item[Unione] Prendo tutti gli elementi in A e B
-    \item[Interesezione] Prendo tutti gli elementi che sono sia in A che in B
-    \item[Differenza] Prendo tutti gli elementi che sono in A ma non in B
-    \item[Prodotto cartesiano] Insieme di \textbf{m-uple} (m-uple: 
-        \((a_1, a_2, \dots, a_n)\)) contenenenti tutte le combinazioni degli 
-        elementi di A e B
+    \item[\hl{Unione}] $A \cup B = \{x | x \in A \vee x \in B\}$
+    \item[\hl{Interesezione}] $A \cap B = \{x | x \in A \wedge x \in B\}$
+    \item[\hl{Differenza}] $A - B = \{x | x \in A \wedge x \notin B\}$
+        Si piò anche trovare indicata con $ \setminus $
+    \item[\hl{Prodotto cartesiano}] $A \times B = \{(a,b) | a \in A, b \in B \}$
+        Le coppie $(a,b)$ sono anche dette \hl{tuple} (m-uple per $m$ elementi)
 \end{description}
 
-\section{Relazioni}
-\textbf{Una relazione è un sottoinsieme del prodotto cartesiano tra due insiemi.}
 
-Esempio:
+\section{Relazioni}
+\hl{Una relazione è un sottoinsieme del prodotto cartesiano tra due insiemi}.
+
+Per indicare che due elementi $(a_i, b_j)$ sono legati da una relazione
+$R$ usiamo \hl{$a_i \sim_R b_j$}. Per rappresentare le relazioni si possono usare i 
+diagrammi di Venn (le patate) con le frecce che collegano i vari elementi tra di
+loro.
+
+\paragraph{Esempio} Presi $A = \{a_1, a_2\}, B = \{b_1, b_2\}$, calcoliamo il 
+loro prodotto cartesiano e otterremo 16 possibili sottoinsiemi:
 \begin{align*}
-    A &= \{a_1, a_2\}, \: B = \{b_1, b_2\} \\
-    A &\times B = \{\text{tutte le combinazioni degli elementi di A e B}\} \\
     R_0 &= \emptyset \\
     R_1 &= \{(a_1, b_1)\}, \dots, R_4 \\
     R_5 &= \{(a_1, b_1), (a_1, b_2)\}, \dots, R_10 \\
     R_{11} &= \{(a_1, b_1), (a_1, b_2), (a_2, b_1)\}, \dots, R_14 \\
-    R_{15} &= \{A \times B\}
+    R_{15} &= A \times B
 \end{align*}
 
-Dati due elementi \((a_i, b_j)\) appartenenti tutti e due ad una stessa relazione
-\(R\), si può scrivere che \(a_i \sim_R b_j\). Per rappresentare le relazioni
-si possono usare i diagrammi di Venn (le patate).
+% tipi di relazioni
+
 
 \section{Funzioni}
-\textbf{Le funzioni sono speciali relazioni che associano a ogni elemento del 
+\hl{Le funzioni sono speciali relazioni che associano a ogni elemento del 
 primo insieme un elemento del secondo}. Prendiamo
-\(R_7 = \{(a_1, b_1), (a_2, b_2)\}\). Questa relazione \textbf{associa un elemento
-del primo insieme a un elemento del secondo} ed è una funzione \(f: A \to B\).
+$R_7 = \{(a_1, b_1), (a_2, b_2)\}$. Questa relazione \hl{associa un elemento
+del primo insieme a un elemento del secondo} ed è una funzione $f: A \to B$.
 
-\textbf{L'insieme A è detto dominio, B il codominio}. Se \(a \in A\), allora
-\(b = f(a)\) \textbf{sarà la sua immagine}. \textbf{L'insieme di tutte le immagini
-è detto insieme immagine} e si indica con \(Im(f)\). La \textbf{controimmagine di b è
-quell'elemento tale che \(f^{-1}(b) = \{ a \in A \: | \: f(a) = b \}\)} (la funzione
+\hl{L'insieme A è detto dominio, B il codominio. Se $a \in A$, allora
+$b = f(a)$ sarà la sua immagine. L'insieme di tutte le immagini
+è detto insieme immagine} e si indica con $Im(f)$. La \hl{controimmagine di b è
+quell'elemento tale che $f^{-1}(b) = \{ a \in A \: | \: f(a) = b \}$} (la funzione
 inversa in questo caso è solo notazione).
 
-Se \textbf{\(Im(f) = \text{codominio}\) allora la funzione è suriettiva}.
-Se \textbf{ad ogni immagine corrisponde una sola controimmagine (\(|Im(f^{-1}(b))| = 1\))
-allora la funzione è iniettiva}. \textbf{Se una funzione è sia iniettiva
-che suriettiva è biunivoca}. \textbf{Una funzione è invertibile se e solo se
+Se \hl{$Im(f) = \text{codominio}$ allora la funzione è suriettiva}.
+Se \hl{ad ogni immagine corrisponde una sola controimmagine ($|Im(f^{-1}(b))| = 1$)
+allora la funzione è iniettiva}. \hl{Se una funzione è sia iniettiva
+che suriettiva è biunivoca}. \hl{Una funzione è invertibile se e solo se
 è biunivoca}.
 
-\textbf{La funzione \(A \times A = \Delta A = Id(A) = \{(a,a) | a \in A\}\) è detta 
+\hl{La funzione $A \times A = \Delta A = Id(A) = \{(a,a) | a \in A\}$ è detta 
 funzione identità o insieme diagonale}.
 
 \section{Operazioni}
-Le operazioni sono delle speciali funzioni: dati \(n+1\) insiemi 
-\(A_1, \dots, A_{n+1}\) non vuoti, una operazione n-aria \(\ast\) è una funzione
+Le operazioni sono delle speciali funzioni: dati $n+1$ insiemi 
+$A_1, \dots, A_{n+1}$ non vuoti, una operazione n-aria $\ast$ è una funzione
 che:
 \begin{align*}
     A_1 \times \dots \times A_n &\to A_{n+1} \\
     (a_1, \dots, a_n) &\mapsto \ast (a_1, \dots, a_n)
 \end{align*}
 
-Se \textbf{gli insiemi usati nel prodotto cartesiano sono lo stesso insieme \(A\)
-si dice che l'operazione è interna} (esempio: la somma). Se il \textbf{numero di insiemi è 2 si dice binaria}.
+Se \hl{gli insiemi usati nel prodotto cartesiano sono lo stesso insieme $A$
+si dice che l'operazione è interna} (esempio: la somma). Se il \hl{numero di insiemi è 2 si dice binaria}.
 
 Esempi di operazioni:
 \begin{description}
-    \item[Somma] \(\mathbb{N} \times \mathbb{N} \to \mathbb{N}, (n1, n2) \mapsto n3 = n1 + n2 \)
-    \item[Differenza] \(\mathbb{N} \times \mathbb{N} \to \mathbb{Z}, (n1, n2) \mapsto n3 = n1 - n2 \)
+    \item[Somma] \[
+        \begin{array}{ccc}
+            \mathbb{N} \times \mathbb{N} &\to &\mathbb{N} \\
+            (n1, n2) &\mapsto &n3 = n1 + n2
+        \end{array} 
+    \]
+    \item[Differenza] \[
+        \begin{array}{ccc}
+            \mathbb{N} \times \mathbb{N} &\to &\mathbb{Z} \\
+            (n1, n2) &\mapsto &n3 = n1 - n2 
+        \end{array}
+    \]
 \end{description}
 
 Le varie operazioni possono essere rappresentate in tabelle che indicano tutti i
-posibili casi. Ad esempio, esistono \(2^4 = 16\) diverse operazioni binarie 
-interne ad \(A = \{a_1, a_2\}\).
+posibili casi. Ad esempio, esistono $2^4 = 16$ diverse operazioni binarie 
+interne ad $A = \{a_1, a_2\}$.
 
 \begin{table}[H]
     \centering
     \begin{tabular}{c|cc}
-        \(\ast\) & \(a_1\) & \(a_2\) \\
+        $\ast$ & $a_1$ & $a_2$ \\
         \midrule
-        \(a_1\) & \(a_1\) & \(a_2\) \\
-        \(a_2\) & \(a_1\) & \(a_2\) \\
+        $a_1$ & $a_1$ & $a_2$ \\
+        $a_2$ & $a_1$ & $a_2$ \\
     \end{tabular}
     \caption{Esempio di operazione interna binaria ad A}
 \end{table}
