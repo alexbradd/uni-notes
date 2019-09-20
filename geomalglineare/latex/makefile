@@ -1,5 +1,5 @@
-build : analisi1.tex
-	pdflatex analisi1.tex
+build : geomalglineare.tex
+	pdflatex geomalglineare.tex
 
 clean :
 	clean '.*\.(log|aux)'
