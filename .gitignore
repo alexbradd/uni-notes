@@ -1,3 +1,6 @@
 # latex stuff
 *.aux
 *.log
+
+# Old packed files
+old-notes/
