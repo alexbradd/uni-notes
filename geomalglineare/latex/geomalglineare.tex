@@ -53,11 +53,12 @@ Trattati nel dettaglio negli appunti di \hl{Analisi 1}.
 \subsection{Operazioni}
 Le operazioni più usate sono:
 \begin{description}
-    \item[\hl{Unione}] $A \cup B = \{x | x \in A \vee x \in B\}$
-    \item[\hl{Intersezione}] $A \cap B = \{x | x \in A \wedge x \in B\}$
-    \item[\hl{Differenza}] $A - B = \{x | x \in A \wedge x \notin B\}$
+    \item[Unione] $A \cup B = \{x | x \in A \vee x \in B\}$
+    \item[Intersezione] $A \cap B = \{x | x \in A \wedge x \in B\}$
+    \item[Complementare] $A^C = \bar{A} = \{x \in U | x \notin A\}$
+    \item[Differenza] $A - B = \{x | x \in A \wedge x \notin B\}$
         Si può anche trovare indicata con $ \setminus $
-    \item[\hl{Prodotto cartesiano}] $A \times B = \{(a,b) | a \in A, b \in B \}$
+    \item[Prodotto cartesiano] $A \times B = \{(a,b) | a \in A, b \in B \}$
         Le coppie $(a,b)$ sono anche dette \hl{coppie} (m-uple per $m$ elementi)
 \end{description}
 
@@ -313,8 +314,8 @@ ordine $(m, n)$ ad elementi nel campo $K$ è una funzione definita come}:
 L'insieme di \hl{tutte le matrici di ordine $(m,n)$ su $K$ viene indicato con
 $Mat(m,n;K)$}.
 
-La matrice nulla è indicata con $0_{mn}$. La matrice identità $I_{mn}$ è, invece,
-una matrice del tipo:
+\paragraph{Matrici particolari} La matrice nulla è indicata con $0_{mn}$. La
+matrice identità $I_{mn}$ è, invece, una matrice del tipo:
 \[
     \begin{array}{cccc}
         I_{mn}: & M \times N & \to & K \\
@@ -332,6 +333,52 @@ numeri di $m$ righe ed $n$ colonne:
                   m & a_{m1} & \cdots & a_{mn} \cr }
     \in Mat(m,n;K)
 \]
+Una matrice si può anche indicare con la notazione $[a_{ij}]$.
+
+\subsection{Operazioni con le matrici}
+\begin{description}
+    \item[Somma] \'E un'operazione binaria interna. Somma gli elementi uno a uno:
+        \[
+            \begin{array}{cccc}
+                +: & Mat(m,n;K) \times Mat(m,n;K) & \to &Mat(m,n;K) \\
+                & ([a_{ij}], [b_{ij}]) &\mapsto  & [a_{ij} + b_{ij}]
+            \end{array}
+        \]
+    \item[Prodotto con scalare] \'E un'operazione binaria esterna:
+        \[
+            \begin{array}{cccc}
+                \cdot: & K \times Mat(m,n;K) & \to &Mat(m,n;K) \\
+                & (t, [a_{ij}]) &\mapsto  & [t \cdot a_{ij}]
+            \end{array}
+        \]
+    \item[Prodotto matriciale] \'E un'operazione binaria esterna:
+        \[
+            \begin{array}{cccc}
+                \ast: & Mat(m,p;K) \times Mat(p,n;K) & \to &Mat(m,n;K) \\
+                & ([a_{ij}], [b_{ij}]) &\mapsto  & [\sum_{k=0}^p a_{ik}b_{kj}]
+            \end{array}
+        \]
+        \hl{Osserva: il numero di colonne della prima deve essere uguale al numero
+            di righe della seconda!}
+\end{description}
+
+\paragraph{Proprietà della somma} La struttura $(Mat(m,n:\mathbb{r}), +)$ è un
+gruppo abeliano quindi:
+\begin{itemize}
+    \item \hl{\'E commutativa}: $A + B = B + A$
+    \item \hl{\'E associativa}: $(A + B) + C = A + (B + C)$
+    \item \hl{Esiste l'elemento neutro} $e = 0_{mn}$
+    \item \hl{Esiste l'inverso}: $A + (-A) = 0_{mn}$
+\end{itemize}
+
+\paragraph{Proprietà del prodotto con scalare}
+\begin{itemize}
+    \item \hl{\'E distributiva con la somma}: $k (A + B) = kA + kB$
+    \item \hl{\'E distributiva con la somma in $K$}: $(j + k)A = jA + kA$
+    \item \hl{\'E omogenea rispetto alla moltiplicazione in $K$}:
+        $(jk)A = j(kA)$
+    \item \hl{Esiste la normalizzazione} $A = 1 \cdot A$
+\end{itemize}
 
 \section{Sistemi lineari}
 
