@@ -335,6 +335,9 @@ numeri di $m$ righe ed $n$ colonne:
 \]
 Una matrice si può anche indicare con la notazione $[a_{ij}]$.
 
+\paragraph{Il rango di una matrice} \hl{Il rango $r(A)$ di una matrice $A$ è il
+rango di una matrice a scala $S$ ottenuta tramite riduzione di Gauss di $A$}.
+
 \subsection{Operazioni con le matrici}
 \begin{description}
     \item[Somma] \'E un'operazione binaria interna. Somma gli elementi uno a uno:
@@ -380,6 +383,95 @@ gruppo abeliano quindi:
     \item \hl{Esiste la normalizzazione} $A = 1 \cdot A$
 \end{itemize}
 
+\paragraph{Proprietà del prodotto matriciale} 
+\begin{itemize}
+    \item \hl{Non vale la proprietà commutativa}
+    \item \hl{Non esiste l'annullamento}  
+    \item \hl{L'elemento neutro è $I_{m}A_{mn} = A, A_{mn}I_{n} = A$}
+    \item \hl{Non esiste l'inverso}
+    \item \hl{\'E associativo}
+    \item \hl{\'E distributivo con la somma}: $A(B+C) = (AB) + (AC)$
+    \item \hl{\'E omogenea con l'altro prodotto}: $t(AB) = (tA)B = A(tB)$
+\end{itemize}
+
+\subsection{La matrice trasposta}
+Data una matrice $A$, la matrice trasposta è un'altra matrice $A^T$ che si 
+ottiene trasformando tutte le righe in colonne e viceversa:
+\[
+    A \in Mat(m,n;K); A^T \in Mat(n,m,K)
+\]
+
+\subsection{Pivot e matrice a scala}
+\paragraph{Pivot} Un pivot $Pi$ è \hl{il primo elemento non nullo della riga $i$}
+della matrice.
+
+\paragraph{Matrice a scala} Una matrice nella quale \hl{il pivot della prima riga 
+compare prima del pivot della seconda riga, che a sua volta compare prima del 
+pivot della terza riga e così andare}, con le eventuali righe nulle per ultime, si 
+dice matrice a scala.
+\[
+    A = 
+    \begin{bmatrix}
+        P1 & *  & *  & * \\
+        0  & P2 & *  & * \\
+        0  & 0  & P3 & * \\
+        0  & 0  & 0  & P4 \\
+        & & 0_{m-r, n} & 
+    \end{bmatrix} \in Mat(m,n;K)
+\]
+
+\paragraph{Il rango di una matrice a scala} \hl{Il rango $r(S)$ di una matrice 
+a scala $S$ è il numero di pivot in $S$}. 
+
+\subsection{Eliminazione di Gauss}
+Il metodo di eliminazione di Gauss ci permette \hl{di ridurre qualsiasi matrice
+in una nuova matrice a scala tramite alcune operazionei }. Esisteranno \hl{diverse
+riduzioni, ma tutte hanno lo stesso rango}.
+
+\paragraph{Le operazioni di Gauss} 
+\begin{description}
+    \item[Permutazione] Scambio due righe tra di loro
+    \item[Moltiplicazione per uno scalare non nullo] Moltiplico tutti gli elementi
+        di una riga per un numero diverso da $0$
+    \item[Somma tra righe] Sommo uno a uno gli elementi di due righe e la riga
+        risultante la inserisco al posto di uno dei due addendi:
+        $A_{R(i)} \to A_{R(i)} + tA_{R(j)} \text{ con } i \neq j$
+\end{description}
+
 \section{Sistemi lineari}
+Un sistema lineare è un insieme di espressioni che hanno questa forma:
+\[
+    \begin{cases}
+        a_{11}x_1 + \cdots + a_{1n}x_n = b_1 \\
+        \cdots + \cdots + \cdots = \cdots \\
+        a_{m1}x_1 + \cdots + a_{mn}a_n = b_m
+    \end{cases}
+\]
+Dove:
+\begin{itemize}
+    \item $a_{ij}, b_i \in K$
+    \item $x_n$ sono incognite
+    \item $1 \leq i \leq m, 1 \leq j \leq n$
+\end{itemize}
+
+\hl{Un sistema lineare può anche essere scritto come un'equazione matriciale:}
+\begin{align*}
+    & A = 
+    \begin{bmatrix}
+        a_{11} & \cdots & a_{1n} \\
+        \vdots & \ddots & \vdots \\
+        a_{m1} & \cdots & a_{mn}
+    \end{bmatrix}, B = 
+    \begin{bmatrix}
+        b_1 \\ \vdots \\ b_m
+    \end{bmatrix}, X = 
+    \begin{bmatrix}
+        x_1 \\ \vdots \\ x_n 
+    \end{bmatrix} \\
+    & AX = B
+\end{align*}
+
+\hl{La matrice $[A|B]$ è detta la matrice completa del sistema. $[A|0]$ è detta 
+matrice del sistema omogeneo associato.}
 
 \end{document}
