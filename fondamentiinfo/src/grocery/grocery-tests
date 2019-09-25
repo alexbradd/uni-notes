@@ -6,6 +6,7 @@ else if (q >= 10) // Raggiungibile solo per numeri negativi
     else if (q >= 50)
         sconto = 10;
 
+
 //(C) -1: 0, 0: 0, 10: 5, 50: 10 OK
 if (q < 10) // problema per quantità negative
     sconto = 0;
@@ -13,6 +14,7 @@ else if (q >= 10) && (q < 50) // syntax error (da correggere)
         sconto = 5;
     else
         sconto = 10;
+
 
 //(B) -1: 0, 0: 0, 10: 5, 50: 10 OK
 if (q <= 9) // problema per quantità negative
@@ -22,6 +24,7 @@ if ((q >= 10) && (q < 50) // syntax error (da correggere)
 if (q >= 50)
     sconto = 10;
 
+
 //(A) -1: 0, 0: 0, 10: 5, 50: 5
 if (q >= 50)
     sconto = 10;
@@ -29,5 +32,4 @@ if (q >= 10)
     sconto = 5;
 if (q < 10) // problema per quantità negative
     sconto = 0;
-
 
