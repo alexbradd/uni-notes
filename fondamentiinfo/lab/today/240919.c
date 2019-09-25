@@ -11,6 +11,7 @@ int main (int argc, char* argv[])
         printf("Argument: %s\n", argv[i]);
     return 0;
 }*/
+
 /* Es 1
 int main(void)
 {
@@ -28,6 +29,7 @@ int main(void)
 
     return 0;
 }*/
+
 /* Es 2
 int main(void)
 {
@@ -58,6 +60,7 @@ int main(void)
     }
     return 0;
 }*/
+
 /* Es 3
 int main(void)
 {
@@ -107,43 +110,83 @@ int main(void)
     }
     return 0;
 }*/
+
 /* Es 4
 int main(void)
 {
 	int input;
     printf("Numero? ");
     scanf("%d", &input);
-    
+
     printf("Tabellina del numero %d:\n", input);
     for (int i = 0; i <= 10; i++)
     	printf("%d x %d = %d; ", input, i, (input * i));
-    	
+
     printf("\n");
     return 0;
-	
+
 }*/
+
 /* Es 5
 int main(void)
 {
-	int input1 = 0, 
+	int input1 = 0,
 		input2 = 0,
-		n = 0, 
+		n = 0,
 		sum = 0;
 	float avg = 0;
-	
+
 	printf("Numero 1? ");
     scanf("%d", &input1);
     discard;
 	printf("Numero 2? ");
     scanf("%d", &input2);
-    
+
     avg = (input1 + input2) / 2;
     while ((n + input1) <= input2){
     	sum += input1 + n; // prima dell'incremento sennò salta un numero
     	++n;
     }
-    
-    printf("Intervallo [%d, %d]: n = %d; somma = %d; media = %f\n", 
+
+    printf("Intervallo [%d, %d]: n = %d; somma = %d; media = %f\n",
     		input1, input2, n, sum, avg);
     return 0;
+}*/
+
+/* Es 6
+int main(void)
+{
+    int input;
+
+    printf("Numero? ");
+    scanf("%d", &input);
+
+    for (int i = 1; i <= input; i++)
+        printf("%d", i);
+
+    printf("\n");
+    for (int i = 1; i <= input; i++){
+        for (int j = 1; j <= i; j++){
+            printf("*");
+        }
+        printf("\n");
+    }
+}*/
+
+/* Es 7
+int main(void)
+{
+    int old,
+        quoz,
+        resto;
+
+    printf("Inserire numero: ");
+    scanf("%d", &quoz);
+
+    do {
+        old = quoz;
+        resto = quoz % 2;
+        quoz = (int) (quoz / 2);
+        printf("%d / 2 = %d con resto di %d\n", old, quoz, resto);
+    } while (quoz != 0);
 }*/
