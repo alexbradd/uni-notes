@@ -105,4 +105,45 @@ int main(void)
         default:
             printf("???\n");
     }
+    return 0;
+}*/
+/* Es 4
+int main(void)
+{
+	int input;
+    printf("Numero? ");
+    scanf("%d", &input);
+    
+    printf("Tabellina del numero %d:\n", input);
+    for (int i = 0; i <= 10; i++)
+    	printf("%d x %d = %d; ", input, i, (input * i));
+    	
+    printf("\n");
+    return 0;
+	
+}*/
+/* Es 5
+int main(void)
+{
+	int input1 = 0, 
+		input2 = 0,
+		n = 0, 
+		sum = 0;
+	float avg = 0;
+	
+	printf("Numero 1? ");
+    scanf("%d", &input1);
+    discard;
+	printf("Numero 2? ");
+    scanf("%d", &input2);
+    
+    avg = (input1 + input2) / 2;
+    while ((n + input1) <= input2){
+    	sum += input1 + n; // prima dell'incremento sennò salta un numero
+    	++n;
+    }
+    
+    printf("Intervallo [%d, %d]: n = %d; somma = %d; media = %f\n", 
+    		input1, input2, n, sum, avg);
+    return 0;
 }*/
