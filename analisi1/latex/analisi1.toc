@@ -1,0 +1,17 @@
+\babel@toc {italian}{}
+\babel@toc {italian}{}
+\contentsline {section}{\numberline {1}Insiemi}{1}% 
+\contentsline {section}{\numberline {2}Numeri}{1}% 
+\contentsline {subsection}{\numberline {2.1}Numeri naturali}{1}% 
+\contentsline {paragraph}{Il principio di induzione}{1}% 
+\contentsline {paragraph}{Il principio di induzione (logica)}{1}% 
+\contentsline {paragraph}{Esempio}{1}% 
+\contentsline {paragraph}{Principio del minimo intero}{2}% 
+\contentsline {paragraph}{Definizioni delle operazioni in $\mathbb {N}$}{2}% 
+\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{2}% 
+\contentsline {subsubsection}{\numberline {2.1.1}Sommatoria}{2}% 
+\contentsline {paragraph}{Esempio}{2}% 
+\contentsline {paragraph}{Alcune sommatorie famose}{2}% 
+\contentsline {paragraph}{Le propriet\IeC {\`a} della sommatoria}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.2}La produttoria}{3}% 
+\contentsline {paragraph}{Propriet\IeC {\`a}}{3}% 
