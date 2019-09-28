@@ -1,0 +1,91 @@
+\section{Intervalli e intorni}
+\subsection{Intervallo}
+Per intervallo di estremi $a$ e $b$ si intende \hl{un sottoinsieme di
+$\mathbb{R}$ di diversi tipi}:
+\begin{itemize}
+    \item $(a;b) = \{ x\in\mathbb{R}|a<x<b\}$
+    \item $[a;b] = \{ x\in\mathbb{R}|a \leq x \leq b\}$
+    \item $[a;b) = \{ x\in\mathbb{R}|a \leq x < b\}$
+    \item $(a;b] = \{ x\in\mathbb{R}|a < x \leq b\}$
+\end{itemize}
+
+Gli intervalli possono essere anche illimitati: $(a; +\infty)$.
+
+\subsection{Intorno}
+Preso $x_0 \in \mathbb{R}$, di dice intorno di $x_0$ di raggio $\delta$ 
+l'insieme dei valori $x$ tali che:
+\[ |x - x_0| < \delta \]
+
+\hl{In generale un intorno è un intervallo $(x_0 - \delta; x_0 + \delta)$, ma un
+intervallo non per forza è un intorno.}
+
+\section{Insiemi limitati}
+Sia \hl{$E \subseteq \mathbb{R}$}. $E$ è detto \hl{insieme limitato se 
+$\exists m,M \in \mathbb{R} | \forall x \in E \; m \leq x \leq M$}. L'insieme 
+$E$ è detto superiormente limitato se esiste solo $M$, mentre è detto 
+inferiormente limitato se esiste solo $m$.
+
+Un insieme limitato può avere \hl{un massimo e un minimo, però non è detto
+che li contenga}. Un esempio di insieme dei questo tipo è $(-1; 1)$. Infatti 
+gli elementi, si \hl{continuano ad avvicinare a un valore, ma a causa della
+completezza di $\mathbb{R}$, non lo raggiungeranno mai poichè esisterà sempre 
+un sepratore} tra l'elemento e il ``bordo''. Ciò sarà ancora più apparente dalla
+definizione di massimo e minimo. Per descrivere appieno insiemi come $(-1;1)$
+vengono aggiunti i concetti di \hl{maggiorante, minorante, estremo superiore e 
+inferiore} che completano quello di massimo e minimo.
+
+\subsection{Massimo di un insieme limitato}
+Viene detto \hl{$M$ massimo per un insieme limitato superiormente $E$ se}:
+\begin{itemize}
+    \item \hl{$\forall x \in E, x \leq M$}
+    \item \hl{$M \in E$}
+\end{itemize}
+
+\subsection{Minimo di un insieme limitato}
+Viene detto \hl{$m$ minimo per un insieme limitato inferiormente $E$ se}:
+\begin{itemize}
+    \item \hl{$\forall x \in E, x \geq M$}
+    \item \hl{$m \in E$}
+\end{itemize}
+
+\subsection{Maggiorante di un insieme limitato}
+Viene detto \hl{$\bar{M}$ maggiorante di un insieme limitato superiormente $E$}
+se \hl{$\forall x \in E, x \geq \bar{M}$}.
+
+Si può notare come \hl{il maggiorante sia una generalizzazione del concetto di 
+massimo}. Infatti, \hl{per un insieme superiormente limitato possono esistere 
+$\infty$ maggioranti}.
+
+\subsection{Minorante di un insieme limitato}
+Viene detto \hl{$\bar{m}$ minorante di un insieme limitato inferiormente $E$}
+se \hl{$\forall x \in E, x \leq \bar{m}$}.
+
+Si può notare come \hl{il minorante sia una generalizzazione del concetto di 
+minimo}. Infatti, \hl{per un insieme inferiormente limitato possono esistere 
+$\infty$ minoranti}.
+
+\subsection{Estremo superiore di un insieme limitato}
+Definiamo \hl{$Sup(E)$ estremo superiore di un insieme limitato superiormente $E$
+il minimo dei maggioranti}, ossia un numero che:
+\begin{itemize}
+    \item \hl{$\forall x \in E x \leq a$}
+    \item \hl{$a = Min(\mathcal{M})$} 
+\end{itemize}
+dove $\mathcal{M}$ è l'insieme dei maggioranti di $E$.
+
+\hl{Un insieme limitato superiormente possiede sempre un estremo superiore: esso 
+può essere sia interno all'insieme che esterno ad esso}.
+
+\subsection{Estremo inferiore di un insieme limitato}
+Definiamo \hl{$Inf(E)$ estremo inferiore di un insieme limitato inferioremente $E$
+il massimo dei minoranti}, ossia un numero che:
+\begin{itemize}
+    \item \hl{$\forall x \in E x \geq a$}
+    \item \hl{$a = Max(\mathit{m})$} 
+\end{itemize}
+dove $\mathit{m}$ è l'insieme dei minoranti di $E$.
+
+\hl{Un insieme limitato inferiormente possiede sempre un estremo inferiore: esso 
+può essere sia interno all'insieme che esterno ad esso}.
+
+\subsection{Collegamento tra estremo inferiore (superiore) e la completezza di $\mathbb{R}$}

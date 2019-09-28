@@ -1,0 +1,58 @@
+\section{Sommatoria}
+Si indica con la \hl{sigma maiuscola}:
+\[
+    \sum_{i \in I} a_i
+\]
+Dove:
+\begin{itemize}
+    \item $I$ è un \hl{insieme finito}. I suoi elementi sono chiamati \hl{indici}
+    \item $(a_i), i \in I$ è una \hl{famiglia di numeri che dipendono da $i$}
+\end{itemize}
+
+\paragraph{Alcune sommatorie famose}
+\begin{description}
+    \item[Formula di Gauss] $\sum_{i=1}^n (i) = \frac{n\cdot(n-1)}{2}$
+    \item[Somma di una progressione geometrica]
+        \begin{align*}
+            \sum_{i = 0}^n q^i &= \frac{1-q^{n+1}}{1-q} \\
+            &= n+1 \text{ per } q = 1
+        \end{align*}
+        Dimostrazione:
+        \begin{align*}
+            \text{Tesi: } (1-q)\sum_{i = 0}^n q^i &= 1-q^{n+1} \\
+            (1-q)\sum_{i = 0}^n q^i &= \sum_{i = 0}^n q^i - q \sum_{i = 0}^n q^i \\
+            &= \sum_{i = 0}^n q^i - \sum_{i = 0}^n q^{i+1} \text{ prendiamo } k = i + 1 \\
+            &= \sum_{i = 0}^n q^i - \sum_{k = 1}^{n+1} q^{k} \\
+            &= (q^0 + \sum_{i = 1}^n q^i) - (\sum_{k = 1}^{n} q^{k} + q^{n+1}) \\
+            &= q^0 + \sum_{i = 1}^n q^i - \sum_{k = 1}^{n} q^{k} - q^{n+1} \\
+            &= 1 - q^{n+1} \\
+        \end{align*}
+\end{description}
+
+\paragraph{Le proprietà della sommatoria} 
+\begin{itemize}
+    \item La sommatoria è \hl{un operatore lineare}
+    \item \hl{l'indice è muto}: non importa il nome dell'indice 
+    \item \hl{traslando gli indici, la sommatoria non cambia}: è importante 
+        che il numero di elementi sia uguale
+    \item \hl{si definiscono sommatorie anche su due o più famiglie di indici}: 
+        $\sum_{i \in I, j \in J} a_{ij} = \sum_{i \in I}\sum_{j \in J} a_{ij}$
+    \item \hl{vale la proprietà dissociativa}:
+        $\sum_{i \in I} (a_i + b_i) = \sum_{i \in I} (a_i) + \sum_{i \in I} (b_i)$
+    \item \hl{le costanti possono essere portate fuori}:
+        $\sum_{i \in I} Ka_i = K\cdot\sum_{i \in I} a_i$
+    \item \hl{può essere scomposta in sommatorie più piccole}:
+        $\sum_{i=1}^n a_i = \sum_{i=1}^k a_i + \sum_{i=k+1}^n a_i$
+    \item \hl{riflessione degli indici}:
+        $\sum_{i=0}^n = \sum_{i=0}^n a_{n-i}$
+\end{itemize}
+
+\section{La produttoria}
+Si indica con un grande pi greco. E' uguale alla sommatoria ma al posto di
+fare la somma fa il prodotto.
+
+\paragraph{Proprietà}
+\begin{itemize}
+    \item $\prod_{i \in I} ka_i = k^{\#i}\prod_{i \in I} a_i$
+    \item Non vale la dissociativa
+\end{itemize} 

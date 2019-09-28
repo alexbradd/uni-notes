@@ -1,0 +1,230 @@
+\section{Insiemi numerici}
+\subsection{Numeri naturali ($\mathbb{N}$)}
+Sono i numeri \hl{interi positivi incluso lo 0}. Può \hl{essere costruito a 
+partire da un solo numero (lo 0)} basta aggiungendo un'unità ogni volta.
+\[ \mathbb{N} = \{0, 1, 2, 3, \dots \} \]
+
+\subsubsection{Proprietà} 
+\hl{Contiene sempre il successore di ogni suo elemento 
+(principio di induzione)}. Gode della \hl{relazione d'ordine $\leq$, il che lo 
+rende un insieme ordinato}. $\mathbb{N}$, come tutti i suoi sottoinsiemi, 
+\hl{godono del principio del minimo intero} che lo rende, insieme ai suoi 
+sottoinsiemi, \hl{un insieme \textit{ben} ordinato}.
+
+\subsubsection{Operazioni definite} 
+In $\mathbb{N}$ sono definite somma e prodotto: in questo modo:\[
+    \begin{array}{cccc}
+        +: &\mathbb{N} \times \mathbb{N} &\to &\mathbb{N} \\
+        &somma(n1, n2) &\mapsto & n_1 + n_2 \in \mathbb{N}
+    \end{array} \quad
+    \begin{array}{cccc}
+        \cdot: &\mathbb{N} \times \mathbb{N} &\to &\mathbb{N} \\
+        &prodotto(n1, n2) &\mapsto & n_1 \cdot n_2 \in \mathbb{N}
+    \end{array}
+\]
+
+\paragraph{Proprietà delle operazioni}
+\begin{description}
+    \item[Commutativa] $n_1 + n_2 = n_2 + n_1$
+    \item[Associativa] $n_1 + (n_2 + n_3) = (n_1 + n_2) + n_3$
+    \item[Distributiva] $n_1 \cdot (n_2 + n_3) = n_1 \cdot n_2 + n_1 \cdot n_3$
+\end{description}
+
+\subsubsection{Principio del minimo intero} 
+\hl{Ogni sottoinsieme di $\mathbb{N}$ ha un elemento minimo (più piccolo di 
+tutti gli altri)}.
+
+\subsubsection{Il principio di induzione} 
+Sia \hl{$S \subseteq \mathbb{N}$ un sottoinsieme tale che 
+$0 \in S$ e $\forall n \in S \implies n+1 \in S$}. Allora 
+\hl{S coincide con $\mathbb{N}$}.
+
+\paragraph{Il principio di induzione nella logica} Il principio di induzione 
+può essere usato per dimostrare teoremi in $\mathbb{N}$. Enunciamolo in questo 
+modo: sia \hl{$P(n)$ un predicato che dipende da $n \in \mathbb{N}$} tale che
+\hl{$P(n_0)$ sia vero e che $\forall n \in \mathbb{N} P(n) \implies P(n+1)$}. Il
+predicato \hl{sarà vero per tutti gli $n \geq n_0$}.
+
+\subsubsection{Fattoriale} 
+Preso $n \in N$, il fattoriale di $n$ sarà
+$n! = 1 \cdot 2 \cdot 3 \cdot \ldots \cdot (n-1) \cdot n$. Una eccezione è lo 0:
+il fattoriale di 0 è $0! = 1$. Il fattoriale è un numero definito che può essere
+definito induttivamente: $n! = n(n-1)!$.
+
+\subsubsection{Coefficiente binomiale} 
+Già incontrati nella probabilità:
+\[ \binom{n}{n} = \frac{n!}{k!(n-k)!} \]
+con $n \in \mathbb{N}, 0 \leq k \leq n$. Convenzionalmente $\binom{0}{0} = 1$. 
+Il coefficiente binomiale viene usato nel binomio di Newton.
+
+\subsubsection{Binomio di Newton} 
+Il binomio di Newton ci permette di calcolare l'elevamento a qualsiasi potenza 
+di un binomio:
+\[ (a+b)^n = \sum_{k=0}^n \binom{n}{k} a^{n-k} b^k \]
+La formula è dimostrabile per induzione (se sei proprio interessato, vedi gli
+appunti a penna).
+
+\subsection{Numeri interi relativi ($\mathbb{Z}$)}
+\'E l'insieme $\mathbb{Z}$. \hl{Non esiste un minimo, di conseguenza non valgono 
+il principio del minimo intero e il principio di induzione}. \'E \hl{definita la
+relazione d'ordine $\leq$, quindi è un insieme ordinato} ma a causa della
+mancata validità dei due principi nominati precedentemente, \hl{non è un insieme
+ben ordinato}. $\mathbb{Z}$ è, inoltre, più grande di $\mathbb{N}$: $ N \subset Z$.
+
+\subsubsection{Costruzione} 
+Per costruire il numeri relativi, \hl{definiamo una relazione di equivalenza 
+$\sim$ in $\mathbb{N} \times \mathbb{N}$ tale che}:
+\[ (a,b) \sim (h,k) \iff a+k=b+h \]
+Questa relazione di equivalenza \hl{ci permette di descrivere tutti i numeri negativi
+che sono la differenza dei numeri $a$ e $b$ o $h$ e $k$}: per esempio \hl{$-1$ è la 
+classe di equivalenza $[(2,3)]_{\sim}$}. $\mathbb{Z}$ viene, quindi, definito come
+$\mathbb{Z} = (\mathbb{N} \times \mathbb{N}) / \sim$
+
+\paragraph{Dimostrazione che $\sim$ è una relazione di equivalenza} Per
+dimostrare che $\sim$ è una relazione di equivalenza, verifichiamo che soddisfi
+i requisiti:
+\begin{itemize}
+    \item è riflessiva: $(m,n) \sim (m,n) \implies m+n = n+m$
+    \item è simmetrica: $(a,b) \sim (c,d) = (c,d) \sim (a,b)$
+    \item è transitiva: $(a,b) \sim (c,d), (c,d) \sim (e,f) \implies (a,b)\sim(e,f)$
+        Infatti: 
+        \begin{align*}
+            a+d=b+c, &\quad c+f=d+e \\
+            a-b=c-d, &\quad c-d=e-f \\
+            a-b&=e-f \\
+            a+f&=b+e
+        \end{align*}
+\end{itemize}
+
+\subsubsection{Operazioni definite} 
+Le operazioni sono \hl{le stesse di $\mathbb{N}$ ma aggiornate}:
+\[
+    \begin{array}{cccc}
+        +: &\mathbb{Z} \times \mathbb{Z} &\to &\mathbb{Z} \\
+        &((a, b)_{\sim}, (h,k)_{\sim}) &\mapsto & (a+h, b+k)_{\sim}
+    \end{array} \quad
+    \begin{array}{cccc}
+        \cdot: &\mathbb{Z} \times \mathbb{Z} &\to &\mathbb{Z} \\
+        &((a, b)_{\sim}, (h,k)_{\sim}) &\mapsto & (ah + bk, bh + ak)_{\sim}
+    \end{array}
+\]
+
+\paragraph{Proprietà delle operazioni} Mantnengono le stesse proprietà che 
+avevano in $\mathbb{N}$.
+
+\subsection{Numeri razionali ($\mathbb{Q}$)}
+\'E l'insieme $\mathbb{Q}$. \hl{Non esiste un minimo, di conseguenza non valgono 
+il principio del minimo intero e il principio di induzione}. \'E \hl{definita la
+relazione d'ordine $\leq$, quindi è un insieme ordinato} ma a causa della
+mancata validità dei due principi nominati precedentemente, \hl{non è un insieme
+ben ordinato}.
+
+\subsubsection{Costruzione}
+Per costruire il numeri razionali, \hl{definiamo una relazione di equivalenza 
+$\approx$ in $\mathbb{Z} \times (\mathbb{Z} - \{0\})$ tale che}:
+\[ (a,b) \approx (h,k) \iff ak=bh \]
+Questa relazione di equivalenza \hl{ci permette di descrivere tutti i numeri razionali
+che sono divisione dei numeri $a$ e $b$ o $h$ e $k$}: per esempio \hl{$\sfrac{2}{3}$
+è la classe di equivalenza $[(2,3)]_{\approx}$}. $\mathbb{Q}$ viene, quindi, 
+definito come $\mathbb{Z} = (\mathbb{Z} \times (\mathbb{Z} - \{0\}) / \approx$
+
+\paragraph{Dimostrazione che $\approx$ è una relazione di equivalenza} Per
+dimostrare che $\approx$ è una relazione di equivalenza, verifichiamo che soddisfi
+i requisiti:
+\begin{itemize}
+    \item è riflessiva: $(m,n) \approx (m,n) \implies mn = nm$
+    \item è simmetrica: $(a,b) \approx (c,d) = (c,d) \approx (a,b)$
+    \item è transitiva: $(a,b) \approx (c,d), (c,d) \approx (e,f) \implies (a,b)\approx(e,f)$
+        Infatti: 
+        \begin{align*}
+            ad=bc, &\quad cf=de \\
+            \frac{a}{b}=\frac{c}{d}, &\quad \frac{c}{d}=\frac{e}{f} \\
+            \frac{a}{b}&=\frac{e}{f} \\
+            af&=be
+        \end{align*}
+\end{itemize}
+
+\subsubsection{Operazioni definite} 
+Le operazioni sono \hl{le stesse che sono definite in $\mathbb{Z}$ ma aggiornate}:
+\[
+    \begin{array}{cccc}
+        +: &\mathbb{Q} \times \mathbb{Q} &\to &\mathbb{Q} \\
+        &((a, b)_{\approx}, (h,k)_{\approx}) &\mapsto & (ak+bh, b+k)_{\sim}
+    \end{array} \quad
+    \begin{array}{cccc}
+        \cdot: &\mathbb{Q} \times \mathbb{Q} &\to &\mathbb{Q} \\
+        &((a, b)_{\approx}, (h,k)_{\approx}) &\mapsto & (ah, bk)_{\approx}
+    \end{array}
+\]
+
+\paragraph{Proprietà delle operazioni} Mantengono le stesse proprietà che 
+avevano in $\mathbb{Z}$.
+
+\subsubsection{La rappresentazione decimale}
+La rappresentazione decimale di un numero non è nient'altro che un \hl{allineamento
+di cifre}. Le rappresentazioni decimali che si trovano \hl{nei razionali sono 
+limitate, illimitate periodiche}. Esistono anche rappresentazioni \hl{illimitate,
+ma non sono contenute in $\mathbb{Q}$}.
+
+\'E costituita da una \hl{parte intera (necessariamente finita)} e una \hl{parte
+decimale che può essere finita o illimitata} (si ricorda che in $\mathbb{Q}$ solo
+illimitati periodici). Può essere scritta come:
+\[ x = \pm \sum_{j=0}^k c_j \cdot 10^j + \sum_{l=0}^m d_l 10^{-l} \]
+Dove la prima sommatoria rappresenta la parte intera e la seconda la parte 
+decimale.
+
+\subsection{I numeri reali ($\mathbb{R}$)}
+L'insieme dei numeri reali contiente \hl{qualsiasi rappresentazione decimale
+possibile, limitata o illimitata}. Di conseguenza, $\mathbb{R}$ contiene tutti
+gli insiemi visti fino ad ora. Nell'insieme dei reali è \hl{definita la relazione
+d'ordine $\leq$, rendolo un insieme ordinato}. Inoltre, vale anche \hl{l'assioma
+di completezza, che rende $\mathbb{R}$ un insieme ordinato e completo}.
+
+\subsubsection{Operazioni definite}
+Le operazioni definite sono \hl{sempre le stesse trovate negli insiemi precedenti}:
+\[
+    \begin{array}{cccc}
+        +: &\mathbb{R} \times \mathbb{R} &\to &\mathbb{R} \\
+        &somma(a,b) &\mapsto & a + b \in \mathbb{R}
+    \end{array} \quad
+    \begin{array}{cccc}
+        \cdot: &\mathbb{R} \times \mathbb{R} &\to &\mathbb{R} \\
+        &prodotto(a,b) &\mapsto & a \cdot b \in \mathbb{R}
+    \end{array}
+\]
+
+\paragraph{Proprietà delle operazioni} Mantengono le stesse proprietà che 
+avevano in $\mathbb{Q}$.
+
+\subsubsection{Assioma di completezza}
+Siano \hl{$A, B \subseteq R$ tali che}:
+\begin{itemize}
+    \item $A,B \neq \emptyset$
+    \item $A \cap B = \emptyset$ 
+    \item $A \cup B = R$
+    \item $\forall a \in A, \forall b \in B \; a < b$ 
+\end{itemize}
+allora esiste un unico numero reale tale che 
+\hl{$\forall a \in A, \forall b \in B \; a \leq s \leq b$}. $s$ è detto elemento 
+\hl{separatore}. 
+
+\subsection{Numeri complessi}
+\'E l'insieme che \hl{completa i numeri reali}: \hl{ci permettono di risolvere le
+equazioni polinomiali che non riuscivamo nei reali (chiusura algebrica)}. 
+
+\subsubsection{Costruzione}
+\'E un \hl{insieme di coppie ordinate di numeri reali} appartenenti a 
+$\mathbb{R} \times \mathbb{R}$.
+
+\subsubsection{Operazioni}
+Le operazioni sono \hl{sempre le stesse che in $\mathbb{R}$ ma aggiornate}:
+\begin{align*}
+    \begin{array}{cccc}
+        +: &\mathbb{C} \times \mathbb{C} &\to &\mathbb{C} \\
+        &somma((a,b), (c,d)) &\mapsto & (a+c, b+d) \in \mathbb{R}
+    \end{array} \\
+    \begin{array}{cccc}
+        \cdot: &\mathbb{C} \times \mathbb{C} &\to &\mathbb{C} \\
+        &prodotto((a,b), (c,d)) &\mapsto & (ac-bd, ad + bc) \in \mathbb{R}
+    \end{array}
+\end{align*} 

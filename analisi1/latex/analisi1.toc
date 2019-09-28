@@ -1,17 +1,48 @@
 \babel@toc {italian}{}
 \babel@toc {italian}{}
-\contentsline {section}{\numberline {1}Insiemi}{1}% 
-\contentsline {section}{\numberline {2}Numeri}{1}% 
-\contentsline {subsection}{\numberline {2.1}Numeri naturali}{1}% 
-\contentsline {paragraph}{Il principio di induzione}{1}% 
-\contentsline {paragraph}{Il principio di induzione (logica)}{1}% 
-\contentsline {paragraph}{Esempio}{1}% 
-\contentsline {paragraph}{Principio del minimo intero}{2}% 
-\contentsline {paragraph}{Definizioni delle operazioni in $\mathbb {N}$}{2}% 
-\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{2}% 
-\contentsline {subsubsection}{\numberline {2.1.1}Sommatoria}{2}% 
-\contentsline {paragraph}{Esempio}{2}% 
-\contentsline {paragraph}{Alcune sommatorie famose}{2}% 
-\contentsline {paragraph}{Le propriet\IeC {\`a} della sommatoria}{3}% 
-\contentsline {subsubsection}{\numberline {2.1.2}La produttoria}{3}% 
-\contentsline {paragraph}{Propriet\IeC {\`a}}{3}% 
+\contentsline {section}{\numberline {1}Insiemi}{2}% 
+\contentsline {section}{\numberline {2}Insiemi numerici}{3}% 
+\contentsline {subsection}{\numberline {2.1}Numeri naturali ($\mathbb {N}$)}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.1}Propriet\IeC {\`a}}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.2}Operazioni definite}{3}% 
+\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.3}Principio del minimo intero}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.4}Il principio di induzione}{3}% 
+\contentsline {paragraph}{Il principio di induzione nella logica}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.5}Fattoriale}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.6}Coefficiente binomiale}{3}% 
+\contentsline {subsubsection}{\numberline {2.1.7}Binomio di Newton}{3}% 
+\contentsline {subsection}{\numberline {2.2}Numeri interi relativi ($\mathbb {Z}$)}{4}% 
+\contentsline {subsubsection}{\numberline {2.2.1}Costruzione}{4}% 
+\contentsline {paragraph}{Dimostrazione che $\sim $ \IeC {\`e} una relazione di equivalenza}{4}% 
+\contentsline {subsubsection}{\numberline {2.2.2}Operazioni definite}{4}% 
+\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{4}% 
+\contentsline {subsection}{\numberline {2.3}Numeri razionali ($\mathbb {Q}$)}{4}% 
+\contentsline {subsubsection}{\numberline {2.3.1}Costruzione}{4}% 
+\contentsline {paragraph}{Dimostrazione che $\approx $ \IeC {\`e} una relazione di equivalenza}{5}% 
+\contentsline {subsubsection}{\numberline {2.3.2}Operazioni definite}{5}% 
+\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{5}% 
+\contentsline {subsubsection}{\numberline {2.3.3}La rappresentazione decimale}{5}% 
+\contentsline {subsection}{\numberline {2.4}I numeri reali ($\mathbb {R}$)}{5}% 
+\contentsline {subsubsection}{\numberline {2.4.1}Operazioni definite}{5}% 
+\contentsline {paragraph}{Propriet\IeC {\`a} delle operazioni}{5}% 
+\contentsline {subsubsection}{\numberline {2.4.2}Assioma di completezza}{6}% 
+\contentsline {subsection}{\numberline {2.5}Numeri complessi}{6}% 
+\contentsline {subsubsection}{\numberline {2.5.1}Costruzione}{6}% 
+\contentsline {subsubsection}{\numberline {2.5.2}Operazioni}{6}% 
+\contentsline {section}{\numberline {3}Sommatoria}{7}% 
+\contentsline {paragraph}{Alcune sommatorie famose}{7}% 
+\contentsline {paragraph}{Le propriet\IeC {\`a} della sommatoria}{7}% 
+\contentsline {section}{\numberline {4}La produttoria}{8}% 
+\contentsline {paragraph}{Propriet\IeC {\`a}}{8}% 
+\contentsline {section}{\numberline {5}Intervalli e intorni}{9}% 
+\contentsline {subsection}{\numberline {5.1}Intervallo}{9}% 
+\contentsline {subsection}{\numberline {5.2}Intorno}{9}% 
+\contentsline {section}{\numberline {6}Insiemi limitati}{9}% 
+\contentsline {subsection}{\numberline {6.1}Massimo di un insieme limitato}{9}% 
+\contentsline {subsection}{\numberline {6.2}Minimo di un insieme limitato}{9}% 
+\contentsline {subsection}{\numberline {6.3}Maggiorante di un insieme limitato}{9}% 
+\contentsline {subsection}{\numberline {6.4}Minorante di un insieme limitato}{9}% 
+\contentsline {subsection}{\numberline {6.5}Estremo superiore di un insieme limitato}{10}% 
+\contentsline {subsection}{\numberline {6.6}Estremo inferiore di un insieme limitato}{10}% 
+\contentsline {subsection}{\numberline {6.7}Collegamento tra estremo inferiore (superiore) e la completezza di $\mathbb {R}$}{10}% 
