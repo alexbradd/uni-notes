@@ -1,5 +1,5 @@
 # latex stuff
-*.aux
+#*.aux
 *.log
 
 # Old packed files

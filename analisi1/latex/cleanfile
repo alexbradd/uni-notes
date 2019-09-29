@@ -1,4 +1,4 @@
 #! recursive=1
 # Latex junk
-.*\.aux
+# .*\.aux
 .*\.log
