@@ -3,10 +3,10 @@
 Per intervallo di estremi $a$ e $b$ si intende \hl{un sottoinsieme di
 $\mathbb{R}$ di diversi tipi}:
 \begin{itemize}
-    \item $(a;b) = \{ x\in\mathbb{R}|a<x<b\}$
-    \item $[a;b] = \{ x\in\mathbb{R}|a \leq x \leq b\}$
-    \item $[a;b) = \{ x\in\mathbb{R}|a \leq x < b\}$
-    \item $(a;b] = \{ x\in\mathbb{R}|a < x \leq b\}$
+    \item $(a;b) = \{ x\in\mathbb{R} \mid a<x<b\}$
+    \item $[a;b] = \{ x\in\mathbb{R}\mid a \leq x \leq b\}$
+    \item $[a;b) = \{ x\in\mathbb{R}\mid a \leq x < b\}$
+    \item $(a;b] = \{ x\in\mathbb{R}\mid a < x \leq b\}$
 \end{itemize}
 
 Gli intervalli possono essere anche illimitati: $(a; +\infty)$.
@@ -21,7 +21,7 @@ intervallo non per forza è un intorno.}
 
 \section{Insiemi limitati}
 Sia \hl{$E \subseteq \mathbb{R}$}. $E$ è detto \hl{insieme limitato se 
-$\exists m,M \in \mathbb{R} | \forall x \in E \; m \leq x \leq M$}. L'insieme 
+$\exists m,M \in \mathbb{R} \mid  \forall x \in E \; m \leq x \leq M$}. L'insieme 
 $E$ è detto superiormente limitato se esiste solo $M$, mentre è detto 
 inferiormente limitato se esiste solo $m$.
 
@@ -88,4 +88,39 @@ dove $\mathit{m}$ è l'insieme dei minoranti di $E$.
 \hl{Un insieme limitato inferiormente possiede sempre un estremo inferiore: esso 
 può essere sia interno all'insieme che esterno ad esso}.
 
-\subsection{Collegamento tra estremo inferiore (superiore) e la completezza di $\mathbb{R}$}
+\subsection{Collegamento tra estremo inferiore (superiore) e l'assioma di completezza}
+\hl{Ogni insieme $E \subseteq \mathbb{R}$ limitato inferiormente (superiormente)
+ammette estremo inferiore (superiore)}.
+
+\paragraph{Dimostrazione} Prendiamo un \hl{insieme $E$ limitato superiormente}. 
+Allora \hl{$E$ ammette maggioranti}. Indichiamo con \hl{$\mathcal{M}$ l'insieme 
+di tutti i maggioranti} ($\mathcal{M} = \{x \in R \mid \forall e \in E \; e \leq x\}$). 
+L'insieme \hl{$\mathcal{M}$ così definito è limitato inferiormente (tutti gli 
+elementi di $E$ sono minoranti di $\mathcal{M}$)}. Definiamo, allora, 
+\hl{$\mathcal{N} = \mathbb{R} - \mathcal{M}$} l'insieme di tutti gli elementi 
+che non sono maggioranti di $E$. \hl{Osserviamo che}: 
+\begin{itemize}
+    \item $\mathcal{N} \neq \emptyset$
+    \item $\mathcal{M} \cup \mathcal{N} = \mathbb{R}$
+    \item $\mathcal{M} \cap \mathcal{N} = \emptyset$
+    \item $\forall y \in \mathcal{N} \; \exists \bar{e} \in E \mid \bar{e} > y$,  
+        $\forall x \in \mathcal{M} \; \exists \bar{e} \in E \mid x > \bar{e}$ quindi 
+        $y < \bar{e} < x$
+\end{itemize}
+Le osservazioni che abbiamo fatto \hl{non sono altro che le ipotesi dell'assioma
+di completezza (vedi {\ref{sec:assioma-completezza}})}. Quindi possiamo affermare
+che \hl{$\forall y \in\mathcal{N},\forall x \in\mathcal{M}\;\exists s \mid y \leq s \leq x$}.
+\hl{Questo elemento, però, dovrà essere unico in quanto dovrà essere o il minimo di
+$\mathcal{M}$ o il massimo di $\mathcal{N}$}. Per dimostrare il teorema dobbiamo 
+dimostrare che \hl{$s$ appartiene a $\mathbb{M}$}.
+
+\subparagraph{L'assurdo} \hl{Per assurdo, supponiamo che $s$ appartenga a 
+$\mathcal{N}$}. Ciò significa che \hl{$s$ non è un maggiorante} e che 
+\hl{$\exists \bar{e} \in E \mid \bar{e} > s$}. Posso, allora, costruire \hl{un 
+elemento $s < \frac{s + \bar{e}}{2} < \bar{e}$}. Questo numero è una \hl{contraddizione
+perché sarebbe come dire che $\frac{s + \bar{e}}{2} \in \mathcal{N}$ e quindi 
+$y \leq s < \frac{s + \bar{e}}{2} < \bar{e} \leq x$}.
+Così esisterebbero due elementi separatori, ciò però è un \hl{assurdo perché in
+questo caso l'assioma di completezza permette l'esistenza di un solo separatore}.
+Allora \hl{$s \in \mathcal{M}$ e di conseguenza $\exists \, Sup(E)$}.
+
