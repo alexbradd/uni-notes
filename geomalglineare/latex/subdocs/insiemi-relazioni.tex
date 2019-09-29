@@ -2,11 +2,11 @@
 \hl{Un insieme è una collezione di oggetti}. Tutta la matematica si basa
 sulla teoria assiomatica degli insiemi. \hl{Un insieme A si può indicare
 per elencazione ($A = \{a_1, \dots, a_n\}$) o con una condizione
-($A = \{x|\textit{condizione}\}$)}. La \hl{cardinalità di $A$ è il numero di
+($A = \{x\mid \textit{condizione}\}$)}. La \hl{cardinalità di $A$ è il numero di
 oggetti: $|A| = n$}. La cardinalità dell'insieme vuoto è 0.
 
 \paragraph{Esempi} $\mathbb{N} = \{0, 1, 2,\dots\}$,
-$\mathbb{Q} = \{q = \frac{m}{n} | m,n \in \mathbb{Z}, n \neq 0\}$,
+$\mathbb{Q} = \{q = \frac{m}{n} \mid m,n \in \mathbb{Z}, n \neq 0\}$,
 $\mathbb{R} = \{\text{x numeri decimali}\}$.
 
 Un \hl{insieme particolare è l'insieme con nessun elemento detto vuoto, indicato
@@ -26,12 +26,12 @@ Trattati nel dettaglio negli appunti di \hl{Analisi 1}.
 \subsection{Operazioni}
 Le operazioni più usate sono:
 \begin{description}
-    \item[Unione] $A \cup B = \{x | x \in A \vee x \in B\}$
-    \item[Intersezione] $A \cap B = \{x | x \in A \wedge x \in B\}$
-    \item[Complementare] $A^C = \bar{A} = \{x \in U | x \notin A\}$
-    \item[Differenza] $A - B = \{x | x \in A \wedge x \notin B\}$
+    \item[Unione] $A \cup B = \{x \mid x \in A \vee x \in B\}$
+    \item[Intersezione] $A \cap B = \{x \mid x \in A \wedge x \in B\}$
+    \item[Complementare] $A^C = \bar{A} = \{x \in U \mid x \notin A\}$
+    \item[Differenza] $A - B = \{x \mid x \in A \wedge x \notin B\}$
         Si può anche trovare indicata con $ \setminus $
-    \item[Prodotto cartesiano] $A \times B = \{(a,b) | a \in A, b \in B \}$
+    \item[Prodotto cartesiano] $A \times B = \{(a,b) \mid a \in A, b \in B \}$
         Le coppie $(a,b)$ sono anche dette \hl{coppie} (m-uple per $m$ elementi)
 \end{description}
 
@@ -82,7 +82,7 @@ dell'uguaglianza}.
 \subparagraph{Classe di equivalenza} Data una relazione di equivalenza $R$, preso
 un elemento $a$, la \hl{classe di equivalenza di $a$ sono tutti gli elementi
 equivalenti equivalenti ad $a$, ossia:}
-    \[ {[a]}_R = \{ b \in A | a \sim_R a \} \]
+    \[ {[a]}_R = \{ b \in A \mid a \sim_R a \} \]
 La classe di equivalenza è in sostanza l'insieme di tutti gli elementi
 equivalenti tra di loro.
 
@@ -103,20 +103,20 @@ con la lettera minuscola e usa questa notazione: \[ f: A \to B \]
 possibili funzioni che vanno da $A$ a $B$ si indica con $B^A$.}
 
 Preso \hl{$a \in A, b = f(a)$ sarà la sua immagine}. La \hl{controimmagine
-di $b$ è l'elemento tale che \\ $f^{-1}(b) = \{ a \in A | f(a) = b \}$}
+di $b$ è l'elemento tale che \\ $f^{-1}(b) = \{ a \in A \mid f(a) = b \}$}
 
 \hl{L'insieme di tutte le immagini è detto insieme immagine} e si indica con
 $Im(f)$.
 
 \paragraph{Funzione particolare} \hl{La funzione
-$A \times A = \Delta A = Id(A) = \{(a,a) | a \in A\}$ è detta funzione identità
+$A \times A = \Delta A = Id(A) = \{(a,a) \mid a \in A\}$ è detta funzione identità
 o insieme diagonale}.
 
 \paragraph{Iniettività} Una funzione è detta \hl{iniettiva se
 $\forall a,b \in A, a \neq b \implies f(a) \neq f(b)$}.
 
 \paragraph{Suriettività} Una funzione è detta \hl{suriettiva se
-$\forall b \in B, \exists a \in A | f(a) = b$}.
+$\forall b \in B, \exists a \in A \mid f(a) = b$}.
 
 \paragraph{Funzione biunivoca} Se una funzione è \hl{sia iniettiva che
 suriettiva è detta biunivoca}. Se una funzione è biunivoca può essere invertita
