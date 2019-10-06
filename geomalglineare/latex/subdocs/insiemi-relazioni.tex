@@ -108,6 +108,9 @@ di $b$ è l'elemento tale che \\ $f^{-1}(b) = \{ a \in A \mid f(a) = b \}$}
 \hl{L'insieme di tutte le immagini è detto insieme immagine} e si indica con
 $Im(f)$.
 
+Le funzioni sono trattate più nel dettaglio nell'omonimo capitolo degli appunti
+di Analisi 1
+
 \paragraph{Funzione particolare} \hl{La funzione
 $A \times A = \Delta A = Id(A) = \{(a,a) \mid a \in A\}$ è detta funzione identità
 o insieme diagonale}.
@@ -168,64 +171,6 @@ proprietà:
     \item[Proprietà distributiva] Lega due operazioni:
         $a \cdot (b \ast c) = (a \cdot b) \ast (a \cdot c)$
 \end{description}
-
-\section{Struttura algebrica}
-\hl{Dicesi struttura algebrica l'insieme di un certo numero di insiemi
-$A_1, \ldots, A_n$, chiamato \textit{supporto della struttura} e delle
-operazioni $\ast_1, \ldots, \ast_n$ su questi insiemi.}
-
-Tre importanti strutture sono \hl{il gruppo, l'anello e il campo}.
-
-\subsection{Il gruppo}
-Il gruppo è una struttura algebrica del tipo $(G, \ast)$ dove \hl{$G$ è un insieme
-e $\ast$ è un'operazione binaria interna a $G$} che deve rispettare \hl{queste 
-date proprietà $\forall a \in G$:}
-\begin{itemize}
-    \item \hl{Deve possedere l'elemento neutro in $G$}
-    \item \hl{Deve possedere l'inverso in $G$}
-    \item \hl{Deve godere della proprietà associativa}
-\end{itemize}
-Se l'operazione è anche \hl{commutativa il gruppo viene detto abeliano}.
-
-\subsection{L'anello}
-Un anello è una \hl{struttura algebrica del tipo $(A, \ast, \cdot)$} dove le due
-operazioni devono soddisfare le \hl{seguenti proprietà}:
-\begin{itemize}
-    \item \hl{$(A, \ast)$ è un gruppo abeliano}
-    \item \hl{$\cdot$ deve avere elemento neutro in $A$}
-    \item \hl{$\cdot$ deve godere della proprietà associativa}
-    \item \hl{$\cdot$ e $\ast$ devono essere legate dalla proprietà distributiva}
-\end{itemize}
-Se \hl{la seconda operazione è commutativa, allora l'anello si dice commutativo}.
-
-\subsection{Il campo}
-Un campo è una \hl{struttura algebrica del tipo $(K, \ast, \cdot)$} dove le due
-operazioni devono soddisfare le \hl{seguenti proprietà}:
-\begin{itemize}
-    \item \hl{$(K, \ast)$ deve essere un gruppo abeliano con elemento neutro $e$}
-    \item Detto $K^* = K - {e}$, \hl{$(K^*, \cdot)$ deve essere un gruppo abeliano}
-    \item \hl{Le due operazioni sono legate dalla proprietà distributiva}
-\end{itemize}
-
-Il campo $(\mathbb{R}, +, \times)$ è uno dei campi più importanti.
-
-\subsection{Omomorfismo}
-\hl{Un omomorfismo tra due strutture algebriche è una funzione $f$ che commuta
-tra le due con le loro operazioni}. Se \hl{$f$ è invertibile}, allora viene
-chiamata \hl{isomorfismo}.
-
-\paragraph{Omomorfismo di gruppi} Dati due gruppi $(A, \ast)$ e $(B, \cdot)$ la
-funzione \hl{$f: A \to B$ è un omomorfismo se}
-\[
-    f(a_1 \ast a_2) = f(b_1) \cdot f(b_2)
-\]
-
-\paragraph{Omomorfismo di campo} Dati due campi $(A, \ast_1, \cdot_1)$ e
-$(B, \ast_2, \cdot_2)$ la funzione \hl{$f: A \to B$ è un omomorfismo se}
-\[
-    f(a_1 \ast_1 a_2) = f(b_1) \ast_2 f(b_2) \wedge
-        f(a_1 \cdot_1 a_2) = f(b_1) \cdot_2 f(b_2)
-\]
 
 \section{Polinomi}
 Un polinomio $P(x)$ è una \hl{particolare funzione della forma}:

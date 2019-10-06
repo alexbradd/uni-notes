@@ -6,24 +6,37 @@
 \BOOKMARK [2][-]{subsection.2.1}{Relazioni particolari}{section.2}% 6
 \BOOKMARK [1][-]{section.3}{Funzioni}{}% 7
 \BOOKMARK [1][-]{section.4}{Operazioni}{}% 8
-\BOOKMARK [1][-]{section.5}{Struttura algebrica}{}% 9
-\BOOKMARK [2][-]{subsection.5.1}{Il gruppo}{section.5}% 10
-\BOOKMARK [2][-]{subsection.5.2}{L'anello}{section.5}% 11
-\BOOKMARK [2][-]{subsection.5.3}{Il campo}{section.5}% 12
-\BOOKMARK [2][-]{subsection.5.4}{Omomorfismo}{section.5}% 13
-\BOOKMARK [1][-]{section.6}{Polinomi}{}% 14
-\BOOKMARK [2][-]{subsection.6.1}{Divisione tra polinomi}{section.6}% 15
-\BOOKMARK [1][-]{section.7}{Matrici}{}% 16
-\BOOKMARK [2][-]{subsection.7.1}{Le matrici quadrate}{section.7}% 17
-\BOOKMARK [2][-]{subsection.7.2}{Matrice invertibile}{section.7}% 18
-\BOOKMARK [2][-]{subsection.7.3}{La matrice trasposta}{section.7}% 19
-\BOOKMARK [2][-]{subsection.7.4}{Operazioni con le matrici}{section.7}% 20
-\BOOKMARK [2][-]{subsection.7.5}{Pivot e matrice a scala}{section.7}% 21
-\BOOKMARK [2][-]{subsection.7.6}{Eliminazione di Gauss}{section.7}% 22
-\BOOKMARK [1][-]{section.8}{Sistemi lineari}{}% 23
-\BOOKMARK [2][-]{subsection.8.1}{Sistema lineare omogeneo}{section.8}% 24
-\BOOKMARK [2][-]{subsection.8.2}{Teorema di struttura delle soluzioni}{section.8}% 25
-\BOOKMARK [2][-]{subsection.8.3}{Forma chiusa per il calcolo della soluzione di un sistema lineare}{section.8}% 26
-\BOOKMARK [2][-]{subsection.8.4}{Equivalenza dei sistemi lineari}{section.8}% 27
-\BOOKMARK [2][-]{subsection.8.5}{Algoritmo di Gauss per la risoluzione dei sistemi lineari}{section.8}% 28
-\BOOKMARK [2][-]{subsection.8.6}{Teorema di Rouch\351-Capelli}{section.8}% 29
+\BOOKMARK [1][-]{section.5}{Polinomi}{}% 9
+\BOOKMARK [2][-]{subsection.5.1}{Divisione tra polinomi}{section.5}% 10
+\BOOKMARK [1][-]{section.6}{Struttura algebrica}{}% 11
+\BOOKMARK [2][-]{subsection.6.1}{Il gruppo}{section.6}% 12
+\BOOKMARK [2][-]{subsection.6.2}{L'anello}{section.6}% 13
+\BOOKMARK [2][-]{subsection.6.3}{Il campo}{section.6}% 14
+\BOOKMARK [2][-]{subsection.6.4}{Omomorfismo}{section.6}% 15
+\BOOKMARK [1][-]{section.7}{Spazi vettoriali}{}% 16
+\BOOKMARK [2][-]{subsection.7.1}{Propriet\340 elementari}{section.7}% 17
+\BOOKMARK [2][-]{subsection.7.2}{Omomorfismi}{section.7}% 18
+\BOOKMARK [3][-]{subsubsection.7.2.1}{Propriet\340}{subsection.7.2}% 19
+\BOOKMARK [2][-]{subsection.7.3}{Sottostrutture: sottospazi vettoriali}{section.7}% 20
+\BOOKMARK [3][-]{subsubsection.7.3.1}{Caratterizzazione degli sottospazi}{subsection.7.3}% 21
+\BOOKMARK [1][-]{section.8}{Matrici}{}% 22
+\BOOKMARK [2][-]{subsection.8.1}{Sottomatrice}{section.8}% 23
+\BOOKMARK [2][-]{subsection.8.2}{Operazioni con le matrici}{section.8}% 24
+\BOOKMARK [2][-]{subsection.8.3}{Le matrici quadrate}{section.8}% 25
+\BOOKMARK [2][-]{subsection.8.4}{La matrice trasposta}{section.8}% 26
+\BOOKMARK [2][-]{subsection.8.5}{La traccia}{section.8}% 27
+\BOOKMARK [2][-]{subsection.8.6}{Matrici a scala, pivot e rango}{section.8}% 28
+\BOOKMARK [2][-]{subsection.8.7}{Eliminazione di Gauss}{section.8}% 29
+\BOOKMARK [2][-]{subsection.8.8}{Le matrici elementari}{section.8}% 30
+\BOOKMARK [2][-]{subsection.8.9}{Il determinante}{section.8}% 31
+\BOOKMARK [2][-]{subsection.8.10}{Matrici inverse}{section.8}% 32
+\BOOKMARK [3][-]{subsubsection.8.10.1}{Teorema di caratterizzazione delle matrici invertibili}{subsection.8.10}% 33
+\BOOKMARK [3][-]{subsubsection.8.10.2}{Dimostrazione del teorema di caratterizzazione delle matrici invertibili}{subsection.8.10}% 34
+\BOOKMARK [3][-]{subsubsection.8.10.3}{Algoritmo di Gauss-Jordan}{subsection.8.10}% 35
+\BOOKMARK [1][-]{section.9}{Sistemi lineari}{}% 36
+\BOOKMARK [2][-]{subsection.9.1}{Sistema lineare omogeneo}{section.9}% 37
+\BOOKMARK [2][-]{subsection.9.2}{Teorema di struttura delle soluzioni}{section.9}% 38
+\BOOKMARK [2][-]{subsection.9.3}{Forma chiusa per il calcolo della soluzione di un sistema lineare}{section.9}% 39
+\BOOKMARK [2][-]{subsection.9.4}{Equivalenza dei sistemi lineari}{section.9}% 40
+\BOOKMARK [2][-]{subsection.9.5}{Algoritmo di Gauss per la risoluzione dei sistemi lineari}{section.9}% 41
+\BOOKMARK [2][-]{subsection.9.6}{Teorema di Rouch\351-Capelli}{section.9}% 42

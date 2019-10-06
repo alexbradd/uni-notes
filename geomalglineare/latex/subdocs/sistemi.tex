@@ -1,0 +1,169 @@
+\section{Sistemi lineari}
+Un sistema lineare è un insieme di espressioni che hanno questa forma:
+\[
+    \begin{cases}
+        a_{11}x_1 + \cdots + a_{1n}x_n = b_1 \\
+        \cdots + \cdots + \cdots = \cdots \\
+        a_{m1}x_1 + \cdots + a_{mn}a_n = b_m
+    \end{cases}
+\]
+Dove:
+\begin{itemize}
+    \item $a_{ij}, b_i \in K$
+    \item $x_n$ sono incognite
+    \item $1 \leq i \leq m, 1 \leq j \leq n$
+\end{itemize}
+
+\hl{Un sistema lineare può anche essere scritto come un'equazione matriciale:}
+\begin{align*}
+    & A =
+    \begin{bmatrix}
+        a_{11} & \cdots & a_{1n} \\
+        \vdots & \ddots & \vdots \\
+        a_{m1} & \cdots & a_{mn}
+    \end{bmatrix}, B =
+    \begin{bmatrix}
+        b_1 \\ \vdots \\ b_m
+    \end{bmatrix}, X =
+    \begin{bmatrix}
+        x_1 \\ \vdots \\ x_n
+    \end{bmatrix} \\
+    & AX = B
+\end{align*}
+
+\hl{La matrice $[A|B]$ è detta la matrice completa del sistema. $[A|0]$ è detta
+matrice del sistema omogeneo associato.}
+
+\subsection{Sistema lineare omogeneo}
+Un sistema lineare omogeneo è un \hl{sistema lineare del tipo $[A|0_{m1}]$} e avrà
+sempre \hl{almeno una soluzione, di cui una $X=0_{n1}$}. La soluzione del sistema
+lineare omogeneo \hl{è detta soluzione generale}. Un \hl{sistema lineare omogeneo e
+il corrispettivo sistema normale condividono la soluzione generale}:
+\begin{align*}
+    \begin{cases}
+        x + y + z = 0 \\
+        z = 0
+    \end{cases} & X_0 =
+    \begin{bmatrix}
+        -t \\
+        t \\
+        0
+    \end{bmatrix} \\
+    \begin{cases}
+        x + y + z = 1 \\
+        z = 0
+    \end{cases} & X =
+    \begin{bmatrix}
+        1-t \\
+        t \\
+        0
+    \end{bmatrix} =
+    \begin{bmatrix}
+        1 \\
+        0 \\
+        0
+    \end{bmatrix} +
+    \begin{bmatrix}
+        -t \\
+        t \\
+        0
+    \end{bmatrix} =
+    \begin{bmatrix}
+        1 \\
+        0 \\
+        0
+    \end{bmatrix} + X_0
+\end{align*}
+Questo ci permette di enunciare il \hl{teorema di costruzione delle soluzioni}.
+
+\paragraph{Nucleo di una matrice} In nucleo di $A = Ker(A)$ è \hl{l'insieme delle
+soluzioni del sistema lineare omogeneo associato}
+($Ker(A) = \{x \in Mat(m,n;K) \mid AX = 0\} \neq \emptyset$)
+
+\subsection{Teorema di struttura delle soluzioni}
+Sia $[A|B]$ risolvibile, \hl{la soluzione del sistema sarà la soluzione particolare di
+$[A|B]$ sommata alla soluzione generale del sistema omogeneo associato $[A|0_{m1}]$}
+
+\subsection{Forma chiusa per il calcolo della soluzione di un sistema lineare}
+La forma chiusa per \hl{la risoluzione di un generico sistema lineare $AX = B$ è}
+\[
+    A^{-1}AX = BA^{-1}
+\]
+Questa forma chiusa è il \hl{teorema di Cramer}
+
+\paragraph{Teorema di Cramer} Se una matrice $A$ è invertibile, allora il
+sistema lineare $[A|B]$ associato avrà soluzione $X = BA^{-1}$.
+
+\subparagraph{Dimostrazione} Se $A$ è invertibile, allora $r(A) = n$. Per il
+teorema di Rouché-Capelli, la soluzione del sistema associato ad $A$ sarà unica.
+Possiamo allora scrivere:
+\[
+    AX = A(A^{-1}B) = (AA^{-1})B = I_n B = B
+\]
+Confermando il fatto che $X = BA^{-1}$ è soluzione del sistema.
+
+\subsection{Equivalenza dei sistemi lineari}
+Sia $[A|B]$ un generico sistema lineare e $[S|B]$ una sua riduzione a scala.
+\hl{I due sistemi avranno le stesse soluzioni}.
+
+\paragraph{Dimostrazione} Per dimostrare il teorema verifichiamo che ogni
+operazione di Gauss non modifichi le soluzioni:
+\begin{itemize}
+    \item Permutazione: modifica solo l'ordine delle equazioni, ma non le soluzioni
+    \item Moltiplicazione per scalare: se lo scalare $t \neq 0$ le soluzioni non
+        cambiano in quanto
+        \[\not{t}(a_{i1}x_1 + \cdots + a_{ij}) = \not{t}(b_i)\]
+    \item Somma tra righe: Prendiamo due sistemi così definiti:
+        \[
+            \begin{cases}
+                a_{i1}x_1 + \cdots + a_{in} - b_i = 0 \\
+                a_{j1}x_1 + \cdots + a_{jn} - b_j = 0
+            \end{cases}
+            \begin{cases}
+                (a_{i1}x_1 + \cdots + a_{in} - b_i) + t(a_{j1}x_1 + \cdots + a_{jn} - b_j) = 0 \\
+                a_{j1}x_1 + \cdots + a_{jn} - b_j = 0
+            \end{cases}
+        \]
+        Siano $(x_1, \ldots, x_n)$ le soluzioni del primo sistema. Allora
+        \begin{align*}
+            &a_{i1}x_1 + \cdots + a_{in} - b_i = 0 \text{ per ipotesi}\\
+            &a_{j1}x_1 + \cdots + a_{jn} - b_j = 0 \text{ per ipotesi}\\
+            &(a_{i1}x_1 + \cdots + a_{in} - b_i) + t(a_{j1}x_1 + \cdots + a_{jn} - b_j) = 0
+        \end{align*}
+        Siano $(x_1, \ldots, x_n)$ le soluzioni anche per il secondo sistema.
+        Allora:
+        \begin{align*}
+            &a_{i1}x_1 + \cdots + a_{in} - b_i = 0 \text{ per soluzione del primo sistema}\\
+            &a_{j1}x_1 + \cdots + a_{jn} - b_j = 0 \text{ per ipotesi}\\
+            &(a_{i1}x_1 + \cdots + a_{in} - b_i) + t(a_{j1}x_1 + \cdots + a_{jn} - b_j) = 0
+        \end{align*}
+        Le stesse $(x_1, \ldots, x_n)$ risolvono entrambi i sistemi
+\end{itemize}
+Le operazioni gaussiane, quindi, non modificano le soluzioni.
+
+\subsection{Algoritmo di Gauss per la risoluzione dei sistemi lineari}
+L'algoritmo di Gauss per risolvere i sistemi lineari \hl{si basa sull'equivalenza
+dei sistemi lineari}. Consiste nella \hl{riduzione a scala della matrice completa
+del sistema lineare}.
+
+\subsection{Teorema di Rouché-Capelli}
+Il teorema di Rouché-Capelli ci \hl{permette di capire la risolvibilità di un sistema
+lineare in base al rango della sua matrice associata}
+($r(A) \leq r([A|B]) \leq r([A]) + 1$). Sia un sistema che ha come matrice dei
+coefficienti $[A]$ e matrice completa $[A|B]$. Se:
+\begin{itemize}
+    \item \hl{$r([A|B]) > r(A)$: il sistema sarà impossibile} Il sistema si dice
+        \hl{sovradeterminato}
+    \item \hl{$r([A|B]) = r(A) = n$: il sistema avrà un'unica soluzione}
+    \item \hl{$r([A|B]) = r(A) < n$: il sistema avrà infinite soluzioni}
+\end{itemize}
+
+Consideriamo il sistema associato ad $[A|B] \in Mat(m,n;K)$, per il teorema
+sopra enunciato:
+\begin{itemize}
+    \item La soluzione non esiste se $r([A|B]) > r(A)$
+    \item La soluzione esiste unica se $r([A|B]) = r(A) = n$ ($\infty^{0} = 1$
+        soluzioni)
+    \item Esistono infinite soluzioni dipendenti da $n-r(A)$ parametri se e
+        solo se $r([A|B]) = r(A) < n$ ($\infty^{n-r}$ soluzioni)
+\end{itemize}

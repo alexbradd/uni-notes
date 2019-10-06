@@ -1,0 +1,176 @@
+\section{Struttura algebrica}
+\hl{Dicesi struttura algebrica l'insieme di un certo numero di insiemi
+$A_1, \ldots, A_n$, chiamato \textit{supporto della struttura} e delle
+operazioni $\ast_1, \ldots, \ast_n$ su questi insiemi.}
+
+Tre importanti strutture sono \hl{il gruppo, l'anello e il campo}.
+
+\paragraph{Studio di una struttura algebrica} Lo studio di una struttura algebrica
+prima inizia con lo studio del supporto della struttura e delle operazioni.
+Poi si procede a trovare eventuali omomorfismi e isomorfismi. In seguito si
+procede allo studio di eventuali sottogruppi.
+
+\subsection{Il gruppo}
+Il gruppo è una struttura algebrica del tipo $(G, \ast)$ dove \hl{$G$ è un insieme
+e $\ast$ è un'operazione binaria interna a $G$} che deve rispettare \hl{queste
+date proprietà $\forall a \in G$:}
+\begin{itemize}
+    \item \hl{Deve possedere l'elemento neutro in $G$}
+    \item \hl{Deve possedere l'inverso in $G$}
+    \item \hl{Deve godere della proprietà associativa}
+\end{itemize}
+Se l'operazione è anche \hl{commutativa il gruppo viene detto abeliano}.
+
+\paragraph{I sottogruppi} Sono i sottoinsiemi di un gruppo che sono a loro volta
+dei gruppi.
+
+\subsection{L'anello}
+Un anello è una \hl{struttura algebrica del tipo $(A, \ast, \cdot)$} dove le due
+operazioni devono soddisfare le \hl{seguenti proprietà}:
+\begin{itemize}
+    \item \hl{$(A, \ast)$ è un gruppo abeliano}
+    \item \hl{$\cdot$ deve avere elemento neutro in $A$}
+    \item \hl{$\cdot$ deve godere della proprietà associativa}
+    \item \hl{$\cdot$ e $\ast$ devono essere legate dalla proprietà distributiva}
+\end{itemize}
+Se \hl{la seconda operazione è commutativa, allora l'anello si dice commutativo}.
+
+\subsection{Il campo}
+Un campo è una \hl{struttura algebrica del tipo $(K, \ast, \cdot)$} dove le due
+operazioni devono soddisfare le \hl{seguenti proprietà}:
+\begin{itemize}
+    \item \hl{$(K, \ast)$ deve essere un gruppo abeliano con elemento neutro $e$}
+    \item Detto $K^* = K - {e}$, \hl{$(K^*, \cdot)$ deve essere un gruppo abeliano}
+    \item \hl{Le due operazioni sono legate dalla proprietà distributiva}
+\end{itemize}
+
+Il campo $(\mathbb{R}, +, \times)$ è uno dei campi più importanti.
+
+\subsection{Omomorfismo}
+\hl{Un omomorfismo tra due strutture algebriche è una funzione $f$ che commuta
+tra le due con le loro operazioni}. Se \hl{$f$ è invertibile}, allora viene
+chiamata \hl{isomorfismo}.
+
+\paragraph{Omomorfismo di gruppi} Dati due gruppi $(A, \ast)$ e $(B, \cdot)$ la
+funzione \hl{$f: A \to B$ è un omomorfismo se}
+\[
+    f(a_1 \ast a_2) = f(b_1) \cdot f(b_2)
+\]
+
+\paragraph{Omomorfismo di campo} Dati due campi $(A, \ast_1, \cdot_1)$ e
+$(B, \ast_2, \cdot_2)$ la funzione \hl{$f: A \to B$ è un omomorfismo se}
+\[
+    f(a_1 \ast_1 a_2) = f(b_1) \ast_2 f(b_2) \wedge
+        f(a_1 \cdot_1 a_2) = f(b_1) \cdot_2 f(b_2)
+\]
+
+\section{Spazi vettoriali}
+Sono una struttura algebrica molto importante. \hl{Dati $V$ un insieme di vettori
+$\underline{v}$ e un campo $\mathbb{K}$, si dice spazio vettoriale la struttura
+formata da $(V, \mathbb{K}, +, *)$ dove}:
+\[
+    \begin{array}{cccc}
+        +: &V \times X &\to &V \\
+        &(\underline{v_1}, \underline{v_2}) &\mapsto & \underline{v_1} + \underline{v_2}
+    \end{array} \quad
+    \begin{array}{cccc}
+        *: &\mathbb{K} \times V  &\to & V \\
+        &(t, \underline{v_1}) &\mapsto & t * \underline{v_1}
+    \end{array}
+\]
+\hl{se rispetta queste proprietà}:
+\begin{itemize}
+    \item \hl{$(V, +)$ è un gruppo abeliano} ($\underline{v_0}$ è l'elemento neutro
+        e $-\underline{v}$ è l'inverso)
+    \item \hl{Vale la proprietà distributiva tra $+$ e $*$}
+    \item \hl{Vale la proprietà distributiva tra $+_{\mathbb{K}}$ e $*_V$}
+    \item \hl{Vale l'omogeneità tra i prodotti di $V$ e $\mathbb{K}$}
+    \item \hl{Vale la proprietà di normalizzazione ($1 * \underline{v} = \underline{v}$)}
+\end{itemize}
+
+\paragraph{Esempi di spazi vettoriali} Alcuni spazi vettoriali sono:
+\begin{itemize}
+    \item Lo spazio vettoriale delle matrici: $(Mat(m,n;\mathbb{K}), \mathbb{K}, + *)$
+    \item Lo spazio vettoriale dei vettori come sono intesi in matematica e
+        fisica: $(\mathbb{R}^2, \mathbb{R}, +, *)$
+    \item Lo spazio vettoriale dei polinomi: $(\mathbb{K}[x], \mathbb{K}, +, *)$
+    \item Lo spazio vettoriale delle funzioni reali: $(\mathbb{R}, \mathbb{R}, +, *)$
+\end{itemize}
+
+\subsection{Proprietà elementari}
+Sono proprietà che di solito sono date per scontato a causa della familiarità
+con le operazioni elementari. Anche queste proprietà andrebbero, però, dimostrate
+in quanto da non dare per scontato (dimostrazione reperibile in dispensa).
+
+\begin{itemize}
+    \item \hl{$\underline{u} + \underline{v} = \underline{u} + \underline{w} \iff \underline{w} = \underline{v}$}
+    \item \hl{$t * \underline{v} = 0 \iff t = 0 \vee \underline{v} = 0$}
+    \item \hl{$\underline{0}$ e $-\underline{v}$ sono unici}. In particolare
+        \hl{$-\underline{v} = (-1)*\underline{v}$}
+\end{itemize}
+
+\paragraph{Dimostrazione $3^a$ proprietà} Siano $e_1, e_2$ elementi neutri della
+somma, allora $\underline{v} + e_1 = \underline{v} = \underline{v} + e_2$ quindi
+$e_1 = e_2 = 0$. Uguale per l'inverso: siano $v', v''$ inversi di $\underline{v}$,
+allora $\underline{v} + v' = 0 = \underline{v} + v''$ quindi $v' = v''$. \\
+La seconda parte, invece, si dimostra così:
+$\underline{v} + (-1)*\underline{v} = (1*\underline{v}) + (-1*\underline{v}) = (1-1)*\underline{v} = 0 * \underline{v} = \underline{0}$
+
+\subsection{Omomorfismi}
+\hl{ Dati due spazi vettoriali $(V, \mathbb{K}, +, *)$ $(W, \mathbb{K}, +, *)$ e
+una funzione $f: V \to W$ è detta applicazione lineare (omomorfismo di spazi
+vettoriali) se:}
+\begin{itemize}
+    \item \hl{$f(v +_V \tilde{v}) = f(v) +_W f(\tilde{v}) \quad \forall v, \tilde{v} \in V$}
+    \item \hl{$f(v *_V v) = t *_W f(v) \quad \forall v, \tilde{v} \in V$}
+\end{itemize}
+
+L'insieme di tutte le applicazioni lineari da $V$ a $W$ è $Hom(V, W)$.
+
+\subsubsection{Proprietà}
+\begin{itemize}
+    \item \hl{Se un'applicazione lineare è invertibile, allora essa sarà isormorfismo}
+    \item \hl{$f: V \to W \in Hom(V; W) \iff f(t_1v_1 + t_2v_2) = t_1f(v_1) + t_2f(v_2)$}
+\end{itemize}
+
+\paragraph{Dimostrazione seconda proprietà} La dimostrazione andrà fatta in due
+versi in quanto le due proposizioni sono legate da $\iff$. Dato $f$ un'applicazione
+lineare si ha:
+\begin{description}
+    \item[Verso 1] $f(t_1v_1 + t_2v_2) = f(t_1v_1) + f(t_2v_2) = t_1f(v_1) + t_2f(v_2)$
+    \item[Verso 2] $t_1f(v_1) + t_2f(v_2) = f(t_1v_1) + f(t_2v_2) = f(t_1v_1 + t_2v_2)$
+\end{description}
+
+\subsection{Sottostrutture: sottospazi vettoriali}
+\hl{ Dati $(V, \mathbb{K}, +, *)$ uno spazio vettoriale e $U \subseteq V$ se
+$(U, \mathbb{K}, +, *)$ dice sottospazio vettoriale se a sua volta è uno spazio
+vettoriale.}
+
+In un sottospazio vettoriale le proprietà delle operazioni sono ereditate dallo
+spazio vettoriale che lo contiene.
+
+\subsubsection{Caratterizzazione degli sottospazi}
+\hl{Dato $U \subseteq V$, $U$ è un sottospazio se e solo se:}
+\begin{itemize}
+    \item \hl{$U$ è chiuso rispetto alla somma}
+    \item \hl{$U$ è chiuso rispetto al prodotto}
+    \item \hl{$\underline{0} \in U$}
+\end{itemize}
+
+\hl{ \textbf{Nota bene}: L'ultima proprietà impone che il sottospazio contenga almeno
+un vettore e che quel vettore sia sia il vettore $\underline{0}$.}
+
+\paragraph{Dimostrazione} Come per la dimostrazione delle proprietà degli omomorfismi,
+anche questa andrà dimostrata in tutti e due i versi:
+\begin{description}
+    \item[Verso 1] Se $U$ è un sottospazio, allora le proprietà sono soddisfatte
+        per definizione.
+    \item[Verso 2] Se le prime due sono vere, allora dobbiamo verificare solo che
+        $\underline{0} \in U$ e $-v \in U$:
+        \begin{itemize}
+            \item dato $u \in U$, abbiamo che $0*u = \underline{0}$ e, poiché
+                $U$ è chiuso rispetto al prodotto, $\underline{0} \in U$
+            \item dato $u \in U$, abbiamo che $(-1)*u = -u$ e, poiché $U$ è
+                chiuso rispetto al prodotto, $-u \in U$
+        \end{itemize}
+\end{description}
