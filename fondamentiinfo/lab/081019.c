@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 
 int main(void)
 {
@@ -39,12 +40,11 @@ int main(void)
     // ### ES 3 ###
     /* int num, */
     /*     n, sum, min, max; */
-    /* printf("Inserire numero: "); */
-    /* scanf("%d", &num); */
-    /* getchar(); // get rid of \n */
-    /* sum = min = max = num; */
-    /* n = 1; */
-    /* while (num != 0){ */
+    /* sum = 0; */
+    /* min = INT_MAX; // every int is smaller */
+    /* max = INT_MIN; // every int is bigger */
+    /* n = 0; */
+    /* do { */
     /*     printf("Inserire numero: "); */
     /*     scanf("%d", &num); */
     /*     getchar(); // get rid of \n */
@@ -56,13 +56,13 @@ int main(void)
     /*         sum += num; */
     /*         ++n; */
     /*     } */
-    /* } */
-    /* if (n == 1) // only 0 */
+    /* } while (num != 0); */
+    /* if (n == 0) // only 0 */
     /*     printf("Nessun calcolo da inserire\n"); */
     /* else */
     /*     printf("%d numeri inseriti\nsomma = %d\nmin = %d\nmax = %d\n", */
     /*             n, sum, min, max); */
-    /* return 0 */
+    /* return 0; */
 
     // ### ES 4 ###
     /* int n1, n2; */
