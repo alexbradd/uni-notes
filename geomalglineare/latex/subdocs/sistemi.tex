@@ -92,7 +92,7 @@ La forma chiusa per \hl{la risoluzione di un generico sistema lineare $AX = B$ �
 Questa forma chiusa è il \hl{teorema di Cramer}
 
 \paragraph{Teorema di Cramer} Se una matrice $A$ è invertibile, allora il
-sistema lineare $[A|B]$ associato avrà soluzione $X = BA^{-1}$.
+sistema lineare $[A|B]$ associato avrà soluzione $X = A^{-1}B$.
 
 \subparagraph{Dimostrazione} Se $A$ è invertibile, allora $r(A) = n$. Per il
 teorema di Rouché-Capelli, la soluzione del sistema associato ad $A$ sarà unica.
@@ -100,7 +100,7 @@ Possiamo allora scrivere:
 \[
     AX = A(A^{-1}B) = (AA^{-1})B = I_n B = B
 \]
-Confermando il fatto che $X = BA^{-1}$ è soluzione del sistema.
+Confermando il fatto che $X = A^{-1}B$ è soluzione del sistema.
 
 \subsection{Equivalenza dei sistemi lineari}
 Sia $[A|B]$ un generico sistema lineare e $[S|B]$ una sua riduzione a scala.
