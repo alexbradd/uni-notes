@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include <time.h>
 
 #define DISCARD_CHARS while (( c = getchar() ) != '\n') {}
@@ -8,6 +9,8 @@
 #define FIG_SIZE 7
 #define SUP 10
 #define UNTIL 7
+#define LEN_GRAPH 50
+#define T_STEP_S 10
 
 char c;
 
@@ -121,8 +124,65 @@ int main(void)
     /* } */
 
     // ### ES6 ###
+    /* int num, digit, quoz, power, */
+    /*     i = 0; */
+    /* bool loop = true; */
+    /* do { */
+    /*     printf("Inserisci numero naturale: "); */
+    /*     scanf("%d", &num); */
+    /*     DISCARD_CHARS; */
+    /* } while(num < 0); */
+    /* while(loop){ // find power */
+    /*     power = ((int)(pow(10, i) + 0.5)); */
+    /*     if(power <= num) */
+    /*         i++; */
+    /*     else */
+    /*         loop = false; */
+    /* } */
+    /* for (int j = i - 1; j >= 0; j--){ */
+    /*     power = (int)(pow(10, j) + 0.5); */
+    /*     digit = num / power; */
+    /*     num %= power; */
+    /*     switch(digit) { */
+    /*         case 0: printf("zero "); break; */
+    /*         case 1: printf("uno "); break; */
+    /*         case 2: printf("due "); break; */
+    /*         case 3: printf("tre "); break; */
+    /*         case 4: printf("quattro "); break; */
+    /*         case 5: printf("cinque "); break; */
+    /*         case 6: printf("sei "); break; */
+    /*         case 7: printf("sette "); break; */
+    /*         case 8: printf("otto "); break; */
+    /*         case 9: printf("nove "); break; */
+    /*     } */
+    /* } */
+    /* printf("\n"); */
 
+    // ### ES7 ###
+    float v0_ms = 1,
+          a0_ms2 = 0.1,
+          s_tot_m = 100,
+          v_ms, s_m, t_s;
+    int s_char, tot_t_s, i;
 
+    printf("Per quanti secondi simulare? ");
+    scanf("%d", &tot_t_s);
 
+    for (t_s = 0; t_s <= tot_t_s; t_s += T_STEP_S) {
+        v_ms = v0_ms + a0_ms2 * t_s;
+        s_m = 1.0 / 2.0 * a0_ms2 * (t_s * t_s) + v0_ms * t_s;
+        s_char = s_m * (LEN_GRAPH / s_tot_m);
+        printf("Tempo: %5.2f s\tVelocita': %5.2f m/s = %5.2f km/h\t"
+                "Distanza: %5.2f m = %5.2f km\n",
+                t_s, v_ms, v_ms * 3.6, s_m , s_m * 0.001);
+        printf("0 ");
+        for(i = 0; i < s_char; i++)
+            putchar('-');
+        putchar('X');
+        for(i += 1; i < LEN_GRAPH; i++)
+            putchar('-');
+        printf(" %.2f", s_tot_m);
+        putchar('\n');
+    }
 }
 
