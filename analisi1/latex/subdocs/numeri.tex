@@ -109,7 +109,7 @@ Le operazioni sono \hl{le stesse di $\mathbb{N}$ ma aggiornate}:
     \end{array}
 \]
 
-\paragraph{Proprietà delle operazioni} Mantnengono le stesse proprietà che 
+\paragraph{Proprietà delle operazioni} Mantengono le stesse proprietà che 
 avevano in $\mathbb{N}$.
 
 \subsection{Numeri razionali}
@@ -118,6 +118,8 @@ il principio del minimo intero e il principio di induzione}. \'E \hl{definita la
 relazione d'ordine $\leq$, quindi è un insieme ordinato} ma a causa della
 mancata validità dei due principi nominati precedentemente, \hl{non è un insieme
 ben ordinato}.
+
+La struttura algebrica $(\mathbb{R}, +, \cdot)$ è un campo.
 
 \subsubsection{Costruzione}
 Per costruire il numeri razionali, \hl{definiamo una relazione di equivalenza 
@@ -174,11 +176,13 @@ Dove la prima sommatoria rappresenta la parte intera e la seconda la parte
 decimale.
 
 \subsection{I numeri reali}
-L'insieme dei numeri reali contiente \hl{qualsiasi rappresentazione decimale
+L'insieme dei numeri reali contiene \hl{qualsiasi rappresentazione decimale
 possibile, limitata o illimitata}. Di conseguenza, $\mathbb{R}$ contiene tutti
 gli insiemi visti fino ad ora. Nell'insieme dei reali è \hl{definita la relazione
-d'ordine $\leq$, rendolo un insieme ordinato}. Inoltre, vale anche \hl{l'assioma
+d'ordine $\leq$, rendendolo un insieme ordinato}. Inoltre, vale anche \hl{l'assioma
 di completezza, che rende $\mathbb{R}$ un insieme ordinato e completo}.
+
+La struttura algebrica $(\mathbb{R}, +, \cdot)$ è un campo.
 
 \subsubsection{Operazioni definite}
 Le operazioni definite sono \hl{sempre le stesse trovate negli insiemi precedenti}:
@@ -194,7 +198,7 @@ Le operazioni definite sono \hl{sempre le stesse trovate negli insiemi precedent
 \]
 
 \paragraph{Proprietà delle operazioni} Mantengono le stesse proprietà che 
-avevano in $\mathbb{Q}$.
+avevano in $\mathbb{Q}$. 
 
 \subsubsection{Assioma di completezza}\label{sec:assioma-completezza}
 Siano \hl{$A, B \subseteq R$ tali che}:
@@ -212,11 +216,20 @@ allora esiste un unico numero reale tale che
 \'E l'insieme che \hl{completa i numeri reali}: \hl{ci permettono di risolvere le
 equazioni polinomiali che non riuscivamo nei reali (chiusura algebrica)}. 
 
-\subsubsection{Costruzione}
-\'E un \hl{insieme di coppie ordinate di numeri reali} appartenenti a 
-$\mathbb{R} \times \mathbb{R}$.
+La struttura algebrica $(\mathbb{R}, +, \cdot)$ è un campo.
 
-\subsubsection{Operazioni}
+\subsubsection{Costruzione}
+\'E un \hl{insieme di coppie ordinate di numeri reali} 
+$\mathbb{R} \times \mathbb{R}$. Di solito si indicano con $z = (a,b)$. I numeri 
+complessi estendono i reali: essi sono le coppie $(a,0)$.
+
+\subsubsection{Proprietà}
+\hl{$\mathbb{C}$ perde l'ordine}. Infatti nei reali potevamo dire $x^2 \geq 0$,
+ma nei complessi questo non è possibile: 
+\[ i^2 = -1 \geq 0 \text{ è un assurdo}\] 
+\hl{Non può quindi essere definita una relazione d'ordine tra numeri complessi}.
+
+\subsubsection{Operazioni definite}
 Le operazioni sono \hl{sempre le stesse che in $\mathbb{R}$ ma aggiornate}:
 \begin{align*}
     \begin{array}{cccc}
@@ -228,3 +241,151 @@ Le operazioni sono \hl{sempre le stesse che in $\mathbb{R}$ ma aggiornate}:
         &prodotto((a,b), (c,d)) &\mapsto & (ac-bd, ad + bc) \in \mathbb{R}
     \end{array}
 \end{align*} 
+
+Le operazioni sopracitate sono definite usando la rappresentazione algebrica di
+un numero complesso.
+
+\subsubsection{Proprietà delle operazioni}
+\begin{itemize}
+    \item Le operazioni sono \hl{interne}
+    \item Le operazioni sono \hl{commutative}
+    \item Le operazioni sono \hl{associative}
+    \item La somma ha elemento \hl{neutro $(0,0)$ e inverso $(-a,-b)$}
+    \item Il prodotto ha elemento \hl{neutro $(1,0)$ e inverso 
+        $(\frac{a}{a^2 + b^2}, -\frac{b}{a^2 + b^2})$}
+\end{itemize}
+
+\subsubsection{La forma algebrica dei numeri complessi}
+Se ad $(a, 0)$ corrispondono i reali, che tipo di numeri sono $(0,1)$. Usando le
+operazioni definite troviamo che:
+\begin{align*}
+    (0,a) + (0,b) &= (0,a+b) \\
+    (0,1) * (0,1) &= (-1,0) \mathit{=} -1
+\end{align*}
+Il numero $(0,1)$ è, quindi, un numero il cui prodotto con sé stesso è uguale a 
+$-1$. In $\mathbb{R}$ questo non esiste. Se $(0,1)^2 = -1$ allora il numero in questione
+è $\sqrt{-1} = i$ dove $i$ è detto \hl{unità immaginaria}. Ciò \hl{ci permette di 
+scrivere un numero complesso come}:
+\[
+    (a,b) = (a,0) + (0,b) = = a(1,0) + b(0,1) = a * 1 + b * i = a + ib
+\]
+Questa forma \hl{è detta forma algebrica} di un numero complesso. I membri che
+compongono la forma algebrica sono:
+\begin{itemize}
+    \item \hl{$Re(z) = a$: parte reale di $z$}
+    \item \hl{$Im(z) = b$: parte immaginaria di $z$}
+    \item \hl{$i$: unità immaginaria}
+\end{itemize}
+
+La forma algebrica ci permette di \hl{semplificare le operazioni. Infatti ci basta
+usare le regole dell'algebra simbolica}:
+\begin{itemize}
+    \item La somma diventa: 
+        \[ (a+bi) + (c+di) = a + bi + c + di = (a+c) + (b + d)i \]
+    \item La prodotto diventa: 
+        \[ (a+bi)(c+di) = ac + adi + bci + bd(i)^2 = (ac - bd) + (ad + bc)i \]
+\end{itemize}
+
+\subsubsection{La forma trigonometrica}
+Visto che abbiamo definito $\mathbb{C} = \mathbb{R} \times \mathbb{R}$, possiamo
+\hl{rappresentare un numero complesso come una coppia di coordinate in un piano 
+cartesiano chiamato piano di Gauss}:
+\begin{itemize}
+    \item sull'asse \hl{orizzontale metteremo la parte reale e lo chiameremo asse
+        reale}
+    \item sull'asse \hl{verticale metteremo la parte immaginaria e lo chiameremo 
+        asse immaginario}
+\end{itemize}
+
+Nel piano di Gauss, un numero complesso di solito non viene identificato come un
+punto ma \hl{come un vettore} con queste caratteristiche:
+\begin{description}
+    \item[Punto di applicazione] origine
+    \item[Direzione] La retta passante per origine e per il punto $(a,b)$. La 
+        retta formerà un angolo $\theta$ con l'asse reale. \hl{L'angolo viene 
+        chiamato argomento e viene indicato con $Arg(z)$}
+    \item[Modulo] Il modulo viene indicato con \hl{$\rho = |z|$}
+\end{description}
+Possiamo, allora, scrivere che:
+\[z = \rho(cos(\theta) + sin(\theta)\]
+
+\paragraph{Osservazioni} Dalla definizione si può intuire che:
+\begin{itemize}
+    \item $\rho$ sarà sempre positivo 
+    \item L'angolo $\theta$ non è definito in modo unico a causa della periodicità
+        di seno e coseno
+\end{itemize}
+
+\paragraph{Trasformazione da forma trigonometrica ad algebrica} \'E semplice: 
+Basta eseguire i calcoli. Per esempio:
+\[ z = 2[\cos(\sfrac{\pi}{3}) + i\sin(\sfrac{\pi}{3})] = 2\sfrac{1}{2} + \sfrac{\sqrt{3}}{2} \]
+
+\paragraph{Trasformazione da forma algebrica a trigonometrica} Passare dalla forma 
+algebrica alla trigonometrica è un po' più complesso, ma basta usare delle 
+semplici formule:
+\begin{align*}
+    \rho &= \sqrt{a^2 + b^2} \\
+    \theta &= \arctan \sfrac{b}{a}
+\end{align*}
+
+Poiché l'arcotangente restituisce due angoli, per trovare l'argomento giusto
+si dovranno valutare i valori di $a$ e $b$:
+\begin{itemize}
+    \item se $a > 0 \wedge b > 0$ allora $\theta$ appartiene al primo quadrante
+    \item se $a < 0 \wedge b > 0$ allora $\theta$ appartiene al secondo quadrante
+    \item se $a < 0 \wedge b < 0$ allora $\theta$ appartiene al terzo quadrante
+    \item se $a > 0 \wedge b < 0$ allora $\theta$ appartiene al quarto quadrante
+\end{itemize}
+
+\subsubsection{Forma esponenziale}
+Dato un numero complesso, esso può essere scritto in forma esponenziale in questo
+modo:
+\[ z = \rho [\cos\theta + i\sin\theta] = \rho e^{i\theta} \]
+
+Per prodotto, divisione, potenza valgono le consuete proprietà delle potenze.
+
+\subsubsection{Il coniugato}
+Dato un numero complesso $z = a+bi = \rho(\cos\theta + i\sin\theta)$ viene detto
+suo coniugato 
+\[ 
+    \bar{z} = a - bi = \rho[\cos(-\theta) + i\sin(-\theta)] = \rho[\cos\theta - i\sin\theta]
+\]
+
+\paragraph{Proprietà del coniugato}
+\begin{itemize}
+    \item $z + \bar{z} = a + ib + a - ib = 2a = 2Re(z)$
+    \item $z - \bar{z} = a + ib - a + ib = 2bi = 2Im(z) * i$
+    \item $z * \bar{z} = a^2 + abi - abi - i^2 b^2 = a^2 + b^2 = \rho^2$
+    \item $\frac{z}{\bar{z}} = \frac{a+ib}{a-ib} = \frac{z^2}{\rho^2}$
+\end{itemize}
+
+\subsubsection{Disuguaglianza triangolare}
+La disuguaglianza triangolare afferma che 
+\[ \forall z,w \in \mathbb{C} |z + w| \leq |z| + |w| \]
+
+La disuguaglianza sopra è equivalente a quella definita nei numeri reali (non
+riportata qui).
+
+\paragraph{Dimostrazione} Per le proprietà viste prima, scriviamo:
+\begin{align*}
+    (|z+w|)^2 &= (z+w)(\bar{z} + \bar{w}) = \\
+        &= z\bar{z} + w\bar{z} + \bar{w}z + w\bar{w} = \\
+        &= |z|^2 + |w|^2 + (w\bar{z} + z\bar{w}) = \\
+        &= |z|^2 + |w|^2 + 2Re(w\bar{z}) \leq \\
+        &\leq |z|^2 + |w|^2 + 2|w\bar{z}| \leq \\
+        &\leq |z|^2 + |w|^2 + 2|w||\bar{z}| \leq \\
+        &\leq |z|^2 + |w|^2 + 2|w||z| \leq (|z| + |w|)^2
+\end{align*}
+Nella dimostrazione abbiamo utilizzato le seguenti relazioni:
+\begin{align*}
+    |Re(z)| &\leq |z| & |Im(z)| &\leq |z| \\
+    |zw| &= |z||w| & (w\bar{z} + \bar{w}z) &= 2Re(w\bar{z})
+\end{align*}
+
+\subsection{Il teorema fondamentale dell'algebra}
+Finito il discorso sui vari insiemi numerici, possiamo finalmente comprendere
+il \hl{teorema fondamentale dell'algebra}:
+\begin{center}
+\textit{Un'equazione polinomiale algebrica complessa a coefficienti complessi di
+grado $n$ avrà esattamente $n$ soluzioni contate con la loro molteplicità algebrica}
+\end{center}
