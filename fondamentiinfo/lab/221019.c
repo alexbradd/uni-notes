@@ -4,15 +4,18 @@
 #include <string.h>
 #include <time.h>
 
-#define DIM0 5
-#define DIM1 5
-#define DIM2 4
-#define DIM3 3
-#define DIM4 10
-#define DIM5 10
-#define DIM6 3
+#define DIM0      5
+#define DIM1      5
+#define DIM2      4
+#define DIM3      3
+#define DIM4      10
+#define DIM5      10
+#define DIM6      3
+#define NMAX      100
+#define NAMELEN   20
+#define NANAGR    5
 
-bool verify_uniqueness(const int n, const int* arr, const int dim);
+/* bool verify_uniqueness(const int n, const int* arr, const int dim); */
 
 int main(void)
 {
@@ -140,15 +143,59 @@ int main(void)
     /* } */
 
     // ### ES7 ###
+    /* int rands[NMAX], freq[10] = {0}, i; */
+    /* srand(time(NULL)); */
+    /* for(i = 0; i < NMAX; i++){ */
+    /*     rands[i] = rand() % 100; */
+    /*     freq[rands[i]/10]++; */
+    /* } */
+    /* for(i = 0; i < 10; i++) */
+    /*     printf("Freq %d-%d: %d;", i*10, i*10 + 9, freq[i]); */
+    /* printf("\n"); */
 
+    // ### ES8 ###
+    /* typedef struct { */
+    /*     char name[NAMELEN + 1]; */
+    /*     char sex; */
+    /*     int age; */
+    /* } s_anagr; */
+    /* s_anagr v_anagr[NANAGR] = {{"Topolino", 'M', 47}, */
+    /*                            {"Minni", 'F', 37}, */
+    /*                            {"Pluto", 'M', 17}, */
+    /*                            {"Clarabella", 'F', 27}, */
+    /*                            {"Pippo", 'M', 26}}, */
+    /*         v_finale[NANAGR + 1], */
+    /*         empty_m = {"N/A", 'M', -1}, */
+    /*         empty_f = {"N/A", 'F', -1}; */
+    /* int i, next_free = 2; */
 
+    /* v_finale[0] = empty_m; */
+    /* v_finale[1] = empty_f; */
+    /* for(i = 0; i < NANAGR; i++){ */
+    /*     if (v_anagr[i].sex == 'M') { */
+    /*         if (v_finale[0].age == -1 || v_anagr[i].age < v_finale[0].age) */
+    /*             v_finale[0] = v_anagr[i]; */
+    /*         if (v_anagr[i].age > 25) { */
+    /*             v_finale[next_free] = v_anagr[i]; */
+    /*             next_free++; */
+    /*         } */
+    /*     } else if (v_anagr[i].sex == 'F') { */
+    /*         if (v_finale[1].age == -1 || v_anagr[i].age < v_finale[1].age) */
+    /*             v_finale[1] = v_anagr[i]; */
+    /*     } else { */
+    /*         return 1; */
+    /*     } */
+    /* } */
+    /* for(i = 0; i < next_free; i++) */
+    /*     printf("Anagrafica %d = {Nome: %s, sesso: %c, eta': %d}\n", */
+    /*             i, v_finale[i].name, v_finale[i].sex, v_finale[i].age); */
 }
 
-bool verify_uniqueness(const int n, const int* array, const int dim)
-{
-    for (int i = 0; i < dim; i++){
-        if (array[i] == n)
-            return false;
-    }
-    return true;
-}
+/* bool verify_uniqueness(const int n, const int* array, const int dim) */
+/* { */
+/*     for (int i = 0; i < dim; i++){ */
+/*         if (array[i] == n) */
+/*             return false; */
+/*     } */
+/*     return true; */
+/* } */
