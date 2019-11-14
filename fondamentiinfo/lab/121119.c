@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 
 /* #define MAT_DIM 2 Per es 2*/
@@ -7,6 +8,8 @@
 #define DIM       10
 #define SOGLIA    10
 #define STR_LEN   50
+#define DIMV      100
+#define RANGE     10
 
 typedef float t_matrice[MAT_DIM][MAT_DIM];
 typedef struct {
@@ -30,6 +33,16 @@ int dentro(int x, int y);
 void stampavet(const int vet[DIM], int dim);
 void inserisci(int vet[DIM], int pos, int val);
 s_risultato analisi(int vet[DIM], int *sotto_s);
+
+int memorizza_univ(int quantita);
+// void stampavet(const int vet[DIMV], int dim);
+int find_in(int vet[DIMV], int to_find, int dim);
+void shift(int vet[DIMV], int from, int dim);
+
+int memorizza_ord(int sommafinale);
+void merge_sort(int vet[], int l, int r);
+void merge(int vet[], int l, int m, int r);
+// void stampavet(const int vet[DIMV], int dim);
 
 int main(void)
 {
@@ -68,7 +81,7 @@ int main(void)
     /* srand(time(NULL)); */
     /* for (i = 0; i < MAT_DIM; i++) { */
     /*     for (j = 0; j < MAT_DIM; j++) { */
-    /*         mat[i][j] = rand() % 100; */
+    /*         mat[i][j] = rand() % RANGE; */
     /*         printf("%d ", mat[i][j]); */
     /*     } */
     /*     printf("\n"); */
@@ -82,20 +95,38 @@ int main(void)
     /* } */
 
     // ### ES5 ###
-    int vet[DIM], i, sotto_s;
-    s_risultato ris;
+    /* int vet[DIM], i, sotto_s; */
+    /* s_risultato ris; */
 
+    /* srand(time(NULL)); */
+    /* for (i = 0; i < DIM; i++) */
+    /*     vet[i] = rand() % RANGE; */
+    /* printf("Vettore orig: "); */
+    /* stampavet(vet, DIM); */
+    /* pritnf("\n"); */
+    /* ris = analisi(vet, &sotto_s); */
+    /* printf("Vettore pari: "); */
+    /* stampavet(ris.v_pari, ris.n_pari); */
+    /* printf("\nVettore dispari: "); */
+    /* stampavet(ris.v_dispari, ris.n_dispari); */
+    /* pritnf("\n"); */
+
+    // ### ES6 ###
+    /* int quanti, eliminati; */
+    /* printf("Quanti? "); */
+    /* scanf("%d", &quanti); */
+    /* eliminati = memorizza_univ(quanti); */
+    /* printf("Eliminato %d\n", eliminati); */
+
+    // ### ES7 ###
+    int max, gen;
     srand(time(NULL));
-    for (i = 0; i < DIM; i++)
-        vet[i] = rand() % 100;
-    printf("Vettore orig: ");
-    stampavet(vet, DIM);
-    ris = analisi(vet, &sotto_s);
-    printf("Vettore pari: ");
-    stampavet(ris.v_pari, ris.n_pari);
-    printf("Vettore dispari: ");
-    stampavet(ris.v_dispari, ris.n_dispari);
-
+    do {
+        printf("Max? ");
+        scanf("%d", &max);
+    } while(max <= 0);
+    gen = memorizza_ord(max);
+    printf("Generati %d\n", gen);
     return 0;
 }
 
@@ -108,7 +139,7 @@ int genera_matrice(int mat[MAT_DIM][MAT_DIM], int *sum)
     srand(time(NULL));
     for(i = 0; i < MAT_DIM; i++) {
         for (j=0; j < MAT_DIM; j++) {
-            mat[i][j] = rand() % 10;
+            mat[i][j] = rand() % RANGE;
             *sum += mat[i][j];
         }
     }
@@ -165,15 +196,9 @@ float media(int mat_orig[MAT_DIM][MAT_DIM], int i, int j)
     }
     return ((float)sum) / n;
 }
-int dentro(int i, int j)
-{ return (i >= 0 && i < MAT_DIM) && (j >= 0 && j < MAT_DIM); }
+int dentro(int i, int j) { return (i >= 0 && i < MAT_DIM) && (j >= 0 && j < MAT_DIM); }
 
-void stampavet(const int vet[DIM], int n)
-{
-    for(int i = 0; i < n; i++)
-        printf("%d ", vet[i]);
-    printf("\n");
-}
+void stampavet(const int vet[DIM], int n) { for(int i = 0; i < n; i++) printf("%d ", vet[i]); }
 void inserisci(int vet[DIM], int pos, int val) { vet[pos] = val; }
 s_risultato analisi(int vet[DIM], int *sotto_s)
 {
@@ -196,4 +221,84 @@ s_risultato analisi(int vet[DIM], int *sotto_s)
         }
     }
     return ris;
+}
+
+int memorizza_univ(int quantita)
+{
+    int eliminati = 0, vet[RANGE + 1], last = 0, randi, dup = 0;
+    for (;quantita > 0; quantita--) {
+        randi = rand() % RANGE;
+        dup = find_in(vet, randi, last);
+        if (dup != -1) {
+            printf("Duplicato: %d@%d. Vettore originale: ", randi, dup);
+            stampavet(vet, last);
+            shift(vet, dup, last);
+            last--;
+            eliminati++;
+            printf(" | Vettore pulito: ");
+            stampavet(vet, last);
+            printf("\n");
+        }
+        vet[last++] = randi;
+    }
+    printf("Creato vettore: ");
+    stampavet(vet, last);
+    printf("\n");
+    return eliminati;
+}
+int find_in(int vet[DIMV], int to_find, int dim)
+{
+    for (int i = 0; i < dim; i++)
+        if (vet[i] == to_find)
+            return i;
+    return -1;
+}
+void shift(int vet[DIMV], int from, int dim) { for (int i = from; i < dim - 1; i++) vet[i] = vet[i + 1]; }
+
+int memorizza_ord(int sommafinale)
+{
+    int vet[DIMV], i, parzsum = 0, randi;
+    for(i = 0; i < DIMV && parzsum <= sommafinale; i++) {
+        randi = rand() % RANGE;
+        vet[i] = randi;
+        merge_sort(vet, 0, i);
+        parzsum += randi;
+        printf("Generato e aggiunto %d. Vettore: ", randi);
+        stampavet(vet, i + 1);
+        printf(" | Somma parziale: %d\n", parzsum);
+    }
+    printf("Generato: ");
+    stampavet(vet, i);
+    printf("\n");
+    return i;
+}
+void merge_sort(int vet[], int l, int r)
+{
+    int m;
+    if (l < r) {
+        m = (l+r)/2;
+        merge_sort(vet, l, m);
+        merge_sort(vet, m+1, r);
+        merge(vet, l, m, r);
+    }
+}
+void merge(int vet[], int l, int m, int r)
+{
+    int n1 = m - l + 1,
+        n2 = r - m,
+        i, j, k,
+        L[n1], R[n2];
+    for (i = 0; i < n1; i++)
+        L[i] = vet[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = vet[m + 1 + j];
+
+    for (i = 0, j = 0, k = l; i < n1 && j < n2; k++) {
+        if (L[i] <= R[j])
+            vet[k] = L[i++];
+        else
+            vet[k] = R[j++];
+    }
+    for (; i < n1; i++, k++) vet[k] = L[i];
+    for (; j < n2; j++, k++) vet[k] = R[j];
 }
