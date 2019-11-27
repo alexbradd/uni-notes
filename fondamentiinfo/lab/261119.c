@@ -218,12 +218,15 @@ void dividi(struct el **lista, struct el **lista_p, struct el **lista_d)
                 cur = cur->next;
                 free(to_f);
             }
-        } else
+        } else {
+            prev = cur;
             cur = cur->next;
+        }
     }
 
     cur = *lista;
-    while(to_f) {
+    to_f = *lista;
+    while(cur) {
         to_f = cur->next;
         if ((cur->quant % 2) == 0) {
             cur->next = *lista_p;
