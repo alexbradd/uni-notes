@@ -99,7 +99,7 @@ int main (void)
     dividi(&lista1, &lista_p, &lista_d);
     stampalista(lista1, "Lista 1");
     stampalista(lista_p, "Lista pari");
-    stampalista(lista_p, "Lista dispari");
+    stampalista(lista_d, "Lista dispari");
 
     return 0;
 }
@@ -207,7 +207,7 @@ void dividi(struct el **lista, struct el **lista_p, struct el **lista_d)
     struct el *to_f = NULL;
 
     while(cur) { // rimuovi multipli 5
-        if ((cur->quant % 5) == 0) {
+        if ((cur->quant % 5) == 0 && cur->quant != 0) {
             if (prev == NULL) { // rimozione in testa
                 cur = cur->next;
                 free(*lista);
