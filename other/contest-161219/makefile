@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -std=c89 -pedantic
+CFLAGS = -g -Wall -O2 \-std=c89 -pedantic
 
 TARGET = es
 
