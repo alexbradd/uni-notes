@@ -1,0 +1,256 @@
+# Cos'è internet
+1. Architettura fisica fatta di componenti
+2. Un'architetttura di rete
+3. Servizio di comunicazione che ci permette di trasferire informazione
+   tramite un protocollo di comunicazione
+
+## Componenti fisichi
+- Sono i terminali di rete (host)
+- Canali di comunicazioni (link) (fibre ottiche e simili)
+- Router o nodi di rete
+- Altri nodi
+
+### Gli host
+Gli host sono i nostri pc, dei server o delle macchine virtuali. Anche telefoni,
+smartwatch e IoT sono host. Gli host sono in grado di ricevere o mandare
+informazioni per le loro applicazioni
+
+### I link
+Possono essere di natura fisica diversa: fibre ottiche, doppini telefonici, 
+antenne radio e cavi coassiali.  
+La differenza principale tra i vari link è la tecnologia usata per trasmettere
+i dati e la velocità di trasmissione dei suddetti (rate, misorato in Kb/s ecc...)
+
+### Nodi di rete
+I router sono unità che smistano informazione suddivisa in pacchetti: sequenze 
+finite di bit.
+
+Oltre ai router esistono altri tipi di nodi che svolgo compiti di collegamento:
+- i switch
+- gli access point wifi
+
+## Architettura fisica
+### Accesso a internet
+Per accesso si intende la tecnologia che consentono alla nostra rete locale di
+collegarsi al resto di internet. Prima, però, si passa per la rete dell'ISP.
+
+Per accedere alla rete dell'ISP ci sono molte tecnologie diverse:
+- Dialup (modem analogico)
+  - Fino a 56KB/s
+  - Accesso diretto tramite circuito telefonico
+  - Trasmissione segnale in banda fonica
+- ADSL (asymmetric digital subscriber line)
+  - Sempre basata sul doppino telefonico, ma non passa per la rete telefonica
+    permettendo velocità più alte. Poichè condivide l'accesso (doppino) con il 
+    telefono, esiste un meccanismo di splitting tra il segnale del modem e 
+    quello telefonico (nella centrale telefonica)
+  - L'unico limite in velocità è il mezzo fisico stesso
+- Fibra ottica
+  - Sta sostituendo il doppino
+  - Ci sono diversi tipi di collegamento: 
+    - Fino a casa
+    - fino a edificio: il pezzo fino all'utilizzatore è in doppino
+    - fino quartiere: il pezzo fino all'utilizzatore è in doppino
+- Rete cellulare (reti radio)
+  - Dipende dal mezzo
+  - Sono sistemi molto più complessi
+
+### Reti di reti
+Internet è un puzzle di reti interconnesse tramite diverse tecnologie. La 
+tecnologia di internet puù essere usata per interconnettere reti di tipo diverso:
+- le diverse porzioni di rete sono composte da tecnologie diverse e possono essere
+  anche "sottoreti" (reti locali che gestiscono autonomamente i propri nodi e link)
+- I link sono di vario tipo
+
+La rete mondiale è composta da tanti reti degli ISP indipendenti che si accordano
+per collegarle insieme.
+
+#### Eterogeneità
+Una classifica di reti è in base alla dimensione:
+- LAN: Local Area Network. Impiegate in aree limitate
+- MAN: Metropolitan Area Network. Interconnettono LAN  e hanno estensioni di 
+  decinde di chilometri
+- WAN: Wide Area Netwrok. Ampiezza a piacere, anche globale.
+
+Di solito le LAN sono delle CN: reti terminali che permettono l'accesso ai 
+consumatori. Le CN si collegano attraverso un POP (Point of Presence) alla
+rete dell'ISP. 
+
+Gli ISP si connettono agli atri grazie ad altri ISP che offrono
+collegamenti a lunga distanza (Backbone Service Provider)tramite un POP. Gli ISP
+si collegano tra di loro anche tramite le NAP (Neurtal Access Point). I NAP
+prendono il nome di Internet Exchange Point.
+
+```
+CN -- | POP - ISP | -- | POP - BSP - POP | -- | ISP -- POP | -- CN
+        |                  |          |
+       NAP ----------------|          CN
+        |
+     | ISP - POP | -- CN
+```
+
+## Servizi di comunicazione e Protocolli
+- Infrastruttura di comunicazione: Consente la creazione di applicazioni
+  distribuite
+- Servizio di comunicazione: Le modalità con cui sono trasferite le informazione
+  con delle determinate regole
+- Protocollo di comunicazione: Regole con le quali l'informazione viene costruita
+  e trasferita
+
+### Servizio di comunicazione
+E' un servizio di trasporto delle informazioni tra processi. Il servizio prende
+una parte di memoria e la trasferisce in un'altra parte di memoria nel processo
+remoto (lato server). Le regole con cui si scrive e si leggono le informazioni
+fanno parte del servizio di comunicazione. I tipi di servizi sono diversi adatti
+a diversi tipi di messaggi con diversi gradi di affidabilità.
+
+I meccanismi vengono chiamati Socket.
+
+### Protocolli di comunicazione
+I protocolli permettono di impacchettare l'informazione in modo che il server
+capisca la nostra richesta e la esegua correttamente. Esempio:
+- Il client "saluta" il server, server risponde facendo capire che è pronto
+- Il client richiede un risorsa, il server gliela invia
+
+#### Esempio: Posta elettronica
+- Quando ci colleghiamo il server si presenta
+- Il client risponde indicando il suo nome
+- Il server riconosce il client ed è pronto per gestire le email
+- Il client specfica mittente e mail
+- Il server risponde indicando che è tutto in regola
+- Il client indica il ricevitore
+- Il server risponde indicando che è tutto in regola
+- Il client chiede di poter inserire il messaggio
+- Il server concede il permesso specificando il terminatore
+- Il client inserisce il messaggio
+- Il server accetta il messaggio e lo spedisce
+- Il client chiude la comunicazione
+
+```
+S: 220 hamburger.edu
+C: HELO cerpes.fr
+S: 250 Hello crepes.fr, pleased to meet you
+C: MAIL FROM: <alice@crepes.fr>
+S: 250 alice@crepes.fr... Sender ok
+C: RCPT TO: <bob@hamburger.edu>
+S: 250 bob@hamburger.edu... Recipient ok
+C: DATA
+S: 354 Enter mail, end with "." on a line by itself
+C: Bla bla bla
+C: Bla bla Bla
+C: .
+S: 250 Message accepted for delivery
+C: QUIT
+S: 221 hamburger.edu closing connection
+```
+
+Nota: assomglia molto al linguaggio umano. I protocolli sono convenzioni.
+
+#### Modelli
+- Modello client/server: Il client fanno richieste, i server rispondono
+  I client chiedono un servizio e il server lo fornisce.
+  - E' una comunicazione asimmetrica
+- P2P: Tutti comunicano senza distinzione di ruoli.
+  - I tipi di messaggi sono di dverso tipi
+
+# Come funziona la rete
+## Commutazione di circuito
+Funzionamento della vecchie rete telefonica: viene allocata una risorsa che 
+connette fisicamente i due terminali per l'intera comunicazione.
+
+Come funziona:
+- Tramite una richiesta il client chiede alla rete di comunicare con un altro
+  nodo
+- Viene creato un canale di comunicazione con l'altro terminale e viene aperto
+- Alla fine della chiamata viene rilasciato il circuti per uso da altre telefonate
+
+Le risorse di rete sono suddivise in "pezzi". Ciascun pezzo viene allocato a vari
+collegamenti. Le risorse rimangono inattive se non utilizzate.  
+La banda è quindi divisa in pezzi: divisione di frequenza o di tempo.
+
+### Nodo: Commutatore di circuito
+Il commutatore connette un canale in ingresso con uno in uscita.
+
+## Commutazione di pacchetto
+I collegamenti non sono suddivisi come nella commutazione di circuito, ma bensì
+si forma un rete di diversi router collegati tra loro.
+
+Ciascun router ha al suo interno una tabella di instradamento che gli permette di
+scegliere il prossimo nodo in base alla destinazione dell'informazione.
+
+### I pacchetti
+L'informazione viede divisa in pacchetti. Il pacchetto viaggia in rete in modo
+autonomo (simile al servizio postale). Il pacchetto è identificato da un header
+che specifica la sua destinazione (simile alla busta di una lettera).
+
+        Pacchetto:
+        | header | Pacchetto ... |
+
+Tutti i pacchetti condividono le risorse di rete e utilizza il canale trasmissivo
+solo per il tempo necessario alla trasmissione.
+
+### I nodi di rete: packet switch/router
+I pacchetti vengono smistati in 3 passaggi
+- I pacchetti arrivano in modo asincrono da diversi ingressi. Man mano che
+  arrivano vengono memorizzati in una coda di entrata dal router per essere
+  processati.
+- Il router guarda la tabella e decide dove trasferire il pacchetto. 
+- In uscita possono esserci dei conflitti temporali tra pacchetti: due pacchetti
+  si avviano verso l'uscita contemporaneamente. Si forma, quindi, una coda di uscita
+  per ogni canale.
+
+Il router deve prima ricevere tutto il pacchetto prima di poter elaborarlo 
+e spedirlo in uscita (store and forward). 
+
+L'ordine con cui i pacchetti vengono inviati rispeccha quello di arrivo (se 
+viene usato un meccanismo FIFO e un'elaborazione semplice). Ciò viene chiamato
+multiplazione statistica.
+
+## Confronto tra pacchetti e circuiti
+Esempio:
+- Collegamento di 1MB/s di N utenti. Ciascun utente genera 100 KB/s quando è 
+  attivo (attivo 10% del tempo).
+  - Commutazione a circuito: possono essere serviti massimo 10 utenti 
+    (1 MB/s / 100 KB/s = 10)
+  - Commutazione di pacchetto: Con 35 utenti, la probabilità di averne più di 10
+    è inferiore allo 0,0004.
+- Collegamento di 2048 MB/s di 25 utenti. Ciscun utente chiede risorse di 50 KB
+  ogni 62.5s in media.
+  - Commutazione a circuito: 1 canale a 64 KB/s per utente, ritardo di
+    trasferimento pagina di 6.25s (400 KB / 64 KB/s = 6,25s)
+  - Commutazione a pacchetto: Ritardo di trasferimento medio di 0.22s 
+    (teoria delle code)
+
+La commutazione di circuito permette:
+- di servire molti più utenti con pochi errori, ma dobbiamo accettare la
+  probabilità che qualcosa potrebbe andare storto (troppi pacchetti che non
+  vengono smistati in tempo).
+- di servire gli utenti più in fretta.
+
+Internet è costruito sulla commutazione a pacchetti. Ciò, però, causa il
+problema delle code: ridardo e perdita di pacchetti. Esistono dei protocolli
+per gestire i pacchetti e la perdita dei suddetti.
+
+## Altri tipi di commutazione di pacchetto
+### Datagram
+Utilizzata da internet. In ciascun pacchetto viene indicata solo l'indirizzo di
+destinazione. Ciascun pacchetto viene gestito indipendentemente dagli altri,
+anche se fanno parte della stessa informazione.
+
+Il meccanismo datagram è stato il primo ed è il più semplice e più utilizzato,
+specialmente nella rete periferica.
+
+### Circuito virtuale
+I nodi indentificano i pacchetti di un flusso informativo sulla base di un
+identificativo di circuito virtuale (CVI o label). Nella tabella di instrdamento
+ci sono solo i label dei vari circuiti virtuali.
+
+I circuiti virtuali vanno creati in fase di setup. I pacchetti seguono, quindi,
+lo stesso percorso in quanto identificati dallo stesso label.
+
+Il circuito virtuale permette di ridurre notevolmente la dimensione della tabella
+di instradamento del router a patto che il numero di circuiti non sia troppo 
+elevato.
+
+Nel cuore della rete viene usato questo approcio in quanto più efficiente quando
+le tabelle di instradamento diventano troppo lunghe.
