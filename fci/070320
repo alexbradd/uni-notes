@@ -1,0 +1,98 @@
+# Velocità di trasmissione (rate, R)
+La velocità con il quale l'informazione viene trasmessa sulla linea. Si misura
+in bit/s (bps). Esistono multipli (basati sulle potenze di 10): kbps, Mbps...
+
+Sono usati anche i byte/s (Bps = 8bps). Esistono anche di questi i multipli 
+(kBps, MBps).
+
+Noi useremo la variante basta sui bit.
+
+## Cosa significa?
+La velocità di trasmissione di un bit è uguale all'inverso del suo tempo di
+trasmissione (ricavabile dalla semplice formula della velocità).
+
+# Tempo di trasmisisone (T)
+Il tempo tra la trasmissione del primo e quella dell'ultimo bit. Legata alla 
+velocità di trasmissione: $T = L / R$, dove L è il numero di bit.
+
+# Ritardo di propagazione (latency)
+Il tempo $\tau$ affichè un impulso trasmesso da un trasmettitore raggiunga un
+altro. Essa dipende dalla distanza (D) e dalla velocità di propagazione v 
+(prossima a quella della luce): $\tau = D / v$.
+
+# Tempo di attraversamento del canale
+Tempo fra la trasmissione del primo bit e la ricezione dell'ultimo: 
+$T_{tot} = T + \tau$
+
+# Store and forward e Cut-through
+Nello store-and-forward, il pacchetto deve essere prima ricevuto nella sua
+interità ($T_{tot} = T + \tau$).
+
+La tecnica Cut-through viene usato per reti più piccole e permette di ridurre
+i tempi salvando solo l'header del pacchetto, processare quello e poi fare un
+passthrough dell'area dati:
+
+    | H | DATA... |
+    \         \
+          | H | DATA... |
+
+L'architettura Cut-Through presenta problemi se la velocità del canale in uscita
+è più lenta di quello in entrata o viceversa.
+
+# Architettura semplificata di un nodo
+Architettura general-purpose di un nodo:
+- CPU: elabora le informazioni
+- Memoria
+- Bus: permette lo scambio di informazioni tra CPU, periferiche e memoria
+- NIC (Network interface card): sono porte d'ingresso e/o di uscita.
+
+Esistono architetture specifiche con hardware dedicato. Queste architetture sono
+basate su delle tabelle (match table )che ci permetto di effettuare in hardware
+il processamento. Una switch matrix permette di collegare l'input con la coda di
+output.
+
+## Il tempo di elaborazione
+Tra l'istante di ricezione e quello di invio avviene il porcessamento 
+dell'informazione (lookup e instradamento). Nei sistemi fatti bene, questo tempo
+e approssimabile a 0. Esistono però, casi in cui questo non è trascurabile. Noi
+lo assumeremo sempre trascurabile.
+
+## Ritardo di accodamento
+Se la linea di uscita è occupata, allora occorre aspettare in coda.
+
+    | A  | B  |
+         \    \
+         | A'      | B'      |
+              |----| <- Attesa
+
+Nel calcolare l'intervallo complessivo di trasmissione bisogna contare il fatto
+che la ricezione di un pacchetto possa avvenire in contemporanea alla trasmissione
+di quello precedente. Fai attenzione però: interfacce indipendenti hanno code 
+distinte e lavorano in parallelo.
+
+### Multiplazione statistica e packet-loss
+Il ritardo di accodamento dipende dalla multiplazione statistica dovuta
+all'arrivo asincrono dei pacchetti alle code di uscita. Tutto ciò possono
+essere caratterizzato da grandezze statistiche.
+
+Quando il rate di arrivo è maggiore al rate di uscita, la coda di uscita
+verrà saturata e i pacchetti che arrivano dopo la saturazione vengono persi. I
+pacchetti persi possono essere ritrasmessi a seconda del livello/protocollo 
+che gestisce l'evento di perdita.
+
+Il ritardo di accodamento medio è basato su dei risultati della teoria delle
+code. Dati:
+- R la velocità del link
+- L la lunghezza del pacchetto
+- $\lambda$ la frequenza di arrivo dei pacchetti
+- $\mu$ la frequenza di trasmissione dei pacchetti pari a $\mu = R / L$
+
+L'intensità del traffico è: 
+$$\frac{L\lambda}{R}$$
+Se:
+- l'intensità di traffico tende a 0, il ritardo è piccolo
+- se l'intensità di traffico tende a 1, il ritardo tende a $\infty$
+
+Si può dimostrare che in alcune condizioni (code infinite) si ha che il ritardo
+medio di accodamento è:
+$$T_a = \frac{1}{\mu - \lambda} - \frac{1}{\mu}$$
