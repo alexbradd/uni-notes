@@ -1,0 +1,65 @@
+# Storia di internet
+## Storia
+Leonard Kleinrock è stato il primo a spedire un pacchetto alla UCLA. Lo scopo
+di internet era di creare una rete dove era possibile distribuire tra vari computer
+le risorse. Il primo esperimento è stato di fare un login da un computer della
+UCLA a uno della SRI, ma è fallito: dei tre caratteri (LOG) sono stati inviati
+solo i primi 2 (LO). La prima rete è stata ARPAnet.
+
+Negli anni '70 nasce il primo protocollo di internet (NCP) e il primo programma
+di e-mail. La prima rete wireless è stata la ALOHAnet. Nel '76 nasce Ethernet.
+Nel '82 nasce la base dell'internet moderno: SMTP, TCP/IP, DNS. Nascono nuove
+reti nazionali.Le prime applicazioni furono telnet (remote login), e-mail, FTP.
+
+Negli anni '90 ARPAnet viene dismessa. Tim Berners-Lee inventa il Web moderno al
+CERN. Nasce il primo browser (Mosaic, diventato Netscape e poi Mozilla) e 
+l'internet viene commercializzato e diventa com'è oggi.
+
+## Commento di Kleinrock sulla rete
+Il problema principale della rete è che è stata concepita per essere utilizzata
+da piattaforme fidate. Con l'adozione di massa, la sicurezza è dientata un
+problema e aggiungerla a questo punto è difficile.
+
+L'internet ha, però, ha un grande potenziale in quanto permette lo sviluppo
+di applicazioni che non sono state concepite al momento della sua creazione:
+si pensi ai contenuti multimediali, appstore e tutti i servizi moderni.
+
+Il prossimo passo di internet è deiventare trasparente, "come la corrente
+elettrica". Ciò si potrà raggiungere con l'avvernto dell'IoT.
+
+# Internet oggi
+Il traffico aumenta ogni anno. La maggior parte del traffico odierno è
+multimediale. Il numero di utenti è altissimo. Viene utilizzato principalmente
+IPv4. IPv6 è meno diffuso e non sarà scopo del corso. La maggior parte della
+capacità della rete è forntià da cavi sottomarini(le dorsali)
+
+La rete oggi è molto densa: per andare da un punto all'altro basta attraversare
+solo pochi nodi. In totale i nodi sono più di un miliardo.
+
+# Programma del corso
+Ha un approcio TOP-DOWN: si parte dalle architetture e si arriva ai metodi di
+trasmissione dei bit:
+
+## Prima parte
+1. Introduzione e architetture
+2. Sistemi di comunicazione
+3. Modelli funzionali
+4. Livello fisico
+5. Protocolli applicativi
+6. Il livello di trasporto (UDP, TCP)
+
+## Seconda parte
+7. Networking (IP, DHCP, DNS, ICMP)
+8. Inoltro e instradamento in internet (Routing)
+9. Reti locali e livello di linea (Reti locali, bridge/switch, Ethernet, WIFI)
+
+## Laboratorio
+### Esercitazione
+1. Sniffer di rete
+2. Ping, traceroute, Dig, strumenti browser (chrome)
+3. Protocolli applicativi
+
+### Prima parte
+1. Programmi socket (python)
+2. Configurazione e simulazione di rete (PT)
+3. Attività sperimentali su reti wireless
