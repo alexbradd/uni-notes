@@ -2,10 +2,15 @@
 
 [ -x /usr/bin/pandoc ] || exit 1
 
-if [ -z "$1" ] || [ "$1" = "--help" ]; then
-	echo "md_to_pdf.sh input output"
-	exit 0
-fi
+TOC="--toc --toc-depth=4"
+case "$1" in
+	""|"--help")
+		echo "md_to_pdf.sh [ --no-toc ] input output"
+		exit 0 ;;
+	"--no-toc")
+		TOC=""
+		shift 1 ;;
+esac
 
 INPUT="$(realpath "$1")"
 OUTPUT="$(realpath "$2")"
@@ -13,8 +18,7 @@ OUTPUT="$(realpath "$2")"
 pandoc "$INPUT" \
 	-o "$OUTPUT" \
 	-f markdown \
-	--toc \
-	--toc-depth=4 \
+	$TOC \
 	-V "geometry:margin=.5in" \
 	-V "toc-title:Indice"
 
