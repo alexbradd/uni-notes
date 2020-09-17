@@ -2,6 +2,11 @@
 
 [ -x /usr/bin/pandoc ] || exit 1
 
+if [ -z "$1" ] || [ "$1" = "--help" ]; then
+	echo "md_to_pdf.sh input output"
+	exit 0
+fi
+
 INPUT="$(realpath "$1")"
 OUTPUT="$(realpath "$2")"
 
