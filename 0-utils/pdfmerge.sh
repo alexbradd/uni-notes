@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# REQUIREMENS
+# gs: merging + compressing
+
 [ -x /usr/bin/gs ] || exit 1
 
 parameters=""

@@ -1,6 +1,13 @@
 #! /bin/sh
 
+# REQUIREMENTS
+# pandoc: conversion
+# pdflatex: exporting to pdf (needs texlive-scheme-medium)
+# rsvg-convert: embedding svg
+
 [ -x /usr/bin/pandoc ] || exit 1
+[ -x /usr/bin/pdflatex ] || exit 1
+[ -x /usr/bin/rsvg-convert ] || exit 1
 
 TOC="--toc --toc-depth=4"
 case "$1" in
