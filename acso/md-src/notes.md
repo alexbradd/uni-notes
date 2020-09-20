@@ -44,10 +44,10 @@ usano (può essere una singola parola (RISC) oppure più (CISC)).
 
 ### Data path
 
-Il datapath è formato da registri e da ALU. I registri sono divisi in:
+Il data path è formato da registri e da ALU. I registri sono divisi in:
 
 - utilizzabili dall'assembler
-- di supporto per altri componenti (es.: 3 registri di support dell'ALU
+- di supporto per altri componenti (es.: 3 registri di supporto dell'ALU
   (sorgente, sorgente, destinazione))
 
 Abbiamo due classi di istruzioni:
@@ -98,7 +98,7 @@ E' divisa in una gerarchia (dalla più veloce alla più lenta):
 - Registri
 - Cache (L1, L2, L3)
 - Memoria fisica: RAM (es. DDR-SDRAM)
-- Memoria a stato solid (SSD)
+- Memoria a stato solido (SSD)
 - Memoria virtuale: basata su file (HDD)
 
 ### Indirizzi di memoria principale
@@ -179,6 +179,9 @@ I comandi che iniziano con `.` sono direttive del preprocessore. Esse sono:
 - `.aciiz`: specifica un'area di memoria che contiene una stringa ASCII
   terminata da `\0`
 - `.space n`: riserva uno spazio di n byte
+- `.word n`: equivalente a `.space 4` e settare a `n`
+- `.half n`:  equivalente a `.space 2` e settare a `n`
+- `.byte n`:  equivalente a `.space 1` e settare a `n`
 
 #### Registri
 
@@ -225,7 +228,7 @@ In MIPS ci sono 3 tipi di istruzioni:
 ```txt
         6        5        5        5         6       5
     +--------+--------+--------+--------+--------+--------+
-    | OPCODE |   rd   |   rs   |   rt   |   sa   | funct  |
+    | OPCODE |   rs   |   rt   |   rd   |   sa   | funct  |
     +--------+--------+--------+--------+--------+--------+
 ```
 
@@ -234,7 +237,7 @@ In MIPS ci sono 3 tipi di istruzioni:
 ```txt
         6        5        5                 16
     +--------+--------+--------+--------------------------+
-    | OPCODE |   rd   |   rs   |           const          |
+    | OPCODE |   rs   |   rt   |           const          |
     +--------+--------+--------+--------------------------+
 ```
 
@@ -250,7 +253,7 @@ In MIPS ci sono 3 tipi di istruzioni:
 Sintassi:
 
 ```nasm
-    istruzione field1, field2, field3
+    istruzione field1, field2, field3 # comment
 ```
 
 La lista completa di tutte le istruzioni non è riportata qui. Può essere trovata
@@ -258,23 +261,24 @@ nella cartella con il materiale del corso.
 
 ##### Istruzioni aritmetico-logiche
 
-| istruzione | registro | registro | registro |
-|------------|----------|----------|----------|
-| `add`      | `rd`     | `rs`     | `rt`     |
-| `addu`     | `rd`     | `rs`     | `rt`     |
-| `addi`     | `rd`     | `rs`     | `const`  |
-| `addui`    | `rd`     | `rs`     | `const`  |
-| `sub`      | `rd`     | `rs`     | `rt`     |
-| `subu`     | `rd`     | `rs`     | `rt`     |
-| `subi`     | `rd`     | `rs`     | `const`  |
-| `subui`    | `rd`     | `rs`     | `const`  |
-| `mult`     | `rs`     | `rt`     | -        |
-| `multu`    | `rs`     | `rt`     | -        |
-| `div`      | `rs`     | `rt`     | -        |
-| `divu`     | `rs`     | `rt`     | -        |
+| istruzione | campo | campo |  campo  |
+|------------|-------|-------|---------|
+| `add`      | `rd`  | `rs`  | `rt`    |
+| `addu`     | `rd`  | `rs`  | `rt`    |
+| `addi`     | `rd`  | `rs`  | `const` |
+| `addui`    | `rd`  | `rs`  | `const` |
+| `sub`      | `rd`  | `rs`  | `rt`    |
+| `subu`     | `rd`  | `rs`  | `rt`    |
+| `subi`     | `rd`  | `rs`  | `const` |
+| `subui`    | `rd`  | `rs`  | `const` |
+| `mult`     | `rs`  | `rt`  | -       |
+| `multu`    | `rs`  | `rt`  | -       |
+| `div`      | `rs`  | `rt`  | -       |
+| `divu`     | `rs`  | `rt`  | -       |
 
 Le istruzioni immediate (`*i`) hanno la peculiarità di prendere una costante al
-posto di un secondo registro.
+posto di un secondo registro. Per come è strutturato il formato delle istruzioni
+immediate, la costante sarà di massimo 2^16.
 
 Il registro di destinazione della `mult` è implicito: il risultato viene
 salvato in `$hi` (32 cifre più significative) e `$lo` (32 cifre meno
@@ -284,17 +288,37 @@ significative). Per spostare il risultato da questi due registri viene usato
 
 ##### Trasferimenti in memoria
 
-| istruzione | registro | registro               |
-|------------|----------|------------------------|
-| `lw`       | `rd`     | `const(registro base)` |
-| `sw`       | `rs`     | `const(registro base)` |
-| `la`       | `rd`     | `const`                |
+| istruzione | campo | campo                  |
+|------------|-------|------------------------|
+| `lw`       | `rd`  | `const(registro base)` |
+| `sw`       | `rs`  | `const(registro base)` |
+| `la`       | `rd`  | `const`                |
 
 La parte `const(registro base)` serve a calcolare l'indirizzo di memoria a cui
 si fa riferimento. L'indirizzo di memoria è pari a
-`const + indirizzo contenuto nel registro base`.
+`const + indirizzo contenuto nel registro base`. Per come è strutturata il tipo
+di istruzione I, posso caricare/salvare nell'intervallo `[-2^15 ; +2^15 -1]`
+rispetto al registro base.
+
+In memoria una `lw` o una `sw` avranno questo formato:
+
+```txt
+        6        5        5                 16
+    +--------+--------+--------+--------------------------+
+    | OPCODE | rd/rs  | r base |           const          |
+    +--------+--------+--------+--------------------------+
+```
+
+L'istruzione `la` è una pseudo istruzioni: poiché gli indirizzi sono di 32 bit,
+non è possibile specificare un intero indirizzo in un'istruzione.
+L'assemblatore, allora, espande la `la` in 2 istruzioni:
 
 L'ordinamento dei byte di una parola non è da dare per scontato:
+
+- si utilizza `lui $rt const` per caricare i 16 bit più significativi in
+  `$at` (mettendo a 0 gli altri 16 bit meno significativi)
+- si utilizza un'altra istruzione (`ori` un esempio) per caricare gli altri
+  bit meno significativi e spostare tutto nel registro di destinazione
 
 - big-endian: ordinamento da sinistra a destra
 - little-endian: ordinamento da destra a sinistra
@@ -303,16 +327,18 @@ Il MIPS può operare con entrambe le modalità.
 
 ##### Istruzioni logiche
 
-| istruzione | registro | registro | registro |
-|------------|----------|----------|----------|
-| `and`      | `rd`     | `rs`     | `rt`     |
-| `or`       | `rd`     | `rs`     | `rt`     |
-| `nor`      | `rd`     | `rs`     | `rt`     |
-| `sll`      | `rd`     | `rs`     | `#bit`   |
-| `sri`      | `rd`     | `rs`     | `#bit`   |
+| istruzione | campo | campo | campo |
+|------------|-------|-------|-------|
+| `and`      | `rd`  | `rs`  | `rt`  |
+| `or`       | `rd`  | `rs`  | `rt`  |
+| `nor`      | `rd`  | `rs`  | `rt`  |
+| `sll`      | `rd`  | `rs`  | `sa`  |
+| `srl`      | `rd`  | `rs`  | `sa`  |
 
-`sll` di 1 bit equivale a moltiplicare per 2. `sri` di 1 bit equivale dividere
+`sll` di 1 bit equivale a moltiplicare per 2. `srl` di 1 bit equivale dividere
 per 2.
+
+L'istruzione `not` viene eseguita con usando `nor $rd $rs $0`.
 
 Esistono anche le varianti immediate per `and`, `or` e `nor`.
 
@@ -322,41 +348,59 @@ Le istruzioni di modifica del flusso servono a forzare la modifica del `$pc`,
 rompendo il flusso sequenziale standard. Il salto condizionato viene chiamato
 branch, quello incondizionato jump.
 
-In tutti i casi, il salto viene effettuato ad un offset relativo al program
-counter, mai ad un indirizzo assoluto.
-
 ###### Branch
 
 Le istruzioni di branch hanno tutte la forma:
 
 ```nasm
-branch_condizione rs, rt, indirizzo di sato
+branch_condizione rs, rt, offset
 ```
 
-Avrò quindi a disposizione un salto di massimo 2^16 byte.
+Le istruzioni di branch sono di tipo I. Avrò quindi a disposizione un salto di
+`[-2^15 ; +2^15 -1]` (salvato a complemento a 2) parole. Il salto però viene
+effettuato relativo al program counter. Il principio di località degli
+indirizzi, però, ci viene in aiuto: i programmi lavorano solo su segmenti vicini
+di indirizzi. La probabilità di saltare verso indirizzi più distanti di 2^15-1 è
+molto bassa.
 
-| istruzione | registro | registro | registro  | condizione |
-|------------|----------|----------|-----------|------------|
-| `beq`      | `rs`     | `rt`     | indirizzo | `rs == rt` |
-| `bne`      | `rs`     | `rt`     | indirizzo | `rs != rt` |
+| istruzione | campo | campo | campo  | condizione |
+|------------|-------|-------|--------|------------|
+| `beq`      | `rs`  | `rt`  | offset | `rs == rt` |
+| `bne`      | `rs`  | `rt`  | offset | `rs != rt` |
+
+L'assemblatore, a un'etichetta messa nel campo offset, sostituisce
+`(L-(PC+4))/4`.
 
 Per verificare diseguaglianze usiamo le seguenti istruzioni ausiliarie. Esse
 caricano 1 nel registro destinazione se la condizione è avverata e 0 altrimenti.
 
-| istruzione | registro | registro | registro | condizione |
-|------------|----------|----------|----------|------------|
-| `slt`      | `rd`     | `rs`     | `rt`     | `rs < rt`  |
-| `sltu`     | `rd`     | `rs`     | `rt`     | `rs < rt`  |
+| istruzione | campo | campo | campo | condizione |
+|------------|-------|-------|-------|------------|
+| `slt`      | `rd`  | `rs`  | `rt`  | `rs < rt`  |
+| `sltu`     | `rd`  | `rs`  | `rt`  | `rs < rt`  |
+
+Queste istruzioni sono di tipo R. Esistono anche le varianti immediate di
+queste istruzioni.
 
 ###### Jump
 
 Sono possibili 3 salti assoluti:
 
-| istruzione | registro  |
-|------------|-----------|
-| `j`        | indirizzo |
-| `jal`      | indirizzo |
-| `jr`       | `rs`      |
+| istruzione | campo  |
+|------------|--------|
+| `j`        | offset |
+| `jal`      | offset |
+| `jr`       | `rs`   |
+
+Nel campo offset rizzo posso salvare fino a 26 bit. Poiché le
+istruzioni hanno allineamento 4, i due bit meno significativi saranno sempre
+`00`. Posso, quindi, ignorare questi due bit salvando escludendo i due bit meno
+significativi ottenendo un salto totale di 2^28 indirizzi (ossia 2^26 parole).
+A runtime il processore farà uno shift di due a sinistra il campo indirizzo e lo
+concatenerà ai 4 bit più significativi del program counter, ottenendo
+l'indirizzo di salto.
+
+Per saltare a indirizzi superiori a 2^28 Byte devo usare la `jr`.
 
 La `jal` salva `$pc + 4` nel registro `$ra` prima di saltare. Essa viene usata
 per implementare la chiamata a funzione. La `jr` invece viene usata per
@@ -365,6 +409,23 @@ implementare il ritorno al chiamante (`jr $ra`).
 Nota bene: anche i salti hanno delle restrizioni sull'indirizzo
 (26 bit dedicati)
 
+##### Gestione delle costanti
+
+Se usiamo costanti di 32 bit, l'assemblatore deve fare 2 passi per caricarla:
+deve separare la costanti in due parti di 16 bit e trattarle con due istruzioni
+separate. Proprio come `la`, esiste la pseudo istruzione `li $rs, const` che
+esegue gli stessi passaggi.
+
+#### Modalità di indirizzamento
+
+In MIPS ci sono 5 modalità di indirizzamento:
+
+- Immediato (quello usato dalle istruzioni di tipo I)
+- A registro (quello usato dalle istruzioni di tipo R)
+- Con base e offset (quello usato da `lw`/`sw`)
+- Relativo al program counter (quello usato da `beq`)
+- Pseudo diretto (quello usato da `jr`)
+
 #### Etichette
 
 Le etichette vengono usate per dare nomi simbolici a delle celle di memoria.
@@ -372,6 +433,70 @@ Sarà compito dell'assemblatore tradurre le etichette in indirizzi di memoria.
 Sintassi:
 
 ```nasm
-etichetta: add $1, $2, $3 # anche direttiva
+etichetta:
+    add $1, $2, $3 # anche direttiva
 ```
 
+## Traduzione da C a MIPS
+
+Per tradurre da un linguaggio sorgente a un linguaggio macchina, bisogna
+definire un modello di architettura runtime. Alcune delle convenzioni di questo
+modello sono:
+
+- collocazione e ingombro di tipi di variabili
+- ???
+
+### Modello di memoria
+
+La memoria di un programma è divisa in vari segmenti:
+
+- text (`.text`): codice del programma (dichiarato dal programma)
+- data (`.data`): dati statici e dinamici (dichiarato del programma)
+- stack: la stack del processo (allocato dal sistema operativo)
+
+```txt
+ 0x7ffffffc ----------
+                        Stack
+            ----------
+                v
+
+
+                ^
+            ----------
+                        Dynamic Data
+                        Static Data
+ 0x10000000 ----------
+                        Text
+   0x400000 ----------
+                        Riservato
+        0x0 ----------
+```
+
+Gli indirizzi di impianto dei segmenti sono indirizzi virtuali, non fisici.
+
+Programmi molto grandi e sofisticati possono avere due o più segmenti dati o
+testo, segmenti di dati condivisi, segmenti di libreria dinamica e altro.
+
+### Dimensioni delle variabili
+
+| tipo    | dimensione (B) |
+|---------|----------------|
+| `char`  | 1              |
+| `short` | 2              |
+| `int`   | 4              |
+| `void*` | 4              |
+
+Per dichiarare una `struct`, basta semplicemente allocare una dimensione di pari
+alla dimensione totale della `struct.` Per accedere ai vari elementi,
+semplicemente ci accede come ad un array, tenendo conto dell'ordine degli
+elementi.
+
+### Classi di variabili
+
+In C abbiamo diversi tipi di variabili. Seguendo il modello di memoria descritto
+sopra, dobbiamo:
+
+- Allocare prima le variabili statiche (o globali). Per puntare al segmento
+  dati statici si usa il registro `$gp` inizializzato a 0x10008000
+- Alle variabili locali posso associare un indirizzo. Se però ho bisogno del
+  suo indirizzo devo allocarle sulla stack
