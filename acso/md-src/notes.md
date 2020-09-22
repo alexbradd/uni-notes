@@ -182,6 +182,7 @@ I comandi che iniziano con `.` sono direttive del preprocessore. Esse sono:
 - `.word n`: equivalente a `.space 4` e settare a `n`
 - `.half n`:  equivalente a `.space 2` e settare a `n`
 - `.byte n`:  equivalente a `.space 1` e settare a `n`
+- `.eqv A, n`: equivalente alla `#define` del C
 
 #### Registri
 
@@ -309,21 +310,65 @@ In memoria una `lw` o una `sw` avranno questo formato:
     +--------+--------+--------+--------------------------+
 ```
 
-L'istruzione `la` è una pseudo istruzioni: poiché gli indirizzi sono di 32 bit,
+L'istruzione `la` è una pseudo istruzione: poiché gli indirizzi sono di 32 bit,
 non è possibile specificare un intero indirizzo in un'istruzione.
 L'assemblatore, allora, espande la `la` in 2 istruzioni:
-
-L'ordinamento dei byte di una parola non è da dare per scontato:
 
 - si utilizza `lui $rt const` per caricare i 16 bit più significativi in
   `$at` (mettendo a 0 gli altri 16 bit meno significativi)
 - si utilizza un'altra istruzione (`ori` un esempio) per caricare gli altri
   bit meno significativi e spostare tutto nel registro di destinazione
 
+Un'altra pseudo istruzione simile è `li $rd, const`.
+
+L'ordinamento dei byte di una parola non è da dare per scontato:
+
 - big-endian: ordinamento da sinistra a destra
 - little-endian: ordinamento da destra a sinistra
 
 Il MIPS può operare con entrambe le modalità.
+
+###### Load e store con indirizzi simbolici
+
+Nelle chiamate a `lw` e `sw` si può omettere il registro base. In quel caso
+verrà usato `$gp` e l'offset verrà calcolato dal linker.
+
+```nasm
+.data
+...
+A: .word
+...
+
+.text
+...
+    lw $t0, A
+    # viene assemblato in
+    #   lw $t0, %gp_rel(A)($gp)
+    # dove %gp_rel(A) è una direttiva del linker che calcola l'offset di A da
+    # $gp
+```
+
+Anche `la` possiede una forma simile: i bit più significativi e meno
+significativi non sono calcolati dal compilatore, ma il compito viene delegato
+al linker:
+
+```nasm
+.data
+...
+A: .word
+...
+
+.text
+...
+    la $t0, A
+    # viene assemblato in:
+    #   lui $t0, %hi(A)
+    #   addiu $t0, %lo(A) # oppure ori $t0, %lo(A)
+    # dove come prima %hi(A) e %lo(A) sono direttive del linker
+```
+
+Queste forme vanno usate solo con valori dichiarati con `.word`, `.half` e
+`.byte`.
 
 ##### Istruzioni logiche
 
@@ -444,7 +489,7 @@ definire un modello di architettura runtime. Alcune delle convenzioni di questo
 modello sono:
 
 - collocazione e ingombro di tipi di variabili
-- ???
+- destinazione di uso dei registri
 
 ### Modello di memoria
 
@@ -477,6 +522,17 @@ Gli indirizzi di impianto dei segmenti sono indirizzi virtuali, non fisici.
 Programmi molto grandi e sofisticati possono avere due o più segmenti dati o
 testo, segmenti di dati condivisi, segmenti di libreria dinamica e altro.
 
+### Syscall
+
+La `syscall` è un'istruzione che passa il controllo al kernel. Il kernel offre
+vari servizi, ognuno indentificato da un codice.
+
+Il codice, prima, viene salvato dal chiamante nel registro `$v0`, seguito dagli
+argomenti in `$a*` o `$f12`. Viene poi chiamata l'istruzione `syscall`.
+
+Se una `syscall` ritorna un valore, esso viene salvato nel registro `$v0`, anche
+`$f0` se è più grande di 32 bit.
+
 ### Dimensioni delle variabili
 
 | tipo    | dimensione (B) |
@@ -486,6 +542,13 @@ testo, segmenti di dati condivisi, segmenti di libreria dinamica e altro.
 | `int`   | 4              |
 | `void*` | 4              |
 
+Per dichiarare un array allochiamo semplicemente `n*dimensione` byte. Per
+accederci, usiamo l'aritmetica dei puntatori (come si fa anche in C):
+`base + (dimensione * n)`.
+
+Una sintassi alterativa di `.word` è: `.word n, m,...`. Essa equivale
+all'inizializzazione diretta di un array (come in C)
+
 Per dichiarare una `struct`, basta semplicemente allocare una dimensione di pari
 alla dimensione totale della `struct.` Per accedere ai vari elementi,
 semplicemente ci accede come ad un array, tenendo conto dell'ordine degli
@@ -493,10 +556,166 @@ elementi.
 
 ### Classi di variabili
 
-In C abbiamo diversi tipi di variabili. Seguendo il modello di memoria descritto
-sopra, dobbiamo:
+In C abbiamo diversi tipi di variabili: globali, locali, parametri e allocate
+dinamicamente.
 
-- Allocare prima le variabili statiche (o globali). Per puntare al segmento
-  dati statici si usa il registro `$gp` inizializzato a 0x10008000
-- Alle variabili locali posso associare un indirizzo. Se però ho bisogno del
-  suo indirizzo devo allocarle sulla stack
+#### Variabili globali
+
+Le variabili globali sono allocate in `.data` a partire da 0x10000000. Per
+indirizzarla usiamo un'etichetta che gli assegniamo.
+
+Per puntare al segmento dati statici usiamo il registro `$gp`, inizializzato
+all'indirizzo 0x10008000
+
+#### Variabili locali
+
+Per le variabili locali posso usare i registri `$s*`. Se, però, ho bisogno di
+usare l'indirizzo di una variabile locale, essa andrà salvata sulla stack.
+
+#### Parametri
+
+I primi quattro parametri vengono passati tramite i registri `$a*`. Se la
+funzione ha più di 4 parametri essi vengono salvati sulla stack.
+
+Nota bene: per array e struct viene passato l'indirizzo!
+
+Il chiamante, prima della chiamata, salva in memoria i registri che vuole
+mantenere inalterati durante la chiamata.
+
+Per i valori in uscita si usa il registro `$v0`. Se la return è più lunga di
+32 bit si usa anche il registro `$v1`.
+
+#### Variabili dinamiche
+
+Come anche in C, bisogna ricorrere a una funzione che ci allochi memoria sulla
+heap. Viene utilizzata la syscall `sbrk` (codice 9 su SPIM) passando in entrata
+il numero di byte da allocare. L'indirizzo dello spazio di memoria allocato è
+ritornato in `$v0`.
+
+### Funzioni
+
+La chiamata a funzione, in linguaggi come il C, ha come effetto la creazione di
+un record di attivazione sulla stack. Il record di attivazione contiene:
+
+- i parametri formali e i loro valori
+- l'indirizzo di ritorno al chiamante
+- le informazioni per gestire lo spazio allocato per il record
+- le variabili locali
+- il valore restituito
+
+Il chiamante esegue le seguenti operazioni preliminari:
+
+1. Predispone i parametri in ingresso negli opportuni registri
+2. Salva sulla stack il valore di registri che vuole mantenere
+3. Trasferisce il controllo alla procedura tramite `jal`
+
+Il chiamato esegue le seguenti operazioni:
+
+1. Alloca lo spazio di memoria necessario alla memorizzazione dei dati e alla
+   sua esecuzione
+2. Salva alcuni registri sulla stack
+3. Eseguire le sue funzioni
+4. Memorizzare il risultato nell'apposito registro
+5. Ripristina i registri salvati sulla stack
+6. Ritornare il controllo al chiamante tramite `jr`
+
+#### Salvataggio dei registri
+
+Vengono salvati sullo stack solo un particolare gruppo di registri. I registri
+che vengono preservati dal chiamato sono: `$s*`, `$fp`, `$ra`.
+
+I registri che il chiamante può salvare, invece, sono: `$t*`, `$a*` e `$v*`.
+
+Entrambe le parti devono salvare i registri solo se verranno modificati.
+
+##### Minimo salvataggio dei registri
+
+- Il chiamato non deve salvare nulla se:
+  - Non chiama nessun'altra funzione
+  - scrive solo in registri temporanei, per parametri, per risultati o non
+    indirizzabili
+- La funzione chiamante non deve salvare nulla se:
+  - non vuole salvare il contenuto dei suoi registri temporanei, parametro e
+    risultato
+
+#### Gestione dello stack
+
+Lo stack cresce dall'altro verso il basso. Lo stack pointer contiene
+l'indirizzo della cima della stack. Quindi ogni volta che dobbiamo
+spingere qualcosa sulla stack dobbiamo decrementare lo stack pointer e ogni
+volta che dobbiamo rimuovere qualcosa dobbiamo incrementarlo.
+
+```nasm
+PUSH:
+    addi $sp, $sp, -4
+    sw $reg, 0($sp)
+
+POP:
+    lw $reg, 0($sp)
+    addi $sp, $sp, 4
+```
+
+Nello stack sono salvati i record di attivazione (frame). Lo spazio sulla stack
+viene allocato dal programmatore in una sola volta all'inizio della procedura.
+Lo stesso vale per la deallocazione.
+
+##### Stack frame
+
+Lo stack frame è allocato dal chiamato e ha la seguente forma:
+
+```txt
+    -------------------
+    Registri salvati
+    dal chiamante
+    -------------------
+    Paramentri (5, 6...)
+    ------------------- <- $fp
+
+    Registri salvati
+
+    -------------------
+
+    Variabili locali
+
+    ------------------- <- $sp
+```
+
+Il registro `$fp` punta alla prima parola del frame, mentre `$sp` punta
+all'ultima parola del frame. L'utilizzo del frame pointer è opzionale.
+
+Il layout dei registri salvati è il seguente:
+
+```txt
+    ...
+    -------------------
+    Vecchio $fp
+    -------------------
+    Vecchio $ra
+    -------------------
+
+    Vecchi $s0 - $s7
+
+    -------------------
+    ....
+```
+
+La generalizzazione dello stack frame è l'area di attivazione e comprende anche
+i registri salvati dal chiamante.
+
+#### Funzioni foglia
+
+Si dice funzione foglia una funzione che non ha annidate al suo interno altre
+chiamate a procedure. La peculiarità di questo tipo di funzioni è che non deve
+salvare il valore di `$ra`.
+
+### Valutazioni espressioni algebriche
+
+Adotteremo la regola più semplice senza ottimizzare. Basta seguire un semplice
+procedimento:
+
+1. Completa l'espressione associando a sinistra
+2. Finché non hai finito valuta il primo operatore valutabile da sinistra
+
+Un operatore viene considerato valutabile se da entrambi i lati sono presenti
+solo costanti o risultati di sotto-espressioni già calcolate.
+
