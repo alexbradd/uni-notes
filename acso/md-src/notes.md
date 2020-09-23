@@ -1,6 +1,5 @@
 # Appunti ACSO
 
-<!-- 15/09 -->
 ## I principi fondamentali
 
 I processori eseguono le istruzioni in maniera sequenziale (non vedremo la Out
@@ -148,7 +147,6 @@ varie periferiche.
 2. Quando la memoria ha completato la lettura della parola richiesta, il dato
   viene trasmesso sul bus dati
 
-<!-- 16/09 -->
 ## MIPS assembler
 
 Il linguaggio assembler è simbolico. E' il primo livello di astrazione prima
@@ -226,35 +224,35 @@ In MIPS ci sono 3 tipi di istruzioni:
 
 - tipo R: istruzioni aritmetico-logiche; strutturate in:
 
-```txt
-        6        5        5        5         6       5
-    +--------+--------+--------+--------+--------+--------+
-    | OPCODE |   rs   |   rt   |   rd   |   sa   | funct  |
-    +--------+--------+--------+--------+--------+--------+
-```
+  ```txt
+      6        5        5        5         6       5
+  +--------+--------+--------+--------+--------+--------+
+  | OPCODE |   rs   |   rt   |   rd   |   sa   | funct  |
+  +--------+--------+--------+--------+--------+--------+
+  ```
 
 - tipo I: istruzioni di accesso alla memoria o contenenti costanti
 
-```txt
-        6        5        5                 16
-    +--------+--------+--------+--------------------------+
-    | OPCODE |   rs   |   rt   |           const          |
-    +--------+--------+--------+--------------------------+
-```
+  ```txt
+      6        5        5                 16
+  +--------+--------+--------+--------------------------+
+  | OPCODE |   rs   |   rt   |           const          |
+  +--------+--------+--------+--------------------------+
+  ```
 
 - tipo J: salto
 
-```txt
-        6                        26
-    +--------+--------------------------------------------+
-    | OPCODE |                jump target                 |
-    +--------+--------------------------------------------+
-```
+  ```txt
+      6                        26
+  +--------+--------------------------------------------+
+  | OPCODE |                jump target                 |
+  +--------+--------------------------------------------+
+  ```
 
 Sintassi:
 
 ```nasm
-    istruzione field1, field2, field3 # comment
+istruzione field1, field2, field3 # comment
 ```
 
 La lista completa di tutte le istruzioni non è riportata qui. Può essere trovata
@@ -304,10 +302,10 @@ rispetto al registro base.
 In memoria una `lw` o una `sw` avranno questo formato:
 
 ```txt
-        6        5        5                 16
-    +--------+--------+--------+--------------------------+
-    | OPCODE | rd/rs  | r base |           const          |
-    +--------+--------+--------+--------------------------+
+    6        5        5                 16
++--------+--------+--------+--------------------------+
+| OPCODE | rd/rs  | r base |           const          |
++--------+--------+--------+--------------------------+
 ```
 
 L'istruzione `la` è una pseudo istruzione: poiché gli indirizzi sono di 32 bit,
@@ -369,6 +367,8 @@ A: .word
 
 Queste forme vanno usate solo con valori dichiarati con `.word`, `.half` e
 `.byte`.
+
+Per più dettagli vedi la sezione sulla compilazione e assemblaggio.
 
 ##### Istruzioni logiche
 
@@ -718,4 +718,176 @@ procedimento:
 
 Un operatore viene considerato valutabile se da entrambi i lati sono presenti
 solo costanti o risultati di sotto-espressioni già calcolate.
+
+## Flusso di compilazione e assemblaggio
+
+Un programma C passa attraverso diverse fasi prima di essere eseguibile: prima
+viene compilato in linguaggio assembler, poi viene assemblato da un assemblatore
+in linguaggio macchina e poi i riferimenti ad altre funzioni o variabili vengono
+riempiti (collegato) per poi essere eseguibile.
+
+Ciò che ci interesserà di più è il processo di assemblaggio.
+
+### L'assemblaggio
+
+L'assembler legge, riga per riga, le istruzioni simboliche e poi le traduce in
+formato macchina:
+
+- Le pseudo istruzioni vengono espanse
+- Le istruzioni vengono tradotte nel loro corrispettivo binario
+- I riferimenti ai registri vengono tradotti nei loro "numeri" di registro
+- I riferimenti simbolici vengono risolti
+
+Ogni segmento è assemblato in termini di memoria virtuale rilocabili.
+
+Il risultato dell'assemblaggio è la generazione dei file oggetto.
+
+#### Tabella dei simboli
+
+Il primo passo svolto dall'assemblatore è la costruzione della tabella dei
+simboli, ossia una corrispondenza tra le varie etichette e i rispettivi
+indirizzi di memoria. Le etichette definite come globali (`.globl`) vengono rese
+disponibili anche ad altri oggetti.
+
+I valori degli indirizzi usati non sono assoluti, ma sono rilocabili ossia
+relativi alla posizione del segmento a cui appartengono.
+
+#### Assemblaggio e tabella di rilocazione
+
+Usando la tabella dei simboli e la tabella di rilocazione, l'assemblatore
+assembla le varie istruzioni
+
+Alcune istruzioni vengono assemblate in modo incompleto e vanno processate anche
+dal linker. Una istruzione viene tradotta parzialmente se:
+
+- il riferimento simbolico al suo interno è relativo al segmento `.data`
+- il riferimento è relativo a simboli non presenti nella tabella dei simboli
+  (il simbolo è posto a 0 per convenzione)
+- è un istruzione di salto di tipo J (usa indirizzi assoluti): il simbolo è
+  posto a 0 per convenzione
+
+In corrispondenza a ogni elemento tradotto incompletamente è creato un elemento
+nella tabella di rilocazione della forma:
+
+```txt
+<indirizzo rilocabile dell'istruzione, OPCODE, simbolo da risolvere>
+```
+
+L'indirizzo del simbolo in una branch, se locale, può essere risolto subito con
+questa formula: `(DEST_REL_ADDR - (SOURCE_REL_ADDR + 4))/4)`
+
+#### Il formato oggetto
+
+Il formato di un oggetto è il seguente:
+
+```txt
+| object file | text    | data    | relocation  | symbol | debug |
+| header      | segment | segment | information | table  | info  |
+```
+
+- L'intestazione: descrive le dimensioni di testo e dati
+- Il segmento di testo: contiene le istruzioni eseguibili; esse potrebbero
+  essere non complete a causa di riferimenti non risolti
+- Il segmento dati: Contiene una rappresentazione binaria dei dati definiti
+  nella sorgente; essi potrebbero non essere completi a causa di riferimenti non
+  risolti
+- Le informazioni di rilocazione: identificano le istruzioni che dipendono da
+  indirizzi assoluti
+- La tabella dei simboli: associa un indirizzo alle etichette globali
+- Le informazioni di debug
+
+### Indirizzamento di dati statici
+
+Poiché il segmento dati inizia all'indirizzo 0x10000000, le istruzioni di load
+non possono far rifermento direttamente ai dati. Per evitare ogni volta di
+espandere le load in due istruzioni, viene usato il `$gp` come riferimento per
+lo spiazzamento (con segno) di 16 bit delle istruzioni di load e store.
+
+L'utilizzo del global pointer permette di accedere ai primi 64 kB del segmento
+di dati statici.
+
+### Simboli rilocabili, locali ed esterni
+
+Gli indirizzi all'interno del modulo possono variare se i vari segmenti
+dell'oggetto sono rilocati. Di conseguenza tutte le etichette che corrispondono
+ad indirizzi assoluti possono puntare ad indirizzi diversi.
+
+Un simbolo può essere locale (definito nel modulo) o esterno (definito in un
+altro modulo).
+
+L'assemblatore non può tradurre completamente istruzioni se:
+
+- fa riferimento ad un simbolo esterno (risolto dal linker)
+- fa riferimento ad un simbolo rilocabile (risolto dal linker)
+  - un'eccezione sono le istruzioni di branch in quanto compiono un salto
+    relativo al PC e la distanza relativa delle istruzioni non viene modificata
+
+### Il linker
+
+Il compito del linker è quello di mettere insieme i diversi moduli di un
+programma.
+
+Il linker "collega" i vari oggetti risolvendo i simboli esterni e crea un vero
+e proprio eseguibile.
+
+Il linker crea un unico programma binario eseguibile con un solo spazione di
+indirizzamento per tutto il programma.
+
+Il linker prima:
+
+- Determina la posizione in memoria delle sezioni di codice e dati dei diversi
+  moduli
+  - I moduli solo caricati in memoria sequenzialmente rispettando la struttura
+    generale della memoria
+- Crea la tabella dei simboli globale
+  - Essa consiste nell'unione di tutte le tabelle dei simboli di tutti i moduli
+    che devono essere collegati, modificate in base all'indirizzo di base del
+    modulo di appartenenza di ciascun simbolo
+- Corregge in tutti i moduli i riferimenti ad indirizzi simbolici
+
+#### Regole di correzione dei riferimenti nei moduli
+
+Siano:
+
+- `ISTR` un'istruzione riferita dalla tabella di rilocazione di un modulo `M`,
+  con simbolo `S` e indirizzo `IND`
+- `IADDR` l'indirizzo di una istruzione `ISTR` riferita dalla tabella di
+  rilocazione di un modulo `M` con simbolo `S`
+- `VS` il valore di `S` nella tabella globale dei simboli
+- `GP` il valore del global pointer
+
+Regole da applicare in base al tipo di istruzioni:
+
+- `ISTR` è in formato J: inserire `VS/4` nell'istruzione
+- `ISTR` è di salto in formato I: inserire `(VS - (IADDR + 4)) / 4`
+- `ISTR` è aritmetico/logica in formato I: inserire i 16 bit meno significativi
+  di `VS` (`VS_Low`)
+- `ISTR` è di tipo load o store: inserire `VS-GP`
+- `ISTR` è l'istruzione `lui`: inserire i 16 bit più significativi di `VS`
+  (`VS_High`)
+
+### Caricamento ed esecuzione del programma
+
+Nei sistemi UNIX, il kernel carica il programma in memoria e ne lancia
+l'esecuzione. Le operazioni eseguite sono:
+
+1. Legge l'intestazione dell'eseguibile per determinare le dimensioni dei vari
+   segmenti
+2. Crea un nuovo spazio di indirizzamento per il programma abbastanza grande per
+   contenere i vari segmenti del programma (inclusa la stack)
+3. Copia le istruzioni e i dati del file eseguibile in memoria all'interno dello
+   spazio appena allocato
+4. Copia nello stack gli argomenti passati al programma
+5. Inizializza i registri dell'architettura (in generale tutti azzerati tranne
+   per lo stack pointer a cui viene assegnato il nuovo indirizzo della stack)
+6. Salta a una procedura di avvio che copia i gli argomenti del programma dallo
+   stack ai registri, per poi chiamare la procedura `main` del programma.
+7. Quando la procedura `main` termina, la procedura di avvio conclude il
+   programma attraverso la syscall `exit`
+
+### Librerie dinamiche
+
+Alcune volte, per ridurre le dimensioni degli eseguibili, alcune librerie
+vengono collegate solo a runtime. Il linker dinamico esegue la procedura di
+caricamento in memoria alla prima chiamata di un determinato simbolo.
 
