@@ -251,7 +251,7 @@ In MIPS ci sono 3 tipi di istruzioni:
 
 Sintassi:
 
-```nasm
+```mips
 istruzione field1, field2, field3 # comment
 ```
 
@@ -331,7 +331,7 @@ Il MIPS può operare con entrambe le modalità.
 Nelle chiamate a `lw` e `sw` si può omettere il registro base. In quel caso
 verrà usato `$gp` e l'offset verrà calcolato dal linker.
 
-```nasm
+```mips
 .data
 ...
 A: .word
@@ -350,7 +350,7 @@ Anche `la` possiede una forma simile: i bit più significativi e meno
 significativi non sono calcolati dal compilatore, ma il compito viene delegato
 al linker:
 
-```nasm
+```mips
 .data
 ...
 A: .word
@@ -397,7 +397,7 @@ branch, quello incondizionato jump.
 
 Le istruzioni di branch hanno tutte la forma:
 
-```nasm
+```mips
 branch_condizione rs, rt, offset
 ```
 
@@ -477,7 +477,7 @@ Le etichette vengono usate per dare nomi simbolici a delle celle di memoria.
 Sarà compito dell'assemblatore tradurre le etichette in indirizzi di memoria.
 Sintassi:
 
-```nasm
+```mips
 etichetta:
     add $1, $2, $3 # anche direttiva
 ```
@@ -645,7 +645,7 @@ l'indirizzo della cima della stack. Quindi ogni volta che dobbiamo
 spingere qualcosa sulla stack dobbiamo decrementare lo stack pointer e ogni
 volta che dobbiamo rimuovere qualcosa dobbiamo incrementarlo.
 
-```nasm
+```mips
 PUSH:
     addi $sp, $sp, -4
     sw $reg, 0($sp)
@@ -890,4 +890,3 @@ l'esecuzione. Le operazioni eseguite sono:
 Alcune volte, per ridurre le dimensioni degli eseguibili, alcune librerie
 vengono collegate solo a runtime. Il linker dinamico esegue la procedura di
 caricamento in memoria alla prima chiamata di un determinato simbolo.
-
