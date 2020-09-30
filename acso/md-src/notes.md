@@ -890,3 +890,145 @@ l'esecuzione. Le operazioni eseguite sono:
 Alcune volte, per ridurre le dimensioni degli eseguibili, alcune librerie
 vengono collegate solo a runtime. Il linker dinamico esegue la procedura di
 caricamento in memoria alla prima chiamata di un determinato simbolo.
+
+## Livello logico-digitale
+
+### I segnali
+
+I segnali che utilizzeremo saranno segnali discreti, adatti a rappresentare i
+numeri binari. Essi sono derivati da segnali elettrici continui. La grandezza
+che varierà sarà la tensione elettrica: essa oscillerà tra un minimo ed un
+massimo che rappresentano rispettivamente 0 e 1.
+
+Ci sono due classi di dispositivi di elaborazione:
+
+- reti combinatorie: reti senza retroazioni: il risultato dipende solo dagli
+  ingressi
+- reti sequenziali: reti con retroazioni: il risultato dipende sia dagli
+  ingressi che dalla sequenza di segnali precedenti (stato del circuito)
+
+### Algebra di commutazione
+
+Deriva dall'algebra di Boole e consente di descrivere matematicamente i circuiti
+digitali. Definisce espressioni logiche che descrivono il comportamento del
+circuito da realizzare nella forma `U = f(I)`. A partire da queste espressioni
+è possibile derivare una rappresentazione circuitale.
+
+#### Operatori
+
+Chiameremo variabile di commutazione, o variabile logica, il singolo bit di
+informazione rappresentata e elaborata.
+
+- Negazione: `!A` vale 0 se A è 1 e viceversa
+- Somma logica: equivale a OR
+- Prodotto logico: equivale a AND
+
+##### Proprietà
+
+|     Legge      |           AND           |              OR             |
+|----------------|-------------------------|-----------------------------|
+| Identità       | `1 A = A`               | `0 + A = A`                 |
+| Elemento nullo | `0 A = 0`               | `1+ A = 1`                  |
+| Idempotenza    | `A A = A`               | `A + A = A`                 |
+| Inverso        | `A !A = 0`              | `A + !A = 1`                |
+| Commutativa    | `A B = B A`             | `A + B = B + A`             |
+| Associativa    | `(A B) C = A (B C)`     | `(A + B) + C = A + (B + C)` |
+| Distributiva   | `A (B + C) = A B + A C` | `A + B C = (A + B)(A + C)`  |
+| Assorbimento   | `A (A + B) = A`         | `A + A B = A`               |
+| De Morgan      | `!(A B) = !A + !B`      | `!(A + B) = !A !B`          |
+
+#### Funzione combinatoria
+
+Una funzione combinatoria corrisponde ad una espressione booleana. Essa si
+comporta esattamente come una normale funzione.
+
+### Porte logiche
+
+I circuiti digitali sono formati da componenti digitali elementari, chiamate
+porte logiche, ossia circuiti minimi per l'elaborazione di segnali binari
+e corrispondo agli operatori elementari dell'algebra di commutazione. L'insieme
+NOT, AND e OR è detto insieme di operatori funzionalmente completo, ossia un
+insieme con il quale è possibile costruire qualsiasi calcolatore.
+
+Oltre alle porte logiche fondamentali si definiscono altre 2 porte anch'esse
+funzionalmente complete: NAND (`!(AB)`) e NOR (`!(A+B)`). Con NAND e NOR si
+possono costruire tutti e tre gli operatori fondamentali.
+
+Definiamo ancora altre 2 porte logiche: XOR (`!AB + A!B` o OR esclusivo) e
+XNOR (`!(!AB + A!B)` o NOR esclusivo). Essi sono utilizzati per contare il
+numero di bit: XOR ci dice se c'è un numero dispari di 1, mentre XNOR se c'è
+un numero pari.
+
+Esistono porte con più di 2 ingressi. Esse però sono realizzate con delle porte
+a 2 ingressi (ad esempio una porta a 3 ingressi viene realizzata con 2 porte
+a 2 ingressi). Nel conteggio delle porte logiche utilizzate bisogna usare come
+unità di misura le porte a 2 ingressi.
+
+Le porte logiche sono costruite tramite i transistor. Il transistor funziona
+come un interruttore: ha uno stato di aperto e uno chiuso.
+
+#### Costo e velocità delle porte
+
+Il costo di realizzazione equivale al numero di transistor necessari per
+realizzare una porta. Esso dipende dalla tecnologia utilizzata, dalla funzione
+e dal numero di ingressi.
+
+Ogni porta ha anche una velocità di commutazione. Anch'essa come il costo
+dipende da tecnologia, funzione e numero di ingressi.
+
+Il costo delle porte e la velocità permettono di calcolare il costo della rete
+logica e il ritardo di propagazione associato alla rete.
+
+Nel conteggio di solito non includiamo le porte NOT in quanto costituite solo da
+1 transistor.
+
+### Analisi e sintesi di reti combinatorie
+
+A ogni funzione combinatoria si può sempre associare un circuito digitale
+formato da porte logiche chiamato rete combinatoria. Gli ingressi della rete
+saranno le variabili della funzione e le uscite il valore della funzione.
+Considereremo sempre solo 1 uscita.
+
+Una funzione combinatoria può ammettere più reti combinatorie che differiscono
+per il numero di porte logiche.
+
+L'operazione di trovare la funzione combinatoria data una tabella di verità
+viene detta sintesi. L'inverso (trovare la tabella di verità di una rete o
+funzione) è detta analisi.
+
+#### Sintesi
+
+La sintesi di una rete combinatoria è un problema Np completo, ossia esiste un
+algoritmo che risolverà sempre il problema, anche se non nel modo più ottimale.
+
+Data una funzione booleana, la soluzione iniziale al problema consiste nel
+ricorso alle forme canoniche:
+
+- forma somma di prodotti (SoP o prima forma canonica)
+- forma prodotto di somme (PoS o seconda forma canonica)
+
+Data una una funzione booleana esistono una e una sola espressione per
+ciascuna delle forme canonica.
+
+Le forme canoniche non sono una forma ottimale. E', quindi, necessaria una
+ottimizzazione utilizzando i teoremi dell'algebra combinatoria visti sopra
+
+##### Sintesi in prima forma canonica
+
+La funzione F può essere specificata come:
+
+- la somma di tutti i termini prodotto delle variabili di ingresso
+  corrispondenti agli 1 della funzione
+- Ogni termine prodotto (o mintermine) è costituito dal prodotto logico delle
+  variabili di ingresso prese in forma naturale (se valgono 1) o in forma
+  complementata (se valgono 0)
+
+##### Sintesi in seconda forma canonica
+
+La funzione F può essere specificata come:
+
+- il prodotto di tutti i termini somma delle variabili di ingresso
+  corrispondenti agli 0 della funzione
+- il termine somma (o maxtermine) è costituito dalla somma logica delle
+  variabili di ingresso prese in forma naturale se valgono 0 o in forma
+  complementata se valgono 1
