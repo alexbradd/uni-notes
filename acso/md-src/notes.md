@@ -907,6 +907,20 @@ Ci sono due classi di dispositivi di elaborazione:
 - reti sequenziali: reti con retroazioni: il risultato dipende sia dagli
   ingressi che dalla sequenza di segnali precedenti (stato del circuito)
 
+### I circuiti sequenziali
+
+Un circuito sequenziale possiede uno stato che ne influenza il comportamento
+
+Lo stato di un circuito sequenziale rappresenta una sorta di descrizione della
+storia passata del circuito stesso. L'elemento funzionale elementare per la
+realizzazione di circuiti sequenziali è il bistabile, che è in grado di
+memorizzare un bit di informazione.
+
+I circuiti sequenziali sono formati da:
+
+- bistabili: memorizzano valori di singoli bit
+- porte logiche organizzate in reti combinatorie: elaborano le informazioni
+
 ### Algebra di commutazione
 
 Deriva dall'algebra di Boole e consente di descrivere matematicamente i circuiti
@@ -950,14 +964,20 @@ e corrispondo agli operatori elementari dell'algebra di commutazione. L'insieme
 NOT, AND e OR è detto insieme di operatori funzionalmente completo, ossia un
 insieme con il quale è possibile costruire qualsiasi calcolatore.
 
+![Porte logiche fondamentali](./img/gates1.pdf)
+
 Oltre alle porte logiche fondamentali si definiscono altre 2 porte anch'esse
 funzionalmente complete: NAND (`!(AB)`) e NOR (`!(A+B)`). Con NAND e NOR si
 possono costruire tutti e tre gli operatori fondamentali.
+
+![Porte logiche negate](./img/gates2.pdf)
 
 Definiamo ancora altre 2 porte logiche: XOR (`!AB + A!B` o OR esclusivo) e
 XNOR (`!(!AB + A!B)` o NOR esclusivo). Essi sono utilizzati per contare il
 numero di bit: XOR ci dice se c'è un numero dispari di 1, mentre XNOR se c'è
 un numero pari.
+
+![Porte logiche esclusive](./img/gates3.pdf)
 
 Esistono porte con più di 2 ingressi. Esse però sono realizzate con delle porte
 a 2 ingressi (ad esempio una porta a 3 ingressi viene realizzata con 2 porte
@@ -1032,3 +1052,184 @@ La funzione F può essere specificata come:
 - il termine somma (o maxtermine) è costituito dalla somma logica delle
   variabili di ingresso prese in forma naturale se valgono 0 o in forma
   complementata se valgono 1
+
+### I blocchi funzionali
+
+Esiste una libreria di blocchi funzionali predefiniti di tipo combinatorio che
+contiene i blocchi per tutte le funzioni combinatorie di base:
+
+- Multiplexer/demultiplexer
+- Decoder
+- Confrontatore
+- Shifter combinatorio
+- Half/full adder
+- Addizionatore a n bit
+- ALU or, not, e somma
+
+#### Multiplexer
+
+Ha `n >= 1` ingressi di selezione, `2^n > 2` ingressi dati e un'uscita. Gli ingressi dati sono numerati a partire da 0. Sugli ingressi di selezione è
+presente il numero binario k e il k-esimo ingresso dati viene inviato in uscita.
+
+![Multiplexer](./img/mux.pdf)
+
+#### Demultiplexer
+
+Ha `n >= 1` ingressi di selezione, 1 ingresso dati e `2^n > 2` uscite. Ha la
+funzione opposta del multiplexer.
+
+![Demultiplexer](./img/demux.pdf)
+
+#### Decoder
+
+Ha `n >= 1` ingressi e `2^n > 2` uscite. Le uscite sono numerate a partire da
+0. Se sugli ingressi è presente il numero binario k, la k-esima uscita assume il
+valore 1 e le restanti uscite assumono il valore 0.
+
+#### Comparatore
+
+Ha due gruppi A e B di ingressi da `n >= 1` bit ciascuno e tre uscite:
+minoranza, uguaglianza e maggioranza. Il blocco confronta i due numeri binari A
+e B presenti sui due ingressi e attiva l'uscita corrispondente all'esito del
+confronto.
+
+#### Shifter combinatorio
+
+Ha `n >= 1` ingressi, 1 ingresso per il bit aggiunto a dx, 1 ingresso per il
+bit aggiunto a sx, 1 ingresso di controllo che comanda lo scorrimento, `n >= 1`
+uscite.  Sull'uscita vengono attivati i bit corrispondenti al numero shiftato a
+destra o sinistra.
+
+Viene implementato con multiplexer in serie.
+
+#### Half adder
+
+Ha come input 2 bit e come output la somma dei due bit e il riporto. Viene
+implementato con un AND e un XOR.
+
+![Half Adder](./img/half-adder.pdf)
+
+#### Full adder
+
+Ha come input 2 bit e il CarryIn e come output la somma e il riporto. Esegue la
+somma dei due bit tenendo conto del riporto in entrata.
+
+![Full Adder](./img/full-adder.pdf)
+
+#### Addizionatore a k bit in binario naturale intero
+
+Ha come input 2 numeri binari e come output la somma e il riporto. He formato da
+una cascata di Half Adder e Full Adder. Questa struttura è molto lenta,
+soprattutto per numeri con grande numero di bit. Ci sono addizionatori più
+veloci basati sul carry look-ahead, un blocco funzionali che cerca di prevedere
+il valore del carry per velocizzare il processo.
+
+Il sottrattore funziona alla stessa maniera e viene sintetizzato analogamente.
+
+#### Unità aritmetico logica
+
+Ha 2 ingressi da n bit, un ingresso per i comandi, un'uscita di esito e il
+risultato dell'operazione. L'esito viene usato per segnalare l'esito dei
+confronti o informazioni addizionali per date operazioni matematiche.
+
+### Bistabili
+
+Esistono due famiglie di bistabili:
+
+- Asincroni: privi di un segnale di sincronizzazione e modificano lo stato
+  rispondendo direttamente a eventi sugli ingressi
+- Sincroni: sensibili ad un segnale di controllo e la transizione da uno stato
+  all'altro può avvenire solo in corrispondenza di eventi del segnale di
+  controllo
+  - bistabili sincroni controllati (gated latch)
+  - flip flop master-slave
+  - flip flop edge-triggered
+
+#### Bistabili SR asincroni
+
+Ha 2 ingressi, S (set) e R (Reset), e 2 uscite Q e !Q:
+
+- Q = 1: stato di set
+- Q = 0: stato di reset
+
+L'uscita Q rappresenta, quindi, lo stato memorizzato.
+
+Studiando il circuito si nota che ci sono solo due stati stabili (bistabile):
+
+- S = R = 0, Q = 1
+- S = R = 0, Q = 0
+
+Se viene passato R = 1 allora Q = 0 qualunque sia il vecchio valore. Se viene
+passato S = 1 allora Q = 1 qualunque sia il vecchio valore. Se sia S che R sono
+1, si avrà uno stato indefinito in cui sia Q che !Q sono nulli.
+
+![Bistabile SR asincrono](./img/bistable-sr-async.pdf)
+
+#### Segnale di sincronizzazione
+
+E' un segnale binario con andamento periodico nel tempo. Esso è una successione
+di impulsi consecutivi a distanza costante. Il periodo di clock è il tempo
+dall'inizio del livello inferiore fino alla fine del livello superiore. Un ciclo
+di clock contiene 3 eventi: livello basso, fronte di salita, fronte di discesa.
+
+#### Bistabili sincroni
+
+I fattori che differenziano i bistabili riguardano due aspetti:
+
+- la relazione ingresso-stato: definisce quando gli ingressi vengono modificati
+  - temporizzazione basata sul livello: il valore viene modificato durante tutta
+    la permanenza su un livello
+  - temporizzazione basata sul fronte: il valore viene modificato solo durante
+    il fronte
+- relazione stato-uscita: definisce quando le uscite vengono modificate
+  - commutazione basata sul livello: le uscite vengono aggiornate durante tutta
+    la permanenza su un livello (latch)
+  - commutazione basata sul fronte: le uscite vengono aggiornate solo durante il
+    fronte
+
+|         |      Livello     |           Fronte         |
+|---------|------------------|--------------------------|
+| Fronte  | N.A.             | Flip Flop edge-triggered |
+| Livello | Latch con Enable | Flip Flop master-slave   |
+
+Affinché i bistabili sincroni funzionino, è necessario che il tempo di clock sia
+lungo tanto quanto il più lungo cammino nella logica combinatoria associata. Se
+ciò avviene, possiamo ottenere lettura e scrittura all'interno di un singolo
+stato di clock.
+
+#### Bistabile SR sincrono (SR-latch)
+
+Il bistabile SR sincrono è molto simile al bistabile SR asincrono. Esso ha in
+più l'entrata per il segnale di sincronizzazione. Inoltre se il clock vale 0,
+si segnali non vengono modificati, se è 1 si comporta come un bistabile SR
+asincrono.
+
+![Bistabile SR sincrono](./img/bistable-sr-sync.pdf)
+
+#### Bistabile D sincrono (D-latch)
+
+Ha 1 ingresso D (dati), 1 ingresso di clock e le due uscite Q e !Q come negli
+altri bistabili. Se il clock vale 0, l'ingresso D non è efficace, se è 1
+l'ingresso D è efficace e il bistabile memorizza il valore logico in D.
+
+![Bistabile D sincrono](./img/bistable-d-sync.pdf)
+
+Se il clock è 1, il bistabile si dice trasparente: le uscite sono sempre pari
+alle entrate, come se non ci fosse. Per evitare il fenomeno di trasparenza,
+dobbiamo usare i flip flop.
+
+#### Flip flop D master-salve
+
+Sono realizzati tramite una coppia di bistabili sincroni D in cascata con clock
+invertiti. L'insieme dei due permette di eliminare il fenomeno della
+trasparenza.
+
+![Flip Flop D master-slave](./img/flip-flop-d-ms.pdf)
+
+#### Flip flop D edge-triggered
+
+Sono meno costosi rispetto ai flip flop master-slave. Sono realizzati con 3 SR
+latch asincroni e 1 porta OR. Nelle implementazioni reali sono più utilizzati
+della controparte master-slave.
+
+![Flip Flop D edge-triggered](./img/flip-flop-d-et.pdf)
