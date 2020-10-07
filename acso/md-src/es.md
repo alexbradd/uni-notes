@@ -2,7 +2,7 @@
 
 ## 23/09/20
 
-### 1
+### "eserciziAssemblaggio" esercizio 1
 
 Dati i seguenti moduli:
 
@@ -51,7 +51,7 @@ Si compilino le quattro tabelle relative a:
 3. La tabella globale dei simboli
 4. il contenuto del file eseguibile prodotto dal linker
 
-#### Soluzione
+---
 
 1. Tabella file oggetto
 
@@ -124,7 +124,7 @@ Si compilino le quattro tabelle relative a:
 
 ## 25/09/20
 
-### 1
+### "eserciziAssemblaggio" esercizio 2
 
 - Modulo "Main":
 
@@ -169,7 +169,7 @@ Si compilino le quattro tabelle relative a:
 3. La tabella globale dei simboli
 4. il contenuto del file eseguibile prodotto dal linker
 
-#### Soluzione
+---
 
 1. Tabella file oggetto
 
@@ -241,7 +241,7 @@ Si compilino le quattro tabelle relative a:
 
 ## 30/09/20
 
-### 1
+### "eserciziAssembler1" esercizio 9
 
 Si traduca il seguente programma C in MIPS. Il modello di memoria è quello
 standard e gli interi sono a 32 bit. Non si eseguano ottimizzazioni. Si
@@ -264,6 +264,8 @@ Si svolgano i quattro punti:
 ```c
 #define N 16
 int byte = 64;
+int elem;
+int elem;
 int list[N];
 
 int *binary(int i, int val) {
@@ -282,7 +284,7 @@ int main(void) {
 }
 ```
 
-#### Soluzione
+---
 
 1. MIPS e indirizzo:
 
@@ -352,7 +354,7 @@ int main(void) {
        jr $ra
    ```
 
-### 2
+### "eserciziAssembler1" esercizio 10
 
 Tradurre da C a MIPS il programma riportato. Il modello di memoria è quello
 standard MIPS e gli interi sono a 32 bit. Non si eseguano ottimizzazioni. Si
@@ -372,7 +374,7 @@ Si svolgano i seguenti 3 punti:
    delle variabili locali di `fill` nei registri
 3. Si traduca in linguaggio macchina dell'intera funzione `fill`
 
-Sullo stesos programma C, si usi adesso il frame pointer e si svolgano i
+Sullo stesso programma C, si usi adesso il frame pointer e si svolgano i
 seguenti due punti:
 
 1. Si descriva l'area di attivazione della funzione `fill`
@@ -398,7 +400,7 @@ int main(void) {
 }
 ```
 
-#### Soluzione 2.1
+---
 
 1. Segmento dati statici
 
@@ -442,48 +444,48 @@ int main(void) {
 
 3. Codice MIPS di `fill`
 
-```mips
-FILL:
-    addi $sp, $sp, -9 # $ra, $s0, rnd
-    sw $ra, 5($sp)    # $ra
-    sw $s0, 1($sp)    # $s0
-    addi $sp, $sp, -7 # $a0, $v0 !! allineamento !!
-    sw $a0, 0($sp)
-    li $a0, 0
-    jal INIT
-    addi $sp, $sp, -4
-    sw $v0, 0($sp)
-    li $a0, 1
-    jal INIT
-    move $t0, $v0
-    lw $t1, 0($sp)
-    addi $sp, $sp, 4
-    lw $a0, 0($sp)
-    addi $sp, $sp, 7
-    add $t0, $t0, $t1
-    sb $t0, 0($sp)
-    move $s0, $sp
+   ```mips
+   FILL:
+       addi $sp, $sp, -9 # $ra, $s0, rnd
+       sw $ra, 5($sp)    # $ra
+       sw $s0, 1($sp)    # $s0
+       addi $sp, $sp, -7 # $a0, $v0 !! allineamento !!
+       sw $a0, 0($sp)
+       li $a0, 0
+       jal INIT
+       addi $sp, $sp, -4
+       sw $v0, 0($sp)
+       li $a0, 1
+       jal INIT
+       move $t0, $v0
+       lw $t1, 0($sp)
+       addi $sp, $sp, 4
+       lw $a0, 0($sp)
+       addi $sp, $sp, 7
+       add $t0, $t0, $t1
+       sb $t0, 0($sp)
+       move $s0, $sp
 
-WHILE:
-    lw $t1, IDX
-    bge $t1, $a0, END
-    la $t0, STR
-    addu $t0, $t0, $t1
-    lb $t1, 0($s0)
-    sb $t1, 0(t0)
-    lw $t0, IDX
-    addi $t0, $t0, IDX
-    sw $t0, IDX
-    j WHILE
+   WHILE:
+       lw $t1, IDX
+       bge $t1, $a0, END
+       la $t0, STR
+       addu $t0, $t0, $t1
+       lb $t1, 0($s0)
+       sb $t1, 0(t0)
+       lw $t0, IDX
+       addi $t0, $t0, IDX
+       sw $t0, IDX
+       j WHILE
 
-END:
-    lw $s0, 1($sp)
-    lw $ra, 5($sp)
-    addi $sp, $sp, 9
-    jr $ra
-```
+   END:
+       lw $s0, 1($sp)
+       lw $ra, 5($sp)
+       addi $sp, $sp, 9
+       jr $ra
+   ```
 
-#### Soluzione 2.2
+---
 
 1. Area di attivazione di `fill`
 
@@ -501,4 +503,252 @@ END:
    ```mips
    addiu $s0, $fp, -9
    ```
+
+## 07/10/20
+
+### "eserciziAssembler2" esercizio 3
+
+Tradurre da C a MIPS il programma riportato. Il modello di memoria è quello
+standard MIPS e gli interi sono a 32 bit. Non si eseguano ottimizzazioni. Si
+facciano le seguenti ipotesi:
+
+- si usa il frame pointer
+- le variabili locali sono allocate nei registri (se possibile)
+- vanno salvati solo i registri necessari
+
+Si svolgano i seguenti punti:
+
+1. Si descriva il segmento dei dati statici, dando anche spiazzamenti delle
+   variabili rispetto a `$gp`
+2. SI traduca in MIPS fal funzione `main`
+3. Si descriva l'area di attivaizone della funzione `fibonacci`, indicando
+   l'indirizzo a cui puntano `$fp` e `$sp`
+4. Si traduca in MIPS la funzione `fibonacci`
+5. Si descrivano la stack e i registri usati prima della chiamata a
+   `fibonacci(n-2)`. Si assuma che le chiamate vengano eseguite nell'ordine
+   di scrittura.
+
+```c
+int valore = 6;
+
+int fibonacci(int n) {
+  if (n <= 1)
+    return n;
+  else
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+void main(void) {
+  fibonacci(valore);
+  return 0;
+}
+```
+
+---
+
+1. Segmento dati globale:
+
+   ```mips
+   .data
+   VALORE: .word 6
+   ```
+
+   | contenuto simbolico | indirizzo   | offset      |
+   |---------------------|-------------|-------------|
+   | VALORE              | 0x1000 0000 | 0x0000 8000 |
+
+2. Funzione `main`;
+
+   ```mips
+   .text
+   MAIN:
+       lw $a0, VALORE
+       jal FIBONACCI
+       li $v0, 10
+       syscall
+   ```
+
+3. Area di attivazione di fibonacci
+
+   | contenuto simbolico | offset (`$sp`) | offest (`$fp`) |
+   |---------------------|----------------|----------------|
+   | `$fp`               | -4             | 0              |
+   | `$ra`               | 0              | -4             |
+
+4. Funzione `fibonacci`:
+
+   ```mips
+   FIBONACCI:
+       addi $sp, $sp, -8
+       sw $fp, 4($sp)
+       sw $ra, 0($sp)
+       addiu $fp, $sp, 4
+       bgt $a0, 1, ELSE
+       move $v0, $a0
+       j END
+
+   ELSE:
+       addi $sp, $sp, -4
+       sw $a0, -8(fp)
+       subi $a0, $a0, 1
+       jal FIBONACCI
+       addi $sp, $sp, -4
+       lw $a0, -8($fp)
+       sw v0, -8($fp)
+       subi $a0, $a0, 2
+       jal FIBONACCI
+       lw $t0, -8($fp)
+       add $v0, $v0, $t0
+       addiu $sp, $sp, 4
+
+   END:
+       lw $ra, 4($fp)
+       lw $fp, 0($fp)
+       addiu $sp, $sp, 8
+       jr $ra
+   ```
+
+5. Contenuto stack:
+
+   | contenuto simbolico | indirizzo   | valore |
+   |---------------------|-------------|--------|
+   | ...                 | 0x7FFF FFFC | ???    |
+   | `$fp`               | 0x7FFF FFF8 | ???    |
+   | `$ra`               | 0x7FFF FFF4 | ???    |
+   | `$v0`               | 0X7FFF FFF0 | ???    |
+
+   Registri:
+
+   | registro | contenuto (hex) | significato        |
+   |----------|-----------------|--------------------|
+   | `$fp`    | 0x7FFF FFF8     | frame pointer      |
+   | `$sp`    | 0x7FFF FFF0     | stack pointer      |
+   | `$a0`    | 0x0000 0004     | `n - 2`            |
+   | `$v0`    | 0x0000 0005     | `fibonacci(n - 1)` |
+
+### "LogicaCombinatoria" esercizio 11
+
+Si vuole progettare una rete combinatoria che riceve in ingresso 3 bit (A, B, C)
+e fornisce un'uscita U. Il risutato deve essere 1 se il numero di 1 negli
+ingressi è dispari, 0 altrimenti.
+
+1. Completare la tabella di verità
+2. Progettare la rete in prima forma canonica (SoP)
+3. Scrivere una equazione equivalente a quella trovata in 2 contenente solamente
+   operatori XOR
+
+---
+
+1. Tabella di verità:
+
+   | A | B | C | U |
+   |---|---|---|---|
+   | 0 | 0 | 0 | 0 |
+   | 0 | 0 | 1 | 1 |
+   | 0 | 1 | 0 | 1 |
+   | 0 | 1 | 1 | 0 |
+   | 1 | 0 | 0 | 1 |
+   | 1 | 0 | 1 | 0 |
+   | 1 | 1 | 0 | 0 |
+   | 1 | 1 | 1 | 1 |
+
+2. SoP:
+
+   $$
+   U = \bar{AB}C + \bar{A}C\bar{C} + A\bar{BC} + ABC
+   $$
+
+3. Riduzione:
+
+   $$
+   \begin{aligned}
+     U & = \bar{AB}C + \bar{A}C\bar{C} + A\bar{BC} + ABC = \\
+       & = \bar{A}(\bar{B}C + B\bar{C}) + A(\bar{BC} + BC) = \\
+       & = \bar{A}(B \oplus C) + A\bar{(B \oplus C)} = \\
+       & = A \oplus B \oplus C
+   \end{aligned}
+   $$
+
+### "LogicaSequenziale" esercizio 3
+
+Sia dato il circuito sequenziale descritto dalle equazioni logiche:
+
+$$
+\begin{aligned}
+  D1 &  = IN(Q1 Q2 + \bar{Q1 Q2}) + \bar{IN}(\bar{Q1} Q2 + Q1 \bar{Q2}) = \\
+     &  = IN \oplus Q1 \oplus Q2 \\
+  D2 &  = \bar{Q1} \\
+  Z  &  = Q1 Q2
+\end{aligned}
+$$
+
+Il circuito è composto da due bistabili di tipo flip-flop master-slave di tipo D
+ed è dotato di ingresso $IN$ e di uscita $Z$.
+
+1. Disegnare lo schema del circuito
+2. Completare il diagramma temporale
+   - Si trascurino ritardi di propagazione
+   - La commutazione avviene sul fronte di discesa del clock
+   - IN può variare in ogni momento
+
+---
+
+1. Circuito: (vedi figura)
+
+   ![Circuito es 3](./img/logica-sequenziale-es3-1.pdf)
+
+2. Diagramma temporale: (vedi figura)
+
+   ![Diagramma temporale es 3](./img/logica-sequenziale-es3-2.pdf)
+
+### "LogicaSequenziale" esercizio 4
+
+Sia dato il seguente circuito sequenziale: (vedi figura)
+
+![Circuito es 4](./img/logica-sequenziale-es4-1.pdf)
+
+Il circuito è composto da due bistabili di tipo flip-flop master-slave di tipo D
+ed è dotato di ingressi $IN1, IN2, SEL$ e di uscita $U$. Completare il diagramma
+temporale. Si considerino le seguenti ipotesi:
+
+- Si trascurino ritardi di propagazione
+- La commutazione avviene sul fronte di discesa del clock
+- IN può variare in ogni momento
+
+---
+
+Soluzione in figura.
+
+![Diagramma temporale es 4](./img/logica-sequenziale-es4-2.pdf)
+
+### "LogicaSequenziale" esercizio 7
+
+Sia dato il circuito sequenziale descritto dalle equazioni logiche:
+
+$$
+\begin{aligned}
+  D  & = I \oplus Q \\
+  Z1 & = \bar{Q} \\
+  Z2 & = Q D
+\end{aligned}
+$$
+
+Il circuito è composto da un bistabile di tipo flip-flop master-slave di tipo D
+ed è dotato di ingresso $I$ e di uscite $Z1, Z2$.
+
+1. Disegnare lo schema del circuito
+2. Completare il diagramma temporale
+   - Si trascurino ritardi di propagazione
+   - La commutazione avviene sul fronte di discesa del clock
+   - IN può variare in ogni momento
+
+---
+
+1. Circuito: (vedi figura)
+
+   ![Circuito es 7](./img/logica-sequenziale-es7-1.pdf)
+
+2. Diagramma temporale: (vedi figura)
+
+   ![Diagramma temporale es 7](./img/logica-sequenziale-es7-2.pdf)
 
