@@ -1053,7 +1053,7 @@ La funzione F può essere specificata come:
   variabili di ingresso prese in forma naturale se valgono 0 o in forma
   complementata se valgono 1
 
-### I blocchi funzionali
+### I blocchi funzionali combinatori
 
 Esiste una libreria di blocchi funzionali predefiniti di tipo combinatorio che
 contiene i blocchi per tutte le funzioni combinatorie di base:
@@ -1142,8 +1142,8 @@ Esistono due famiglie di bistabili:
   all'altro può avvenire solo in corrispondenza di eventi del segnale di
   controllo
   - bistabili sincroni controllati (gated latch)
-  - flip flop master-slave
-  - flip flop edge-triggered
+  - flip-flop master-slave
+  - flip-flop edge-triggered
 
 #### Bistabili SR asincroni
 
@@ -1189,8 +1189,8 @@ I fattori che differenziano i bistabili riguardano due aspetti:
 
 |         |      Livello     |           Fronte         |
 |---------|------------------|--------------------------|
-| Fronte  | N.A.             | Flip Flop edge-triggered |
-| Livello | Latch con Enable | Flip Flop master-slave   |
+| Fronte  | N.A.             | Flip-flop edge-triggered |
+| Livello | Latch con Enable | Flip-flop master-slave   |
 
 Affinché i bistabili sincroni funzionino, è necessario che il tempo di clock sia
 lungo tanto quanto il più lungo cammino nella logica combinatoria associata. Se
@@ -1216,20 +1216,196 @@ l'ingresso D è efficace e il bistabile memorizza il valore logico in D.
 
 Se il clock è 1, il bistabile si dice trasparente: le uscite sono sempre pari
 alle entrate, come se non ci fosse. Per evitare il fenomeno di trasparenza,
-dobbiamo usare i flip flop.
+dobbiamo usare i flip-flop.
 
-#### Flip flop D master-salve
+#### Flip-flop D master-salve
 
 Sono realizzati tramite una coppia di bistabili sincroni D in cascata con clock
 invertiti. L'insieme dei due permette di eliminare il fenomeno della
 trasparenza.
 
-![Flip Flop D master-slave](./img/flip-flop-d-ms.pdf)
+![Flip-flop D master-slave](./img/flip-flop-d-ms.pdf)
 
-#### Flip flop D edge-triggered
+#### Flip-flop D edge-triggered
 
-Sono meno costosi rispetto ai flip flop master-slave. Sono realizzati con 3 SR
+Sono meno costosi rispetto ai flip-flop master-slave. Sono realizzati con 3 SR
 latch asincroni e 1 porta OR. Nelle implementazioni reali sono più utilizzati
 della controparte master-slave.
 
-![Flip Flop D edge-triggered](./img/flip-flop-d-et.pdf)
+![Flip-flop D edge-triggered](./img/flip-flop-d-et.pdf)
+
+### Blocchi funzionali sequenziale
+
+I tipi principali sono:
+
+- Registro parallelo
+- Registro a scorrimento
+- Banco di registri
+- Memoria
+
+#### Il registro parallelo
+
+E' un vettore di `n >= 1` flip-flop di tipo D. Ha `n >= 1` ingressi e uscite e
+l'ingresso per il clock.
+
+A ogni ciclo di clock, il registro legge e memorizza nel suo stato la parola di
+n bit presenti in ingresso e lo presenta sui n bit di uscita il prossimo ciclo.
+
+Il registro parallelo è formato da n flip-flop sincroni tutti in parallelo. Il
+clock viene condiviso tra tutti i bistabili. Se si usano dei bistabili sincroni
+su livello, o asincroni, il registro sarebbe anch'esso trasparente.
+
+![Registro parallelo (4 bit)](./img/parallel-register.pdf)
+
+Il registro di parallelo con comando di caricamento funziona allo stesso modo
+del registro parallelo, ma ha un ingresso in più: il comando L. Quando il
+comando L è attivo, viene aggiornato lo stato; quando il comando L non è attivo
+lo stato viene mantenuto.
+
+![Registro parallelo con comando (2 bit)](./img/parallel-register-cmd.pdf)
+
+Il registro parallelo con comando è realizzato in modo simile al registro
+parallelo, solo con un multiplexer con comando L in entrata a ogni bistabile.
+
+Esistono altre varianti di registri paralleli con diversi comandi.
+
+#### Registro a scorrimento
+
+E' simile al registro parallelo, ma prende i bit in ingresso in modo seriale
+invece che in parallelo. Avrà quindi un solo ingresso S, un ingresso di clock e
+`n >= 1` uscite.
+
+A ogni ciclo di clock fa scorrere di un bit verso destra la parola memorizzata
+aggiungendo a sinistra il bit presente sull'ingresso seriale.
+
+Viene realizzato usando flip-flop in cascata. L'uso di bistabili trasparenti
+causerebbe un comportamento errato.
+
+![Registro a scorrimento (4 bit)](./img/shift-register.pdf)
+
+Esistono diverse varianti di registro a scorrimento: a destra, a sinistra o
+universale (scelta con comando). Possiamo anche avere un registro che combina
+le funzionalità del parallelo e dello scorrimento in base al comando. Possiamo
+anche avere ingressi seriali, uscite seriali o una combinazione di parallelo
+e seriale.
+
+## Banchi di registri e memoria
+
+### Circuito di pilotaggio
+
+Per pilotare le uscite dei vari componenti di memoria deve essere regolata in
+modo da garantire un comportamento consistente. Per fare ciò sono necessari dei
+circuiti di pilotaggio delle uscite. Per fare ciò si usa il buffer ti-state.
+
+Il buffer tri-state ha 3 posizioni:
+
+- uno stato di bassa impedenza consente il passaggio di entrambi i livelli di
+  tensione
+- uno stato di alta impedenza isola elettricamente l'uscita
+
+Il comportamento viene regolato da un segnale di controllo (Output Enable).
+
+### Banchi di registri
+
+I banchi di registri sono strutture tipo vettore dove ogni elemento è un
+registro parallelo.
+
+Si consideri un banco 8x16 (8 registri da 16 bit). Ogni registro è identificato
+da un indirizzo. Serviranno quindi 3 bit per indirizzare i vari registri. Le
+operazioni eseguibili sul banco sono lettura e scrittura.
+
+Possiamo quindi disegnare il banco di registri 8x16 come un blocco sequenziale
+con:
+
+- 3 ingressi indirizzo
+- 16 uscite e ingressi dati
+- 1 ingresso di comando (lettura o scrittura)
+- 1 ingresso di abilitazione al banco
+- 1 ingresso di controllo per la gestione delle uscite tri-state
+- il segnale di clock
+
+I banchi, ovviamente, esistono in diverse dimensioni. I banchi più sofisticati
+possono avere più porte di accesso distinte, in lettura/scrittura o solo per
+una delle due, per poter operare in parallelo su più registri.
+
+### Memoria
+
+La memoria è un tipo di tipo sequenziale complesso. Ha anch'essa una struttura a
+vettore i cui elementi sono le parole di memoria. Un componente integrato (chip)
+è caratterizzato da:
+
+- capacità misurata in numero totale di bit memorizzabili
+- le funzioni (lettura/scrittura)
+- il numero di porte d'accesso
+- il tempo utilizzato per l'accesso alla memoria
+
+Solitamente il contenuto della memoria viene letto/scritto una parola per volta
+in un ciclo di clock. Per accedere alla memoria si usa la porta d'accesso alla
+memoria.
+
+La porta di accesso è formata da:
+
+- Gli ingressi di indirizzo: codificano l'indirizzo della cella su cui si deve
+  operare
+- Le uscite/ingresso di dato: servono per leggere/scrivere una parola
+- il comando di lettura/scrittura
+- il comando di abilitazione del componente
+- il comando di abilitazione delle uscite dati
+
+Le strutture interne della memoria sono diverse. Il modo più semplice (non
+adatto a grandi capacità) è quello di creare una matrice di bistabili dove le
+righe sono le parole e le colonne i bit della parola. Le memorie ad alta
+capacità sono solitamente disposti a matrice bidimensionale per ridurre i
+collegamenti interni. In questo caso saranno necessari altri due comandi: RAS e
+CAS (Row Address Select e Column Address Select).
+
+I banchi di memoria sono l'aggregazione di più componenti di memoria per
+ottenere memoria di capacità più elevata. I banchi di memoria hanno struttura a
+matrice di chip:
+
+- Per aumentare la lunghezza della parola si compone una colonna di chip di
+  memoria da usare in parallelo
+- Per aumentare il numero di parallelo si compone una riga di chip di memoria
+  da usare in esclusione
+
+#### Tecnologie di memoria
+
+##### SRAM (Static RAM)
+
+E' una memoria realizzata con bistabili. Perciò ha una capacità medio-piccola ed
+è volatile. Ha un tempo di accesso molto veloce ma occupa tanto spazio (6
+transistor per bit). Viene usata come cache dei professori
+
+##### DRAM (Dynamic RAM)
+
+E' una memoria che usa circa 1 transistor per bit (fenomeno di accumulo di
+carica sul transistor). Ha una alta densità e quindi può essere usata per creare
+memorie più grandi. Il tempo di accesso è medio ed anch'essa è volatile. Viene
+usata per la memoria centrale.
+
+##### ROM
+
+Memoria a sola lettura realizzata come matrice di transistor. Ha una capacità
+grande e un tempo di accesso medio. Essa è persistente. Viene usata per
+memorizzare programmi permanenti non modificabili.
+
+Per memoria ROM si intendono anche i sistemi ottici (CD-ROM ecc.). Noi
+considereremo memoria ROM solo quella a stato solido basata su transistor.
+
+##### PROM, EPROM, EEPROM
+
+Capacità e tempo simili alla ROM. Anch'esse sono di sola lettura e persistenti.
+Possono essere riprogrammate tramite un apposito programmatore:
+
+- PROM: programmabile solo 1 volta
+- EPROM: cancellabile con raggi UV e riscrivibile un numero limitato di volte
+- EEPROM: cancellabile elettricamente e scrittura di 1 byte alla volta
+
+Le memorie cancellabili sono anche dette "read-mostly". Si usano principalmente
+per sistemi embedded e prototipi.
+
+##### Memoria FLASH
+
+Capacità e tempo poco inferiori alla DRAM. Funziona in lettura e scrittura
+(scrittura a blocchi di byte) ed è persistente. Viene usata per dati
+multimediali o programmi fissi ma periodicamente aggiornabili.
