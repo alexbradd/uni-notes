@@ -629,7 +629,7 @@ void main(void) {
 ### "LogicaCombinatoria" esercizio 11
 
 Si vuole progettare una rete combinatoria che riceve in ingresso 3 bit (A, B, C)
-e fornisce un'uscita U. Il risutato deve essere 1 se il numero di 1 negli
+e fornisce un'uscita U. Il risultato deve essere 1 se il numero di 1 negli
 ingressi è dispari, 0 altrimenti.
 
 1. Completare la tabella di verità
@@ -695,17 +695,17 @@ ed è dotato di ingresso $IN$ e di uscita $Z$.
 
 1. Circuito: (vedi figura)
 
-   ![Circuito es 3](./img/logica-sequenziale-es3-1.pdf)
+   ![Circuito es 3](./img/logica-sequenziale-es3-1.pdf){width=50%}
 
 2. Diagramma temporale: (vedi figura)
 
-   ![Diagramma temporale es 3](./img/logica-sequenziale-es3-2.pdf)
+   ![Diagramma temporale es 3](./img/logica-sequenziale-es3-2.pdf){width=50%}
 
 ### "LogicaSequenziale" esercizio 4
 
 Sia dato il seguente circuito sequenziale: (vedi figura)
 
-![Circuito es 4](./img/logica-sequenziale-es4-1.pdf)
+![Circuito es 4](./img/logica-sequenziale-es4-1.pdf){width=50%}
 
 Il circuito è composto da due bistabili di tipo flip-flop master-slave di tipo D
 ed è dotato di ingressi $IN1, IN2, SEL$ e di uscita $U$. Completare il diagramma
@@ -719,7 +719,7 @@ temporale. Si considerino le seguenti ipotesi:
 
 Soluzione in figura.
 
-![Diagramma temporale es 4](./img/logica-sequenziale-es4-2.pdf)
+![Diagramma temporale es 4](./img/logica-sequenziale-es4-2.pdf){width=50%}
 
 ### "LogicaSequenziale" esercizio 7
 
@@ -746,9 +746,9 @@ ed è dotato di ingresso $I$ e di uscite $Z1, Z2$.
 
 1. Circuito: (vedi figura)
 
-   ![Circuito es 7](./img/logica-sequenziale-es7-1.pdf)
+   ![Circuito es 7](./img/logica-sequenziale-es7-1.pdf){width=50%}
 
 2. Diagramma temporale: (vedi figura)
 
-   ![Diagramma temporale es 7](./img/logica-sequenziale-es7-2.pdf)
+   ![Diagramma temporale es 7](./img/logica-sequenziale-es7-2.pdf){width=50%}
 

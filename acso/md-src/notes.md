@@ -1409,3 +1409,130 @@ per sistemi embedded e prototipi.
 Capacità e tempo poco inferiori alla DRAM. Funziona in lettura e scrittura
 (scrittura a blocchi di byte) ed è persistente. Viene usata per dati
 multimediali o programmi fissi ma periodicamente aggiornabili.
+
+## Il processore
+
+Nella progettazione del processore considereremo un set di istruzioni ridotto
+per semplificarci le cose. Useremo le solite ipotesi dell'architettura
+LOAD-STORE.
+
+Prima progetteremo il processore per l'esecuzione di una istruzione alla volta,
+poi vedremo l'uso dell'architettura a pipeline per poter eseguire più istruzioni
+alla volta.
+
+### Esecuzione di una istruzione
+
+#### Esecuzione di istruzioni aritmetico logiche
+
+Viene eseguita in 4 passi:
+
+- Prelievo istruzione dalla memoria e incremento del program counter
+- Lettura dei due registri sorgente dal banco di registri
+- Operazione dell'ALU sui dati letti dal banco di registri utilizzando il
+  codice operativo e il campo fuction
+- Scrittura del risultato dell'ALU nel banco registri utilizzando il registro di
+  destinazione
+
+Per le istruzioni aritmetiche immediate i passaggi sono più o meno gli stessi.
+Cambia solamente il fatto che viene letto solo 1 dei due registri e si carica
+in 1 dei registri di ingresso all'ALU il valore immediato
+
+#### Esecuzione di istruzioni di load e store
+
+Le istruzioni di load richiedono 5 passaggi:
+
+- Prelievo istruzione dalla memoria e incremento del program counter
+- Lettura del registro base dal banco dei registri
+- Operazione dell'ALU per calcolare la somma del valore letto dal registro base
+  e dei 16 bit meno significativi dell'istruzione estesi in segno
+- Prelievo del dato nella memoria dati utilizzando come indirizzo di lettura
+  il risultato dell'ALU
+- Scrittura del dato proveniente dalla memoria nel registro di destinazione
+
+La store è simile, ma salta un passaggio di lettura da memoria:
+
+- Prelievo istruzione dalla memoria e incremento del program counter
+- Lettura del registro base e del registro sorgente dal banco di registri
+- Operazione dell'ALU per calcolare la somma del valore letto dal registro base
+  e dei 16 bit meno significativi dell'istruzione estesi in segno
+- Scrittura del dato proveniente dal registro sorgente alla memoria
+
+#### Istruzione di salto condizionato
+
+Richiede 5 passi:
+
+- Prelievo istruzione dalla memoria e incremento del program counter
+- Lettura dei registri sorgente dal banco dei registri
+- Operazione dell'ALU per effettuare la sottrazione tra i valori letti dal banco
+  di registri. Il valore viene sommato ai 14 bit meno significativi
+  dell'istruzione estesi di segno. Il risultato è l'indirizzo di destinazione
+  del salto.
+- L'uscita `zero` dell'ALU viene usata per decidere quale valore debba essere
+  memorizzato nel program counter (`$pc + 4` o `$pc + 4 + offset`)
+
+#### Istruzioni di salto incondizionato
+
+Richiedono tecnicamente 1 solo passaggio, quello di fetch. Lo shift e la somma
+al program counter viene eseguito da un circuito combinatorio dedicato.
+
+### Realizzazione del processore a ciclo singolo
+
+Per garantire il corretto funzionamento della logica combinatoria, ogni tipo di
+istruzione non può condividere tutte le componenti con gli altri. Alcuni
+componenti dovranno, quindi, essere duplicati e l'output va filtrato con l'uso
+di un multiplexer e di un segnale di controllo. Servono anche dei segnali di
+controllo per regolare ALU, lettura e scrittura:
+
+| Nome     |           Se 1           |                   Se 0                |
+|----------|--------------------------|---------------------------------------|
+| RegDst   | Il registro di scrittura | Il registro di scrittura proviene da  |
+|          | proviene da rt           | rd                                    |
+| RegWrite | Nulla                    | Il dato viene scritto nel registro    |
+|          |                          | di scrittura                          |
+| ALUSrc   | Il secondo operando      | Il secondo operando dell'ALU          |
+|          | dell'ALU proviene dal    | proviene dall'estensione di segno     |
+|          | secondo dato letto       | del secondo dato letto                |
+| ALUOp    | Controlla l'operazione   | Controlla l'operazione eseguita       |
+|          | eseguita dalla ALU       | dalla ALU                             |
+| PCSrc    | Nel PC viene scritta     | Nel PC viene scritta l'uscita del     |
+|          | l'uscita di `$pc + 4`    | sommatore che calcola l'indirizzo di  |
+|          |                          | salto                                 |
+| MemRead  | Nulla                    | Il dato della memoria nella posizione |
+|          |                          | puntata dall'indirizzo viene          |
+|          |                          | considerato dato letto                |
+| MemWrite | Nulla                    | Il dato della memoria nella posizione |
+|          |                          | puntata dall'indirizzo viene          |
+|          |                          | considerato dato letto                |
+| MemToReg | Il dato inviato per      | Il dato inviato per la scrittura      |
+|          | la scrittura proviene    | proviene dalla memoria dati           |
+|          | dalla ALU                |                                       |
+
+E' ovvio, quindi, che serve un'unità di controllo che prende in input il codice
+operativo dell'istruzione e regola il valore delle varie linee di controllo.
+Conoscendo i vari codici operativi, è possibile costruire una tabella di
+verità e costruire il circuito combinatorio equivalente.
+
+![Schema del processore a ciclo singolo](./img/arch-single-cycle.png){height=50%}
+
+### CPU a singolo ciclo e multiciclo
+
+Ogni istruzione verrà eseguita in un ciclo di clock. Questo ci limita in
+velocità: siamo limitati dall'istruzione più lenta. L'implementazione di un
+ciclo variabile sarebbe molto più complessa per poco guadagno. Un altra
+soluzione è quella di distribuire un'istruzione su più cicli, creando una CPU
+multiciclo.
+
+In una CPU multiciclo:
+
+- Ogni fase d'esecuzione di un'istruzione richiede 1 ciclo di clock
+- Un'unità funzionale può essere usata più di una volta per istruzione in cicli
+  di clock diversi, consentendo la condivisione di elementi funzionali
+- E' necessario introdurre dei registri interni addizionali per memorizzare i
+  valori da usare nei cicli successivi
+
+Avremo, quindi, una distribuzione su un massimo di 5 cicli di clock con ciascun
+clock di durata inferiore. Questo significa che ogni fase impiegherebbe lo
+stesso tempo, anche se fosse più veloce. In più, ogni singola istruzione dovrà
+passare attraverso tutti e 5 i cicli. Ciò rende il tempo di esecuzione più lungo
+rispetto al singolo ciclo, andando contro il nostro obiettivo di migliorare le
+prestazioni.
