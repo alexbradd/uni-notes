@@ -1429,7 +1429,7 @@ Viene eseguita in 4 passi:
 - Prelievo istruzione dalla memoria e incremento del program counter
 - Lettura dei due registri sorgente dal banco di registri
 - Operazione dell'ALU sui dati letti dal banco di registri utilizzando il
-  codice operativo e il campo fuction
+  codice operativo e il campo `fuction`
 - Scrittura del risultato dell'ALU nel banco registri utilizzando il registro di
   destinazione
 
@@ -1437,9 +1437,9 @@ Per le istruzioni aritmetiche immediate i passaggi sono più o meno gli stessi.
 Cambia solamente il fatto che viene letto solo 1 dei due registri e si carica
 in 1 dei registri di ingresso all'ALU il valore immediato
 
-#### Esecuzione di istruzioni di load e store
+#### Esecuzione di istruzioni di `load` e `store`
 
-Le istruzioni di load richiedono 5 passaggi:
+Le istruzioni di `load` richiedono 5 passaggi:
 
 - Prelievo istruzione dalla memoria e incremento del program counter
 - Lettura del registro base dal banco dei registri
@@ -1449,7 +1449,7 @@ Le istruzioni di load richiedono 5 passaggi:
   il risultato dell'ALU
 - Scrittura del dato proveniente dalla memoria nel registro di destinazione
 
-La store è simile, ma salta un passaggio di lettura da memoria:
+La `store` è simile, ma salta un passaggio di lettura da memoria:
 
 - Prelievo istruzione dalla memoria e incremento del program counter
 - Lettura del registro base e del registro sorgente dal banco di registri
@@ -1472,7 +1472,7 @@ Richiede 5 passi:
 
 #### Istruzioni di salto incondizionato
 
-Richiedono tecnicamente 1 solo passaggio, quello di fetch. Lo shift e la somma
+Richiedono tecnicamente un solo passaggio, quello di fetch. Lo shift e la somma
 al program counter viene eseguito da un circuito combinatorio dedicato.
 
 ### Realizzazione del processore a ciclo singolo
@@ -1483,29 +1483,29 @@ componenti dovranno, quindi, essere duplicati e l'output va filtrato con l'uso
 di un multiplexer e di un segnale di controllo. Servono anche dei segnali di
 controllo per regolare ALU, lettura e scrittura:
 
-| Nome     |           Se 1           |                   Se 0                |
-|----------|--------------------------|---------------------------------------|
-| RegDst   | Il registro di scrittura | Il registro di scrittura proviene da  |
-|          | proviene da rt           | rd                                    |
-| RegWrite | Nulla                    | Il dato viene scritto nel registro    |
-|          |                          | di scrittura                          |
-| ALUSrc   | Il secondo operando      | Il secondo operando dell'ALU          |
-|          | dell'ALU proviene dal    | proviene dall'estensione di segno     |
-|          | secondo dato letto       | del secondo dato letto                |
-| ALUOp    | Controlla l'operazione   | Controlla l'operazione eseguita       |
-|          | eseguita dalla ALU       | dalla ALU                             |
-| PCSrc    | Nel PC viene scritta     | Nel PC viene scritta l'uscita del     |
-|          | l'uscita di `$pc + 4`    | sommatore che calcola l'indirizzo di  |
-|          |                          | salto                                 |
-| MemRead  | Nulla                    | Il dato della memoria nella posizione |
-|          |                          | puntata dall'indirizzo viene          |
-|          |                          | considerato dato letto                |
-| MemWrite | Nulla                    | Il dato della memoria nella posizione |
-|          |                          | puntata dall'indirizzo viene          |
-|          |                          | considerato dato letto                |
-| MemToReg | Il dato inviato per      | Il dato inviato per la scrittura      |
-|          | la scrittura proviene    | proviene dalla memoria dati           |
-|          | dalla ALU                |                                       |
+| Nome       | Se 1                     | Se 0                               |
+|------------|--------------------------|------------------------------------|
+| `RegDst`   | Il registro di scrittura | Il registro di scrittura proviene  |
+|            | proviene da `$rt`        | da `$rd`                           |
+| `RegWrite` | Nulla                    | Il dato viene scritto nel registro |
+|            |                          | di scrittura                       |
+| `ALUSrc`   | Il secondo operando      | Il secondo operando dell'ALU       |
+|            | dell'ALU proviene dal    | proviene dall'estensione di segno  |
+|            | secondo dato letto       | del secondo dato letto             |
+| `ALUOp`    | Controlla l'operazione   | Controlla l'operazione eseguita    |
+|            | eseguita dalla ALU       | dalla ALU                          |
+| `PCSrc`    | Nel PC viene scritta     | Nel PC viene scritta l'uscita del  |
+|            | l'uscita di `$pc + 4`    | sommatore che calcola l'indirizzo  |
+|            |                          | di salto                           |
+| `MemRead`  | Nulla                    | Il dato della memoria nella        |
+|            |                          | posizione puntata dall'indirizzo   |
+|            |                          | viene considerato dato letto       |
+| `MemWrite` | Nulla                    | Il dato della memoria nella        |
+|            |                          | posizione puntata dall'indirizzo   |
+|            |                          | viene considerato dato letto       |
+| `MemToReg` | Il dato inviato per      | Il dato inviato per la scrittura   |
+|            | la scrittura proviene    | proviene dalla memoria dati        |
+|            | dalla ALU                |                                    |
 
 E' ovvio, quindi, che serve un'unità di controllo che prende in input il codice
 operativo dell'istruzione e regola il valore delle varie linee di controllo.
@@ -1531,8 +1531,90 @@ In una CPU multiciclo:
   valori da usare nei cicli successivi
 
 Avremo, quindi, una distribuzione su un massimo di 5 cicli di clock con ciascun
-clock di durata inferiore. Questo significa che ogni fase impiegherebbe lo
-stesso tempo, anche se fosse più veloce. In più, ogni singola istruzione dovrà
-passare attraverso tutti e 5 i cicli. Ciò rende il tempo di esecuzione più lungo
-rispetto al singolo ciclo, andando contro il nostro obiettivo di migliorare le
-prestazioni.
+clock di durata inferiore. Ogni fase impiega lo stesso tempo, anche se fosse
+più veloce poiché dobbiamo accomodare la fase più lenta. In più, ogni singola
+istruzione dovrà passare attraverso tutti e 5 i cicli. Ciò rende il tempo di
+esecuzione più lungo rispetto al singolo ciclo, andando contro il nostro
+obiettivo di migliorare le prestazioni.
+
+### Pipeline
+
+L'idea dietro la pipeline è quella di simulare una specie di catena di montaggio
+industriale. La pipeline è realizzabile solo se è possibile separare un task
+complesso in molti task più piccoli e semplici. Anche nel caso della pipeline
+siamo limitati dallo stadio più lento. Il tempo della singola istruzione,
+quindi, non cambia e può anche peggiorare ma traiamo benefici dalla
+parallelizzazione di più stadi. Possiamo dire che aumentiamo il throughput, ma
+non la latenza delle singole istruzioni.
+
+L'incremento di velocità introdotto con il pipelining è intaccato da più
+fattori:
+
+- Durata sbilanciata dei vari stadi: limitazione per lo stadio più lento
+- Tempo di "load" e "flush" della pipeline: affinché la pipeline sia a pieno
+  regime serve del tempo, stessa cosa per lo svuotamento.
+
+Il pipelining è completamente trasparente al programmatore in quanto ogni
+singola istruzione viene ancora eseguita in modo sequenziale.
+
+Il MIPS suddivide un'istruzione in un massimo di 5 stadi:
+
+1. `IF`: Instruction Fetch
+2. `ID`: Instruction Decode
+3. `EX`: Esecuzione
+4. `MEM`: Accesso alla memoria
+5. `WB`: Scrittura a registri
+
+Ciò significa che serviranno 4 stadi per caricare e svuotare la pipeline.
+Inoltre, ogni stadio ha una durata prefissata chiamata ciclo di pipeline
+sufficientemente lunga da consentire l'esecuzione dello stadio più lento.
+Le istruzioni non possono saltare stadi (come anche nell'architettura
+multiciclo).
+
+Il caso ideale abbiamo che:
+
+- La latenza della singola istruzione viene peggiorata: una `load` da $800ps$
+  in sequenziale diventa di $1000ps$ con pipeline (ciclo di $200ps$)
+- Il throughput migliora fino a 4 volte (per un numero infinito di istruzioni),
+  quindi una istruzione di `load` viene eseguita ogni $200ps$
+
+In condizioni ideali (stadi bilanciati), quindi, il tempo trascorso tra due
+istruzioni sarà:
+
+$$
+T_{pipe} = \frac{T_{no pipe}}{N_{stadi}}
+$$
+
+La suddivisione di un'istruzione in più stadi implica che in un solo ciclo di
+clock saranno in esecuzione fino a 5 stadi diversi. Servono quindi dei registri
+interstadio che separano i vari stadi. Inoltre la struttura della CPU deve
+essere suddivisa in 5 parti, ciascuna corrispondente a ogni singolo stadio.
+
+La presenza di registri interstadio richiede la presenza di un tempo di
+stabilizzazione dell'uscita del registro in entrata alla logica combinatoria e
+di un altro tempo di stabilizzazione della logica combinatoria stessa. Inoltre,
+i registri usabili dall'utente devono essere sincronizzati al fronte di discesa
+del clock, invece di quello di salita, per garantire lettura e scrittura
+consistente tra i vari stadi.
+
+Anche nell'architettura a pipeline è presente una unità di controllo e dei
+segnali di controllo che governano i vari multiplexer, le memorie e l'ALU. Essi
+sono invariati rispetto alla CPU a singolo ciclo. Unica differenza è che i
+segnali che servono ai vari stadi vanno salvati nei registri interstadio
+corrispondenti.
+
+![Schema del processore con pipeline](./img/arch-pipeline.png){height=50%}
+
+#### Confiltti nella pipeline
+
+Esistono 3 tipi di conflitti che possono succedere:
+
+1. Conflitto strutturale: tentativo di usare la stessa risorsa da parte di
+   diverse istruzioni in modi diversi nello stesso intervallo di tempo (memoria
+   singola)
+2. Conflitti sui dati: tentativo di usare un risultato prima che esso sia pronto
+   (istruzione che dipende dal risultato di un'istruzione precedente)
+3. Conflitti sul controllo: tentativo di prendere una decisione sulla prossima
+   istruzione da eseguire prima che la condizione sia valutata (istruzioni di
+   salto condizionato)
+
