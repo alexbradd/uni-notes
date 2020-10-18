@@ -1594,7 +1594,7 @@ La presenza di registri interstadio richiede la presenza di un tempo di
 stabilizzazione dell'uscita del registro in entrata alla logica combinatoria e
 di un altro tempo di stabilizzazione della logica combinatoria stessa. Inoltre,
 i registri usabili dall'utente devono essere sincronizzati al fronte di discesa
-del clock, invece di quello di salita, per garantire lettura e scrittura
+in mezzo al clock, invece di quello di salita, per garantire lettura e scrittura
 consistente tra i vari stadi.
 
 Anche nell'architettura a pipeline è presente una unità di controllo e dei
@@ -1603,9 +1603,9 @@ sono invariati rispetto alla CPU a singolo ciclo. Unica differenza è che i
 segnali che servono ai vari stadi vanno salvati nei registri interstadio
 corrispondenti.
 
-![Schema del processore con pipeline](./img/arch-pipeline.png){height=50%}
+![Schema del processore con pipeline](./img/arch-pipe.png){height=50%}
 
-#### Confiltti nella pipeline
+#### Conflitti nella pipeline
 
 Esistono 3 tipi di conflitti che possono succedere:
 
@@ -1618,3 +1618,218 @@ Esistono 3 tipi di conflitti che possono succedere:
    istruzione da eseguire prima che la condizione sia valutata (istruzioni di
    salto condizionato)
 
+Nel MIPS è impossibile ottenere conflitti strutturali in quanto la memoria dati
+e la memoria contenente le istruzioni sono separate. Inoltre il banco di
+registri viene usato nello stesso ciclo di clock in modo coerente con la tecnica
+di temporizzazione.
+
+#### Conflitto sui dati
+
+Consideriamo il seguente codice:
+
+```mips
+add $s0, $t0, $t1
+sub $t2, $s0, $t3
+```
+
+Si può notare che il risultato corretto è disponibile anche nella fase `EX`
+dell'istruzione `add`. Per risolvere il conflitto, quindi, ci basterà aggiungere
+il cosiddetto circuito di propagazione/bypassing che collega l'uscita dello
+stadio `EX` con i suoi ingressi (propagazione EX/EX).
+
+Nel seguente codice, invece
+
+```mips
+lw $s0, 20($t1)
+sub $t2, $s0, $t3
+```
+
+Il circuito di propagazione EX/EX non basta poiché il risultato corretto sarà
+caricato in `$s0` solo nella fase `WB`. Andrà inserito un altro circuito di
+propagazione che collega l'uscita della fase `MEM` con l'ingresso della fase
+`EX`. Però, al momento dell'esecuzione di `MEM`, la fase `EX` dell'istruzione
+precedente sarà già stata eseguita. Bisogna quindi aggiungere anche un ciclo di
+ritardo nell'esecuzione di sub per permettere l'allineamento di `MEM` ed `EX`.
+Questo ritardo sarà dato dalla cosiddetta `NOP` (no operation).
+
+Le soluzioni disponibili per la risoluzione dei conflitti di dati sono le
+seguenti:
+
+- A livello di compilazione:
+  - Inserimento di istruzioni `NOP`
+  - Scheduling o riordino delle istruzioni in modo da impedire che istruzioni
+    correlate siano troppo vicine: il compilatore inserisce delle operazioni
+    indipendenti dal risultato delle precedenti operazioni o `NOP` nel caso non
+    ci siano istruzioni di questo tipo
+- A livello hardware:
+  - Inserimento di stalli nella pipeline: lo stallo viene creato propagando 0 in
+    tutti i segnali di controllo.
+  - Propagazione di dati in avanti (forwarding o bypassing): vengono resi
+    accessibili alle istruzioni successive i dati quando sono ancora nei
+    registri interstadio, prima che essi vengano scritti nei registri.
+
+La soluzione preferita saranno le soluzioni a livello hardware.
+
+##### Propagazione di dato
+
+Quando un'istruzione nel suo stadio `EX` deve utilizzare un dato di un registro
+che non è ancora stato scritto da un'istruzione precedente della sua fase di
+`WB` è necessario portare il dato all'ingresso corretto della ALU.
+
+Le coppie di condizioni che generano un conflitto di dato sono:
+
+1. `EX/MEM.RegistroRd == ID/EX.RegistroRs`: conflitto in `EX`
+2. `EX/MEM.RegistroRd == ID/EX.RegistroRt`: conflitto in `EX`
+3. `MEM/WB.RegistroRd == ID/EX.RegistroRs`: conflitto in `MEM`
+4. `MEM/WB.RegistroRd == ID/EX.RegistroRt`: conflitto in `MEM`
+
+Per quanto riguarda l'implementazione, aggiungeremo dei multiplexer in entrata
+agli ingressi dell'ALU (con corrispondenti segnali di controllo) in modo da
+permettere all'ALU di usare il contenuto dei registri interstadio.
+
+La propagazione avviene solo se:
+
+- il segnale `RegWrite` viene asserito nello stadio del conflitto, quindi tra i
+  segnali di controllo `WB` negli stadi `EX/MEM` o `MEM/WB`
+- il registro di destinazione non è il registro 0
+
+L'unità di controllo della propagazione esegue i seguenti controlli (pseudo
+codice):
+
+```c
+PropagaA = 0;
+PropagaB = 0;
+
+if (EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRs))
+  PropagaA = 0x10; // MUX PA
+
+if (EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRt))
+  PropagaB = 0x10; // MUX PB
+
+if (MEM/WB.RegWrite && (MEM/WB.RegRd != 0) && (MEM/WB.RegRd == ID/EX.RegRs))
+  PropagaA = 0x01; // MUX PA
+
+if (MEM/WB.RegWrite && (MEM/WB.RegRd != 0) && (MEM/WB.RegRd == ID/EX.RegRt))
+  PropagaB = 0x01; // MUX PB
+```
+
+Queste condizioni sono, però, ancora incomplete in quanto può svilupparsi il
+conflitto sul quale valore sia più recente. Si dovrà impedire che due
+istruzioni successive condividano lo stesso registro tra registro sorgente e
+destinazione:
+
+```mips
+add $1, $1, $1
+add $1, $1, $2 # Rd == Rs
+```
+
+Riscriviamo le condizioni per riflettere questi cambiamenti:
+
+```c
+PropagaA = 0;
+PropagaB = 0;
+
+if (EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRs))
+  PropagaA = 0x10; // MUX PA
+
+if (EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRt))
+  PropagaB = 0x10; // MUX PB
+
+if (MEM/WB.RegWrite && (MEM/WB.RegRd != 0) &&
+    !(EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRs))
+    && (MEM/WB.RegRd == ID/EX.RegRs))
+  PropagaA = 0x01; // MUX PA
+
+if (MEM/WB.RegWrite && (MEM/WB.RegRd != 0) &&
+    !(EX/MEM.RegWrite && (EX/MEM.RegRd != 0) && (EX/MEM.RegRd == ID/EX.RegRt))
+    && (MEM/WB.RegRd == ID/EX.RegRt))
+  PropagaB = 0x01; // MUX PB
+```
+
+Quindi la propagazione dello stadio `MEM/WB` avviene solo se non esiste una
+conflitto con `EX/MEM`.
+
+![Modifiche per usare la propagazione](./img/arch-pipe-prop.png){height=50%}
+
+Nonostante le nostre condizioni, rimane ancora il problema delle `load/store`.
+Dovremmo aggiungere un ulteriore cammino di propagazione tra i due stadi `MEM`,
+anch'esso comandato dall'unità di propagazione.
+
+Rimane ancora il caso del `load/use`. Questo caso non è risolvibile senza uno
+stallo.
+
+##### Stallo
+
+In aggiunta all'unità di propagazione, aggiungiamo un'altra unità di rilevamento
+dei conflitti che durante lo stadio di `ID` possa inserire uno stallo.
+
+Lo stallo viene eseguito azzerando tutti i segnali di controllo emanati
+dall'unità di controllo. Inoltre l'unità di rilevazione dei conflitti controlla
+la scrittura del program counter.
+
+![Modifiche per usare lo stallo](./img/arch-pipe-stall.png){height=50%}
+
+Prendendo in esame il caso `load/use`, il conflitto verrà rilevato confrontato
+la `ID/EX` della `load` e la `IF/ID` della `use`:
+
+```c
+if (ID/EX.MemRead &&
+    ((ID/EX.RegRt == IF/ID.RegRs) || (ID/EX.RegRt == IF/ID.RegRt)))
+  StallPipeline();
+```
+
+Quindi, se leggo la memoria e la destinazione della `load` e la sorgente della
+`use` coincidono, la pipeline verrà stallata.
+
+#### Conflitto di controllo
+
+Per alimentare la pipeline si deve prelevare un'istruzione ad ogni ciclo di
+clock, però la decisione relativa al salto condizionato non viene presa fino
+allo stadio `MEM`. La logica di controllo del salto viene determinata nello
+stadio `MEM` e, sul fronte di salita del ciclo corrispondente, nel program
+counter viene scritto l'indirizzo di destinazione del salto. Questo ritardo
+nel determinare l'istruzione corretta da prelevare viene chiamato conflitto di
+controllo o conflitto di salto condizionato. Questi conflitti sono
+statisticamente meno frequenti dei conflitti sui dati.
+
+Come soluzione a questo tipo di conflitto possiamo usare diverse strategie:
+
+1. Utilizzo della predizione:
+
+   Viene sempre presa l'ipotesi che il salto non venga eseguito. Se il salto
+   dovrà essere eseguito verrà inserito uno stallo nella pipeline per scartare
+   le istruzioni erroneamente eseguite (2 nel caso di pipeline non ottimizzata,
+   1 altrimenti).
+
+2. Utilizzo della pipeline ottimizzata:
+
+   Si sposta la decisione del salto da `MEM` a uno stadio precedente. Possiamo:
+
+   - Anticipare il calcolo della destinazione del salto: basterebbe spostare il
+     sommatore che calcola l'indirizzo di salto da `EX` a `ID` senza molte
+     modifiche
+   - Anticipare la decisione sul salto: è necessario confrontare il contenuto
+     dei due registri letti nello stadio `ID` tramite un confrontatore (si
+     esegue lo `XOR` bit a bit; se è zero i due valori sono uguali e basta
+     negare l'uscita per ottenere il segnale). Poi è necessario propagare il
+     valore del confronto fino allo stadio `EX` (`ID/EX.Zero`) per poter
+     generare correttamente `PcSrc`. La logica del salto viene, quindi,
+     spostata in `EX`.
+
+   Ci sono dei problemi legati a questa soluzione per quanto riguarda il
+   conflitto sui dati: se il dato da confrontare è calcolato dall'istruzione
+   precedente il valore non è reperibile nella fase di codifica della nostra
+   branch. La soluzione sarebbe aggiungere un nuovo cammino di propagazione tra
+   `EX` e `ID` per effettuare il calcolo corretto se la branch dipende da
+   un'istruzione situata due istruzioni prima e stallare se dipende da quella
+   precedente.
+
+Useremo la seconda ottimizzazione in quanto ci permette di di ridurre la
+penalità di un salto condizione a un solo ciclo di clock.
+
+Se il salto viene eseguito, è necessario scartare l'istruzione nella fase di
+fetch. Per fare ciò, viene aggiunto un altro segnale di controllo chiamato
+`IF.Scarta` che azzera la parte del registro `IF/ID` che contiene l'istruzione,
+rendendola una `NOP`.
+
+![Modifiche per gestire il salto condizionato (schema quasi completo)](./img/arch-pipe-comp.png){height=50%}
