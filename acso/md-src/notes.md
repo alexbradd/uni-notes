@@ -1483,29 +1483,38 @@ componenti dovranno, quindi, essere duplicati e l'output va filtrato con l'uso
 di un multiplexer e di un segnale di controllo. Servono anche dei segnali di
 controllo per regolare ALU, lettura e scrittura:
 
++------------+--------------------------+------------------------------------+
 | Nome       | Se 1                     | Se 0                               |
-|------------|--------------------------|------------------------------------|
++============+==========================+====================================+
 | `RegDst`   | Il registro di scrittura | Il registro di scrittura proviene  |
 |            | proviene da `$rt`        | da `$rd`                           |
++------------+--------------------------+------------------------------------+
 | `RegWrite` | Nulla                    | Il dato viene scritto nel registro |
 |            |                          | di scrittura                       |
++------------+--------------------------+------------------------------------+
 | `ALUSrc`   | Il secondo operando      | Il secondo operando dell'ALU       |
 |            | dell'ALU proviene dal    | proviene dall'estensione di segno  |
 |            | secondo dato letto       | del secondo dato letto             |
++------------+--------------------------+------------------------------------+
 | `ALUOp`    | Controlla l'operazione   | Controlla l'operazione eseguita    |
 |            | eseguita dalla ALU       | dalla ALU                          |
++------------+--------------------------+------------------------------------+
 | `PCSrc`    | Nel PC viene scritta     | Nel PC viene scritta l'uscita del  |
 |            | l'uscita di `$pc + 4`    | sommatore che calcola l'indirizzo  |
 |            |                          | di salto                           |
++------------+--------------------------+------------------------------------+
 | `MemRead`  | Nulla                    | Il dato della memoria nella        |
 |            |                          | posizione puntata dall'indirizzo   |
 |            |                          | viene considerato dato letto       |
++------------+--------------------------+------------------------------------+
 | `MemWrite` | Nulla                    | Il dato della memoria nella        |
 |            |                          | posizione puntata dall'indirizzo   |
 |            |                          | viene considerato dato letto       |
++------------+--------------------------+------------------------------------+
 | `MemToReg` | Il dato inviato per      | Il dato inviato per la scrittura   |
 |            | la scrittura proviene    | proviene dalla memoria dati        |
 |            | dalla ALU                |                                    |
++------------+--------------------------+------------------------------------+
 
 E' ovvio, quindi, che serve un'unità di controllo che prende in input il codice
 operativo dell'istruzione e regola il valore delle varie linee di controllo.
@@ -1833,3 +1842,307 @@ fetch. Per fare ciò, viene aggiunto un altro segnale di controllo chiamato
 rendendola una `NOP`.
 
 ![Modifiche per gestire il salto condizionato (schema quasi completo)](./img/arch-pipe-comp.png){height=50%}
+
+## La gerarchia delle memorie
+
+L'obiettivo è:
+
+- dare l'illusione di una memoria grande, veloce e poco costosa
+- I programmi possano accedere a uno spazio di memoria che scala fino alla
+  dimensione del disco a una velocità pari a quella dell'accesso a registro
+- Fornire al processore i dati alla velocità in cui è in grado di elaborarli
+
+Per ottenere ciò si usa una gerarchia di memoria, ossia diversi livelli di
+memorie realizzate con tecnologie diverse. Noi studieremo la gerarchia a due livelli.
+
+Il processore lavorerà solo con il primo livello, quello più veloce. Se il dato
+non è presente in quel livello, allora il processore preleverà il blocco dai livelli superiori e lo salverà nel primo.
+
+I livelli sono: (dal più alto e veloce al più basso e lento)
+
+- Registri
+  - Scambia istruzioni con la cache
+  - gestito da programmatore/compilatore
+- Cache
+  - scambia blocchi con la memoria centrale
+  - gestito dal controllore della cache
+- Memoria centrale
+  - scambia pagine con il disco
+  - gestito dal sistema operativo
+- Disco
+  - scambia file con i supporti esterni
+  - gestito dall'utente
+- Supporti esterni
+
+### Memoria Cache
+
+La memoria centrale e la memoria cache sono organizzate in blocchi di parole o
+di byte di ugual dimensione. La memoria cache contiene copie di blocchi della
+memoria centrale oppure blocchi liveri. Ad ogni blocco è associato un bit di
+validità che indica se il blocco è significativo o libero.
+
+Il sistema di gestione della cache è in grado di:
+
+- copiare blocchi della memoria centrale alla memoria cache
+- ricopiare blocchi dalla memoria cache alla memoria centrale
+
+Il processore accede prima alla memoria cache e poi alla memoria centrale. La
+cache è indirizzata con gli stessi indirizzi della memoria centrale. La cache è,
+quindi, trasparente al programmatore/assembler.
+
+Funzionamento per le istruzioni:
+
+1. Il processore deve leggere un'istruzione
+2. Se il blocco è in cache, l'istruzione viene prelevata in un solo clock
+   Se il blocco non è in cache, il processore va in stallo  per numero variabile
+   di clock finché l'istruzione non viene copiata dalla memoria centrale nella
+   cache
+
+In lettura di dati il processore funziona come per le istruzioni. Per la scrittura si possono usare diverse strategie: scrittura differita (scrivo prima
+in cache e poi in centrale) o non differita (mantengo cache e RAM
+sincronizzati).
+
+L'uso della memoria cache per incrementare le prestazione del sistema di memoria
+sfrutta il principio di località dei programmi:
+
+- località spaziale: vengono trasferiti in cache più parole di quante non ne
+  siano richieste (linea di cache).
+- località temporale: viene sfruttata quando si deve scegliere il blocco da
+  sostituire nella gestione di un fallimento. Si tenta, quindi, di mantenere i
+  dati a cui si è fatto accesso più di recente vicino al processore.
+
+#### Definizioni
+
+- Hit: accesso a dati presenti in un blocco di cache
+  - Hit rate: numero di accessi che trovano il dato in cache rispetto al numero
+    totale di accessi
+  - Hit time: tempo per accedere al dato in cache
+- Miss: accesso fallito in cache, i dati devono essere recuperati in memoria
+  centrale
+  - Miss Rate: $1- (Hit Rate)$
+  - Miss Penalty: tempo necessario a sostituire un blocco in cache e accedervi
+
+#### Organizzazione delle memoria cache
+
+Si differenziano per:
+
+- metodo di indirizzamento
+- metodo di identificazione
+- metodi di scrittura
+- metodo di sostituzione
+
+##### Cache a indirizzamento diretto
+
+###### Indirizzamento (cache a indirizzamento diretto)
+
+L'indirizzo del blocco di cache viene calcolato con la seguente semplice
+formula:
+
+$$indirizzo_{mem} \mod size_{cache}$$
+
+Più indirizzi possono essere caricati nello stesso blocco in cache. Si possono
+verificare, quindi, dei conflitti. Consideriamo il seguente esempio:
+
+> Cache da $2^3$ blocchi (3 bit di indirizzo) e $2^5$ blocchi di memoria
+> centrale. A ogni blocco di cache corrisponderanno $2^5 / 2^3 = 2^2$ blocchi di
+> memoria centrale.
+>
+> Ogni blocco di memoria centrale viene mappato con i 3 bit meno significativi
+> del suo indirizzo. I bit rimanenti vengono usati per risolvere i conflitti e
+> vengono chiamati etichetta.
+
+Quindi, per risolvere i conflitti, si deve mantenere una tabella ausiliaria
+contente tutte le etichette dei vari blocchi. Come nell'esempio, le etichette
+corrisponderanno agli $n$ bit più significativi degli $n+k$ bit dell'indirizzo.
+
+La limitazione di questa modalità di indirizzamento è che la cache inizierà a
+fallire ben prima che la cache sia piena.
+
+###### Identificazione (cache a indirizzamento diretto)
+
+Poiché nel MIPS usiamo parole di 4 byte e dobbiamo riuscire a indirizzare il
+singolo byte, dobbiamo anche sfruttare le informazioni che l'indirizzo ci può
+fornire:
+
+- $B$ bit per indirizzare il byte
+- $K$ bit per indirizzare la riga di cache
+- $N-(K+B)$ come etichetta
+
+![Funzionamento della cache a indirizzamento diretto](./img/cache-direct.png){height=50%}
+
+Si può notare che i dati arrivano al processore prima del segnale di `hit`. Il
+processore dovrà, quindi, bloccare i dati mentre aspetta l'arrivo del segnale
+di controllo.
+
+###### Strategia di scrittura (cache a indirizzamento diretto)
+
+La gestione delle hit e delle miss in lettura scrittura sarà la seguente:
+
++------+-------------------------------+---------------------------------------+
+|      | Lettura                       | Scrittura                             |
++======+===============================+=======================================+
+| Hit  | Presente in cache             | - Sostituzione del dato sia in cache  |
+|      |                               |   che in memoria (write-through)      |
+|      |                               | - Scrittura del dato solo nella cache |
+|      |                               |   (write-back) con copia in memoria   |
+|      |                               |   in un secondo momento               |
++------+-------------------------------+---------------------------------------+
+| Miss | - Stallo della CPU            | - Stallo della CPU                    |
+|      | - Richiesta del blocco        | - Richiesta del blocco contenente il  |
+|      |   contenente il dato dalla    |   dato dalla memoria                  |
+|      |   memoria                     | - Copia in cache                      |
+|      | - Copia in cache              | - Ripetizione dell'operazione di      |
+|      | - Ripetizione dell'operazione |   scrittura                           |
+|      |   di lettura                  |                                       |
++------+-------------------------------+---------------------------------------+
+
+La durata dello stallo non ha un numero ben definito di cicli. Bisogna quindi:
+
+1. Attivare il segnale di stallo
+2. Inviare il valore corretto dell'indirizzo dell'istruzione da caricare alla
+   memoria e scrittura nel program counter
+3. Richiesta di lettura in memoria e attesa della risposta
+4. Il controllore della cache gestisce il caricamento in cache del dato
+5. Segnalazione all'unità di controllo della pipeline del caricamento
+6. Riesecuzione della fetch dell'istruzione
+
+###### Sostituzione (cache a indirizzamento diretto)
+
+La sostituzione dei blocchi non usati è risolta automaticamente dalla modalità
+di indirizzamento.
+
+###### Dimensionamento (cache a indirizzamento diretto)
+
+Abbiamo quindi:
+
+- 32 bit di indirizzo
+- $2^n$ blocchi con $n$ i bit dell'indirizzo necessari per l'indice
+- ogni blocco sarà $2^{m+2}$ byte con $m$ bit per individuare la parola
+  all'interno del blocco
+- Dimensione etichetta: $32 - (n+m+2)$
+
+Il totale di bit sarà:
+
+$$ 2^n * (dim_{blocco} + dim_{etichetta} + 1) $$
+
+##### Cache completamente associativa
+
+A un indirizzo di memoria centrale può corrispondere qualunque indirizzo di
+cache.  Non esiste, quindi, una relazione tra indirizzo di memoria del blocco in
+cache e di conseguenza il problema del mapping.
+
+Con un indirizzo di $N$ bit e blocchi di cache lunghi $2^M$ byte usiamo:
+
+- $M$ bit meno significativi dell'indirizzo per identificare il blocco della
+  cache.
+- $N-M$ bit più significativi di etichetta
+
+La ricerca di un dato nella cache richiede il confronto di tutte le etichette
+presenti in cache. Per aumentare le prestazioni la ricerca avviene in parallelo
+tramite una memoria associativa dal costo elevato. A causa di questo elevato
+costo non vengono utilizzate spesso.
+
+In caso di miss si agisce alla stessa maniera delle altre cache. Se la cache è
+piena, il blocco da sostituire può essere scelto:
+
+- in modo casuale
+- in base all'ultimo utilizzo
+
+##### Cache set-associative
+
+###### Indirizzamento (cache set-associativa)
+
+E' una via di mezzo tra i due metodi precedenti. I blocchi di cache sono divisi
+in $n$ gruppi (set). La cache viene indirizzata per gruppi. Ogni gruppo contiene
+almeno $2n$ blocchi di cache. Ogni blocco di memoria può essere caricato in un
+solo gruppo e in uno degli $n$ blocchi.
+
+La cache set-associativa in cui un blocco può andare in $n$ posizioni viene
+chiamata set-associativa a $n$ vie.
+
+###### Identificazione (cache set-associativa)
+
+Abbiamo detto che ogni blocco di memoria centrale corrisponde ad un unico gruppo
+della cache ed il blocco può essere messo in uno qualsiasi degli elementi di
+questo gruppo.
+
+L'indirizzo di memoria di $n$ bit è diviso in 4 campi:
+
+- $B$ bit meno significati individuano il byte all'interno della parola
+- $K$ bit individuano la parola all'interno del blocco
+- $M$ bit individuano il gruppo (indirizzamento diretto per il gruppo)
+- $N-(M+K+B)$ come etichette (completamente associativa nel gruppo)
+
+![Funzionamento di una cache set-associativa a 4 vie](./img/cache-set-ass4.png){height=50%}
+
+###### Strategie di scrittura (cache set-associativa)
+
+Come nella cache a indirizzamento diretto.
+
+###### Sostituzione
+
+Come nella cache completamente associativa:
+
+- casuale
+- LRU (Least Recently Used):
+  - Cache a 2 vie: Esiste un bit di uso per ogni blocco dell'insieme: quando
+    un blocco viene usato questo bit vale 1, altrimenti 0
+  - Cache a 4 vie: Esiste un contatore di uso per ogni blocco dell'insieme:
+    quando un blocco viene utilizzato il suo contatore viene messo a 0, gli
+    altri incrementati di 1. Per limitare i ritardi si usa un bit di uso per
+    ogni blocco.
+
+#### Confronto tra diverse organizzazione di cache
+
+Confrontiamo la cache set-associativa a $n$ vie e la cache a indirizzamento
+diretto (la cache completamente associativa non è in meta):
+
++--------------------+---------------------------+-----------------------------+
+|                    | Set-associativa           | Indirizzamento diretto      |
++====================+===========================+=============================+
+| Comparatori        | $n$                       | 1                           |
++--------------------+---------------------------+-----------------------------+
+| Ritardo            | Ritardo aggiuntivo dovuto | Minimo                      |
+|                    | ad un MUX aggiuntivo per  |                             |
+|                    | dati                      |                             |
++--------------------+---------------------------+-----------------------------+
+| Disponibilità dati | Dopo il segnale di `hit`  | Prima del segnale di `hit`. |
+|                    |                           | E' possibile ottimizzare e  |
+|                    |                           | prevedere una hit,          |
+|                    |                           | recuperando in caso di      |
+|                    |                           | fallimento                  |
++--------------------+---------------------------+-----------------------------+
+
+#### Strategie di scrittura di un blocco
+
+Abbiamo anticipato le due strategie utilizzabili per gestire una scrittura in
+cache:
+
+- write-through - L'informazione viene scritta sia nel blocco di livello
+  superiore che nel blocco di livello inferiore. Il vantaggio consiste che
+  fallimenti in lettura non si tramutano in scritture in memoria
+- write-back - L'informazione viene scritta solo nel blocco di livello
+  superiore. Il livello inferiore viene aggiornato solo in caso di sostituzione.
+  Questo significa che:
+  - Per ogni blocco di cache è necessario mantenere l'informazione sulla
+    scrittura
+  - Ad ogni blocco è associato un bit di modifica che indica se il blocco è
+    stato modificato
+  - Non si hanno aggiornamenti ripetuti delle stesse celle di memoria
+
+#### Prestazioni
+
+Le prestazioni vengono calcolate come tempo di accesso medio alla memoria. Esso
+si calcola come:
+
+$$AMAT = Hit_{time} [s] + Miss_Rate [1] * Miss_{Penalty} [cicli]$$
+
+#### Cache multilivello
+
+Al giorno d'oggi i processori possiedono diversi livelli di cache:
+
+- L1: è la più piccola e separa dati e istruzioni in due blocchi separati
+- L2 e L3: è leggermente più grande e sono ad uso generale
+
+Generalmente le cache L1 e L2 sono private di ciascun core mentre la L3 è
+condivisa.
