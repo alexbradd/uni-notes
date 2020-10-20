@@ -287,15 +287,15 @@ significative). Per spostare il risultato da questi due registri viene usato
 
 ##### Trasferimenti in memoria
 
-| istruzione | campo | campo                  |
-|------------|-------|------------------------|
-| `lw`       | `rd`  | `const(registro base)` |
-| `sw`       | `rs`  | `const(registro base)` |
-| `la`       | `rd`  | `const`                |
+| istruzione | campo | campo       |
+|------------|-------|-------------|
+| `lw`       | `rt`  | `const(rs)` |
+| `sw`       | `rt`  | `const(rs)` |
+| `la`       | `rt`  | `const`     |
 
-La parte `const(registro base)` serve a calcolare l'indirizzo di memoria a cui
+La parte `const(rs)` serve a calcolare l'indirizzo di memoria a cui
 si fa riferimento. L'indirizzo di memoria è pari a
-`const + indirizzo contenuto nel registro base`. Per come è strutturata il tipo
+`const + indirizzo contenuto in rs`. Per come è strutturata il tipo
 di istruzione I, posso caricare/salvare nell'intervallo `[-2^15 ; +2^15 -1]`
 rispetto al registro base.
 
@@ -304,7 +304,7 @@ In memoria una `lw` o una `sw` avranno questo formato:
 ```txt
     6        5        5                 16
 +--------+--------+--------+--------------------------+
-| OPCODE | rd/rs  | r base |           const          |
+| OPCODE |   rs   |   rt   |           const          |
 +--------+--------+--------+--------------------------+
 ```
 
@@ -317,7 +317,7 @@ L'assemblatore, allora, espande la `la` in 2 istruzioni:
 - si utilizza un'altra istruzione (`ori` un esempio) per caricare gli altri
   bit meno significativi e spostare tutto nel registro di destinazione
 
-Un'altra pseudo istruzione simile è `li $rd, const`.
+Un'altra pseudo istruzione simile è `li $rt, const`.
 
 L'ordinamento dei byte di una parola non è da dare per scontato:
 
