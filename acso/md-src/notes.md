@@ -2146,3 +2146,280 @@ Al giorno d'oggi i processori possiedono diversi livelli di cache:
 
 Generalmente le cache L1 e L2 sono private di ciascun core mentre la L3 è
 condivisa.
+
+### Memoria virtuale
+
+Nessuna tecnologia ci permette di soddisfare allo stesso tempo i 2 requisiti
+della costruzione del processore:
+
+- accedere a una parola di memoria in un solo ciclo di clock
+- essere così grande da contenere qualsiasi programma (spazio di indirizzamento
+  fisico pari a quello virtuale)
+
+La distribuzione degli accessi di un programma alla memoria non è omogenea, ma
+presenta una certa località:
+
+- Località temporale: un programma tende ad accedere agli stessi indirizzi di
+  memoria a cui ha già acceduta di recente
+- Località spaziale: un programma accede con buona probabilità agli indirizzi
+  vicini a quelli a cui ha già acceduto in passato
+
+Questo comportamento rende efficace il modello di gerarchia di memoria visto
+fino ad ora. Abbiamo detto che tra memoria centrale e cache scambiamo blocchi,
+ma cosa scambiamo tra disco e memoria centrale per rendere la nostra memoria
+disponibile nell'ordine dei TB? Introduciamo il concetto memoria virtuale.
+
+La memoria virtuale si basa sulla separazione del concetto di spazio di
+indirizzamento di un programma e dimensione effettiva della memoria fisica. Lo
+spazio di indirizzamento è definito dal numero di parole indirizzabili e dipende
+esclusivamente dal numero di bit dell'indirizzo e non dal numero di parole di
+memoria effettivamente disponibile. La dimensione della memoria fisica è pari
+an numero di byte che la costituiscono. Poiché la memoria fisica deve essere
+tutta indirizzabile essa è sempre minore o uguale al suo spazio di
+indirizzamento.
+
+Introduciamo allora gli indirizzi virtuali, ossia gli indirizzi rilocabili
+generati dal linker e assemblatore (partono da 0) e lo spazio di indirizzamento
+virtuale definito dalla lunghezza degli indirizzi virtuali. E' possibile
+definire il concetto di dimensione virtuale come la somma delle aree di
+programma effettivamente presenti. Solo gli indirizzi virtuali appartenenti a
+queste aree sono considerati validi. La dimensione iniziale è calcolata dal
+linker e varia al runtime in base a modifiche alla stack, alla heap o per la
+creazione di aree per la mappatura di librerie dinamiche o aree condivise con
+altri processi. E' ovvio il fatto che indirizzi virtuali e fisici non possono
+coincidere. Sarà necessaria una traduzione automatica degli indirizzi. La
+traduzione non viene effettuata dalla CPU, essa lavora con indirizzi virtuali,
+ma da una combinazione di hardware e software detta memory mapping. La
+traduzione avviene a runtime ad opera della MMU (Memory Management Unit) ed è
+completamente trasparente a programmatore, compilatore e linker.
+
+Considerato tutto ciò che abbiamo detto fino ad ora, possiamo:
+
+- usare l'intero spazio di indirizzamento virtuale indipendentemente dalle
+  dimensioni effettive della memoria centrale
+- eseguire più programmi in contemporanea che condividono la stessa memoria
+  centrale indipendentemente dalle sue dimensioni
+- la dimensione di memoria di un singolo programma e/o lo spazio di
+  indirizzamento di più programmi in memoria può essere maggiore della memoria
+  centrale
+- i programmi non risiederanno sempre in memoria centrale, ma solo i pezzi
+  attualmente in esecuzione
+
+#### Processi
+
+Definiamo processo l'esecutore capace di realizzare il modello di esecuzione
+parallela. Esso è creato dinamicamente dal sistema operativo durante il lancio
+di un programma. E' da considerarsi una specie di macchina virtuale realizzata
+da hardware e software. Il processo non è, quindi, il solo programma in
+esecuzione ma ha associato risorse (memoria, file aperti, terminali) e il
+programma da eseguire. Il programma da eseguire può essere sostituito senza
+la chiusura del processo.
+
+#### Paginazione
+
+E' il meccanismo fondamentale per rendere possibile ciò che abbiamo discusso
+fino ad ora.
+
+La memoria virtuale del programma viene suddivisa in porzioni di lunghezza fissa
+dette pagine virtuale aventi lunghezza potenza di 2. La memoria fisica viene
+anch'essa suddivisa in pagine fisiche. Le pagine virtuali dei vari programmi
+vengono caricate in altrettante pagine fisiche prese arbitrariamente e non
+necessariamente continue.
+
+La paginazione ha l'effetto di ridurre la frammentazione della memoria. Inoltre
+è facile gestire la crescita di memoria di un processo durante l'esecuzione.
+
+E' possibile rendere residenti o non residenti singole pagine del processo.
+
+Lo spazio di indirizzamento virtuale di ogni programma è lineare ed è suddiviso
+in un numero intero di pagine di dimensione fissa e potenza di 2. L'indirizzo
+virtuale possiamo vederlo come (consideriamo indirizzi a 16 bit e pagine da 512
+byte):
+
+```txt
+15                            9 8                          0
++------------------------------+---------------------------+
+| Numero pagina virtuale (NPV) | Spiazzamento nella pagina |
++------------------------------+---------------------------+
+```
+
+Anche l'indirizzamento fisico viene suddiviso in un numero intero di pagine di
+uguale dimensione come quelle virtuali. Ogni pagina fisica può, quindi,
+contenere solo 1 pagina virtuale. L'indirizzo fisico può essere visto come
+(consideriamo indirizzi a 16 bit e pagine da 512 byte):
+
+```txt
+15                            9 8                          0
++------------------------------+---------------------------+
+| Numero pagina fisica  (NPF)  | Spiazzamento nella pagina |
++------------------------------+---------------------------+
+```
+
+Con pagine di 4 KB (come in Linux) un indirizzo a 32 bit, avremo uno
+spiazzamento di 12 bit, ossia 3 cifre esadecimali ottenendo in totale $2^{20}$
+pagine virtuali. Se la memoria fisica è di 4 M-parole, avremo un totale di
+$2^{22}$ indirizzi e $\frac{2^{22}}{2^{12}}=2^{10}$ pagine fisiche.
+
+Ogni pagina inizia, quindi, ad un indirizzo con le ultime 3 cifre pari a zero,
+ad esempio (16): `0x02000, 0x03000`.
+
+Per come abbiamo strutturato la paginazione, la MMU dovrà solamente tradurre il
+numero di pagina virtuale in numero di pagina fisica. Poiché non c'è un
+algoritmo di traduzione tra i due (il sistema operativo può rilocare le pagine
+virtuali a suo piacimento) è necessaria una tabella di corrispondenza tra le
+due. La tabella dovrebbe , in linea di principio, contenere una riga per
+ogni pagina virtuale del processo. In questa ipotesi, il numero di pagina
+virtuale NPV viene utilizzato come indice della tabella delle pagine del
+processo.
+
+Diversi processi possono condividere delle pagine, tipicamente di codice o di
+libreria ma anche di dati, tramite opportuni meccanismi messi a disposizione
+dal sistema operativo. Per ogni pagina condivisa esiste una riga nella
+corrispondente tabella della pagine del processo; i valori di NPF relativi
+saranno, però, coincidenti.
+
+Il meccanismo di paginazione permette di rilevare durante l'esecuzione un
+accesso a zone di memoria che non appartengono allo spazio di indirizzamento
+virtuale del processo in esecuzione. E' possibile associare ad ogni pagina
+virtuale di un processo alcuni bit di protezione che definiscono le modalità di
+accesso (RWX) consentite per quella pagina. I diritti di accesso risultano
+particolarmente significativi nel caso di pagine condivise. I bit di permesso
+sono gestiti dalla MMU che può generare un interrupt di violazione di accesso
+di memoria.
+
+Non tutte le pagine virtuali di un processo sono caricate in memoria virtuale.
+La tabella delle pagine può prevedere la presenza di un bit di validità per
+indicare la presenza/assenza in memoria di una pagina.
+
+#### MMU
+
+E' un dispositivo specializzato che si occupa della traduzione del numero di
+pagina virtuale nel corrispondente numero di pagina fisica. Esso può essere
+posizionato nel chip della CPU o in chip separato.
+
+La MMU ha al suo interno una memoria molto veloce (piccola) che contiene le
+tabelle delle pagine dei processi. In generale la tabella nella MMU contiene:
+
+- solo una parte della tabella delle pagine di ogni processo (solo le righe
+  corrispondenti alle pagine più utilizzate); questo implica che NPV non può
+  essere usato come indice della tabella in quanto esso è un campo
+- il PID del processo per distinguere i vari processi
+
+La memoria della NPV è spesso di tipo associativo: la selezione di una riga
+della memoria avviene tramite i descrittori. Il descrittore di una NPF è la
+coppia di PID e NPV.
+
+La tabella avrà dimensione $X*R$ con $X$ il numero di processi in esecuzione e
+$R$ è il numero di pagine residenti in memoria per ogni processo.
+
+La MMU verifica se la pagina richiesta è presente in memoria esaminando il bit
+di validità della pagina (`valid`):
+
+- se il bit è asserito la pagina è presente in memoria e il valore viene letto
+  e interpretato dalla tabella
+- se il bit non è asserito si verifica un page fault e la pagina deve essere
+  caricata da disco
+
+Poiché la MMU contiene solo le pagine residenti $R$ di un dato processo, può
+darsi che la ricerca associativa fallisca. Questo fallimento coincide con la
+mancanza della pagina in memoria centrale e quindi, come nel caso di pagina non
+valida, viene lanciato un segnale di page fault.
+
+Il numero di pagine residenti di ogni processo è ottenuto da una stima del
+cosiddetto Working Set in fase di configurazione. Per Working Set si intende
+quell'insieme di pagine a cui un processo ha fatto accesso le ultime $k$
+richieste alla memoria. Se $k$ è sufficientemente grande il Working Set varia
+molto poco nel tempo. In base alla stima avremo che:
+
+- per $R$ grande otterremo pochi page fault ma meno processi in memoria
+- per $R$ limitato otterremo più processi più piccoli in memoria
+
+#### Immagine su disco
+
+Come detto prima, la memoria virtuale di un processo non è tutta contenuta in
+memoria centrale. La parte non contenuta in memoria centrale deve esistere
+su disco.
+
+La parte di codice esiste già su disco in forma di file eseguibile. I dati
+allocati dinamicamente, che invece sono presenti solo in memoria, sono scaricati
+in una zona del disco detta swap space o swap file.
+
+Un bit di modifica (`dirty`) viene asserito quando si accede in scrittura a una
+pagina fisica corrispondente in modo da gestire la ricopiatura su disco in caso
+di modifiche.
+
+#### Progetto di un sistema di memoria virtuale
+
+I problemi principali sono:
+
+- strategia di caricamento delle pagine:
+  - on demand
+  - working set
+- politica di sostituzione:
+  - LRU
+- dimensione delle pagine
+
+##### On demand paging
+
+All'esecuzione di un nuovo programma la tabella delle pagine viene inizializzata
+con tutti i bit `valid` a 0. All'accesso della prima istruzione da parte della
+CPU si verificherà un page fault e la prima pagina verrà caricata in memoria e
+registrata nella tabella. Ogni volta che si identificherà un indirizzo non
+presente in memoria, si verificherà un altro page fault.
+
+Il metodo on demand viene utilizzato per il caricamento iniziale del programma.
+
+##### Dimensionamento delle pagine e frammentazione
+
+Ad ogni programma viene sempre assegnato un numero intero di pagine. Questo non
+vieta il fatto che alcuni pezzi di pagina vengano inutilizzati.
+
+Considerando pagine da 4096 byte, avremo che per un programma e i suoi dati
+(26000 byte) saranno necessarie 7 pagine, di cui dell'ultima verranno sprecati
+2672 byte.
+
+Per pagine di $n$ byte la quantità media di spazio sprecato nell'ultima pagina
+sarà di $n/2$ byte. Questo porterebbe a minimizzare le dimensioni della pagine.
+Pagine più piccole, però, richiedono una tabella delle pagine più grande e di
+conseguenza una MMU più grande e trasferimenti a disco più frequenti. E' quindi
+necessario equilibrare i vari fattori e non guardare solamente allo spreco di
+spazio.
+
+#### Ottimizzazione della traduzione degli indirizzi
+
+A causa del principio di località, è possibile creare una piccola cache che
+tiene traccia delle traduzioni utilizzate più di recente. Questa cache viene
+chiamata Translation Lookaside Buffer (TLB).
+
+Il TLB identifica le varie NPF in base a una etichetta che corrisponde a parte
+del NPV. Esso contiene anche un bit di validità per indicare se l'associazione
+NPV-NPF è ancora valida, un bit di dirty che indica la modifica di una pagina
+e un bit di utilizzo che indica se la pagina è stata utilizzata di recente.
+
+Con TLB il processo di accesso ad un indirizzo diventa:
+
+- Richiesta indirizzo
+- Richiesta NPV in TLB
+  - Se esiste: legge NPF e costruisci indirizzo
+    - Poni bit di utilizzo a 1 e il dirty a 1 se si tratta di scrittura
+  - Se non esiste: abbiamo un miss del TLB con seguente accesso alla tabella
+    delle pagine
+    - Se la pagina è in memoria centrale viene caricata la traduzione nel TLB
+      e si ripete la procedura
+    - Se la pagina non è in memoria viene lanciato un page fault
+
+In caso di miss del TLB è necessario individuare quale elemento del TLB
+sostituire. La scelta dipende dal grado di associatività:
+
+- se il TLB ha dimensioni piccole, sarà completamente associativo
+- se il TLB ha grandi dimensioni, il grado di associatività sarà basso
+
+Molto spesso si usa una scelta casuale per evitare perdita di prestazioni visto
+che la frequenza di miss tende a essere molto bassa. Un miss del TLB richiede
+una decina di clock per essere gestito. In caso di miss è necessario anche
+copiare i bit di dirty e di utilizzo dell'elemento sostituito nella tabella
+delle pagine.
+
+![TLB, cache e memoria](./img/tlb-cache-mem.png){height=50%}
+
+![Gestione di lettura e scrittura di un dato](./img/mem-rw.png){height=50%}
