@@ -2420,6 +2420,77 @@ una decina di clock per essere gestito. In caso di miss è necessario anche
 copiare i bit di dirty e di utilizzo dell'elemento sostituito nella tabella
 delle pagine.
 
-![TLB, cache e memoria](./img/tlb-cache-mem.png){height=50%}
+![TLB, cache e memoria](./img/tlb-cache-mem.png){width=70%}
 
-![Gestione di lettura e scrittura di un dato](./img/mem-rw.png){height=50%}
+![Gestione di lettura e scrittura di un dato](./img/mem-rw.png){width=70%}
+
+## Misurazione delle prestazioni
+
+Chiamiamo prova l'esecuzione di un programma ad alto livello, compilato ed
+eseguito con certi dati in ingressi. Confrontiamo due computer A e B che
+eseguono la stessa prova. Il parametro più ovvio sarà il tempo di esecuzione
+della prova. La prova misura anche la qualità del compilatore.
+
+A causa della variabilità fra le varie prove, vengono definite un set di prove
+standard detti benchmark standard. I benchmark sono divisi in quelli con base
+intera e quelli con virgola mobile.
+
+Un modo per scegliere il calcolatore è prendere un benchamrk che si avvicina al
+workload necessario e prendere quello con tempo di esecuzione minore.
+
+Confrontare due computer con diverso ISA è molto difficile in base a
+considerazioni su tipo e velocità di esecuzione delle istruzioni. Noi ci
+limiteremo a confrontare calcolatori con lo stesso ISA ma diverse
+implementazioni. Questo ci permette di fare le seguenti ipotesi:
+
+- i due programmi eseguibili sono uguali
+- le istruzioni eseguite per una certa configurazione di ingresso sono uguali
+
+I parametri di prestazione fondamentali di un processore sono:
+
+- $T(P)$ tempo di CPU consumato per eseguire la prova $P$
+- $cicli(P)$ numero di cicli di clock consumati per eseguire la prova $P$
+- $CK$ periodo di clock del processore
+- $FREQ = \frac{1}{CK}$ la frequenza del processore
+
+I parametri relativi alle istruzioni macchina sono:
+
+- $NI(P)$ il numero di istruzioni eseguite durante la prova $P$
+- $CPI(P)=\frac{cicli(P)}{NI(P)}$ cicli di clock per istruzione
+
+Possiamo esprimere il tempo di esecuzione come
+$T(P) = \frac{NI(P)*CPI(P)}{FREQ}$
+
+In una pipeline senza stalli si ha sempre $CPI(P) = 1$. Se invece sono
+introdotti degli stalli, allora avremo $stalli(P)$ il numero di stalli e
+$cicli(P) = NI(P)+stalli(P)+4 \approx NI(P)+stalli(P)$ per numeri grandi.
+Possiamo pertanto ricavare $CPI(P)$ e $T(P)$ in funzione di istruzioni e stalli
+
+$$
+\begin{aligned}
+  CPI(P) & = \frac{cicli(P)}{NI(P)} \approx \frac{NI(P)+stalli(P)}{NI(P)} \\
+  T(P) & = \frac{NI(P)*CPI(P)}{FREQ}
+\end{aligned}
+$$
+
+In questi casi abbiamo considerato che la cache rispondesse sempre in un ciclo.
+Questo però non accade nella realtà. Il numero di stalli causati dalla
+memoria cache sono $stalliM(P)$ e $T(P) = \frac{cicli(P) + stalliM(P)}{FREQ}$.
+Riprendiamo i parametri relativi alla memoria cache:
+
+- $h$ lo hit rate
+- $H$ lo hit time
+- $m = 1-h$ il miss rate
+- $M$ la miss penalty
+- $AMAT = H + m * M$ lo average memory access time
+
+Gli stalli di memoria sono quantificabili come
+$stalliM(P) = stalliR(P) + stalliW(P)$. Supponiamo che la miss penalty sia pari
+sia in lettura che in scrittura (write-through). Pertanto abbiamo che
+
+$$
+\begin{aligned}
+  stalliM(P) & = n_{\text{access mem}}(P) * m * M \\
+  M & = dim_{\text{block}} \, [words] \, * T_{\text{access to mem}}
+\end{aligned}
+$$
