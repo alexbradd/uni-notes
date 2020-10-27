@@ -752,3 +752,188 @@ ed è dotato di ingresso $I$ e di uscite $Z1, Z2$.
 
    ![Diagramma temporale es 7](./img/logica-sequenziale-es7-2.pdf){width=50%}
 
+## 21/10/20
+
+### "pipeline" esercizio 1
+
+Data l'istruzione:
+
+```mips
+0x0000 1000: add $t1, $t0, $t2
+```
+
+con
+
+```txt
+t0: 0x0010 AAAA
+t1: 0x0001 0000
+t2: 0x0000 0010
+```
+
+Completare le tabella con i segnali corrispondenti.
+
+---
+
+| Segnale    | Valore      |
+|------------|-------------|
+| IF/ID.PC   | 0x0000 1004 |
+| IF/ID.istr | add         |
+
+| Segnale           | Valore      |
+|-------------------|-------------|
+| ID/EX.WB.MemToReg | 0           |
+| ID/EX.WB.RegWrite | 1           |
+| ID/EX.M.MemWrite  | 0           |
+| ID/EX.M.MemRead   | 0           |
+| ID/EX.M.Branch    | 0           |
+| ID/EX.PC          | 0x0000 1004 |
+| ID/EX.(RS)        | 0x0010 AAAA |
+| ID/EX.(RT)        | 0x0000 0010 |
+| ID/EX.RT          | 0xA         |
+| ID/EX.RD          | 0x9         |
+| ID/EX.Immediate   | /           |
+| ID/EX.EX.ALUsrc   | 0           |
+| ID/EX.EX.RegDst   | 1           |
+
+| Segnale            | Valore      |
+|--------------------|-------------|
+| EX/MEM.WB.MemToReg | 0           |
+| EX/MEM.WB.RegWrite | 1           |
+| EX/MEM.M.MemWrite  | 0           |
+| EX/MEM.M.MemRead   | 0           |
+| EX/MEM.M.Branch    | 0           |
+| EX/MEM.PC          | /           |
+| EX/MEM.ALU_out     | 0x0010 AABA |
+| EX/MEM.Zero        | 0           |
+| EX/MEM.(Rt)        | /           |
+| EX/MEM.R           | 0x9         |
+
+| Segnale            | Valore      |
+|--------------------|-------------|
+| MEM/WB.WB.MemToReg | 0           |
+| MEM/WB.WB.RegWrite | 1           |
+| MEM/WB.Dato        | X           |
+| MEM/WB.ALU_out     | 0x0010 AABA |
+| MEM/WB.R           | 0x9         |
+
+### "pipeline" esercizio 2
+
+Date le seguenti istruzioni:
+
+```mips
+0x0040 0800: lw $t1, 0x0BBB($t4)
+             nop
+             sw $t3, 0x0AA7($t2)
+             add $t1, $t1, $t2
+             nop
+```
+
+Con:
+
+```txt
+t0: 0x0100 A010 | 0x1060 0C10: 0x0044 0FFF
+t1: 0x0000 1111 | 0x1060 0C21: 0x11FF 0040
+t2: 0x1060 2ABC | 0x1060 3563: 0x48F0 6610
+t3: 0x0050 0000 |
+t3: 0x1060 0066 |
+```
+
+Completare le tabelle con i valori richiesti durante il 5 ciclo di esecuzione.
+
+---
+
+1. indirizzo `lw`: 0x1060 0C21
+2. indirizzo `sw`: 0x1060 3563
+
+| Segnale    | Valore      |
+|------------|-------------|
+| IF/ID.PC   | 0x0040 0814 |
+| IF/ID.istr | nop         |
+
+| Segnale           | Valore      |
+|-------------------|-------------|
+| ID/EX.WB.MemToReg | 0           |
+| ID/EX.WB.RegWrite | 1           |
+| ID/EX.M.MemWrite  | 0           |
+| ID/EX.M.MemRead   | 0           |
+| ID/EX.M.Branch    | 0           |
+| ID/EX.PC          | 0x0040 0810 |
+| ID/EX.(RS)        | 0x11FF 0040 |
+| ID/EX.(RT)        | 0x1060 2ABC |
+| ID/EX.RT          | 0xA         |
+| ID/EX.RD          | 0x9         |
+| ID/EX.Immediate   | /           |
+| ID/EX.EX.ALUsrc   | 0           |
+| ID/EX.EX.RegDst   | 1           |
+
+| Segnale            | Valore      |
+|--------------------|-------------|
+| EX/MEM.WB.MemToReg | X           |
+| EX/MEM.WB.RegWrite | 0           |
+| EX/MEM.M.MemWrite  | 1           |
+| EX/MEM.M.MemRead   | 0           |
+| EX/MEM.M.Branch    | 0           |
+| EX/MEM.PC          | \*          |
+| EX/MEM.ALU_out     | 0x1060 3563 |
+| EX/MEM.Zero        | 0           |
+| EX/MEM.(Rt)        | 0x0050 0000 |
+| EX/MEM.Rt          | 0x9         |
+
+| Segnale            | Valore      |
+|--------------------|-------------|
+| MEM/WB.WB.MemToReg | 0           |
+| MEM/WB.WB.RegWrite | 0           |
+| MEM/WB.Dato        | X           |
+| MEM/WB.ALU_out     | X           |
+| MEM/WB.R           | X           |
+
+Segnali del register file prima del fronte di discesa:
+
+| Segnale       | Valore      |
+|---------------|-------------|
+| Reg letto 1   | $t1         |
+| Reg letto 2   | $t2         |
+| Reg scrittura | $t1         |
+| Dato letto 1  | 0x0000 1111 |
+| Dato letto 2  | 0x1060 2ABC |
+| Dato scritto  | 0x1FFF 0040 |
+
+### "pipeline" esercizio 3
+
+Considera le seguenti istruzioni:
+
+```mips
+1: add $1, $3, $1
+2: and $3, $2, $1
+3: sw  $1, 4($3)
+```
+
+Completa le tabelle.
+
+---
+
+| Istruzione | Dipendenza | Registro | Propagazione | Ciclo |
+|------------|------------|----------|--------------|-------|
+| 2          | 1          | $1       | EX/EX        | 4     |
+| 3          | 1          | $1       | MEM/EX       | 5     |
+| 3          | 2          | $3       | EX/EX        | 5     |
+
+|            | Ciclo 4 | Ciclo 5       |
+|------------|---------|---------------|
+| Istruzione | 2       | 3             |
+| Tipo prop. | EX/EX   | EX/EX, MEM/EX |
+
+|                 | Ciclo 4 | Ciclo 5 |
+|-----------------|---------|---------|
+| ID/EX.Rs        | $2      | $3      |
+| ID/EX.Rt        | $1      | $1      |
+| EX/MEM.R        | $1      | $3      |
+| EX/MEM.RegWrite | 1       | 1       |
+| MEM/WB.R        | /       | $1      |
+| MEM/WB.RegWrite | /       | 1       |
+
+|                | Ciclo 4 | Ciclo 5 |
+|----------------|---------|---------|
+| Mux utilizzato | PB      | PA, PB  |
+| PA             | 00      | 10      |
+| PB             | 10      | 01      |
