@@ -2494,3 +2494,316 @@ $$
   M & = dim_{\text{block}} \, [words] \, * T_{\text{access to mem}}
 \end{aligned}
 $$
+
+## IO a livello hardware
+
+Le unità periferiche interagiscono con il calcolatore attraverso le interfacce
+di ingresso/uscita, dette anche adattatori, collegate al bus di sistema. Le
+interfacce sono, quindi, dispositivi circuitali che consentono al calcolatore
+di scambiare informazioni con le unità periferiche. La struttura delle
+interfacce è costituita, in modo molto schematico, da alcuni registri leggibili
+e/o scrivibili da parte del processore comunicanti con il mondo esterno da
+circuiti ausiliari. Tra l'interfaccia e la periferica sta un bus.
+
+### Registri delle periferiche
+
+Nel dettaglio, una interfaccia è costituita dai seguenti registri:
+
+- Registro dati periferica: contiene i dati che la periferica deve leggere o ha
+  scritto
+- Registro comandi: contiene indicazioni sulle operazione che la periferica deve
+  compiere e sul suo modo di funzionamento
+- Registro di stato periferica: contiene informazioni sullo stato di
+  funzionamento della periferica (es. il bit di ready)
+
+Ci sono due modalità di accesso ai registri delle periferiche:
+
+- Memory mapped IO:
+  - assegna ai registri delle periferiche degli indirizzi di memoria
+  - si utilizzano le stesse istruzioni di accesso alla memoria
+  - MIPS utilizza questa modalità di indirizzamento
+  - Assumiamo che gli indirizzi di memoria da 0 a 255 siano riservati per
+    indirizzare i registri delle periferiche
+- Port mapped IO:
+  - il processore interagisce con le periferiche utilizzando istruzioni macchina
+    specializzate
+  - gli indirizzi di tali registri sono detti port
+  - le istruzioni fondamentali sono `IN port_di_input` e `OUT port_di_output`
+
+### Tecniche di gestione dell'IO
+
+Esistono 3 metodi:
+
+- controllo di programma
+- meccanismo di interruzione
+- accesso diretto alla memoria (DMA)
+
+le tecniche di gestione devono consentire interazioni tra calcolatore e
+periferica per svolgere:
+
+- la sincronizzazione tra periferica e calcolatore
+- il trasferimento del dato da periferica a calcolatore e viceversa
+
+#### Controllo di programma
+
+La sincronizzazione e il trasferimento vengono eseguiti dal programma di
+gestione della periferica (device driver). I compiti del device driver sono:
+
+- legge il registro di stato dell'interfaccia della periferica
+- se lo stato è "non pronto" il programma entra nel ciclo di attesa
+- se la periferica è pronta esegue il trasferimento del dato tramite il registro
+  dati
+
+#### Meccanismo di interruzione
+
+Il problema del controllo di programma è la presenza di un ciclo di attesa sullo
+stato di pronto di una periferica. In un sistema operativo, invece, vogliamo che
+il processore ponga in processo in attesa e passi ad eseguire altre attività
+fino a quando la periferica non diventa pronta. Ciò viene ottenuto utilizzando
+il meccanismo di interrupt: una periferica segnala tramite un apposito interrupt
+il passaggio da occupata a pronta.
+
+Di fatto, il meccanismo di interruzione si basa su una serie di eventi rilevati
+a livello hardware dal processore (interrupt) e su una serie di funzioni, ognuna
+associata in generale ad un evento. Ogni funzione viene chiamata gestore
+dell'interrupt o routine di interrupt. Quando il processore rileva un evento:
+
+- interrompe il programma in esecuzione
+- salta automaticamente ad eseguire la routine di interrupt corrispondente
+- al termine dell'esecuzione della routine, torna ad eseguire il programma che
+  era stato interrotto
+
+Il meccanismo di interruzione è simile a quello di invocazione di una funzione
+in quanto prevede:
+
+- la cessione del controllo dell'esecuzione tra il programma interrotto e la
+  routine di risposta all'interrupt; sarà quindi necessario salvare sullo stack
+  l'indirizzo di ritorno di tale programma
+- il ritorno all'esecuzione del programma interrotto; le routine di risposta
+  all'interrupt utilizzano per il ritorno un'istruzione IRET speciale diversa da
+  una istruzione di ritorno da un routine ordinaria (RFS)
+
+La differenza fondamentale rispetto alle chiamate a funzione è che le routine di
+interrupt sono scatenate da eventi rilevati dal processore e asincroni rispetto
+all'esecuzione del programma che viene interrotto. Gli interrupt, inoltre,
+possono interrompere anche altre routine di interrupt, generando interrupt
+annidati.
+
+#### Accesso diretto alla memoria
+
+Il meccanismo di accesso diretto alla memoria da parte di periferiche prevede
+che il driver della periferica trasferisca in modo autonomo, cioè senza
+l'intervento del processore, un certo numero di dati in memoria centra o dalla
+memoria centrale. Il meccanismo di DMA è utilizzato da periferiche come i dischi
+magnetici dotati di interfacce "intelligenti" che sono in grado di trasferire
+velocemente uno o più settori di disco da o in memoria centrale. Il DMA
+controller effettua il trasferimento dati a blocchi tra periferiche e memoria
+autonomamente. Il controllore è in grado, quindi, di generare segnali per
+accedere alla memoria.
+
+Abbiamo accennato che HDD e SSD usano il DMA per il trasferimento fisico dei
+dati. Dal punto di vista logico (file system) l'indirizzamento dei dati si basa
+sullo schema di indirizzamento LBA (logical block address) nel quale l'intero
+disco è rappresentato come un vettore lineare di blocchi. Useremo il termine
+volume per indicare qualsiasi dispositivo di memorizzazione (HDD o SSD) dotato
+di schema di indirizzamento LBA. A livello logico il blocco costituisce l'unità
+fondamentale di informazione che viene trasferita con una sola operazione tra
+il disco e la memoria centrale.
+
+La tecnica DMA prevede le seguenti fasi:
+
+- Predisposizione: una procedura del SO che scrive nei registri
+  dell'interfaccia:
+  - l'indirizzo della memoria dal quale iniziare il trasferimento
+  - l'indirizzo sulla periferica dal quale iniziare il trasferimento
+  - il numero di dati da trasferire
+  - la direzione del trasferimento
+- Attivazione: la procedura del SO scrive nel registro di controllo
+  dell'interfaccia il comando di avviamento "start" dell'operazione e poi passa
+  ad eseguire altre operazioni
+- Trasferimento di un blocco:
+  - Nel caso di lettura da periferica, ogni volta che dalla periferica arriva un
+    dato all'interfaccia, l'interfaccia scrive il dato in memoria, incrementa
+    l'indirizzo di memoria, decrementa il numero di dati ancora attesi e (se
+    non sono tutti) aspetta il prossimo dato
+  - Nel caso di scrittura su periferica, ogni volta che la periferica è
+    disponibile ad accettare dati, l'interfaccia preleva il dato da memoria,
+    incrementa l'indirizzo di memoria, decrementa il numero di dati ancora da
+    trasferire e (se non sono tutti) aspetta che la periferica sia disponibile
+    per il prossimo dato
+- Conclusione: dopo che l'ultimo dato è stato trasferito l'interfaccia segnala
+  al processore tramite interrupt che l'operazione DMA si è conclusa.
+
+Le periferiche gestite in DMA richiedono che il SO gestisca opportunamente dei
+buffer predisposti al trasferimento dati in modalità DMA da/per le periferiche.
+
+## I bus
+
+Le unità funzionali di un calcolatore sono interconnesse tramite i bus. Un
+transazione di bus (o ciclo di bus) è un insieme di operazioni sul bus che
+permette la:
+
+- transazione di trasferimento: trasferisce una quantità di informazione tra due
+  unità
+- transazione di interrupt: protocollo di segnalazione di un interrupt alla CPU
+
+I bus si distinguono in:
+
+- bus interni: confinati all'interno di una singola unità funzionali
+- bus esterni: collegano più unità funzionali, solitamente standardizzati
+
+I calcolatori più semplici sono dotati si un solo BUS esterno (bus di sistema)
+che collega CPU memoria e IO. La maggior parte dei calcolatori moderni, però, è
+dotata di numerosi bus esterni, in particolare: un bus di memoria e un bus di
+IO.
+
+### Funzionamento
+
+Le attività del calcolatore si sviluppano per cicli di bus: in ogni ciclo
+avviene una operazione. Le operazioni sono governate dal "master", che detiene
+il controllo del bus. Gli "slave" non possono dare inizio a un'operazione in
+modo autonomo. Le operazioni sono, quindi, trasferimenti tra master e slave.
+Può essere necessario specificare se il trasferimento è relativo a memoria o a
+un'interfaccia IO. Le operazioni saranno:
+
+- lettura: un dato viene trasferito da uno slave al master. Lo slave è la
+  sorgente
+- scrittura: un dato viene trasferito dal master a uno slave. Il master è la
+  sorgente
+
+La direzione del trasferimento è relativa al master che detiene in quel momento
+il controllo del bus.
+
+Un bus dovrà possedere le seguenti linee:
+
+- gestione transazione in interrupt: `INT_REQ`, `INT_ACK`
+- gestione transazione di trasferimento: `BUS_BUSY`, `BUS_REQ`, `BUS_GRANT`
+- direzione di trasferimento: `R/W`
+- specifica dell'indirizzo
+- dati
+
+#### Transazione di interrupt
+
+E' l'insieme di operazione che conduce da una segnalazione di interrupt da parte
+di una periferica alla sua presa in carico da parte della CPU. Esistono due modi
+di collegare le linee di interrupt con la CPU:
+
+- `INT_REQ` (richiesta di interrupt) in `wired or`
+- `INT_ACK` (accettazione dell'interrupt) in `daisy chain` per la propagazione
+  segnale
+
+![Cablaggio delle linee di interrupt](./img/bus-interrupt.png){width=50%}
+
+#### Transazione di trasferimento
+
+Una transazione di trasferimento si può generalmente scomporre in:
+
+- fase di arbitraggio: selezione un'unità (master) che controlla il bus
+- fase di trasferimento: avvengono le seguenti operazioni
+  - Il master seleziona un'altra unità (slave) con la quale operare
+  - il master indica la direzione di trasferimento
+  - viene effettuato il trasferimento
+
+Le unità che sono master o slave sono fissate per ogni singola operazione di
+trasferimento del bus, ma possono variare tra operazione diverse.
+
+Nei sistemi multiprocessore le diverse CPU possono tutte diventare master. In
+determinate circostanze anche altre unità possono diventare master.
+
+La fase di arbitraggio del prossimo master può essere sovrapposta alla fase di
+trasferimento controllata dal master corrente. Questo collegamento prevede:
+
+- un'unità funzionale apposita, che svolge la funzione di arbitro del bus;
+  talvolta tale attività è svolta dalla CPU
+- alcune linee che collegano l'arbitro alle unità funzionali potenziali
+  richiedenti il controllo del bus:
+  - `BUS_REQUEST` (`wired or`): richiesta di cessione del controllo
+  - `BUS_BUSY` (`wired or`): indicazione che esiste un master corrente che sta
+    eseguendo un trasferimento
+  - `BUS_GRANT` (`daisy chain`): conferma della cessione di controllo
+
+![Cablaggio delle linee di trasferimento](./img/bus-transfer.png){width=50%}
+
+Il segnale `BUS_BUSY` è asserito dall'unità master fino a quando ha terminato di
+usare il bus per un trasferimento. Dato che questa linea è leggibile da tutte le
+unità, l'unità che diventa il prossimo master può controllarla e attendere che
+il bus diventi libero prima di iniziare a utilizzarlo.
+
+#### Temporizzazione
+
+Per realizzare la scansione dei cicli di BUS esistono due metodi fondamentali:
+
+- bus sincrono: funzionamento governato da un clock
+- bus asincrono: funzionamento governato solo dalle interazione master-slave
+
+##### Bus sincrono
+
+Il bus di controllo contiene una linea per il segnale di clock a una frequenza
+prestabilita. Il clock viene distribuito a tutte le unità funzionali collegate
+al bus. Il segnale di clock scandisce le varie transizione di segnale e il
+passaggio da un ciclo di bus al ciclo successivo. Tutte le unità sanno sempre
+quando si passa al ciclo successivo. La durate del ciclo di bus dipende dai
+dispositivi e dalla latenza/propagazione.
+
+I segnali richiedono tempo per propagarsi da un'unità all'altra a causa della
+distanza (fisica e strutturale) tra le varie unità. I segnali che partono allo
+stesso istante possono, quindi, arrivare sfasati tra loro. La velocità di clock
+va, quindi calibrata in modo da garantire che tutti i segnali siano arrivati a
+tutte le unità durante il primo ciclo. In caso contrario può accadere che uno
+slave non riconosca il proprio indirizzo oppure un'unità diversa dallo slave
+interpreti il segnale come suo. In bus sincrono può, quindi, operare velocemente
+solo se collegato a poche unità vicine con tempi di risposta omogenei.
+
+##### Bus asincrono
+
+Non esiste alcun segnale di clock comune. Le transizioni di segnale e il
+passaggio da un ciclo di bus al ciclo successivo non sono sincronizzati. Le
+unità funzionali osservano il bus di controllo: quando avviene una transizione
+di segnale significa che avviene un avanzamento dell'operazione. Il bus è dotato
+di opportuni segnali di controllo che realizzano un protocollo di
+sincronizzazione (handshake).
+
+I segnali di controllo dell'handshake sono:
+
+- `MSYN` (Master Synchronization): l'unità master è pronta e segnala di aver
+  impostato l'indirizzo (`MREQ`) e `RD` (in caso di lettura)
+- `SSYN` (Slave Synchronization): l'unità slave è pronta e segnala di aver
+  completato l'operazione
+
+Poiché non esiste un segnale di clock che marchi gli istanti di tempo in cui i
+vari segnali di controllo si possono attivare o disattivare, nel diagramma
+temporale vanno indicati i rapporti causa-effetto esistenti tra i vari segnali
+di controllo. I segnali di controllo transitano di valore in reazione a
+transizione precedenti.
+
+![Operazione di lettura sul bus asincrono](./img/bus-async-read.png){width=50%}
+
+Scomponiamo le varie fasi:
+
+- $t_0$: il master manda l'indirizzo sul bus indirizzi, attiva `MREQ` e `RD`
+- $t_1$: il master attiva `MSYN`
+- $[t_0; t_1]$: compensa lo sfasamento temporale dovuto alla propagazione del
+  segnale nel bus
+- $t_2$: lo slave esegue l'operazione e fornisce la parola sul bus dati, poi
+  attiva `SSYN`
+- $[t_1; t_2]$: vara in base alle unità coinvolte e deve tenere conto del
+  ritardo con cui l'unità slave emettono il dato sul bus e il ritardo di
+  propagazione nel bus
+- $t_3$: `SSYN` arriva al master e rende noto che il dato è presenti sul bus,
+  poi disattiva `MSYN`
+  - Il master, prima di leggere il dato dal bus dati, deve attendere eventuali
+    ritardi di propagazione del dato e tempo di setup del registro
+- $t_4$: il master ogni l'indirizzo e comandi dal bus
+- $t_5$: lo slave disattiva `SSYN`
+
+Lo schema asincrono appena visto p incentrato sulla seguente procedura:
+
+- `MSYN` viene attivato
+- `SSYN` viene attivato in risposta a `MSYN`
+- `MSYN` viene disattivato in risposta a `SSYN`
+- `SSYN` viene disattivato in risposta a `MSYN`
+
+La procedura si chiama full-handshake ed è indipendente dal clock ed è
+insensibile alla presenza di slave lenti. La procedura si dice
+"fully-interlocked" in quanto ogni volta uno dei due segnali di sincronismo
+varia, varia anche l'altro.
