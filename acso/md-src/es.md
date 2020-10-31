@@ -937,3 +937,93 @@ Completa le tabelle.
 | Mux utilizzato | PB      | PA, PB  |
 | PA             | 00      | 10      |
 | PB             | 10      | 01      |
+
+## 29/10/20
+
+### "simulazione memorie cache" es 1
+
+Si consideri un sistema di memoria caratterizzato dalle seguenti dimensioni:
+
+- memoria centrale di 4 KiB, indirizzata al byte
+- cache di 1 KiB, indirizzata al byte
+- un blocco di di cache di 256 byte
+
+Considerando la sequenza di richieste riportata, si chiede di completare la
+tabella che illustra il comportamento di un cache a indirizzamento diretto con
+le seguenti indicazioni:
+
+- indicare l'esito dell'azione (`H/M`)
+- nella colonna dato indicare il blocco di memoria contenuto nel blocco di cache
+  in decimale
+- nella colonna relativa all'etichetta indicare l'etichetta in binario
+
+---
+
+Formato informazioni blocco:
+
+- Valido: 1
+- Etichetta: 2
+- Dati: Rimanente
+
+Esempio: `1 00 15`
+
+| indirizzo        | Esito | Blocco 0  | Blocco 1  | Blocco 2  | Blocco 3  |
+|------------------|-------|-----------|-----------|-----------|-----------|
+| Situazione iniz. | -     | `1 00 00` | `0 11 02` | `1 01 03` | `0 10 xx` |
+| `1110 1110 0010` | `M`   | -         | -         | `1 11 14` | -         |
+| `0001 1110 0010` | `M`   | -         | `1 00 01` | -         | -         |
+| `0001 0011 1001` | `H`   | -         | -         | -         | -         |
+| `1100 0000 0010` | `M`   | `1 00 12` | -         | -         | -         |
+| `0011 1111 1110` | `M`   | -         | -         | -         | `1 00 03` |
+| `1001 0100 0111` | `M`   | -         | `1 10 09` | -         | -         |
+
+### "temi cache" es 1
+
+Si consideri una gerarchia di memoria composta dalla memoria centrale da 1 GiB
+indirizzabile al byte con parola di 32 bit, una memoria cache istruzione e una
+memoria cache dati da 512 KiB ciascuna, entrambe a indirizzamento diretto con
+blocchi da 512 B.
+
+Il tempo di accesso alla cache è pari a 1 ciclo di clock. Il tempo di accesso
+alla memoria centrale è pari a 20 cicli di clock per la prima volta e 3 cicli di
+clock per le parole a indirizzi successivi (memoria interlacciata). Il bus dati
+è da 32 bit.
+
+1. Indicare la struttura degli indirizzi di memoria per le memorie cache
+2. Calcolare il tempo necessario per caricare un blocco in caso di fallimento
+3. Si supponga una cache dati vuota; viene mandato in esecuzione un programma
+   che carica sequenzialmente un file da 1026 blocchi e quindi accede
+   sequenzialmente a tutte le parole dei blocchi 0, 1, 1023, 1024, 1025 per 9
+   volte. Calcolare il numero di fallimenti della cache dati.
+4. Calcolare il miss rate della cache dati del programma nel punto precedente
+5. Calcolare il tempo medio di accesso alla memoria del programma del punto 3
+   sapendo che il miss rate della cache istruzione è del 2% e la percentuale di
+   accesso ai dati è del 50%
+
+---
+
+1. Avremo $2^{30}$ indirizzi e $2^{10}$ blocchi, quindi:
+
+   ```txt
+   29          18       8              0
+   +-----------+--------+--------------+
+   | Etichetta | Indice | Spiazzamento |
+   +-----------+--------+--------------+
+   ```
+
+2. Miss penalty: $M_{penalty} = 20 + 127 * 5 = 655 \text{cicli}$
+3. Numero fallimenti: $1024 + 2 + 9 * (2 + 2) = 1062 \text{miss}$
+4. Miss rate cache dati:
+   $M_{dati} = \frac{1062}{(1024 + 5 * 9) * 128} = 0.008 = 0.8\%$
+5. Tempo medio di accesso alla memoria:
+
+   $$
+   \begin{aligned}
+      AMAT_{dati} & = h + M_{dati} * M_{penalty} = 1 + 0.008 * 655 =
+         6.24 \text{cicli} \\
+      AMAT_{istruzioni} & = h + M_{istruzioni} * M_{penalty} =
+         1 + 0.02 * 655 = 14.1 \text{cicli} \\
+      AMAT & = \frac{100}{150} AMAT_{istruzioni} + \frac{50}{150} AMAT_{dati} =
+         11.41 \text{cicli}
+   \end{aligned}
+   $$
