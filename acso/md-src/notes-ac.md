@@ -1,4 +1,4 @@
-# Appunti ACSO
+# Appunti di architettura dei calcolatori
 
 ## I principi fondamentali
 
@@ -2807,3 +2807,4 @@ La procedura si chiama full-handshake ed è indipendente dal clock ed è
 insensibile alla presenza di slave lenti. La procedura si dice
 "fully-interlocked" in quanto ogni volta uno dei due segnali di sincronismo
 varia, varia anche l'altro.
+
