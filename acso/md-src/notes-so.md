@@ -39,7 +39,7 @@ La memoria di ogni processo è divisa in diverse parti dette segmenti:
 Il sistema operativo fornisce a servizio delle applicazioni dei servizi di
 sistema per la manipolazione dei processi.
 
-### Chiamate di sistema per la gestione dei processi
+### Chiamate di sistema per la gestione dei processi (POSIX)
 
 1. Creazione di un processo figlio: `pid_t fork(void)`
 
@@ -83,6 +83,8 @@ Proviamo a scrivere un semplice programma che usa queste chiamate di sistema:
 ```c
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 int main(int argc, char **argv) {
   pid_t pid, pidr;
@@ -100,6 +102,120 @@ int main(int argc, char **argv) {
     pidr = wait(&stato_exit);
     exit(ret_status);
   }
+}
+```
+
+## I thread
+
+Abbiamo due esigenze nel nostro modello di parallelizzazione:
+
+- Creare programmi concorrenti senza cooperazione tra di loro
+- Creare attività che devono condividere dati e sincronizzarsi tra di loro
+
+Il primo è realizzato tramite i processi, il secondo invece grazie ai thread.
+
+Un thread non è altro che un flusso di controllo, ossia una sequenza di
+istruzioni. Più thread possono essere attivi contemporaneamente. A differenza
+dei processi, i thread non possono esistere da soli, ma devono essere sempre
+contenuti in un processo. Ogni processo ha almeno 1 thread.
+
+Una rappresentazione schematica dei thread e dei processi può essere:
+
+```txt
+             Processo
++--------------------------------+
+| codice, dati, file e sistema   |
++----------+----------+----------+
+| Thread 1 | Thread 2 | Thread 3 |
+| Registri | Registri | Registri |
+| Stack    | Stack    | Stack    |
+| ...      | ...      | ...      |
++----------+----------+----------+
+```
+
+I thread, quindi, condividono memoria, codice e risorse tra di loro. Il loro
+vantaggio è, oltre la condivisione della memoria, l'assenza della necessità di
+duplicazione delle strutture necessarie per la virtualizzazione delle risorse
+necessarie per generare un nuovo processo. La creazione e la distruzione di
+thread è, quindi, molto più economica dell'equivalente con i processi.
+
+Ad ogni thread è associato uno stato:
+
+- Esecuzione: in esecuzione sulla CPU (1 thread per CPU, noi ne assumeremo 1)
+- Attesa: bloccato da operazioni di attesa (IO, `wait()` o altri eventi esterni)
+- Pronto: in attesa di essere eseguito sulla CPU
+
+Ad ogni thread è anche associato un Thread ID univoco all'interno del
+processo. La terminazione del processo implica la terminazione di tutti
+i suoi thread, indipendentemente dal loro stato. Sarà compito del
+programmatore far sì che un processo termini dopo che tutti i suoi
+thread hanno terminato l'esecuzione.
+
+L'ordine di esecuzione dei thread non è definito.
+
+Utilizzeremo le API per il threading POSIX in C. La libreria di gestione che
+useremo è la NPTL (Native POSIX Thread Library) fornita da Linux. Nel modello di
+esecuzione che useremo i thread sono tutti visibili al kernel del sistema
+operativo e ne gestisce il tempo di esecuzione.
+
+### Differenza tra concorrenza e parallelismo
+
+Diamo un po' di definizioni:
+
+- Sequenziali - Due attività si dicono sequenziali se è possibile stabilire che
+  una attività è sempre svolta dopo un'altra. Lo indicheremo con
+  $A < B \lor B < A$
+- Concorrenti - Due attività sono concorrenti se non sono sono sequenziali.
+- Parallele - Due attività di dicono parallele se non è possibile stabilire un
+  ordine di esecuzione tra le istruzioni delle due.
+
+Se il numero di CPU è 1, la concorrenza e il parallelismo vengono a coincidere.
+
+### Chiamate di sistema per la gestione dei thread (POSIX)
+
+1. Creazione:
+   `int pthead_create(pthread_t*, pthread_attr_t*, void* (*)(void*), void*)`
+
+   Viene creato un thread con thread id puntato dall'argomento passato.
+   Questo thread eseguirà la funzione passata come argomento e riceverà come
+   argomenti l'array passato. La struttura `pthread_attr_t` contiene degli
+   attributi del thread; se come puntatore a questa struttura viene passato NULL
+   vengono usati gli attributi standard. La funzione ritorna 0 se tutto va a
+   buon fine e un codice di errore altrimenti.
+
+2. Attesa: `int pthread_join(pthread_t*, int*)`
+
+   Il thread che la invoca si pone in attesa della terminazione di un altro
+   thread con thread id passato in argomento. Il valore di ritorno del thread
+   che si sta attendendo viene salvato nell'interno passato. La funzione ritorna
+   0 se va a buon fine e un codice di errore altrimenti.
+
+3. Terminazione: `void pthread_exit(int)`
+
+   Termina l'esecuzione del thread passando un codice al thread che si è messo
+   in attesa tramite `pthread_join()`.
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+
+void *tf1(void *tid) {
+  int conta = 0;
+  conta++;
+  printf("Sono thread n %d; conta = %d\n", (int)tid, conta);
+  return NULL;
+}
+
+int main(void) {
+  pthread_t tid1, tid2;
+
+  pthread_create(&tid1, NULL, &tf1, (void*) 1);
+  pthread_create(&tid2, NULL, &tf1, (void*) 2);
+
+  pthread_join(tid1, NULL);
+  pthread_join(tid2, NULL);
+
+  return 0;
 }
 ```
 
