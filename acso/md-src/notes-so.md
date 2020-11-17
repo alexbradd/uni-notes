@@ -219,3 +219,142 @@ int main(void) {
 }
 ```
 
+### Sincronizzazione di thread
+
+La sincronizzazione dei thread serve a coordinare l'accesso alle risorse
+condivise, coordinare l'allocazione delle risorse o consentire una esecuzione
+deterministica.
+
+I thread possono sincronizzarsi o su base temporale tramite message-passing o
+tramite altri metodi non su base temporale. Per creare il secondo tipo di
+sincronizzazione è necessario garantire serializzazione e la mutua esclusione.
+
+#### I mutex
+
+Analizziamo un caso di conflitto su variabili globali: lo schema
+produttore-consumatore. Risulteranno in un conflitto tutte le operazioni del
+tipo `x = f(x)`. Per risolvere questo tipo di conflitti basta definire
+una serie di operazioni atomiche indivisibili. Le uniche operazioni
+veramente atomiche, però, sono quelle del linguaggio macchina e non quelle di
+un linguaggio di alto livello come il C.  Sarà quindi necessario definire dei
+metodi per rendere delle operazioni di alto livello atomiche: le sezioni
+critiche.
+
+Le sezioni critiche vengono create tramite dei costrutti messi a disposizione
+dalla libreria di threading: i mutex. Un mutex si comportano come un lucchetto:
+esso può essere attivato da un thread (prende possesso del mutex) e blocca
+l'esecuzione della sezione critica finché il thread che lo aveva bloccato non
+lo sblocca (lo rilascia). Tutti i thread che incontrano un mutex bloccato
+verranno messi in attesa.
+
+Ecco le funzioni di libreria per la gestione dei mutex:
+
+1. Creazione: `int pthread_mutex_init(pthread_mutex_t*, pthread_mutexattr_t*)`
+2. Bloccaggio del mutex: `int pthread_mutex_lock(pthread_mutex_t*)`
+3. Sbloccaggio del mutex: `int pthread_mutex_unlock(pthread_mutex_t*)`
+
+#### Realizzazione di un mutex
+
+Come possiamo implementare un mutex? Usiamo un caso speciale di un costrutto di
+sincronizzazione più generico: il semaforo binario. Consideriamo le seguente
+implementazione assai semplificata.
+
+```c
+typedef int mutex;
+
+void mutex_init(mutex *m) {
+  *m = 0;
+}
+
+void mutex_lock(mutex *m) {
+  while (*m == 1)
+    ;
+  *m = 1;
+}
+
+void mutex_unlock(mutex *m) {
+  *m = 0;
+}
+```
+
+Rimane ancora il problema della non atomicità del ciclo in `mutex_lock()`.
+Proviamo a usare 2 variabili. Per semplificare l'implementazione consideriamo
+solo 2 thread.
+
+```c
+
+typedef struct {
+  int blocca1; // thread 1 vuole entrare nella sezione critica
+  int blocca2; // thread 2 vuole entrare nella sezione critica
+} mutex;
+
+void mutex_init(mutex *m) {
+  m->blocca1 = 0;
+  m->blocca2 = 0;
+}
+
+void mutex_lock(mutex *m) {
+  if (is_thead_id(1)) {
+    m->blocca1 = 1; // 1
+    while (m->blocca2 == 1) // 2
+      ;
+  }
+  if (is_thread_id(2)) {
+    m->blocca2 = 1; // 3
+    while (m->blocca1 == 1) // 4
+      ;
+  }
+}
+
+void mutex_unlock(mutex *m) {
+  if (is_thread_id(1))
+    m->blocca1 = 0;
+  if (is_thread_id(2))
+    m->blocca2 = 0;
+}
+```
+
+Questa implementazione garantisce la mutua esclusione, ma crea un altro
+problema: nessun thread riesce ad accedere alla sezione critica. Infatti se la
+funzione `mutex_lock()` nel primo thread viene interrotta durante l'istruzione 1
+e il secondo thread riprende eseguendo 3 e viene anch'esso interrotto cadremo in
+stallo (deadlock). Proviamo con 3.
+
+```c
+typedef struct {
+  int blocca1;  // thread 1 vuole entrare nella sezione critica
+  int blocca2;  // thread 2 vuole entrare nella sezione critica
+  int favorito; // garantisce che un thread possa sempre progredire
+} mutex;
+
+void mutex_init(mutex *m) {
+  m->blocca1 = 0;
+  m->blocca2 = 0;
+  m->favorito = 1;
+}
+
+void mutex_lock(mutex *m) {
+  if (is_thread_id(1)) {
+    m->blocca1 = 1;
+    m->favorito = 2;
+    while (m->blocca1 == 1 & m->favorito == 2)
+      ;
+  }
+  if (is_thread_id(2)) {
+    m->blocca2 = 1;
+    m->favorito = 1;
+    while (m->blocca2 == 1 & m->favorito == 1)
+      ;
+  }
+}
+
+void mutex_unlock(mutex *m) {
+  if (is_thread_id(1))
+    m->blocca1 = 0;
+  if (is_thread_id(2))
+    m->blocca2 = 0;
+}
+```
+
+Con l'utilizzo di 3 variabili siamo riusciti a rendere impossibile il deadlock.
+
