@@ -276,3 +276,11 @@ treffe sie manchmal denn wir skypen oft.
 4. Entschuldigung, wo ist der Kaffee?
    Gehen sie geradeaus und dann nach links. Der Kaffee ist neben der Brot.
 
+## Übung d Seite 41 AB
+
+1. Der Herd ist zwischen dem Kühlschrank und dem Waschbecken.
+2. Die Kühlschrank steht vor der Wand.
+3. Der Tisch steht vor dem Waschbecken.
+4. Die Stühle sind am Tisch.
+5. Die Lampe hängt an der Decke.
+
