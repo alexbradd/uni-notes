@@ -284,3 +284,29 @@ treffe sie manchmal denn wir skypen oft.
 4. Die Stühle sind am Tisch.
 5. Die Lampe hängt an der Decke.
 
+## Übung 2 Seite 38 AB
+
+1. Die Bleistifte steht auf der Tisch.
+2. Die Bild hängt über dem Bett
+3. Der Teppich ist am Boden.
+4. Die Dusche ist neben der Waschmaschine.
+5. Das Sofa ist vor dem Fernseher.
+
+## Übung 3 Seite 38 AB
+
+1. (a3) Im Flure haben wir keine Fenster.
+2. (b6) Im Bad haben wir eine Dusche, aber keine Badewanne.
+3. (c2) Im Wohnzimmer steht unser Fernseher.
+4. (d1) Die Toilette ist im Badezimmer.
+5. (e5) In der Küche kochen wir.
+6. (f4) Im Schlafzimmer steht unser Bett.
+
+## Übung 9 Seite 39 AB
+
+1. Johanna sucht die Hose im Schrank, auf dem Stuhl und auf dem Bett. Sie kann
+   die Hose nicht finden.
+2. Klaus sucht der Reisepass auf dem Tisch und im Bücherregal zwischen dem
+   Bücher. Er findet die Reisepass im Bücherregal.
+3. Maria sucht die Brille neben dem Radio und unter dem Bett, im Schlafzimmer.
+   Sie kann die Brille nicht finden.
+
