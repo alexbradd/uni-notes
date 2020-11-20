@@ -253,7 +253,7 @@ Ecco le funzioni di libreria per la gestione dei mutex:
 2. Bloccaggio del mutex: `int pthread_mutex_lock(pthread_mutex_t*)`
 3. Sbloccaggio del mutex: `int pthread_mutex_unlock(pthread_mutex_t*)`
 
-#### Realizzazione di un mutex
+##### Realizzazione di un mutex
 
 Come possiamo implementare un mutex? Usiamo un caso speciale di un costrutto di
 sincronizzazione più generico: il semaforo binario. Consideriamo le seguente
@@ -357,4 +357,163 @@ void mutex_unlock(mutex *m) {
 ```
 
 Con l'utilizzo di 3 variabili siamo riusciti a rendere impossibile il deadlock.
+
+#### I semafori
+
+I semafori generalizzano il sistema di bloccaggio introdotto dai mutex. Un
+semaforo non è altro che una variabile intera sulla quale si può operare nel
+modo seguente:
+
+- inizializzata con un valore intero
+- incrementata di 1
+- decrementata di 1
+
+Per standard POSIX un semaforo non può assumere valori negativi.
+
+Nella libreria `pthread` (header `<semaphore.h>`) esiste il tipo `sem_t` e sono
+dichiarate le seguenti funzioni:
+
+- `int sem_init(sem_t *, int, unsigned int)`
+
+  Inizializza il semaforo a un valore intero senza segno. Possono essere passati
+  dei flag (secondo intero), noi lo considereremo sempre 0.
+
+- `int sem_wait(sem_t*)`
+
+  Decrementa il semaforo; se esso è già 0 essa blocca il thread finché un altro
+  thread non incrementa il semaforo.
+
+- `int sem_post(sem_t*)`
+
+  Incrementa il semaforo
+
+- `int sem_getvalue(sem_t*, int*)`
+
+  Restituisce il valore corrente del semaforo.
+
+Il valore del semaforo rappresenta, quindi, il numero di thread che possono
+concorrentemente accedere a una risorsa. L'uso di un semaforo più semplice di un
+semaforo è quello di segnalare ad un altro thread che è avvenuto un evento.
+Possiamo così risolvere il problema della serializzazione di eventi.
+
+##### Utilizzi dei semafori
+
+- Rendezvous:
+
+  ```c
+  sem_t a_ok, b_ok;
+
+  void *tf1(void *a) {
+    a1();
+
+    sem_wait(&b_ok);
+    sem_post(&a_ok);
+
+    a2();
+    return NULL;
+  }
+
+  void *tf2(void *a) {
+    b1();
+
+    sem_post(&b_ok);
+    sem_wait(&a_ok);
+
+    b2();
+    return NULL;
+  }
+
+  int main(void) {
+    ....
+    sem_init(&a_ok, 0, 0);
+    sem_init(&b_ok, 0, 0);
+    ...
+  }
+  ```
+
+- Implementazione di un mutex:
+
+  ```c
+  sem_t mutex;
+  int i = 0;
+  
+  void *tf(void*a) {
+    sem_wait(&mutex)
+    i += 1;
+    sem_post(&mutex);
+    return NULL;
+  }
+  
+  int main(void) {
+    ...
+    sem_init(&mutex, 0, 1);
+    ...
+  }
+  ```
+
+  Se inizializzo il semaforo a `n >= 1` possiamo garantire l'accesso concorrente
+  a `n` thread.
+
+- Barriera - tutti i thread si sincronizzano in un punto
+
+  ```c
+  #define T ...
+
+  sem_t barriera;
+  mutex_t mutex;
+  int count; // quanti thread sono arrivati alla barriera
+
+  void *tf(void *a) {
+    ...
+    pthread_mutex_lock(&mutex)
+    count++;
+    pthread_mutex_unlock(&mutex);
+    if (count == T)
+      sem_post(&barriera);
+    else {
+      sem_wait(&barriera);
+      sem_post(&barriera);
+    }
+    ...
+  }
+
+  int main(void) {
+    ...
+    sem_init(&barriera, 0, 0);
+    ...
+  }
+  ```
+
+- Problema dei 5 filosofi
+
+  ```c
+  sem_t forchette[5];
+
+  void mangia(void) { ... }
+
+  void *filosofo(void *arg) {
+    int index = (int) arg;
+    if (index >= 0 && index <=3) {
+      sem_wait(&forchette[index]);
+      sem_wait(&forchette[index + 1]);
+      mangia();
+      sem_post(&forchette[index]);
+      sem_post(&forchette[index + 1]);
+    } else {
+      sem_wait(&forchette[0]);
+      sem_wait(&forchette[index]);
+      mangia();
+      sem_post(&forchette[0]);
+      sem_post(&forchette[index]);
+    }
+    return NULL;
+  }
+
+  int main(void) {
+    ...
+    for (int i = 0; i < 5; i++)
+      sem_init(&forchette[i], 0, 1);
+    ...
+  }
+  ```
 
