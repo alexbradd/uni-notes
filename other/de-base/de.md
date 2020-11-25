@@ -310,3 +310,18 @@ treffe sie manchmal denn wir skypen oft.
 3. Maria sucht die Brille neben dem Radio und unter dem Bett, im Schlafzimmer.
    Sie kann die Brille nicht finden.
 
+## Übung 6 Seite 41
+
+1. Julia kauft für ihren Mann ein Buch. Raul und Ines kaufen für ihren Vater
+   Tennisbälle.
+2. Pablo kauft für seine Frau eine Lampe. Raul und Ines kaufen für ihre Mutter
+   Blumen.
+3. Pablo und Julia kaufen für ihren Sohn ein Fussball. Ines kauft für ihren
+   Bruder ein CD
+4. Raul kauft für seine Schwester eine Schokolade. Pablo und Julia kaufen für
+   ihre Tochter ein Handy.
+
+## Übung c Seite  43
+
+In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
+
