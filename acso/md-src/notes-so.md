@@ -1,6 +1,6 @@
 # Appunti di sistemi operativi
 
-## I processi
+## Generalità sui processi
 
 Il sistema operativo mette a disposizione dell'utente (un programma in
 esecuzione) una macchina virtuale che astrae la macchina fisica creando un
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-## I thread
+## Generalità sui thread
 
 Abbiamo due esigenze nel nostro modello di parallelizzazione:
 
@@ -516,4 +516,443 @@ Possiamo così risolvere il problema della serializzazione di eventi.
     ...
   }
   ```
+
+## Il kernel Linux
+
+Considereremo una variante semplificata del kernel circa versione 2.6 con
+architettura x86_64.
+
+### Accesso alle periferiche
+
+L'accesso alle periferiche viene assimilato a dei file speciale. Un programma
+non ha necessità di conoscere i dettagli delle periferiche per utilizzare la
+periferica. E' il device driver a gestire le caratteristiche delle periferiche.
+
+Per rendere il sistema più flessibile e permettere il supporto di nuove
+periferiche è presente un sistema di inserzione/rimozione di moduli.
+
+### I processi
+
+Per linux i thread sono processi leggeri (LWP) e come tutti processi hanno un
+PID. Per rimanere aderente allo standard POSIX, è definita una coppia di
+identificatori, il PID e il TGID (Thread Group ID). Alla creazione di un
+processo, al suo main thread viene assegnato un nuovo PID, coincidente al TGID.
+Tutti i thread appartenenti a quel processo avranno TGID uguale e diverso PID.
+Questi due identificatori sono reperibili tramite le funzioni `getpid()` e
+`gettid()`:
+
+- `gettid()` restituisce il PID del processo (LWP)
+- `getpid()` restituisce il TGID
+
+Il multitasking in linux viene gestito tramite time-sharing: a ogni processo è
+assegnato un quanto di tempo e alla scadenza di questo il processo viene sospeso
+(preemption) e un nuovo processo può iniziare a utilizzare il processore. Un
+processo può anche sospendere la propria esecuzione volontariamente dopo aver
+richiesto un servizio di sistema. La sostituzione di un processo in esecuzione
+con un altro è chiamo context switch. Per context si intende l'insieme di
+informazioni relative ad ogni processo che il sistema gestisce. Quando un
+processo è in esecuzione, una parte del suo contesto è nei registri della CPU
+(Hardware Context) e una parte è in memoria; quando il processo non è in
+esecuzione, tutto il suo contesto è in memoria. E' lo scheduler a decidere
+quando effettuare un context switch tra processi in base ad una politica di
+scheduling.
+
+Linux supporta anche architetture multiprocessore del tipo SMP (Symmetric
+Multiprocessing). Essa ha:
+
+- 2 o più processori identici collegati a una singola memoria centrale
+- hanno accesso a tutti i dispositivi periferici
+- sono controllati da un singolo sistema operativo e vengono considerati
+    identici
+
+L'approccio di linux al SMP consiste nell'allocare ogni task (sinonimo di
+processo in gergo linux) a una CPU. Questi task possono essere rilocati tra le
+varie CPU per bilanciare il carico. Lo spostamento di un task tra varie CPU
+richiede lo svuotamento delle cache e introduce latenza nell'accesso alla
+memoria. Per i nostri scopi non è necessario considerare la presenza di più
+processori in quanto un processo è eseguito da un solo processore e non è
+influenzato dagli altri.
+
+Il kernel Linux viene detto non-preemptable: è proibita la preemption
+(l'interruzione) di un processo quando esegue codice del sistema operativo.
+Questa caratteristica semplifica assai la realizzazione del kernel.
+
+Le informazioni relative ad ogni processo è rappresentata in strutture dati
+mantenute dal sistema. Le strutture dati usate per rappresentare/salvare il
+contesto di un processo sono:
+
+- il descrittore del processo; l'indirizzo del descrittore del processo
+    costituisce un identificatore univoco del processo
+- una pila di di sistema operativo del processo
+
+### Descrittore del processo
+
+Viene allocata dinamicamente nella memoria dinamica del kernel ogni volta che
+viene creato un nuovo processo. La struttura semplificata è la seguente:
+
+```c
+#include <linux/sched.h>
+
+struct task_truct {
+  pid_t                pid;
+  pid_t                gid;
+  volatile long        state;       /* -1 unrunnable, 0 runnable, >0 stopped */
+  void                 *stack       /* punta fine della system stack */
+
+  struct thread_struct thread;      /* hardware context */
+  ...
+
+  struct mm_struct     *mm;         /* mappature di memoria */
+
+  int                  exit state;
+  int                  exit_code;
+  int                  exit_signal;
+
+  struct fs_struct     *fs;         /* informazione su file system */
+  struct files_struct  *files;      /* file aperti */
+}
+```
+
+Ogni processo contiene due stack: la system stack e user stack. La system stack
+è usata durante le chiamate a sistema ed è vuota durante le chiamate di sistema
+con solo uno `struct thread_info` al suo fondo. La struttura che contiene le
+informazioni dello hardware context dipende dall'architettura. Nel caso dello
+X86_64 la forma semplificata è:
+
+```c
+struct thread_struct {
+  ...
+  unsigned long sp0;    /* base della system stack */
+  unsigned long sp;     /* posizione nella system stack */
+  unsigned long usersp; /* posizione nella user stack */
+  ...
+}
+```
+
+### Meccanismi hardware di supporto
+
+Il metodo principale di comunicazione tra hardware e kernel sono le strutture
+dati ad accesso hardware, ossia strutture alle quali l'hardware può accedere
+autonomamente per eseguire alcune operazioni. Il sistema accede a queste
+strutture per impostare valori per governare l'hardware o leggerne i valori per
+determinarne lo stato.
+
+La principale di queste strutture è il registro di stato o PSR (Process Status
+Register). Questo registro contiene tutta l'informazione di stato che
+caratterizza la situazione del processore escluse alcune informazioni alle quali
+è dedicato un registro a parte. Noi vedremo una gestione semplificata del PSR in
+quanto quella reale è assai più complicata.
+
+Il processore possiede diverse modalità di funzionamento con diverse modalità di
+funzionamento (`CPL[0-3]`). Linux usa i due estremi per definire:
+
+- modalità utente: modalità non privilegiata che permette l'esecuzione solo di
+  istruzioni non privilegiate e un accesso limitato alla memoria
+- modalità supervisore: modalità privilegiata che permette l'esecuzione di
+  istruzioni privilegiate e un accesso completo alla memoria
+
+Le funzioni di sistema sono eseguite in modalità supervisore mentre i processi
+utente sono ovviamente eseguiti in modalità utente. Il modo di funzionamento è
+rappresentato da un bit di funzionamento all'interno del PSR.
+
+Il cambio di modalità di esecuzione avviene tramite due istruzioni:
+
+- `syscall` (`U -> S`) - istruzione simile ad un salto a funzione che esegue
+  servizio di sistema. L'istruzione:
+  - incrementa il valore del PC e lo salva sulla stack
+  - salva il valore del PSR sulla stack
+  - nel PC e nel PSR vengono caricati i valori presenti in una struttura
+    presente ad un noto indirizzo detta vettore di syscall
+- `sysret` (`S -> U`) - speculare della `syscall` presente alla fine della
+  funzione funzione di gestione della chiamata
+  - carica nel PSR il valore presente sulla stack
+  - carica nel PC il valore presente sulla stack
+
+Il vettore di syscall viene inizializzato in fase di avviamento con la coppia
+indirizzo della funzione `system_call()` e un PSR opportuno per l'esecuzione di
+ella precedente. Le istruzioni `syscall` e `sysret` sono rispettivamente gli
+unici punti di entrata e uscita dal sistema operativo.
+
+### Modello di memoria
+
+Nell'architettura x86_64 lo spazio di indirizzamento totale è di $2^{64}$ byte.
+L'architettura, però, limita lo spazio virtuale utilizzabile a $2^{48}$ byte.
+
+Un processo in modalità utente non deve poter accedere a indirizzi di sistema
+mentre un processo in modalità supervisore deve poter accedere a tutti gli
+indirizzi. Per questo lo spazio di indirizzamento è diviso in due metà di
+$2^{47}$ byte:
+
+- lo spazio riservato all'utente va da `0000 0000 0000 0000` a
+  `0000 7FFFF FFFF FFFF`
+- lo spazio riservato al sistema va da `FFFF 8000 0000 0000` a
+  `FFFF FFFF FFFF FFFF`
+
+Gli indirizzi intermedi sono detti non-canonici e non possono essere utilizzati.
+La modalità supervisore può accedere a tutti gli indirizzi canonici mente la
+modalità utente può accedere solo alla sua metà.
+
+Al passaggio di modalità, la CPU cambia anche la stack che utilizza. Le due pile
+sono allocate nei corrispondenti spazi virtuali di modalità utente e
+supervisore. A ogni processo linux alloca una stack di sistema di 2 pagine (8
+KB). Nella commutazione tra modalità il cambio di stack avviene prima del
+salvataggio di informazioni sulla stessa in modo che l'indirizzo di ritorno
+dalla modalità utente sia nella stack di sistema cosicché al ritorno
+l'informazione venga prelevata dalla stack di sistema. Per poter commutare tra
+le due stack è necessaria una opportuna struttura dati basata su di celle di
+memoria chiamate USP e SSP:
+
+- SSP contiene il valore da caricare nello stack pointer al momento del
+  passaggio alla modalità supervisore. E' compito del sistema operativo far sì
+  che SSP contenga il calore corretto
+- USP contiene il valore dello stack pointer al momento del passaggio alla
+  modalità supervisore
+
+Di conseguenza le operazioni svolte da `syscall` sono:
+
+- salva il valore corrente dello stack pointer in USP
+- carica nello stack pointer il valore presente in SSP
+- salva sulla pila di sistema il PC di ritorno al programma chiamante
+- salva sulla pila di sistema il valore del PSR del programma chiamante
+- carica nel PC e in PSR i valore presenti nel vettore di syscall
+
+Mentre `sysret` farà:
+
+- carica in PSR il valore presente nella pila di sistema
+- carica nel PC il valore presente nella pila di sistema
+- carica nello stack pointer il valore presente in USP
+
+Linux associa ad ogni processo una diversa tabella delle pagine, in questo modo
+gli indirizzi virtuali di ogni processo sono mappati su aree indipendenti della
+memoria fisica. Nel x86_64 esiste un registro, il `CR3`, che contiene
+l'indirizzo d'inizio della tabella delle pagine utilizzata per la mappatura
+degli indirizzi. Per cambiare la mappatura è quindi sufficiente cambiare il
+contenuto di questo registro, facendolo puntare a una diversa tabella delle
+pagine.
+
+### Meccanismo di interruzione
+
+A ogni evento che rilascia interrupt è associata una particolare funzione detta
+gestore di interrupt o routine di interrupt. Le routine dell'interrupt fanno
+parte del sistema operativo. Quando il processore rileva un evento, esso
+interrompe il programma correntemente in esecuzione ed esegue un salto
+all'esecuzione della funzione associata a tale evento. L'esecuzione di una
+routine di interrupt comporta sempre il passaggio alla modalità supervisore,
+sia che si sia in modalità utente o in modalità supervisore. Quando la routine
+di interrupt termina, il processore riprende l'esecuzione del programma che è
+stato interrotto.
+
+Per poter riprendere l'esecuzione, il processore ha salvato sulla pila, al
+momento del salto alla routine di interrupt, l'indirizzo della prossima
+istruzione del programma interrotto. Dopo l'esecuzione della routine di
+interrupt tale indirizzo è disponibile per eseguire il ritorno. L'istruzione
+privilegiata che esegue l ritorno da interrupt è detta `iret`.  Il meccanismo di
+interrupt è molto simile all'invocazione di una funzione o di una syscall. Le
+routine di interrupt sono completamente asincrone rispetto al programma
+interrotto. Il processore rileva la presenza del segnale di interrupt al termine
+dell'esecuzione dell'istruzione corrente. Gli interrupt possono anche avvenire
+in modo annidato (chiamata a interrupt durante una routine di interrupt).
+
+I processore deve sapere quale sia l'indirizzo della routine di interrupt che
+deve essere eseguita quando si verifica un certo evento e il valore del PSR da
+utilizzare. La tabella degli interrupt, un'altra struttura dati ad accesso
+hardware, contiene un certo numero di vettori di interrupt costituiti, come il
+vettore di syscall, da una coppia `{ PC, PSR }`. Un meccanismo hardware converte
+l'identificativo dell'interrupt nell'indirizzo del corrispondente vettore di
+interrupt. L'inizializzazione della tabella degli interrupt con gli indirizzi
+delle opportune routine di di interrupt deve essere svolta dal sistema in fase
+di avviamento.
+
+Sostanzialmente la rilevazione di un interrupt:
+
+- salva il valore corrente dello stack pointer in USP
+- carica nello stack pointer il valore presente in SSP
+- salva sulla pila di sistema il PC di ritorno al programma interrotto
+- salva sulla pila di sistema il valore del PSR del programma interrotto
+- carica nel PC e in PSR i valore presenti nel vettore di interrupt
+
+Simmetricamente la `iret`:
+
+- carica in PSR il valore presente nella pila di sistema
+- carica nel PC il valore presente nella pila di sistema
+- carica nello stack pointer il valore presente in USP
+
+#### Interrupt e gestione degli errori
+
+Durante l'esecuzione delle istruzioni possono verificarsi degli errori critici
+come ad esempio una divisione per 0, accesso a indirizzi non validi o il
+tentativo di eseguire istruzioni non permesse. La maggior parte dei processori
+tratta questo tipo di errori come un particolare tipo di interrupt. Quando si
+verifica una di questi errori viene attivata, con un opportuno vettore di
+interrupt, una routine del sistema operativo che decide come gestire l'errore.
+Spesso la gestione dell'errore consiste nella terminazione forzata del programma
+che ha causato l'errore, eliminando il processo.
+
+#### Priorità e abilitazione degli interrupt
+
+Abbiamo detto che le le chiamate a interrupt possono essere annidate. In alcuni
+casi, però, non è opportuno interrompere una routine che serve un altro
+interrupt. Inoltre è necessario prevedere un metodo per segnalare la necessità
+di una risposta urgente che possa interrompere la gestione di un evento meno
+importante senza permettere il contrario.
+
+Per questi scopi viene definito nel PSR un livello di priorità. Il livello di
+priorità può essere modificato tramite opportune istruzioni. A ogni interrupt
+viene associato un livello di priorità. Un interrupt viene accettato se e solo
+se il suo livello di priorità è superiore al livello di priorità del processore
+in quel momento, altrimenti viene tenuto in sospeso fino al momento in cui il
+livello di priorità non verrà abbassato ad un livello opportuno. Utilizzando
+questo metodo il sistema può alzare e abbassare la priorità del processore in
+modo che durante l'esecuzione delle routine di interrupt più importanti non
+vengano accettati interrupt meno importanti.
+
+### ABI e regole di invocazione del sistema operativo
+
+Viene detta ABI (Application Binary Interface) il set di regole secondo cui un
+compilatore conforme deve tradurre le sorgenti. Queste regole servono per
+garantire che tutti moduli siano tradotti in modo coerente con le convenzioni
+adottate per il passaggio dei parametri. Noi faremo riferimento alla ABI GNU per
+x86_64.
+
+Un programma non invoca l'istruzione `syscall` direttamente, ma chiama una
+funzione di libreria che a sua volta contiene la chiamata di sistema. Queste
+funzioni a loro volta chiamano un'ultima funzione che incapsula la `syscall`
+così definita: `long syscall(long n, ...)`.
+
+Il passaggio dei parametri avviene nel seguente modo:
+
+- il numero del servizio da invocare va messo nel registro `rax`
+- gli eventuali parametri sono messi ordinatamente nei registri `rdi`, `rsi`,
+    `rdx`, `r10`, `r8`, `r9`
+
+I numeri di servizio sono tutti codificati.
+
+### Gestione dello stato dei processi
+
+Normalmente un processo è in esecuzione in modalità utente. Se il processo
+richiede un servizio di sistema tramite `syscall` viene attivata una funzione
+del sistema operativo che esegue il servizio per conto di tale processo. I
+servizi sono, per un certo verso, parametrici rispetto al processo che li
+richiede: essi fanno riferimento al contesto del processo per cui esso è svolto.
+Si dice che un processo è in esecuzione in modalità supervisore quando il
+sistema operativo è in esecuzione nel contesto di tale processo, sia per
+eseguire un processo sia per servire un interrupt.
+
+Un processo può trovarsi in due stati fondamentali:
+
+- attesa - un processo in questo stato non può essere messo in esecuzione perché
+  deve attendere un certo evento
+- pronto - un processo pronto è un processo che può essere messo in esecuzione
+  se lo scheduler lo seleziona
+
+Tra tutti i processi in stato di pronto ne esiste uno che è effettivamente in
+esecuzione, chiamato processo corrente. Lo stato di un processo è registrato nel
+suo descrittore.
+
+Analizziamo i passaggi di stato possibili:
+
+- esecuzione/pronto - Al termine del quanto di tempo il sistema operativo deve
+  salvare il contesto del processo in memoria per poter riprendere l'esecuzione
+  del processo dal punto in cui è stato interrotto
+- esecuzione/attesa - Si verifica quando un servizio di sistema richiesto dal
+  processo deve porsi in attesa di un evento; come per il passaggio
+  esecuzione/pronto il sistema operativo salva il contesto per poter riprendere
+  l'esecuzione al verificarsi dell'evento atteso
+- attesa/pronto - Quando l'evento atteso da un processo si verifica il sistema
+  operativo sposta tutti i processi in attesa di quell'evento nella coda dei
+  processi pronti
+- pronto/esecuzione - Lo scheduler del sistema operativo decide quale dei
+  processi accodati nello stato di pronto viene mandato in esecuzione e il suo
+  contesto viene ripristinato. La scelta dello scheduler avviene in base alla
+  politica di scheduling.
+
+```txt
++------------------------+
+| Processo in esecuzione |
+| in modalità utente     |
++------------------------+
+         |  ^
+ syscall |  | iret      /-\
+         |  | sysret    | | interrupt annidato
+         V  |           | V
++--------------------------+
+| Processo in esecuzione   |-------------------------
+| in modalità superv.      |<---------------------   \
++--------------------------+                       \  \
+       |                                            \ |
+       | Sospensione                     Ripresa di | | Termine del quanto
+       | volontaria                      esecuzione | | di tempo (preemption)
+       |                                 (schedule) | |
+       V                                            | V
++--------------------+                      +-----------------+
+| Processo in attesa |--------------------> | Processo pronto |
++--------------------+  Wakeup per evento   +-----------------+
+                        esterno
+```
+
+### Lo scheduler
+
+Lo scheduler è quel componente del sistema operativo che decide quale processo
+mettere in esecuzione in base a una politica. Esso svolge due principali
+funzioni:
+
+- determina quale processo deve essere messo in esecuzione, quando e per quanto
+  tempo (politica di scheduling)
+- esegue l'effettiva commutazione di contesto (context switch)
+
+Il context switch è svolto dalla funzione `schedule()` dello scheduler.
+
+#### Le queue
+
+Lo scheduler gestisce una struttura dati fondamentale per ogni CPU: la runqueue
+o lista dei processi pronti. La runqueue contiene due campi:
+
+- `RB`: lista di puntatori ai descrittori dei processi pronti (escluso quello in
+  esecuzione)
+- `CURR`: puntatore al descrittore del processo in esecuzione
+
+La runqueue è implementata con una doubly-linked cirular list. Parallelamente
+alla runqueue, lo scheduler gestisce le liste di attesa per ogni evento dette
+waitqueues.
+
+La waitqueue è una lista contenente i puntatori ai descrittori dei processi in
+attesa dei processi in attesa di un certo evento. In una waitqueue vengono posti
+tutti i processi in attesa dello stesso evento. L'indirizzo della waitqueue
+associata all'evento costituisce l'identificatore dell'evento. Una nuova
+waitqueue è create dinamicamente ogni volta che si vogliono mettere dei processi
+in attesa di uno stesso evento tramite: `DECLARE_WAIT_QUEUE_HEAD(name)`. La
+waitqueue è di tipo `wait_queue_head_t` e può contenere zero o più
+`wait_queue_t` elementi accodati. Quando un elemento viene risvegliato esso
+viene spostato dalla waitqueue e posto nella runqueue.
+
+#### Il context switch
+
+Come abbiamo visto precedentemente, Linux assegna a ogni processo una stack di
+sistema e commuta tra la stack in spazio utente e quella in spazio di sistema al
+cambio di modalità. La commutazione viene gestita da un meccanismo hardware che,
+a condizione che `SSP` e `USP` contengano i valori corretti, fa il suo lavoro.
+Poiché a ogni processo viene assegnata una stack di sistema, l'indirizzo di base
+(`sp0`) e della cima (`sp`) vengono salvati all'interno del descrittore.
+
+Quando un processo è in esecuzione in modalità utente la stack di sistema è
+vuota e `SSP` conterrà il valore di base preso dal descrittore del processo. Al
+passaggio in modalità supervisore in `USP` viene caricato automaticamente
+dall'hardware il valore corretto per il ritorno in modalità utente. Se durante
+l'esecuzione in modalità S viene eseguita una commutazione di contesto, ossia si
+esegue il salvataggio di contesto:
+
+- si salva del valore del program counter sulla stack di sistema
+- si salva di `USP` sulla stack di sistema
+- si salva del valore dello stack pointer in `sp` nel descrittore del processo
+
+  Nota: `SSP` non deve essere salvato in quanto punta alla base dove punta già
+  `sp0`, già presente nel descrittore
+
+Quando il processo riprenderà l'esecuzione, verrà eseguito il ripristino di
+contesto:
+
+- si carica nello stack pointer il valore del campo `sp` del descrittore
+- si carica in `SSP` il valore del campo `sp0`
+- si carica in `USP` il valore presente nella stack di sistema
+- si carica nel program counter il valore presente nella stack di sistema.
 
