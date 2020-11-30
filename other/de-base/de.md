@@ -310,7 +310,7 @@ treffe sie manchmal denn wir skypen oft.
 3. Maria sucht die Brille neben dem Radio und unter dem Bett, im Schlafzimmer.
    Sie kann die Brille nicht finden.
 
-## Übung 6 Seite 41
+## Übung 6 Seite 41 AB
 
 1. Julia kauft für ihren Mann ein Buch. Raul und Ines kaufen für ihren Vater
    Tennisbälle.
@@ -321,7 +321,16 @@ treffe sie manchmal denn wir skypen oft.
 4. Raul kauft für seine Schwester eine Schokolade. Pablo und Julia kaufen für
    ihre Tochter ein Handy.
 
-## Übung c Seite  43
+## Übung c Seite 43 KB
 
 In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
+
+## Übung 7 Seite 45 AB
+
+1. Der fünfte elfte ist ein Mittwoch. Dann ist der dritte elfte ein Montag.
+2. Der dreiundzwanzigste zehnte ist ein Donnerstag. Dann ist der zwanzigste
+   zehnte ein Montag.
+3. Der zwölfte vierte ist ein Sonntag. Dann ist der zehnte vierte ein Freitag.
+4. Der zwanzigste vierte ist ein Montag. Dann ist der siebzehnte vierte ein
+   Freitag.
 
