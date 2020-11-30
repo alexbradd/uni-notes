@@ -730,6 +730,19 @@ degli indirizzi. Per cambiare la mappatura è quindi sufficiente cambiare il
 contenuto di questo registro, facendolo puntare a una diversa tabella delle
 pagine.
 
+#### Accesso allo spazio utente da sistema operativo
+
+I singoli servizi di sistema, alcune volte, devono leggere o scrivere dati nella
+memoria utente del processo che li ha invocati. Questa operazione è svolta
+tramite 2 macro:
+
+- `get_user(x, ptr)`
+  - `x` variabile in cui memorizzare il risultato
+  - `ptr` indirizzo della variabile in spazio di memoria utente
+- `put_user(x, ptr)`
+  - `x` variabile da memorizzare in spazio utente
+  - `ptr` indirizzo della variabile in spazio utente in cui salvare i dati
+
 ### Meccanismo di interruzione
 
 A ogni evento che rilascia interrupt è associata una particolare funzione detta
@@ -827,6 +840,68 @@ Il passaggio dei parametri avviene nel seguente modo:
 
 I numeri di servizio sono tutti codificati.
 
+Il nome delle routine che eseguono il servizio di sistema può variare, per
+quello noi assumeremo che abbiano un nome che segue `sys_{nome del servizio}`.
+
+### Creazione di processi/thread
+
+I processi "pieni" sono creati quando con la funzione `fork()`, mentre quelli
+leggeri con `pthread_create()`. Entrambe le funzioni sono realizzate in kernel
+tramite una sola routine chiamata `sys_clone`. La `sys_clone` può specificare
+quanta condivisione si può avere con il figlio e quale codice il figlio può
+eseguire.
+
+In libreria la clone è così dichiarata:
+
+```c
+int clone(int (*fn)(void*), void *child_stack, int flags, void *arg, ...);
+```
+
+- `int (*fn)(void*)` è la funzione che il figlio eseguirà
+- `void *child_stack` è l'indirizzo della pila utente che verrà utilizzata dal
+  processo figlio
+- i flag sono numerosi, ne consideriamo solo 3:
+  - `CLONE_VM`: utilizzano lo stesso spazio di memoria
+  - `CLONE_FILES`: condividono i file aperti
+  - `CLONE_THREAD`: il processo viene creato per implementare un thread
+- `void *arg` è un puntatore agli argomenti da passare al figlio
+
+La funzione `clone` è pensata principalmente per creare un thread. Infatti la
+`pthread_create()` è implementata in maniera molto diretta diretta dalla
+`clone()`:
+
+```c
+...
+char *stack = malloc(...);
+clone(fn, stack, CLONE_VM | CLONE_FILES | CLONE_THREAD, ...);
+...
+```
+
+Come si può notare lo spazio per la pila utente del thread viene allocata
+all'interno della memoria dinamica dello stesso processo.
+
+La routine di sistema `sys-clone` è pensata per create un processo figlio
+normale e quindi assomiglia alla funzione `fork()`:
+
+```c
+long sys_clone(unsigned long flags, void *child_stack, void *ptid, void ctid,
+  struct pt_regs *regs);
+```
+
+Peculiarità di `sys_clone()`:
+
+- se `child_stack` è 0, allora il figlio lavora su una stack che è copia fisica
+  del padre posta allo stesso indirizzo virtuale; in questo caso `CLONE_VM` non
+  deve essere specificato, altrimenti non è garantita la correttezza del
+  funzionamento
+- se `child_stack` è diverso da 0, allora il figlio lavora su una pila posta
+  all'indirizzo `child_stack` e tipicamente la memoria viene condivisa
+
+La funzione `fork()` viene così implementata `syscall(sys_clone, 0, 0)`
+
+La funzione `sys_clone()` è molto complessa e richiede l'utilizzo abbondante di
+inline assembler per permettere la manipolazione della stack.
+
 ### Gestione dello stato dei processi
 
 Normalmente un processo è in esecuzione in modalità utente. Se il processo
@@ -890,18 +965,6 @@ Analizziamo i passaggi di stato possibili:
                         esterno
 ```
 
-### Lo scheduler
-
-Lo scheduler è quel componente del sistema operativo che decide quale processo
-mettere in esecuzione in base a una politica. Esso svolge due principali
-funzioni:
-
-- determina quale processo deve essere messo in esecuzione, quando e per quanto
-  tempo (politica di scheduling)
-- esegue l'effettiva commutazione di contesto (context switch)
-
-Il context switch è svolto dalla funzione `schedule()` dello scheduler.
-
 #### Le queue
 
 Lo scheduler gestisce una struttura dati fondamentale per ogni CPU: la runqueue
@@ -918,12 +981,27 @@ waitqueues.
 La waitqueue è una lista contenente i puntatori ai descrittori dei processi in
 attesa dei processi in attesa di un certo evento. In una waitqueue vengono posti
 tutti i processi in attesa dello stesso evento. L'indirizzo della waitqueue
-associata all'evento costituisce l'identificatore dell'evento. Una nuova
-waitqueue è create dinamicamente ogni volta che si vogliono mettere dei processi
-in attesa di uno stesso evento tramite: `DECLARE_WAIT_QUEUE_HEAD(name)`. La
-waitqueue è di tipo `wait_queue_head_t` e può contenere zero o più
-`wait_queue_t` elementi accodati. Quando un elemento viene risvegliato esso
-viene spostato dalla waitqueue e posto nella runqueue.
+associata all'evento costituisce l'identificatore dell'evento.
+
+Una nuova waitqueue è creata dinamicamente ogni volta che si vogliono mettere
+dei processi in attesa di uno stesso evento (IO, lock, timeout o altro) tramite:
+`DECLARE_WAIT_QUEUE_HEAD(name)`. La waitqueue è di tipo `wait_queue_head_t` e
+può contenere zero o più `wait_queue_t` elementi accodati. Quando un elemento
+viene risvegliato esso viene spostato dalla waitqueue e posto nella runqueue.
+
+Ci sono più tipi di attesa:
+
+- esclusiva: solo un processo può essere risvegliato quando l'evento si
+  verifica. Un processo si mette in coda non esclusiva tramite
+  `wait_event_interruptible_exclusive()`.
+- non esclusiva: tutti i processi possono essere risvegliati quando l'evento si
+  verifica. Un processo si mette in coda non esclusiva tramite
+  `wait_event_interruptible()`.
+
+Esiste un flag che indica se il processo è in attesa esclusiva o no. I processi
+in attesa esclusiva sono inseriti alla fine della coda. La routine di wakeup
+opera così: risveglia tutti i processi dall'inizio fino al primo processo in
+attesa esclusiva.
 
 #### Il context switch
 
@@ -955,4 +1033,192 @@ contesto:
 - si carica in `SSP` il valore del campo `sp0`
 - si carica in `USP` il valore presente nella stack di sistema
 - si carica nel program counter il valore presente nella stack di sistema.
+
+#### I segnali
+
+Un segnale è un evento asincrono inviato dal sistema operativo. Ogni segnale
+identificato da un numero da 1 a 31 e un nome simbolico descrittivo. Un segnale
+causa l'esecuzione di un'azione da parte di un processo, similmente ad un
+interrupt. L'azione può essere svolta solamente quando il processo che riceve il
+segnale è in modalità utente. Un processo in modalità supervisore differisce la
+gestione del segnale fino a che non torna in modalità utente.
+
+Se il processo ha definito uno handler verrà eseguito quello, altrimenti viene
+eseguito uno di default.
+
+La maggior parte dei segnali può essere bloccata dal processo. Un segnale
+pendente rimarrà in attesa finché non sarà sbloccato. Due segnali non possono
+essere bloccati: `SIGKILL` e `SIGSTOP`.
+
+Alcuni segnali possono essere inviati a causa di una particolare configurazione
+di tasti da tastiera: `^C - SIGINT` e `^Z - SIGSTP`.
+
+Se un segnale è inviato ad un viene inviato ad un processo in modalità
+supervisore può accadere che:
+
+- se il processo è pronto, il segnale è messo in sospeso finché il processo
+  ritornerà in esecuzione
+- se il processo è in attesa allora:
+  - se l'attesa è interrompibile il processo viene immediatamente risvegliato
+  - altrimenti il segnale rimane in attesa finché non diventa pronto
+
+Alcune funzioni per mettere un processo in stato di attesa sono:
+`wait_event(coda, condizione)`, `wait_event_killable(coda, condizione)` e
+`wait_event_interruptible(coda, condizione)`. Un esempio di dichiarazione della
+coda sarà:
+
+```c
+DECLARE_WAIT_QUEUE_HEAD(coda);
+ret = wait_event_interruptible(c, buffer_buoto == 1);
+```
+
+Per risvegliare un processo invece usiamo `wake_up(wait_queue_head_t *)`. Se un
+task aggiunto alla runqueue ha maggiori diritti di esecuzione rispetto a quello
+corrente `wake_up()` asserisce il flag `TIF_NEED_RESCHED`.
+
+#### Implementazione dei mutex
+
+Linux utilizza un meccanismo detto futex per realizzare i mutex in maniera
+efficiente. Un futex è composta da:
+
+- una variabile intera in spazio utente
+- una waitqueue in spazio sistema
+
+L'incremento e il test della variabile intera sono svolti in maniera atomica in
+spazio utente. Se ciò non è possibile bisogna usare l'algoritmo di Peterson.
+
+Se il lock può essere acquisito, esso viene preso e l'operazione ritorna senza
+invocare una syscall. Se il lock è bloccato, viene invocata la syscall
+`sys_futex()` con parametro `wait`. Lo sblocco chiamerà `sys_futex()` passando
+`wake`.
+
+La funzione `sys_futex()` invoca `wait_event_interruptible_exclusive()` e pone
+il processo in attesa esclusiva su una waitqueue finché il lock non viene
+rilasciato.
+
+#### La preemption
+
+Poiché il kernel è non-preemptive non viene eseguita subito la commutazione di
+contesto ma viene settato il flag `TIF_NEED_RESCHED`. Al momento opportuno
+questo flag causerà la commutazione di contesto.
+
+Sembrerebbe che la preemption in Linux violerebbe l'ipotesi di non-preemptive
+kernel. La regola utilizzata è: "un context switch viene eseguito durante una
+routine di sistema solo alla fine e solo se sta ritornando in modalità utente".
+
+#### Altri tipi di attesa
+
+Esistono casi in cui l'evento che si attende è scoperto da una funzione che non
+ha modo di conoscere la waitqueue. Per questo viene definita una variante di
+wakeup `wakeup_process(task_struct *)` passando direttamente un puntatore al
+processo da risvegliare.
+
+#### Timeout
+
+Un timeout definisce una scadenza temporale. Il tempo interno del sistema è
+rappresentato dalla variabile `jiffies` che registra il numero di tick del clock
+di sistema intercorsi dall'avviamento del sistema. La durata effettiva dei
+`jiffies` dipende quindi dal clock del processore.
+
+Supponiamo che la nostra rappresentazione temporale sia basata sul tipo
+`timespec`, il servizio `sys_nanosleep(timespec)` definisce una scadenza ad un
+tempo dopo la sua invocazione e pone il processo in stato di attesa fino a tale
+scadenza.
+
+Una semplice implementazione di `sys_nanosleep()` è:
+
+```c
+sys_nanoslepp(timespec t) {
+  current->state = ATTESA;
+  schedule_timeout(timespec_to_jiffies(&t));
+}
+
+schedule_timeout(timeout t) {
+  struct timer_list timer;
+  init_timer(&timer);
+  timer.expire = t + jiffies;
+  timer.data = current;
+  timer.function = wakeup_process;
+  add_timer(&timer);
+  schedule();
+  delete_timer(&timer);
+}
+```
+
+Un interrupt del clock aggiorna i `jiffies`. Il controllo della scadenza dei
+timeout non può essere svolto ad ogni tick per ragioni di efficienza.
+Supporremo l'esistenza di una routine `controlla_timer()` che controlla la lista
+dei timer e verifica i timeout scaduti. Un timeout scade quando il valore dei
+`jiffies` è maggiore di `timer.expire`. Quando il timer scade,
+`controlla_timer()` invoca `timer.function` passandole `timer.data`.
+
+#### Gestione degli interrupt
+
+TODO
+
+#### Riassunto routine di gestione dello stato
+
+- `schedule()` - esegui il context switch; se il processo è in stato di attesa
+  rimuovilo dalla runqueue
+- `check_preempt_curr()` - verifica se il task deve essere interrotto e in tal
+  caso pone `TIF_NEED_RESCHED` a 1; invocata da `wake_up()`
+- `enqueue_task()` - inserisci il task nella runqueue
+- `dequeue_task()` - rimuovi il task dalla runqueue
+- `resched()` - pone `TIF_NEED_RESCHED` a 1
+- `task_tick()` - invocata dall'interrupt del clock, aggiorna i vari contatori e
+  determina se il task deve essere interrotto perché scaduto il suo quanto di
+  tempo
+- `wait_event_interruptible()` - crea un elemento della waitqueue che punta al
+  processo corrente e poi il processo in attesa; quando il processo riparte
+  rimuovi il processo dalla waitqueue
+- `wake_up()` - sposta i processi nella runqueue e verifica se è necessaria la
+  preemption
+
+### Eliminazione dei processi
+
+Esistono due routine di sistema relative all'eliminazione di processi:
+
+- `sys_exit()` cancella un singolo processo
+  - rilascia le risorse utilizzate dal processo
+  - restituisce un valore di ritorno al padre
+  - invoca lo scheduler per lanciare in esecuzione un nuovo processo
+- `sys_exit_group()` cancella un intero gruppo di processi
+  - Invia a tutti i i membri del gruppo il segnale di terminazione
+  - esegue `sys_exit()`
+
+La prima viene utilizzata per terminare l'esecuzione di singoli thread, mentre
+la seconda per terminare interi processi e i relativi processi:
+
+- `pthread_exit()` o una `return` alla fine della funzione del thread è
+  implementata con chiamata a `sys_exit`
+- `exit()` è implementata con una chiamata a `sys_exit_group()`
+
+### Avviamento e inizializzazione
+
+Al momento momento dell'avviamento il sistema inizializza alcune strutture
+interne e poi viene creato il primo processo che esegue il programma `init`.
+Tutte le operazioni di avviamento successive alla creazione del primo processo
+sono svolte da `init`.
+
+`init` crea un processo per ogni terminale sul quale potrebbe essere eseguito un
+login. Quando l'utente esegue il login allora il processo che eseguiva il
+programma di login lancia in esecuzione la shell.
+
+Quando nessun processo serve per l'esecuzione, `init` va in idle. Dopo aver
+concluso le operazioni di avviamento del sistema, esso assume questo stato:
+
+- ha priorità inferiore a quella di tutti i processi
+- non sarà mai in attesa
+
+### Lo scheduler
+
+Lo scheduler è quel componente del sistema operativo che decide quale processo
+mettere in esecuzione in base a una politica. Esso svolge due principali
+funzioni:
+
+- determina quale processo deve essere messo in esecuzione, quando e per quanto
+  tempo (politica di scheduling)
+- esegue l'effettiva commutazione di contesto (context switch)
+
+Il context switch è svolto dalla funzione `schedule()` dello scheduler.
 
