@@ -179,9 +179,9 @@ Se il numero di CPU è 1, la concorrenza e il parallelismo vengono a coincidere.
    Viene creato un thread con thread id puntato dall'argomento passato.
    Questo thread eseguirà la funzione passata come argomento e riceverà come
    argomenti l'array passato. La struttura `pthread_attr_t` contiene degli
-   attributi del thread; se come puntatore a questa struttura viene passato NULL
-   vengono usati gli attributi standard. La funzione ritorna 0 se tutto va a
-   buon fine e un codice di errore altrimenti.
+   attributi del thread; se come puntatore a questa struttura viene passato
+   `NULL` vengono usati gli attributi standard. La funzione ritorna 0 se tutto
+   va a buon fine e un codice di errore altrimenti.
 
 2. Attesa: `int pthread_join(pthread_t*, int*)`
 
@@ -1221,4 +1221,371 @@ funzioni:
 - esegue l'effettiva commutazione di contesto (context switch)
 
 Il context switch è svolto dalla funzione `schedule()` dello scheduler.
+
+Lo scheduler deve garantire:
+
+- che i task più importanti vengano eseguiti prima di quelli meno importanti
+- che i task di pari importanza vengano eseguiti in maniera equa
+- che nessun task dovrebbe attendere un tempo indefinito per andare in
+  esecuzione
+
+La politica più semplice bilanciata è il "round robin": dati $N \geq 1$ task di
+pari importanza, assegna un uguale quanto di tempo a ciascun task circolarmente.
+La politica round robin è equa e garantisce che nessun task resti fermo
+indefinitamente.
+
+Lo scheduler interviene in certi momenti per determinare quale task mettere in
+esecuzione e può togliere un task dall'esecuzione. La scelta del task da mettere
+in esecuzione avviene tra tutti i task nella runqueue. Il task scelto è quello
+con diritto di esecuzione maggiore.
+
+Lo scheduler cambia il task corrente in 3 principali casi:
+
+1. Un task si sospende e lascia l'esecuzione
+2. Quando un task in stato di attesa viene risvegliato da parte di un altro task
+   in stato di pronto poiché:
+   - il task risvegliato potrebbe avere un diritto di esecuzione maggiore di
+     quello corrente. Se ciò accade, il maggiore diritto di esecuzione si
+     traduce in diritto di preemption
+3. Quando il task correntemente in esecuzione è gestito con politica round
+   robin e scade il suo quanto di tempo
+
+I task possono avere requisiti di scheduling molto diversificati. Esistono 3
+categorie di task:
+
+- task real-time: devono soddisfare vincoli di tempo stringenti e vanno
+  schedulati con rapidità
+- task semi real-time: possono reagire con rapidità, ma non garantiscono di non
+  superare un ritardo max
+- normali: tutto il resto, divisi in:
+  - IO bound: si sospendono frequentemente poiché hanno bisogno di dati
+    presi da IO
+  - CPU bound: tendono a usare la CPU per la maggior parte del loro tempo perché
+    si sospendono poco
+
+Per gestire ciascuna categoria, lo scheduler realizza varie politiche di
+scheduling. Ogni politica è realizzata da una classe di scheduling diversa
+(scheduler class). Nel descrittore di un task esiste un campo che contiene il
+puntatore alla struttura della classe di scheduling che lo gestisce:
+
+```c
+struct sched_class {
+  var next;
+  var enqueue_task;
+  var dequeue_task;
+  var check_preempt_curr;
+  var pick_next_task;
+  var put_prev_task;
+  var set_curr_task;
+  var task_tick;
+  var task_new;
+};
+```
+
+I campi sono puntatori a funzione che vengono inizializzate alle versioni `fair`
+per realizzare il meccanismo CFS.
+
+Lo scheduler è l'unico gestore della runqueue; tutto il sistema operativo deve
+chiedere allo scheduler di eseguire operazioni sulla runqueue.
+
+#### Politiche di scheduling fondamentali
+
+| Classe         | Politica           | Diritto rispetto alle altre classi |
+|----------------|--------------------|------------------------------------|
+| `SCHED_FIFO`   | First In First Out | Massimo                            |
+| `SCHED_RR`     | Round Robin        | Medio                              |
+| `SCHED_NORMAL` | Complessa          | Minimo                             |
+
+Struttura generale della funzione `schedule()`:
+
+```c
+/*
+ * scandisce le classi di scheduling nell'ordine di importanza e invoca la
+ * funzione pick_next_task specifica della class per scegliere nella runqueue il
+ * prossimo task corrente
+ */
+pick_next_task(rq, prev) {
+  ...
+  struct task_struct *next;
+  for (CLASSI_DI_SCHED_IN_ORDINE_DI_IMPORTANZA) {
+    next = class->pick_next_task(rq, prev);
+    if (next != NULL) {
+      return next;
+    }
+  }
+}
+
+schedule() {
+  ...
+  struct task_struct *prev, *next;
+  prev = CURR;
+  if (prev->stato == ATTESA) {
+    ... // togli prev dalla runqueue e aggiorna la coda
+  }
+  prev = CURR;
+  next = pick_next_task(rq, prev);
+  if (next != prev) {
+    context_switch(prev, next);
+  }
+}
+```
+
+Le classi `SCHED_FIFO` e `SCHED_RR` sono usate per i task di tipo soft
+real-time. Il kernel linux non supporta i processi real-time in senso stretto in
+quanto non è in grado di garantire il non superamento di un ritardo massimo.
+
+Per queste due classi il concetto fondamentale è quello di priorità statica. La
+priorità statica viene assegnata alla creazione e solitamente non varia più. Un
+task figlio eredita la priorità statica del padre. Questi valori vanno da 1 a
+99 . Questa priorità è memorizzata in `static_prio` nel `task_struct`.
+
+##### Classe `SCHED_FIFO`
+
+Quando un task entra in esecuzione viene eseguito senza limite di tempo finché
+non si sospende o termina. Se ci sono due o più task pronti si sceglie quello a
+priorità maggiore.
+
+##### Classe `SCHED_RR`
+
+Due o più task allo stesso livello di priorità sono eseguiti in maniera
+circolare.
+
+##### Classe `SCHED_NORMAL`
+
+Lo scheduler per questa classe è chiamato CFS. Il CFS ambisce a raggiungere per
+ogni CPU il seguente obiettivo:
+
+> dati $N \geq 1$ task assegnati a una CPU di potenza 1, dedicare a ciascun task
+> una CPU "virtuale" di potenza $\frac{1}{N}$
+
+In pratica la CPU va assegnata a ciascun task per un opportuno quanto di tempo.
+Se il sistema è multiprocessore, ogni processore ha la sua runqueue da gestire
+in modo CFS.
+
+Per raggiungere il suo obbiettivo lo scheduler deve:
+
+1. Determinare ragionevolmente la durata del quanto di tempo:
+   - quanto lungo riduce la responsività
+   - quanto breve sovraccarica il sistema (troppe commutazioni di contesto)
+2. Assegnare un peso a ciascun task in modo che ai task più importanti sia dato
+   più peso e quindi più tempo di esecuzione
+3. Permettere ad un task rimasto a lungo in stato di attesa di tornare
+   rapidamente in esecuzione quando viene risvegliato, senza favorirlo troppo
+
+Il CFS ha una base round robin per gestire i task uniformemente, alla quale si
+aggiungono alcuni miglioramenti.
+
+#### Meccanismo di base del CFS
+
+A ogni task si assegna un peso (`LOAD`) iniziale che quantifica l'importanza del
+task. La costante di sistema `NICE_0_LOAD` definisce questo peso iniziale. Per
+semplificare ipotizziamo `t.LOAD = NICE_0_LOAD` per tutti i task `t` della
+runqueue e che nessun task si sospenda. Il numero di task nella runqueue è
+`NRT`. Si stabilisce un periodo di scheduling `PER` durante in cui tutti i task
+della runqueue possono essere eseguiti se non si sospendono. A ogni task si
+assegna un quanto di tempo `Q` la cui durata è:
+
+$$ \mathit{Q = \frac{PER}{NRT}} $$
+
+Il funzionamento di base del CFS è così schematizzabile:
+
+1. Il task in testa viene estratto e diventa corrente
+2. Il task corrente viene eseguito fino a quando scade il quanto
+3. Il task corrente viene sospeso e reinserito in fondo a `RB`
+4. Si ritorna al punto 1.
+
+I task sono eseguiti a turno per esattamente `Q` millisecondi.
+
+Il periodo di scheduling `PER` è una sorta di finestra scorrevole nel tempo:
+
+- non c'è suddivisione rigida nel tempo in intervalli disgiunti consecutivi
+- si può considerare ogni istante come l'inizio di un nuovo periodo di
+  scheduling
+- osservando il sistema a partire da un istante casuale per un intervallo di
+  durata pari a `PER` millisecondi, tutti i task vengono eseguiti ciascuno per
+  un quanto `Q` di tempo
+
+Il periodo di scheduling varia dinamicamente con il crescere o il diminuire del
+numero di task `NRT` presenti nella runqueue. Linux determina il periodo di
+scheduling tramite due parametri di controllo modificabili dall'amministratore:
+
+- `LT`: latenza, default 6 millisecondi, è la durata minima del periodo `PER`
+- `GR`: granularità, default 0.75 millisecondi
+
+Il periodo di scheduling è calcolato secondo:
+
+$$ \mathit{PER = max(LT, NRT * GR)} $$
+
+Se $\mathit{LT > NRT * GR}$ il quanto di tempo è maggiore della granularità,
+altrimenti è uguale ad essa. Di default, con 8 o meno task, il periodo `PER` ha
+il valore fisso minimo di 6 millisecondi.
+
+#### Meccanismo completo del CFS
+
+Il meccanismo di base si fonda su un quanto `Q` costante e sulla politica round
+robin. L'aspetto più importante del CFS è quello relativo alla misura virtuale
+del tempo. Tale misura virtuale ricalcola certe variabili per ogni task in 3
+circostanze:
+
+- a ogni impulso del real-time clock, cioè nella funzione `tick()` dello
+  scheduler
+- a ogni risveglio del task, cioè nella funzione `wake_up()` del kernel
+- alla creazione del task, per inizializzarle, cioè nel servizio `sys_clone()`
+
+La decisione su quale task mettere in esecuzione viene poi presa dalla funzione
+`schedule()` quando viene chiamata.
+
+La formula per il quanto prima vista non tiene conto dei pesi dei task. Bisogna
+valutare il peso relativo dello specifico task `t`:
+
+- $\mathit{t.LOAD}$ è il peso del task; definiamo $\mathit{RQL = \sum t.LOAD}$
+- $\mathit{t.LC = \frac{t.LOAD}{RQL}}$ il rapporto tra il peso del task e `RQL`
+
+La durata del quanto di tempo `Q` di uno specifico task `t`, denotato con `t.Q`,
+dipende allora dal task ed è proporzionale al peso di `t` rispetto al peso di
+tutti i task:
+
+$$
+\begin{aligned}
+  \mathit{t.Q} &= \mathit{PER * t.LC} \\
+  \mathit{PER} &= \mathit{\sum t.Q}
+\end{aligned}
+$$
+
+Se tutti i task hanno lo stesso peso, si riottiene la vecchia formula vista
+prima.
+
+Lo scheduler CFS usa il "Virtual runtime" (`VRT`) per ordinare i task nella
+runqueue. Il `VRT` è una misura virtuale del tempo di esecuzione consumato da un
+processo, basato sulla modifica del tempo reale tramite coefficiente opportuni.
+La decisione su quale sia il prossimo task da mettere in esecuzione si basa
+semplicemente sulla scelta del task con `VRT` minimo tra quelli nella runqueue.
+La runqueue è costituita dal puntatore `CURR` al task corrente e dalla coda `RB`
+ordinata in ordine crescente di `VRT` dei task. Il prossimo task da eseguire è
+il primo in `RB` e si indica con `LFT` (leftmost task). Il `VRT` del task
+corrente viene ricalcolato a ogni tick del clock del sistema. Quando il task
+corrente termina l'esecuzione, viene reinserito in `RB` nella posizione
+determinata in base al valore di `VRT` assunto durante l'esecuzione. La base
+dell'algoritmo di ricalcolo del `VRT` di un task è:
+
+$$
+\begin{aligned}
+  \mathit{SUM}   &= \mathit{SUM + \Delta} \\
+  \mathit{t.VRT} &= \mathit{t.VRT + (\Delta * t.VRC) = t.VRT + \Delta VRT}
+\end{aligned}
+$$
+
+Con:
+
+- $\mathit{SUM}$ tempo totale di esecuzione del task
+- $\Delta$ durata dell'ultimo quanto consumato dal task
+- $\mathit{t.VRC = t.LOAD^{-1}}$ coefficiente di correzione di `VRT`
+
+Se il numero di task è costante e ogni task consuma tutti il suo quanto di
+tempo, il `VRT` di tutti i task cresce di una stessa quantità. In tale caso
+l'incremento $\mathit{\Delta VRT}$ non dipende del peso del task e quindi
+ordinare la runqueue per `VRT` minore equivale a gestire la runqueue con
+politica round robin.
+
+Insieme al `VRT` del task corrente, lo scheduler ricalcola una variabile `VMIN`
+che rappresenta il `VRT` minimo tra tutti i `VRT` di tutti i task presenti nella
+runqueue. Come si vedrà, `VMIN` serve riallineare i `VRT` dei task risvegliati
+dopo un'attesa lunga che hanno un `VRT` molto arretrato rispetto ai task rimasti
+in runqueue.
+
+Pseudo codice di alcune funzioni viste:
+
+```c
+/*
+ * NOW: istante corrente
+ * START: istante in cui un task va in esecuzione
+ * PREV: valore di SUM quando un task va in esecuzione
+ */
+tick() {
+  DELTA = NOW - CURR->START;
+  CURR->SUM = CURR->SUM + DELTA;
+  CURR->VRT = CURR->VR + DELTA * CURR->VRTC;
+  CURR->START = NOW;
+
+  VMIN = min(CURR->VRT, LFT->VRT); // provvisorio
+
+  if ((CURR->SUM - CURR->PREV) > CURR->Q)
+    resched();
+}
+
+pick_next_task_fair(rq, prev) {
+  ...
+  struct task_struct *next;
+
+  if (LFT != NULL) {
+    next = LFT;
+    next->PREV = next->SUM;
+  } else {
+    if (prev == NULL) {
+      next = IDLE;
+    }
+  }
+  return next;
+}
+```
+
+Quando la funzione `wake_up()` risveglia un task `tw`, deve ricalcolare il `VRT`
+di `tw`. Come prima, si dovrebbe prendere il valore minimo di `VRT` tra quello
+di `tw` e della testa di `RB`. La funzione `wake_up()` deve evitare che `tw.VRT`
+diminuisca troppo e che di conseguenza il task `tw` sia troppo favorito. Il
+risveglio di un processo lo fa reinserire nella runqueue e quindi modifica `NRT`
+e `RQL`. E' necessario, quindi, ricalcolare `LC` e `Q`.
+
+La formula per il calcolo di `VRT` per un task risvegliato è:
+
+$$
+\begin{aligned}
+  \mathit{VMIN}   &= \mathit{max(VMIN, min (CURR.VRT, LFT.VRT))} \\
+  \mathit{tw.VRT} &= \mathit{max(tw.VRT, VMIN - \frac{LT}{2})}
+\end{aligned}
+$$
+
+Il task `tw` risvegliato parte con un valore di `VRT` che lo candida
+all'esecuzione nel prossimo futuro, ma senza che gli sia dato credito eccessivo
+rispetto agli altri. Dalla formula si vede che `VMIN` può solo crescere.
+Tipicamente, se il task ha fatto un'attesa molto breve, li viene lasciato il suo
+vecchio `VRT`.
+
+Risvegliando un task `tw` si richiede lo scheduling se una di queste condizioni
+è verificata:
+
+1. Il task risvegliato è in una classe di scheduling con diritto di esecuzione
+   maggiore
+2. Il `VRT` del task risvegliato è significativamente inferiore al `VRT` del
+   task corrente
+
+La seconda condizione ha un coefficiente correttivo detto `WGR` (wakeup
+granularity) affinché un task con attese brevissime non possa causare
+commutazioni di contesto troppo frequenti.
+
+La condizione completa di preemption da valutare è:
+
+```c
+/*
+ * In check_preempt_curr()
+ */
+if ((tw->schedule_class == RR) ||
+    ((tw->vrt + WGR * tw->load_coeff) < CURR->vrt)) {
+  resched();
+}
+```
+
+Di default `WGR` vale 1 millisecondo.
+
+Se un task termina (`sys_exit`), occorre rifare immediatamente lo scheduling. Se
+un task `tnew` viene creato (`sys_clone`), occorre inizializzare il suo `VRT`:
+
+$$ \mathit{tnew.VRT = VMIN + tnew.Q * tnew.VRC} $$
+
+Il nuovo task `tnew` parte con valore di `VRT` allineato a quelli degli altri
+task. La condizione completa di preemption è la stessa valutata per il risveglio
+del task. A differenza di ciò che succedere risvegliando un task, il `VRT`
+iniziale del nuovo task non è tale da posizionarlo all'inizio della coda.
+Tuttavia il nuovo task creato è posizionato in coda in modo da andare certamente
+in esecuzione durante il periodo di scheduling che inizia con la sua creazione.
 
