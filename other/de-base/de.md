@@ -334,3 +334,60 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 4. Der zwanzigste vierte ist ein Montag. Dann ist der siebzehnte vierte ein
    Freitag.
 
+## Übung 6 Seite 44 AB
+
+1. Der Zahnarzttermin ist am siebten Mai.
+2. Der Konzert ist am einundzwanzigsten März.
+3. Jans Geburtstagsparty ist am dreizehnten Januar.
+4. Der Urlaubsbeginn ist am ersten August.
+5. Der Termin in der Firma ist am dreissigsten April.
+6. Der Erste Kursabend ist am siebenundzwanzigsten September
+
+## Übung 10 Seite 45 AB
+
++----------+-----------------------------+
+| Form     | Sätze                       |
++==========+=============================+
+| du-Form  | Bleib heute zu hause.       |
+|          | Hole einen Arzt.            |
+|          | Ruf doch im Büro an.        |
++----------+-----------------------------+
+| ihr-Form | Bleibt heute zu Hause.      |
+|          | Holt einen Arzt.            |
+|          | Ruft doch im Büro an.       |
++----------+-----------------------------+
+| Sie-Form | Bleiben Sie heute zu Hause. |
+|          | Holen Sie einen Arzt.       |
+|          | Rufen Sie doch im Büro an.  |
++----------+-----------------------------+
+
+## Übung 11 Seite 45 AB
+
+1. Herr Berger hat Fieber.
+   - Im Bett bleiben. `:)`
+   - Sport machen. `:(`
+2. Sonja schläft schlecht.
+   - Trink Am Abend eine Flasche Bier oder Wein. `:(`
+   - Steh am Morgen früher auf. `:(`
+3. Florian hat Zahnschmerzen.
+   - Ruf den Zahnarzt an. `:)`
+   - Iss Schokolade. `:(`
+4. Fritz fährt zu viel Auto.
+   - Verkauf das Auto. `:)`
+   - Kauf einen Ferrari. `:(`
+5. Herbert und Lena möchten tanzen lernen.
+   - Besucht einen Tanzkurs. `:)`
+   - Kauft CDs mit Tanzmusik. `:)`
+6. Frau Schön isst zu viel Schokolade.
+   - Essen Sie mehr Kuchen. `:(`
+   - Einkaufen Sie mehr Obst und Gemüse. `:)`
+
+## Übung d Seite 49 KB
+
+1. Tanjas Ches sagt, die Kunden mögen keine Tattoos. Deshalb will Tanja kein
+   Tattoo mehr haben.
+2. Die Tattoos von Marko und seiner Freundin sind die Namen von ihrem Ex.
+   Deshalb wollen sie keine Tattoos mehr haben.
+3. Der Arzt  kann immer nur eine Farbe entfernen. Deshalb braucht man drei oder
+   mehr Arzttermine.
+
