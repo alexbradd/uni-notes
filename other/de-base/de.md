@@ -391,3 +391,48 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 3. Der Arzt  kann immer nur eine Farbe entfernen. Deshalb braucht man drei oder
    mehr Arzttermine.
 
+## Übung 1 Seite 46 AB
+
+1. Der Bauch, Bäuche
+2. Das Gesicht, Gesichter
+3. Die Nase, Nasen
+4. Die Hand, Hände
+5. Der Kopf, Köpfe
+6. Der Mund, Münder
+7. Der Finger, Finger
+8. Der Rücken, Rücken
+9. Das Bein, Beine
+10. Der Hals, Hälse
+11. Der Fuss, Füsse
+12. Das Auge, Augen
+13. Die Brust, Brüste
+14. Der Arm, Arme
+15. Der Zeh, Zehen
+16. Das Ohr, Ohren
+
+## Übung 5 Seite 46 AB
+
+1. Tanjas Chef mag keine Tattoos, deshalb will Tanja ihr Tattoo wegmachen.
+2. Unter der Kleidung kann man Tanjas Tattoo nicht sehen, deshalb ist das Tattoo
+   im Winter kein Problem.
+3. Ärzte können mit dem Laser immer nur eine Farbe von einem Tattoo entfernen,
+   deshalb braucht man oft zwei oder drei mehr Arzttermine.
+
+## Übung 10 Seite 47 AB
+
+1. Wie ist die Farbe von Ihrem Handy? Grau.
+2. Wie ist die Farbe von Ihrem Kugelschreiber? Blau.
+3. Wie ist die Farbe von Ihrer Kursbuch? Rot.
+4. Wie ist die Farbe von Ihrem Fahrrad? Schwarz.
+5. Wie ist die Farbe von Ihrer Gitarre? Weiss.
+6. Wie ist die Farbe von Ihrer Wand? Grau.
+
+## Übung d Seite 51 KB
+
+1. Gestern Morgen um 6:00 Uhr war ich in der Post.
+2. Gestern Vormittag um 9:30 Uhr waren wir am Bahnhof.
+3. Gestern Mittag um 13:30 Uhr wart ihr im Kurs.
+4. Gestern Nachmittag um 17:00 Uhr waren sie im Café.
+5. Gestern Abend um 18:00 Uhr war ich im Park.
+6. Gestern Nacht um 23:30 Uhr waren wir im Bett.
+
