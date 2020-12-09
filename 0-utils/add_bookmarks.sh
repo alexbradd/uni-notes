@@ -1,11 +1,9 @@
 #! /bin/sh
 
-# REQUIREMENTS
-# gs: read postscript script to add bookmarks
+[ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
+[ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
 
-[ -x /usr/bin/gs ] || exit 1
-
-if [ -z "$1" ] || [ "$1" = "--help" ]; then
+if [ -z "$1" ] || [ "$1" = "--help" ] || [ "$1" = '-h' ]; then
 	echo "add_bookmarks.sh input bookmarks"
 	exit 0
 fi

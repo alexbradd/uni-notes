@@ -1,17 +1,11 @@
 #! /bin/sh
 
-# REQUIREMENTS
-# pandoc: conversion
-# pdflatex: exporting to pdf (needs texlive-scheme-medium)
-# rsvg-convert: embedding svg
-
-[ -x /usr/bin/pandoc ] || exit 1
-[ -x /usr/bin/pdflatex ] || exit 1
-[ -x /usr/bin/rsvg-convert ] || exit 1
+[ -x /usr/bin/pandoc ] || { echo "pandoc is required"; exit 1; }
+[ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
 
 TOC="--toc --toc-depth=4"
 case "$1" in
-	""|"--help")
+	""|"--help"|"-h")
 		echo "md_to_pdf.sh [ --no-toc ] input output"
 		exit 0 ;;
 	"--no-toc")

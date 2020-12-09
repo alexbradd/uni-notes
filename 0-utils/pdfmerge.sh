@@ -1,23 +1,21 @@
 #! /bin/sh
 
-# REQUIREMENS
-# gs: merging + compressing
+[ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
 
-[ -x /usr/bin/gs ] || exit 1
+parameters=()
 
-parameters=""
-
-if [ -z "$1" ] || [ "$1" = '--help' ]; then
+if [ -z "$1" ] || [ "$1" = '--help' ] || [ "$1" = '-h' ]; then
 	echo "Usage: pdfmerge output tomerge..."
 	exit 0
 fi
 
 while [ -n "$1" ]; do
-	parameters+="\"$1\" "
+	parameters+=("\"$1\"")
 	shift
 done
 
-exit 0
+echo "${parameters[@]:1}"
+echo "${parameters[0]}"
 
 gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=/tmp/tmp.pdf \
 	"${parameters[@]:1}" &&
