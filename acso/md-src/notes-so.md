@@ -1154,7 +1154,20 @@ dei timer e verifica i timeout scaduti. Un timeout scade quando il valore dei
 
 #### Gestione degli interrupt
 
-TODO
+La gestione degli interrupt si basa sui seguenti principi:
+
+- Quando si verifica un interrupt esiste sempre un processo in stato di
+  esecuzione:
+  - il processo viene interrotto in modalità utente
+  - il sistema viene interrotto durante l'esecuzione di un servizio
+  - il sistema viene interrotto durante una routine di interrupt di priorità
+    inferiore
+- In tutti i casi l'interrupt svolge la sua funzione senza disturbare il
+  processo in esecuzione (la routine è trasparente) ed esso non viene mai
+  sostituito durante l'esecuzione della routine di interrupt (gli interrupt sono
+  eseguiti nel contesto del processo in esecuzione)
+- Se la routine di interrupt è associata al verificarsi di un evento sul quale è
+  in stato di attesa un processo la routine risveglia questo processo
 
 #### Riassunto routine di gestione dello stato
 
@@ -1173,6 +1186,21 @@ TODO
   rimuovi il processo dalla waitqueue
 - `wake_up()` - sposta i processi nella runqueue e verifica se è necessaria la
   preemption
+
+Pseudocodice della routine di interrupt del clock:
+
+```c
+void R_int_clock(...) {
+  handle_counters(); // gestisce i contatori di tempo reale
+  task_tick(); // controlla se è scaduto il quanto di tempo
+  Controlla_time(); // controlla la lista dei timeout
+
+  if (return_mode == USER)
+    schedule();
+
+  asm { IRET }
+}
+```
 
 ### Eliminazione dei processi
 
@@ -1588,4 +1616,395 @@ del task. A differenza di ciò che succedere risvegliando un task, il `VRT`
 iniziale del nuovo task non è tale da posizionarlo all'inizio della coda.
 Tuttavia il nuovo task creato è posizionato in coda in modo da andare certamente
 in esecuzione durante il periodo di scheduling che inizia con la sua creazione.
+
+#### Assegnazione del peso ai processi
+
+L'utente può assegnare a un processo una cosiddetta `nice_value`. Le
+`nice_value` vanno da $-20$ (massima priorità, minima "gentilezza") a $+19$
+(minima priorità, massima "gentilezza"). Il valore di default è $0$. I
+`nice_value` sono trasformati in pesi usando la seguente formula
+(approssimazione):
+
+$$
+\mathit{t.LOAD} = \frac{1024}{1,25^{\mathit{nice_value}}}
+$$
+
+## Organizzazione della memoria
+
+Come abbiamo detto, lo spazio virtuale utilizzabile dal kernel è di $2^{48}$
+byte, suddiviso in due spazi: la metà bassa dedicata allo user space e la metà
+alta dedicata al kernel. Le due metà sono separate da una zona di indirizzi non
+canonici.
+
+```txt
++---------------+ 0000 0000 0000 0000
+| User Space    |
++---------------+ 0000 7FFF FFFF FFFF
+| Non canonical |
+| area          |
++---------------+ FFFF 8000 0000 0000
+| Kernel space  |
++---------------+ FFFF FFFF FFFF FFFF
+```
+
+### Aree di memoria virtuali
+
+Lo spazio virtuale di un programma è suddiviso in più aree di memoria virtuali
+(VMA).  Ogni area di memoria virtuale è caratterizzata da una coppia di
+indirizzi virtuali di pagina che ne definiscono l'inizio e la fine. Ogni area è
+quindi costituita da un numero intero di pagine consecutive. A ogni segmento
+sono associati dei permessi (`rwx`):
+
+| Utilizzo                    | Sigla | Indirizzo        | Crescita |
+|-----------------------------|-------|------------------|----------|
+| Codice eseguibile           | `C`   | `0000 0040 0000` | -        |
+| Costanti di rilocazione     | `K`   | `0000 0060 0000` | -        |
+| Dati statici                | `S`   | -                | -        |
+| Dati non inizializzati      | `BSS` | -                | -        |
+| Dati allocati dinamicamente | `D`   | -                | alto     |
+| Mappatura di file           | `M`   | -                | -        |
+| Thread                      | `T`   | `7FFF F77F FFFF` | basso    |
+| Stack                       | `P`   | `7FFF FFFF FFFF` | basso    |
+
+Il limite dell'area allocata dinamicamente viene indicata dalla variabile `brk`.
+A ogni thread viene allocata una pila di 8 MB. Il segmento della stack parte
+dall'ultimo indirizzo disponibile.
+
+Un'area di memoria viene salvata con il seguente `struct`:
+
+```c
+struct vm_area_struct {
+  struct mm_struct *vm_mm; // mm_struct del processo d'appartenenza
+  unsigned long vm_start;
+  unsigned long vm_end;
+
+  struct vm_area_struct *vm_next, *vm_prev; // list delle aree di memoria
+
+  unsigned long vm_flags; // VM_READ, VM_WRITE, VM_EXEC, VM_SHARED, VM_GROWSDOWN
+                          // VM_DENYWRITE, ...
+
+  ...
+
+  unsigned long vm_pgoff; // Offset in unità PAGE_SIZE
+  struct file *vm_file; // File che vengono mappati
+  ...
+};
+```
+
+Un'area virtuale di memoria può essere mappata su file, detto `backing store`.
+In caso contrario l'area è detta anonima. `vm_file` è il puntatore a questo
+file e `vm_pgoff` è l'offset in suddetto file. Per le aree `C`, `K` e `S` il
+backing store è il file eseguibile.
+
+Ogni volta che la MMU genera un interrupt di Page Fault su un indirizzo virtuale
+appartenente alla pagina virtuale `NPV` viene attivata la routine detta Page
+Fault Handler. Il meccanismo semplificato è:
+
+```txt
+if (!is_in_virtual_memory(NPV))
+    raise segmentation_fault
+else if (is_in_virtual_memory(NPV) && cannot_access_segment(NPV))
+    raise segmentation_fault
+else if (is_in_virtual_memory(NPV) && !is_allocated(NPV))
+    alloc_virtual_page(NPV)
+```
+
+### Gestione delle aree statiche e dinamiche
+
+La sua gestione è basata su opportuni meccanismi hardware che vedremo in
+seguito. Per ora consideriamo:
+
+- in ogni istante esistono esclusivamente le pagine virtuali appartenenti alle
+  aree del processo
+- la tabella ha sempre righe sufficienti a rappresentare le pagine virtuali
+- una pagina virtuale può essere mappata su una fisica oppure; nella riga
+  corrispondente della tabella è presente il flag `P`
+
+Il sistema operativo gestisce l'evoluzione delle varie aree e delle tabelle in
+base agli eventi che si verificano, garantendo le regole sopra.
+
+#### Gestione delle aree relative all'eseguibile e alla stack
+
+Alla creazione del processo Linux prealloca 34 pagine virtuali di stack. Di
+queste pagine vengono allocate solo quelle utilizzate immediatamente
+(tipicamente le prime). Inoltre le pagine vengono caricate secondo la tecnica
+del `demand paging`: il caricamento avviene in base ai page fault che vengono
+generati. Ciò significa che le pagine fisiche sono allocate solamente al momento
+della lettura o scrittura dell'indirizzo virtuale corrispondente.
+
+L'area di stack viene gestita in modo particolare poiché le sue dimensioni sono
+note al momento del caricamento dell'eseguibile ma possono crescere a piacimento
+fino ad un limite massimo (il parametro `RLIMIT_STACK`). Abbiamo già detto che
+sono preallocate 34 pagine virtuali di stack. La dimensione dell'area di stack
+viene incrementata automaticamente: l'accesso alla pagina adiacente al bordo
+inferiore causa una crescita automatica dell'area di una pagina (pagina di
+`growsdown`) posta subito più in basso dell'ultima pagina. Il Kernel non è a
+conoscenza dell'esistenza di una stack, ma tratta così ogni pagina a crescita
+automatica identificata dal flag `VM_GROWSDOWN`. Ciò significa che l'accesso può
+essere casuale. L'accesso a pagine virtuali non allocate o quella dopo quella di
+`growsdown` causa, però, segmentation fault.
+
+L'area di pila non può rimpicciolirsi: le pagine resteranno allocate fino alla
+terminazione dell'esecuzione.
+
+Tenendo conto di queste ultime considerazioni, modifichiamo la nostra routine di
+Page Fault handling:
+
+```txt
+if (!is_in_virtual_memory(NPV))
+   raise segmentation_fault
+else if (is_in_virtual_memory(NPV) && cannot_access_segment(NPV))
+    raise segmentation_fault
+else if (is_in_virtual_memory(NPV) && !is_allocated(NPV))
+    if (get_memory_area(NPV).flags & VM_GROWSDOWN)
+        add_virtual_page(NPV - 1, get_memory_area(NPV))
+    alloc_virtual_page(NPV)
+```
+
+#### Gestione delle aree dinamiche
+
+Prima di poter allocare fisicamente una pagina virtuale di un'area dinamica è
+necessario richiedere la crescita dell'area stessa. La funzione `malloc()`
+esegue questi due compiti contemporaneamente, ma ha livello di sistema le due
+operazioni sono distinte:
+
+- la crescita dell'area avviene tramite i servizi `brk()` e `sbrk()`
+- l'allocazione delle pagine è effettuata dal sistema quando una pagina viene
+  effettivamente scritta
+
+La `brk()` e la `sbrk()` invocano entrambe lo stesso servizio ma in forma
+diversa:
+
+- `int brk(void *end_data_segment);` assegna il valore `end_data_segment` alla
+  fine dell'area dati dinamici. Restituisce 0 se tutto va bene e -1 in caso di
+  errore
+- `void *sbrk(intptr_t inc);` - incrementa l'area dati dinamici del valore
+  incremento e restituisce un puntatore alla posizione iniziale della nuova area
+
+### Gestione della memoria nella creazione dei processi
+
+#### Gestione di `fork()`
+
+La creazione di un nuovo processo implicherebbe la creazione di tutta la
+struttura di memoria del processo. Poiché il processo figlio è creato a immagine
+del padre, si potrebbe ottimizzare il tutto permettendo al figlio di condividere
+la memoria con il padre e aggiornare solo il descrittore. Ciò viene realizzato
+con il più generale meccanismo di Copy On Write (`CoW`).
+
+In generale, il `CoW` serve a ridurre la duplicazione tra pagine condivise in
+quanto la duplicazione viene effettuata solo se un processo scrive nella pagina.
+L'idea di base è la seguente:
+
+1. al momento della creazione della situazione di condivisione, le pagine
+   condivise sono settate in sola lettura, anche quelle appartenenti ad aree
+   scrivibili, di ambedue i processi
+2. quando si verifica un page fault per violazione della protezione in
+   scrittura, il page fault handler verifica se le condizioni di condivisione
+   sono verificate e se necessario la duplica e cambia la protezione in modo da
+   permettere la scrittura
+
+In modo di permettere al page fault handler di tenere traccia dello stato di
+ogni pagina, viene definita un'apposita struttura detta descrittore di pagina
+`page_descriptor`. In questa struttura un contatore `ref_count` tiene traccia
+del numero di utilizzatori della pagina: se la pagina fisica è libera
+`ref_count == 0`, altrimenti `ref_count == N`.
+
+Riscriviamo il Page Fault Handler per tenere conto di `ref_count` e del `CoW`:
+
+```txt
+if (!is_in_virtual_memory(NPV))
+    raise segmentation_fault
+else if (is_allocated(NPV) && cannot_access_segment(NPV))
+    if (virtual_page_permissions(NPV) & READ &&
+            virtual_area_permissions(get_memory_area(NPV) & WRITE)
+        old_page = get_physical_page(NPV)
+        if (old_page.ref_count > 1)
+            dup_page = duplicate_physical_page(get_physical_page(NPV))
+            dup_page.ref_count = 1
+            old_page--
+            bind_virtual_page(NPV, dup_page)
+            alloc_virtual_page(NPV)
+        else
+            set_virtual_page_permissions(NPV, WRITE)
+    else
+        raise segmentation_fault
+else if (!is_allocated(NPV))
+    if (get_memory_area(NPV).flags & VM_GROWSDOWN)
+        add_virtual_page(NPV - 1, get_memory_area(NPV))
+    alloc_virtual_page(NPV)
+```
+
+Nell'implementazione di Linux che consideriamo, la pagina fisica originale è
+attribuita al processo figlio, mentre per il processo padre viene allocata una
+pagina fisica nuova.
+
+#### Gestione di context switch ed `exit()`
+
+L'esecuzione di un context switch non ha effetti diretti sulla memoria, ma causa
+un flush del TLB poiché rende tutte le pagine del processo corrente non
+utilizzabili nel prossimo futuro. Poiché alcune di queste pagine potrebbero
+avere il bit di `dirty` asserito, questa informazione viene salvata. Perciò il
+descrittore di pagina fisica contiene anch'esso un bit di `dirty` utilizzato per
+inserirvi il valore contenuto nel TLB al momento del flush.
+
+L'esecuzione di `exit()` causa:
+
+1. Eliminazione della struttura delle aree virtuali
+2. Eliminazione della tavola delle pagine del processo
+3. Deallocazione delle pagine virtuali del processo con:
+   - Liberazione delle pagine fisiche con `ref_count == 1`
+   - Il decremento di `ref_count` se `ref_count > 1`
+4. Esecuzione del context switch
+
+### Gestione della memoria nella creazione di thread
+
+La gestione della memoria dei thread è completamente diversa da quella dei
+processi. Essi infatti condividono la stessa struttura delle aree virtuali e la
+stessa tabella delle pagine del processo padre (main thread).
+
+Abbiamo detto che le stack dei vari thread sono allocate con dimensione fissa
+di 8 MB (2048 pagine). Come consueto, le stack crescono verso il basso fino a
+alla dimensione massima (non viene settato, quindi, `VM_GROWSDOWN`). Tra le
+stack dei vari thread viene creata un'area di interposizione in sola lettura di
+una sola pagina.
+
+Considerando un esempio, abbiamo che:
+
+- al primo thread corrisponde `7FFF F77F F-FFF`
+- al secondo thread corrisponde `7FFF F6FF E-FFF`
+- ...
+
+### Meccanismo generale per la creazione di VMA
+
+La realizzazione delle aree virtuali si basa su un meccanismo generale che può
+essere invocato direttamente dal sistema oppure tramite la syscall `mmap()`:
+
+```c
+#include <sys/mmap.h>
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, 
+    off_t offset);
+```
+
+- `addr`: suggerisce l'indirizzo virtuale iniziale dell'area; se non viene
+  specificato il kernel sceglierà il più adatto
+- `length`: la dimensione dell'area
+- `prot`: la protezione (`PROT_EXEC, PROT_READ, PROT_WRITE`)
+- `flags`: indica numerose opzioni; noi considereremo solo
+  - `MAP_SHARED`
+  - `MAP_PRIVATE`
+  - `MAP_ANONYMOUS`
+- `fd`: il descrittore del file da mappare
+- `offset`: la posizione iniziale dell'area rispetto all'inizio del file (deve
+  essere multiplo della dimensione di pagina)
+
+Le aree di memoria create tramite `mmap()` vengono trasmesse ai figli dopo una
+`fork()`. Le pagine verranno gestite grazie alla tecnica del `CoW`.
+
+In caso di successo `mmap()` restituisce un puntatore all'area allocata. Esiste
+anche la syscall opposta per rimuovere il mapping di un certo intervallo di
+pagine virtuali:
+
+```c
+int munmap(void *addr, size_t length);
+```
+
+- `addr`: puntatore all'inizio di una pagina
+- `length`: lunghezza della sezione di cui si rimuovere il mapping
+
+Le aree sono classificate in base a 2 criteri:
+
+- Le aree possono essere mappate su file oppure essere anonime (`anonymous`)
+- Le aree possono essere condivise o private (`shared` o `private`)
+
+Tutte le combinazioni sopra sono supportate dal kernel, ma noi non considereremo
+il caso "shared | anonymous".
+
+#### Aree mappate su file - lettura
+
+Il riferimento al file e lo spiazzamento in pagine rispetto all'inizio del file
+sono memorizzati all'interno di due campi in `vm_area_struct`: `vm_file` e
+`vm_pgoff`. Sia le pagine che costituiscono l'area sia le corrispondenti pagine
+del file devono essere consecutive. Più file possono mappare le stesse pagine di
+file. Quando una pagina è stata letta in memoria fisica, gli altri eventuali
+processi che la richiederanno leggeranno la stessa pagina fisica. Questo
+meccanismo è realizzato grazie alla page cache.
+
+#### La page cache
+
+Con page cache si intende un insieme di pagine fisiche utilizzate per
+rappresentare i file in memoria e un insieme di strutture dati ausiliare e di
+funzioni che ne gestiscono il funzionamento. In particolare, le strutture
+ausiliarie contengono l’insieme dei descrittori delle pagine fisiche presenti
+nella cache; ogni descrittore di pagina contiene l’identificatore del file e
+l’offset sul quale è mappata, oltre ad altre informazioni tra cui `ref_count`.
+Inoltre, le strutture ausiliarie contengono un meccanismo efficiente
+(page cache index) per la ricerca di una pagina in base al suo descrittore
+costituito dalla coppia `<identificatore file, offset>`.
+
+Quando un processo richiede di accedere ad una pagina virtuale mappata su un
+file, il sistema svolge le seguenti operazioni:
+
+1. Determina il file e il page offset richiesto
+   - il file è contenuto nella struttura di VMA
+   - l'offset è calcolato sommando l'offset della VMA dal file e l'offset
+     dell'indirizzo di pagina richiesto rispetto al VMA
+2. Verifica se la pagina esiste nella page cache
+   - se sì la pagina virtuale viene mappata su tale pagina fisica
+   - se no si alloca una pagina fisica, vi si carica tale pagina nella page
+     cache ripetendo l'algoritmo
+
+Le pagine caricate nella cache non vengono liberate neppure quando tutti i
+processi che le utilizzavano non le utilizzano più. L'eventuale liberazione
+avverrà in un contesto di gestione della memoria generale a fronte di richieste
+di pagine da parte dei processi su una memoria quasi piena.
+
+#### Aree mappate su file - scrittura
+
+Il comportamento dell'operazione di scrittura su un'area mappata su file dipende
+dal tipo di area: è mappata in maniera shared o private?
+
+##### Scrittura su aree shared
+
+Questo tipo di scrittura è il più semplice da comprendere. I dati vengono
+scritti sulla pagina della page cache condivisa, quindi:
+
+1. La pagina fisica viene modificata e marcata `dirty`
+2. Tutti i processi che mappano tale pagina fisica vedono immediatamente le
+   modifiche
+3. Prima o poi la pagina modificata verrà riscritta su file; non è infatti
+   indispensabile riscrivere subito su disco la pagina in quanto i processi che
+   la accedono vedono la pagina in page cache permettendo che la pagina venga
+   scritta su disco solo una volta, anche dopo più modifiche
+
+##### Scrittura su aree private
+
+Il comportamento della scrittura su aree marcate private è quello del `CoW` già
+visto. La cosa da notare è che le pagine fisiche modificate dal processo non
+verranno copiate sul backing store e quindi gli altri processi che aprono lo
+stesso file non vedranno queste modifiche.
+
+#### Aree di tipo anonymous
+
+La definizione di un'area di memoria anonima non alloca memoria fisica in quanto
+le le pagine virtuali sono tutte mappate sulla "ZeroPage", una pagina fisica
+piena di zeri mantenuta dal sistema. In questo modo le operazioni di lettura si
+ritrovano una pagina fisica inizializzata a 0 senza richiedere allocazione di
+memoria. La scrittura, invece, provoca l'esecuzione del copy on write, come per
+visto per le private, e richiede l'allocazione di nuove pagine fisiche.
+
+#### Condivisione di eseguibili
+
+Linux tratta le aree di codice dei programmi con lo stesso meccanismo delle aree
+virtuali mappate su file definite in sola lettura e private. In base a quanto
+visto, se due processi eseguono lo stesso eseguibile, il secondo processo
+troverà tali pagine già presenti nella page cache. Grazie al mantenimento al più
+lungo possibile delle pagine in cache è possibile che un processo ritrovi le sue
+pagine di codice in memoria anche dopo molto tempo.
+
+Anche il linker dinamico utilizza le aree virtuali per realizzare la
+condivisione delle pagine fisiche delle librerie condivise. Il linker crea aree
+private per le varie librerie condivise usate.
+
+Se il codice di un eseguibile viene sovrascritto (tramite `exec()`), allora
+verranno allocate delle nuove pagine contenenti il nuovo codice.
 
