@@ -436,3 +436,22 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 5. Gestern Abend um 18:00 Uhr war ich im Park.
 6. Gestern Nacht um 23:30 Uhr waren wir im Bett.
 
+## Übung 5 Seite 48 AB
+
+1. Wo warst du am Sonntag?
+2. Wo wart du gestern um sieben?
+3. Wo wart du gestern Vormittag?
+4. Wo waren du und Marlene gestern Nachmittag?
+
+## Übung d Seite 54
+
+1. Strassenbahn
+2. U-bahn
+3. Zu Fuss
+4. das Taxi
+5. das Schiff
+6. der Bus
+7. der Zug
+8. das Flugzeug / der Flieger
+9. das Fahrrad
+10. das Auto
