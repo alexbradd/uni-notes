@@ -2008,3 +2008,244 @@ private per le varie librerie condivise usate.
 Se il codice di un eseguibile viene sovrascritto (tramite `exec()`), allora
 verranno allocate delle nuove pagine contenenti il nuovo codice.
 
+### Gestione della memoria fisica
+
+Ci sono due modalità di gestione di allocazione:
+
+- Allocazione a grana grossa: fornice ai processi e al sistema le grosse
+  porzioni di memoria sulla quale operare
+- Allocazione a grana fine: alloca strutture piccole nelle posizioni gestite a
+  grana grossa
+
+Il principio base è quello di cercare di sfruttare la memoria centrale il più
+possibile:
+
+- tenere in memoria il sistema operativo
+- soddisfare le richieste di memoria dei processi
+- tenere in memoria i blocchi letti dal disco finché possibile
+  - un blocco letto da disco viene chiamato disk cache
+  - le disk cache riguardanti il file system sono chiamati buffer
+
+Linux usa questo set generale di regole:
+
+- Una  certa quantità di memoria viene allocata inizialmente al sistema e non
+  viene mai deallocata
+- Le eventuali richieste di memoria dinamica da parte del sistema stesso hanno
+  la massima priorità
+- quando un processo richiede memoria questa gli viene allocata senza
+  limitazioni
+- Tutti i dati letti dal disco vengono conservati indefinitamente in memoria per
+  poter essere eventualmente riutilizzati
+- Quando la memoria disponibile scende sotto una soglia predefinita viene
+  eseguita una operazione di riduzione delle pagine occupate
+
+Se la pagina è stata letta da disco e non è mai stata modificata la pagina viene
+semplicemente resa disponibile. Se la pagina è stata modificata la pagina deve
+prima essere scritta su disco prima di essere resa disponibile.
+
+Se la memoria non è sufficiente si iniziano a scaricare pagine di cache non
+utilizzate dai processi, seguite dalle pagine dei processi stessi. Se neanche
+ciò basta allora viene invocato l'OOMK (Out Of Memory Killer) che uccide alcuni
+processi per liberare dello spazio. Il file `/proc/meminfo` riporta informazioni
+sull'utilizzo della memoria.
+
+#### Allocazione di memoria
+
+L'unità di base per l'allocazione della memoria è la pagina, ma linux cerca di
+allocare sempre blocchi di pagine continue per ridurre la frammentazione della
+memoria. Questa operazione può sembrare inutile, ma ha delle motivazioni:
+
+- La memoria p acceduta anche dai canali DMA in base a indirizzi fisici, non
+  virtuali
+- E' preferibile usare pagine contigue fisicamente per motivi legati sia alle
+  cache che alla latenza di accesso alle RAM
+- La rappresentazione della RAM libera risulta più compatta
+
+Per ottenere questo scopo linux utilizza il `buddy system`:
+
+- la memoria è divisa in grandi blocchi di pagine continue
+- la dimensione dei blocchi di pagine continue (potenza di 2) è detta ordine del
+  blocco
+- per ogni ordine esiste una lista che collega tutti i blocchi di quell'ordine
+- se un blocco richiesto è disponibile questo viene allocato, altrimenti il
+  blocco vine diviso in 2
+  - i due nuovi blocchi vengono detti `buddies`
+- quando un blocco viene liberato il suo `buddy` viene analizzato e, se è
+  libero, essi vengono riunificati
+
+#### Deallocazione della memoria fisica
+
+Quando la quantità di memoria scende ad un livello critico interviene il PFRA
+(Page Frame Reclaiming Algorithm). Poiché il PFRA ha bisogno di allocare
+memoria, esso deve essere invocato prima della saturazione. Il PFRA cerca di
+riportare il numero di pagine libere a un livello inferiore al minimo `maxFree`.
+
+Il PFRA gestisce due sotto-problemi:
+
+1. Quando, quante e quali pagine liberare
+2. Il meccanismo di swapping
+
+##### Quando e quante pagine deallocare?
+
+I parametri mantenuti dal sistema per poter far funzionare il PFRA sono:
+
+- `freePages`: il numero di pagine di memoria fisiche libere in un certo istante
+- `requiredPages`: numero di pagine che vengono richieste per una certa attività
+  da parte di un processo
+- `minFree`: numero minimo di pagine libere sotto il quale non si vorrebbe
+  scendere
+- `maxFree`: numero di pagine libere al quale PFRA tenta di riportare
+  `freePages`
+
+Il PFRA può essere invocato:
+
+- Direttamente da parte di un processo che richiede `requiredPages` di memoria
+  se `(freePages - requiredPages) < minFree` tramite `try_to_free_pages()`
+- Periodicamente tramite `kswapd`, una funzione attivata periodicamente dal
+  sistema che invoca il PFRA se `freePages < maxFree`
+
+  `kswapd` è un kernel thread che viene attivato periodicamente da un timer
+
+L'attivazione diretta si verifica n condizioni di forte carico quando `kswapd`
+non riesce a tenere il passo con le allocazioni.
+
+Il numero di pagine da liberare (`toFree`) viene calcolato dal PFRA così:
+
+$$ \mathit{toFree = maxFree - freePages + requiredPages} $$
+
+Le pagine Vengono scelte in base alla categoria alle quali appartengono:
+
+##### Quali pagine deallocare?
+
+- Pagine non scaricabili (pagine del sistema)
+- Pagine mappate sul file eseguibile dei processi che possono essere scaricate
+  senza mai riscriverle
+- Pagine che richiedono una swap area su disco per poter essere scaricate
+  (pagine anonime)
+- Pagine mappate su file
+
+La scelta delle pagine da liberare è uno degli algoritmi più delicati del
+sistema.
+
+#### Algoritmo del PFRA
+
+Si basa su 2 liste globali dette `LRU list`:
+
+- `active list`: contiene le pagine che sono state accedute recentemente e non
+  possono essere scaricate
+- `inactive list`: contiene le pagine inattive da molto tempo
+
+In entrambe le liste le pagine sono tenute in ordine di invecchiamento tramite
+spostamento delle pagine da una lista all'altra per tenere conto degli accessi a
+memoria. L'obiettivo dello spostamento delle pagine tra le due liste è quello di
+accumulare le pagine meno utilizzate in coda alla `inactive list`, mantenendo
+nella `active list` il `working set` di tutti i processi.
+
+La politica è globale e non per processo. Linux realizza un'approssimazione
+basata basata sul bit di accesso `A` presente nella entry della pagina che viene
+asserito ogni volta che la pagina viene acceduta e azzerato periodicamente dal
+sistema.
+
+Vedremo una variante semplificata rispetto a quello reale. Ad ogni pagina viene
+associato un flag (`ref`) oltre al bit `A` hardware. Ciò serve per raddoppiare
+il numero di accessi necessari per spostare la pagina da un lista all'altra.
+Definiamo la funzione periodica `Controlla_Liste()` che esegue una scansione
+delle due liste. Essa è composta da:
+
+1. Scansione della `active list` dalla coda spostando eventualmente alcune
+   pagine alla `inactive list`
+
+   ```c
+    while (iterate_active_list_from_tail(&p)) {
+        if (p.A == 1) {
+            p.A = 0;
+            if (p.ref == 1)
+                move_to_head_in_active(p);
+            else
+                p.ref = 1;
+        } else {
+            if (p.ref == 1)
+                p.ref = 0;
+            else {
+                p.ref = 1;
+                move_to_tail_inactive(p);
+            }
+        }
+    }
+   ```
+
+2. Scansione della `inactive list` dalla testa spostando eventualmente alcune
+   pagine nella `active list`
+
+   ```c
+    while (iterate_inactive_list_from_head(&p)) {
+        if (p.A == 1) {
+            p.A = 0;
+            if (p.ref == 1) {
+                p.ref = 0;
+                move_to_head_in_active(p);
+            } else
+                p.ref = 1;
+        } else {
+            if (p.ref == 1)
+                p.ref = 0;
+            else
+                move_to_tail_inactive(p);
+        }
+    }
+   ```
+
+3. Funzioni che caricano nuove pagine:
+   - Le pagine richieste venono poste in testa alla `active list` con `ref = 1`
+   - Le pagine di un nuovo processo appena creato possiedono nelle due liste lo
+     stesso valore di `ref` di quello del padre e sono poste nelle liste nello
+     stesso ordine con cui compaiono quelle del padre
+4. Funzioni che eliminano dalla liste pagine liberate definitivamente
+
+#### Meccanismo di swapping
+
+Le regole di scaricamento delle pagine sono le seguenti:
+
+- Prima si scaricano le pagine appartenenti alla page cache on più utilizzate da
+  nessun processo, in ordine di numero
+- Successivamente si parte dalla coda della `inactive list`, tenendo conto della
+  eventuale condivisione delle pagine:
+  - Una pagina virtuale è ritenuta scaricabile solo se tutte le pagine condivise
+    sono nella `inactive list` in posizioni successive
+
+E' necessario che sia disponibile una swap area su disco (swap file o swap
+partition). Esso è una sequenza di page slots, ognuna di dimensioni pari ad una
+pagina, identificata da un numero (`swpn`).
+
+Ogni swap area è identificata da un descrittore. Esso contiene un contatore per
+ogni page slot (`swap_map_counter`) che indica il numero di pagine virtuali
+condivise dalla pagina fisica copiata nello slot.
+
+Le regole di swap sono le seguenti:
+
+- Quando il PFRA richiede di scaricare una pagina (swapout):
+  - Viene allocato un page slot
+  - La pagina fisica viene copiata nel page slot e liberata
+  - `swap_map_counter` viene settato al numero di pagine virtuali che
+    condividono quella pagina fisica
+  - In ogni elemento della tabella delle pagine che condividono la pagina fisica
+    viene registrato il `swpn` del page slot al posto del `npf` e il bit di
+    presenza viene azzerato
+- Quando un processore accede a una pagina virtuale scaricata in swap:
+  - Si verifica un page fault
+  - Il gestore di page fault attiva la procedura di caricamento da disco
+    (swapin):
+    - Viene allocata una pagina fisica in memoria
+    - Il page slot indicato nella tabella delle pagine in corrispondenza della
+      pagina virtuale cercata viene copiato nella pagina fisica
+    - La tabella delle pagine viene aggiornata inserendo in `npf` della pagina
+      fisica allocata al posto di `swpn` del page slot
+
+Al momento di uno swapout solo le pagine anonime vengono messe nella swap area.
+Se la pagina è shared, mappata su file e segnata come `dirty` essa viene
+salvata su disco. Una pagina condivisa è considerata `dirty` se:
+
+- il suo descrittore contiene il flag `dirty` a seguito di un flush del TLB
+- una delle pagine virtuali condivise sulla stessa pagina fisica è contenuta nel
+  TLB ed è marcata `dirty`
+
