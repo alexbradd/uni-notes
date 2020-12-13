@@ -2024,7 +2024,6 @@ possibile:
 - soddisfare le richieste di memoria dei processi
 - tenere in memoria i blocchi letti dal disco finché possibile
   - un blocco letto da disco viene chiamato disk cache
-  - le disk cache riguardanti il file system sono chiamati buffer
 
 Linux usa questo set generale di regole:
 
@@ -2248,4 +2247,248 @@ salvata su disco. Una pagina condivisa è considerata `dirty` se:
 - il suo descrittore contiene il flag `dirty` a seguito di un flush del TLB
 - una delle pagine virtuali condivise sulla stessa pagina fisica è contenuta nel
   TLB ed è marcata `dirty`
+
+Per quanto riguarda lo swapin, si cerca di ridurre i trasferimenti tra swap e
+memoria nel caso di pagine che vengano scaricate più volte senza essere
+riscritte. Quando una una pagina viene ricaricata con lo swapin, Linux non
+cancella la pagina dalla swap area e la mantiene nella Swap Cache. La swap
+cache è l'insieme delle pagine che sono state rilette dallo swap e non sono
+state modificate insieme ad alcune strutture ausiliare che permettono di
+gestirla come se le pagine contenute nella cache fossero mappate sulla swap
+area (`swap_cache_index`).
+
+Abbiamo detto che le pagine che richiedono swapping sono solo le pagine anonime.
+Quando si esegue uno swapin, la pagina viene:
+
+- La pagina viene copiata in memoria fisica, la copia nella swap area non viene
+  eliminata e la pagina è marcata in sola lettura
+- Nello `swap_cache_index` viene inserito un descrittore che contiene i
+  riferimenti alla pagina fisica e al page slot
+- Se la pagine viene solo letta quando la pagina viene nuovamente scaricata non
+  viene riscritta sul disco
+- Se la pagina fisica viene scritta, si verifica un page fault per violazione di
+  protezione:
+  - La pagina non appartiene più alla swap area
+  - La sua protezione viene cambiata in `W`
+  - Il contatore `swap_map_counter` viene decrementato
+  - Se `swap_map_counter == 0` allora il page slot viene liberato nella swap
+    area
+
+Per quanto riguarda le liste LRU il comportamento è il seguente:
+
+- la pagina virtuale che è stata letta o scritta (quella che ha causato lo
+  swapin) viene inserita in testa alla `active list` con `ref = 1`
+- eventuali altre pagine virtuali condivise all'interno della stessa pagina
+  vengono poste in coda alla `inactive list` con `ref = 0`
+
+L'allocazione/deallocazione della memoria interferisce con i meccanismi di
+scheduling: un processo può forzare lo swap delle pagine di un altro processo in
+attesa, rallentandolo al risveglio. In altri casi il PFRA può non riuscire a
+liberare abbastanza memoria ed è costretto ad invocare l'OOMK. In
+alcune situazioni si può verificare il fenomeno di thrashing: il sistema
+continua a deallocare pagine che vengono nuovamente richieste dai processi
+causando letture e scritture continue su disco impedendo ai processi di
+terminare e liberare memoria.
+
+### Memoria virtuale del sistema operativo
+
+Gli indirizzi virtuali del kernel sono da `FFFF 8000 0000 0000` a
+`FFFF FFFF FFFF FFFF`. Questo spazio è suddiviso in 5 aree principali:
+
+- codice e dati: `512 Mb`
+- moduli a caricamento dinamico: `1.5 Gb`
+- dati dinamici del kernel: `32 Tb`
+- mappatura della memoria fisica: `64 Tb`
+- mappatura della memoria virtuale: non trattata
+- altri spazi vuoti tra queste aree riservati a usi futuri
+
+| Const. simb         | Inizio                | Fine                  | Dim.   |
+|---------------------|-----------------------|-----------------------|--------|
+| -                   | `FFFF 8800 0000 0000` | -                     | -      |
+| `PAGE_OFFSET`       | `FFFF 8800 0000 0000` | `FFFF C7FF 0000 0000` | 64 TB  |
+| -                   | -                     | -                     | 1 TB   |
+| `VMALLOC_START`     | `FFFF C900 0000 0000` | `FFFF E8FF 0000 0000` | 32 TB  |
+| -                   | -                     | -                     | -      |
+| `VMEMMAP_START`     | `FFFF EA00 0000 0000` | -                     | 1 TB   |
+| -                   | -                     | -                     | -      |
+| `_START_KERNEL_MAP` | `FFFF FFFF 8000 0000` | -                     | 0,5 GB |
+| `MODULES_VADDR`     | `FFFF FFFF A000 0000` | -                     | 1,5 GB |
+
+#### Accesso agli indirizzi fisici
+
+Nella gestione della memoria, il sistema deve essere capace di utilizzare
+indirizzi fisici anche se, essendo software, opera su indirizzi virtuali. La
+soluzione è di dedicare una parte dello spazio virtuale dedicato alla mappatura
+della memoria fisica. L'indirizzo di tale area è definito da `PAGE_OFFSET`.
+L'indirizzo virtuale `PAGE_OFFSET` corrisponde quindi all'indirizzo fisico 0 e
+la conversione tra i due tipi di indirizzi è:
+
+$$
+\begin{aligned}
+  \mathit{ind_f} &= \mathit{inf_v - PAGE_OFFSET} \\
+  \mathit{ind_v} &= \mathit{ind_f + PAGE_OFFSET}
+\end{aligned}
+$$
+
+La divisione per 8 serve per allinearci alla parola
+
+Nel codice del sistema esistono funzioni di conversione tra i due tipi di
+indirizzi.
+
+### Paginazione nell'Intel x64
+
+Abbiamo $2^36$ pagine virtuali possibili. La tabella delle pagine deve essere
+organizzata in modo intelligente per evitare di allocare una tabella gigante per
+ogni processo.
+
+#### Struttura della tabella delle pagine
+
+La tabella è strutturata come un albero a 4 livelli:
+
+- i 36 bit del `npv` sono suddivisi in 4 gruppi da 9 bit
+- ogni gruppo da 9 bit rappresenta lo spiazzamento all'interno di una tabella
+  (directory) contenente 512 righe
+- Poiché ogni entry è di 64 bit, la dimensione di ogni directory è di 4 KB (una
+  pagina)
+- L'indirizzo della directory principale è contenuto nel registro `CR3` della
+  CPU e viene caricato ogni volta che viene mandato in esecuzione un processo
+
+Una traduzione di indirizzo consiste nel cosiddetto `page walk`:
+
+- Parto dalla tabella a cui punta `CR3`
+- Usando i 9 bit più alti accedo alla `page gloabal directory` e ottengo
+  l'indirizzo della `page upper directory`
+- Usando i 9 bit successivi accedo alla `page upper directory` e ottengo
+  l'indirizzo della `page middle directory`
+- Usando i 9 bit successivi accedo alla `page middle directory` e ottengo
+  l'indirizzo della `page table`
+- Usando i 9 bit successivi accedo alla `page table` e ottengo
+  l'indirizzo della nostra pagina
+
+```txt
+63       47           38           29           20          11               0
++--------+------------+------------+------------+-----------+----------------+
+| Unused | PGD offset | PUD offset | PMD offset | PT offset | Physcal offset |
++--------+------------+------------+------------+-----------+----------------+
+```
+
+Le entry non usano i 12 bit meno significativi per indirizzare, li usano come
+flag:
+
+- Bit 0: `valid`
+- Bit 1: permessi (1 scrivibile, 0 solo leggibile)
+- Bit 2: spazio di appartenenza (1 user, 0 kernel)
+- Bit 5: `accessed`
+- Bit 6: `dirty`
+- Bit 8: `global page`
+- Bit 63: `no execute` (permesso di eseguire codice)
+
+Questo modo di salvare la tabella delle pagine tende ad un rapporto dimensionale
+di $\frac{1}{512}$. Per esempio su una macchina con 4 GB di memoria la tabella
+occupa 8 MB. Lo spazio è significativo, ma percentualmente accettabile.
+
+#### Il TLB
+
+Quando il processore deve accedere ad un indirizzo fisico in base ad un
+indirizzo virtuale, deve attraversate tutta la gerarchia della tabella delle
+pagine per trovare la entry. Un page walk richiede 5 accessi di memoria. Per
+evitare questi accessi, lo x64 possiede il TLB.
+
+Quando viene modificato il contenuto idi `CR3` la MMU invalida tutte le entry
+del TLB, escluse quelle marcate globali.
+
+La MMU cerca autonomamente nella tabella delle pagine le entry di pagine non
+presenti. Quando viene richiesto un indirizzo virtuale, la MMU verifica se la
+pagina richiesta è presente le TLB. Se la pagina è presente, la accede
+immediatamente, senno si verifica un TLB miss: la MMU deve eseguire una page
+walk sulla tabella per reperire la pagina; se questa è valida, viene caricata
+nel TLB e viene acceduta, sennò viene lanciato un page fault.
+
+#### La paginazione in Linux
+
+La gestione della paginazione è una funzione che dipende in grande parte
+dall'hardware. Linux utilizza un modello parametrizzato per adattarsi alle
+diverse architetture, caratterizzando il comportamento hardware in base a
+diversi parametri.
+
+In x64 la tabella delle pagine è sempre residente in memoria e mappa tutto lo
+spazio di indirizzamento del processo, user e kernel. Inoltre tutta la memoria è
+paginata, indipendentemente  dal modo di funzionamento della CPU. All'avviamento
+del sistema la tabella delle pagine non è ancora inizializzata. La paginazione
+non è, infatti, ancora attiva. Le funzioni di caricamento iniziale funzionano
+accedendo direttamente alla memoria fisica, senza rilocazione. Dopo un
+caricamento di una parte della tabella indispensabile per far funzionare il
+sistema, il meccanismo di paginazione viene attivato e il caricamento completo
+del kernel viene terminato.
+
+La tabella delle pagine attiva è quella puntata dal registro `CR3`, che è unico.
+Dato che non esiste una tabella delle pagine del sistema, il sistema viene
+mappato nella tabella di ogni processo. Lo spazio virtuale è suddiviso a metà
+tra le due modalità di funzionamento. La metà superiore viene usata per mappare
+il kernel. Ciò non genere ridondanza poiché tutte le metà superiori delle
+tabelle delle pagine di ogni processo puntano alla stessa (unica) directory
+relativa al sistema.
+
+I thread condividono la tessa tabella delle pagine del processo padre.
+
+Una page walk può essere simulata anche in software. La funzione `get_PT()`
+esegue le stesse operazioni della MMU:
+
+```c
+#define NO_OFFSET   0xfffffffffffff000 
+#define NO_NX_FLAGS 0x7fffffffffffffff
+
+unsigned long pgd; // Indirizzo virtuale PGD
+
+struct indirizzo {
+    int pgd_index;
+    int pud_index;
+    int pmd_index;
+    int pt_index;
+    int offset;
+} ind;
+
+/*
+ * Decomposizione indirizzo omessa ...
+ */
+
+unsigned long convert_to_virtual(unsigned long phys) {
+    phys &= NO_OFFSET;
+    // indirizzo virtuale interpretato come parole da 8 byte
+    unsigned long *virt = phys + PAGE_OFFSET / 8; 
+    return virt;
+}
+    
+
+void get_PT(void) {
+    // accesso PUD
+    unsigned long pud_phys = ((unsigned long *) pgd)[ind.pgd_index];
+    unsigned long pud = convert_to_virtual(pud_phys);
+    printk("PUD: 0x%x\n", pud);
+
+    // accesso PMD
+    unsigned long pmd_phys = ((unsigned long *) pud)[ind.pud_index];
+    unsigned long pmd = convert_to_virtual(pmd_phys);
+    printk("PMD: 0x%x\n", pud);
+
+    // accesso PT
+    unsigned long pte_phys = ((unsigned long *) pmd)[ind.pmd_index];
+    unsigned long pte = convert_to_virtual(pte_phys);
+    printk("PTE: 0x%x\n", pte);
+
+    // accedo NPF
+    unsigned long npf = ((unsigned long *) pte)[ind.pt_index];
+    npf &= NO_OFFSET;
+    npf &= NO_NX_FLAGS;
+    unsigned long npv = npv + PAGE_OFFSET / 8;
+    unsigned long vaddr = npv + ind.offset;
+    printk("VADDR: 0x%x\n", vaddr);
+}
+```
+
+#### Paginazione e context switch
+
+La funzione `schedule()`, prima di commutare con `switch_to()`, invoca la
+funzione `switch_mm()` per cambiare il valore del registro `CR3` ed eseguire il
+flush il TLB.
 
