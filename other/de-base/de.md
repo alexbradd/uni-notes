@@ -455,3 +455,9 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 8. das Flugzeug / der Flieger
 9. das Fahrrad
 10. das Auto
+
+## Übung c Seite 55
+
+Von Mailand fahre ich  mit dem Zug nach Turin. Dann fliege ich von Turin nach
+Rom. Dann fliege ich von Rom nach München. Dann fliege ich von München zurück
+nach Mailand.
