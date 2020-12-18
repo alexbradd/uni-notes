@@ -103,7 +103,7 @@ Adriana.
 
 ## Übung 7 Seite 17 AB
 
-1. Adil Erdal ist 53 Jahre alt. Er kmmt aus der Türkei. Er ist Ingenieur von
+1. Adil Erdal ist 53 Jahre alt. Er kommt aus der Türkei. Er ist Ingenieur von
    Beruf.
 2. Kevin Spencer ist 34 Jahre alt. Er kommt aus den USA. Er ist Krankenpfleger
    von Beruf.
@@ -443,7 +443,7 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 3. Wo wart du gestern Vormittag?
 4. Wo waren du und Marlene gestern Nachmittag?
 
-## Übung d Seite 54
+## Übung d Seite 54 AB
 
 1. Strassenbahn
 2. U-bahn
@@ -456,8 +456,46 @@ In meine Stadt finde ich schön mit meinen Freunden ausgehen am Abend.
 9. das Fahrrad
 10. das Auto
 
-## Übung c Seite 55
+## Übung c Seite 55 AB
 
 Von Mailand fahre ich  mit dem Zug nach Turin. Dann fliege ich von Turin nach
 Rom. Dann fliege ich von Rom nach München. Dann fliege ich von München zurück
 nach Mailand.
+
+## Übung 2 Seite 52 KB
+
+1. Ich nehme den Bus. Ich nehme den Zug.  
+   Ich fahre mit dem Bus. Ich fahre mit dem Zug
+2. Ich nehme das Auto. Ich nehme das Schiff.  
+   Ich fahre mit dem Auto. Ich fahre mit dem Schiff.
+3. Ich nehme die Strassenbahn. Ich nehme die U-bahn.  
+   Ich fahre mit der Strassenbahn. Ich fahre mit der U-bahn.
+4. Sie nehmen die Fahrräder. Sie nehmen die Autos.  
+   Sie fahren mit den Fahrrädern. Sie fahren mit den Autos.
+
+## Übung 7 Seite 53 KB
+
+1. Am 8 Uhr muss sie zum Arzt gehen und dann eine Stunde später muss sie
+   zur Bibliothek gehen.
+2. Am Vormittag muss sie zum Friseur gehen und dann am Nachmittag muss sie zur
+   Reisebüro gehen.
+3. Um 17 Uhr muss sie zur Einkaufszentrum gehen und dann am Abend sie muss mit
+   Karin und Christian Abendessen essen
+
+## Übung b Seite 57 AB
+
+- Am Montag sind es 22 Grad und die Sonne scheint.
+- Am Dienstag sind es 20 Grad und es ist windig.
+- Am Mittwoch sind es 17 Grad und es regnet.
+- Am Donnerstag sind es 14 Grad und es regnet stark.
+- Am Freitag sind es 16 Grad und es regnet leicht.
+- Am Samstag sind es 18 Grad und die Sonne scheint.
+- Am Sonntag sind es 23 Grad und die Sonne scheint.
+
+## Übung 8 Seite 55 KB
+
+- Im Western wird es windig. Es sind 12 bis 14 Grad und es regnet leicht.
+- Im Osten scheint die Sonne. Es sind 20 Grad.
+- Im norden wird es kalt. Es regnet stark und es sind 4 bis 6 Grad.
+- Im Süden es ist heiss. Es sind 25 bis 30 Grad.
+
