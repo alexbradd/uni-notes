@@ -874,7 +874,7 @@ La funzione `clone` è pensata principalmente per creare un thread. Infatti la
 ...
 char *stack = malloc(...);
 clone(fn, stack, CLONE_VM | CLONE_FILES | CLONE_THREAD, ...);
-...
+
 ```
 
 Come si può notare lo spazio per la pila utente del thread viene allocata
@@ -2491,4 +2491,513 @@ void get_PT(void) {
 La funzione `schedule()`, prima di commutare con `switch_to()`, invoca la
 funzione `switch_mm()` per cambiare il valore del registro `CR3` ed eseguire il
 flush il TLB.
+
+## Il filesystem
+
+La parola filesystem può assumere diversi significati in base al contesto in cui
+viene utilizzata:
+
+- L'intera struttura di directory
+- Uno specifico formato di archiviazione dei dati (`fat32, ext3, ext4, ntfs`)
+- Una partizione o un volume logico formattato con uno specifico formato.
+
+Il filesystem è quindi quel componente che realizza i servizi di gestione dei
+file. Rappresenta quindi la struttura logica della memoria di massa
+(organizzazione e memorizzazione del file) ed è costituito da un insieme di
+funzioni di sistema e relative struttura dati di supporto. Il virtual filesystem
+(`VFS`) è una struttura unificata per gestire i diversi filesystem che il kernel
+supporta. Esso espone una API che consente l'utilizzo delle stesse chiamate di
+sistema per i vari tipi di filesystem.
+
+Le astrazioni fornite dal filesystem sono:
+
+- File, link e operazioni sui file
+- Directory e file speciali
+- Attributi e politiche di accesso
+- Mapping del filesystem logico su dispositivi fisici
+
+### Il file
+
+Ogni file è costituito da una sequenza di byte, un nome simbolico e univoco
+all'interno della directory e un insieme di attributi (metadata). Un file può
+essere di 3 tipi:
+
+- normale
+- directory (file di tipo `d`): contengono riferimenti ad altri file
+- file speciali: astrazione di un dispositivo periferico.
+
+Tutte le operazioni sul contenuto del file richiedono il trasferimento in/da
+memoria di byte e partono dalla posizione corrente nel file, aggiornandola.
+
+#### Il modello d'utente (System Call Interface)
+
+Possiamo suddividere le varie operazioni in 2 categorie:
+
+- Accesso al singolo file: funzioni utilizzate per scrivere e leggere
+  informazioni sui singoli file
+  (`creat(), open(), close(), fsync(), read(), write(), lseek()...`)
+- Organizzazione della struttura complessiva dei file: funzioni utilizzate per
+  organizzare i file nelle directory e nei volumi
+  (`unlink(), link(), mkdir(), mknod(), dup()...`)
+
+L'accesso ai singoli fil epuò avvenire sceondo due modalità:
+
+- La mappatura di una VMA tramite `mmap()`
+- Le syscall "classiche" di accesso ai file
+
+Il `VFS` deve essere in grado di soddisfare ambedue le modalità.
+
+Per operare su un file la prima operazione da eseguire è l'apertura (o creazione
+se esso non esiste). Le funzioni di apertura e creazione richiedono come
+parametro il nome del file (`pathname`) e restituiscono un intero non negativo
+chiamato descrittore del file. Il descrittore del file rappresenta, quindi, un
+file aperto da un determinato processo e sul quale tale processo può effettuare
+IO.
+
+Le funzioni di lettura e scrittura usano come riferimento il descrittore del
+file e operano su sequenze di byte a partire da un byte specifico, la cui
+posizione è contenuta nell'indicatore di posizione corrente.
+
+Per rendere più efficienti gli accessi ai file, il sistema mantiene in memoria
+centra una parte delle strutture dati per gestire i file:
+
+- Tabella dei file aperti per ogni processo: vettore contente alcune
+  informazioni sui file aperti da un certo processo; indicizzata dai
+  descrittori dei file
+- Tabella globale dei file aperti nel sistema: vettore che contiene un elemento
+  per ogni file aperto nel sistema; ogni elemento viene referenziato tramite la
+  tabella dei file aperti dai singoli processi; contiene l indicatore di
+  posizione corrente
+- Tabella delle directory e dei file "fisici"
+
+#### Operazioni su file
+
+- `int creat(char *nome, int perm)`
+
+  Crea un file nel filesystem allocando lo spazio necessario  creando un
+  riferimento (link) a questo file nel filesystem. Aggiorna inoltre sia la
+  tabella globale dei file che quella locale al processo.  Restituisce un intero
+  che rappresenta il descrittore del file.
+
+- `int open(char *nome, int tipo, int perm)`
+
+  Apre un file identificato dal suo percorso aggiornando sia la tabella globale
+  dei file che quella locale al processo. La variabile `tipo` può assumere i
+  valori di:
+
+  - `O_RDONLY`: aperto in sola lettura
+  - `O_WRONLY`: aperto in sola scrittura
+  - `O_RDWR`: aperto sia in lettura che scrittura
+
+  La variabile `perm` invece gestisce i permessi di accesso al file.
+
+- `int read(int fd, char *buffer, int n)`
+
+  Legge `n` byte dal file aperto con descrittore `fd` e li salva in `buffer`.
+  Restituisce il numero di caratteri letti. Aggiorna, inoltre, l'indicatore di
+  posizione corrente.
+
+- `int write(int fd, char *buf, int n)`
+
+  Scrive `n` byte di `buf` sul file aperto con descrittore `fd`. Restituisce il
+  numero di caratteri scritti. Aggiorna, inoltre, l'indicatore di posizione
+  corrente.
+
+- `long lseek(int fd, long off, int rif)`
+
+  Sposta l'indicatore di posizione corrente del file con descrittore `fd` di un
+  offset `off` rispetto al riferimento `rif`:
+
+  - `rif = 0`: inizio del file
+  - `rif = 1`: indicatore di posizione corrente
+  - `rif = 2`: fine le file
+
+  Infine restituisce il nuovo indicatore di posizione corrente.
+
+- `dup()`
+
+  Crea un nuovo descrittore associato ad un file già aperto con `open()`. La
+  posizione corrente è unica per tutti i scrittori associati allo stesso file
+  "fisico".
+
+- `int close(int fd)`
+
+  Elimina il legame tra il descrittore `fd` e il file. Non garantisce che i dati
+  scritti in memoria siano trasferiti su disco.
+
+- `int fsync(int fd)`
+
+  Scrive su disco tutti i dati del file associato a `fd` che sono presenti solo
+  in memoria.
+
+- `int link(char *nome, char *new)`
+
+  Crea una nuova entry nella directory con nome `new`. Non crea un nuovo
+  descrittore, ma incrementa di 1 i riferimenti (link) al file con nome `nome`.
+
+- `int unlink(char *nome)`
+
+  Elimina una entry dalla directory. Se `nome` era un link, allora viene
+  decrementato il numero di riferimenti al file corrispondente. Se il numero di
+  riferimenti arriva a 0, il file viene eliminato dal file system: viene
+  deallocato lo spazio sul dispositivo fisico e viene rimosso il descrittore del
+  file dal filesystem.
+
+### Organizzazione complessiva dei file
+
+I file sono organizzati in una struttura ad albero i cui nodi sono detti
+directory. Per semplificare la gestione i nomi dei file sono inseriti nelle
+directory. Una directory non è altro che un file dedicato a contenere nomi di
+altri file e le informazioni per accedere ad essi.
+
+La struttura delle directory si basa sull'esistenza di una directory principale
+(`root`) al quale il sistema può accedere autonomamente. `root` è, quindi, anche
+la base dell'albero delle directory.
+
+Il nome completo (`pathname`) di un file è costituito dalla concatenazione dei
+nome di tutte le directory sul percorso da `root` al file stesso, separati dal
+separatore di directory, nel caso di Linux `/`.
+
+### Le directory
+
+Le directory sono, quindi, caratterizzate come tutti i file da nome e diritti di
+accesso. Esse contengono le informazioni sui file e sulle directory contenute in
+essa (nome, attributi e proprietario).
+
+Le directory forniscono una corrispondenza tra i nomi dei file e i file stessi.
+Il Loro contenuto può essere vista come una tabella, con una entry per ogni
+file/directory contenuta.
+
+Le operazioni che è possibile effettuare sulle directory sono:
+
+- Creazione di una directory (`mkdir()`)
+- Ricerca di un file
+- Creazione di un file
+- Rimozioni di un file
+- Elenco dei file
+- Rinomina di un file
+
+### Periferiche e file speciali
+
+In Linux (più in generale in Unix) le periferiche sono viste come file speciali
+posizionati nella directory `/dev` creati tramite la funzione `mknod()`. Sulle
+periferiche è possibile eseguire `open(), read(), write(), creat()` ma non
+`creat()`.
+
+Ogni programma, all'esecuzione dispone già di 3 descrittori di file: `stdin,
+stdout, stderr` associati rispettivamente a tastiera e a video. Nella tabella
+dei file aperti da un processo i primi 3 elementi sono sempre associati a questi
+descrittori. Questi descrittori standard possono essere rediretti su altri file:
+
+```c
+#include <unistd.h>
+#include <fnctl.h>
+
+...
+close(STDOUT_FILENO);
+int fd = open(filename, O_WRONLY):
+...
+```
+
+### Partizioni, volumi e interazione con la memoria
+
+I dispositivi di memorizzazione di massa possono essere suddivisi in porzioni
+dette partizioni. Ogni partizione è considerata come un dispositivo logico
+indipendente. L'indirizzamento dei dati si basa sul concetto di `LBA` (logical
+block address). Lo `LBA`è uno schema di indirizzamento nel quale l'intero
+dispositivo è rappresentato come un vettore lineare di blocchi, ognuno
+costituito da un certo numero di byte.
+
+Il termine volume indica una partizione di qualsiasi dispositivo di
+memorizzazione di massa dotato di uno schema di indirizzamento basato su `LBA`.
+Ogni volume, cioè partizioni dotate del loro filesystem, sono rappresentati da
+nodi dell'albero delle directory detti `mount points`. Il sotto-albero la cui
+radice è il mount point del volume descrive la struttura interna del volume,
+mentre il mount point rende il volume raggiungibile da `root`. Per inserire un
+nuovo volume nella struttura è necessario compiere 2 operazioni:
+
+- Associare un filesystem al volume
+- Montare il volume in un opportuno mount point.
+
+Il blocco è l'unità fondamentale di trasferimento.
+
+L'accesso ai dispositivi di memorizzazione di massa è un'operazione che avviene
+nell'ordine dei millisecondi. Quindi filesystem e gestione di memoria devono
+collaborare. Infatti quando un filesystem ha bisogno di leggere un blocco su un
+volume, esso lo richiede alla page cache: se è il blocco è in cache viene usato
+quello altrimenti viene letto da disco.
+
+### Area buffer/cache e gestori dei dispositivi locali
+
+Il filesystem svolge le sue azioni appoggiandosi su due componenti:
+
+- Il gestore dei buffer/cache: gestisce le zone di memoria destinate a contenere
+  blocchi dei file che sono stati letti da disco
+- Il gestore del disco (disk driver): componente che astrae il dispositivo
+  fisico disaccoppiandolo da quello logico
+
+Il gestore  dei buffer/cache gestisce la page cache con il principio di tenere
+in memoria il più a lungo possibile i blocchi letti da disco.
+
+Quando il filesystem richiede la lettura di un blocco da un file passa la sua
+richiesta al gestore di dei buffer/cache:
+
+- Se il blocco del file è già nella page cache, il gestore dei buffer lo
+  "fornisce" al file system
+- In caso contrario il filesystem identifica lo `LBA`  del blocco da caricare e
+  chiede al gestore di allocare spazio e caricare il blocco
+
+In gestore dei buffer a sua volta interagisce con il disk driver, accodando la
+richiesta di trasferimento che sarà soddisfatta in maniera ottimale dal driver
+in funzione delle operazioni fisiche su disco.
+
+### Il modello del VFS
+
+Il modello del VFS deve rappresentare due tipi di informazioni: le informazioni
+statiche contenute nei file e nelle directory memorizzate nei diversi volumi e
+le informazioni dinamiche associate ai file e alle directory aperte durante il
+funzionamento del sistema. Il VFS si appoggia su 3 principali strutture dati
+
+- `struct dentry`: (`dentry` è crasi di "directory entry") rappresenta una
+  directory nel VFS
+- `struct inode`: (`inode` è crasi di "index node") rappresenta uno e un solo
+  file fisicamente esistente sui volume e ne contiene i metadati
+- `struct file`: rappresenta un file aperto dal sistema; associa ad un file
+  fisico rappresentato dal suo `inode` le informazioni dinamiche (posizione
+  corrente ecc)
+
+Queste strutture dati contengono, oltre ai campi utilizzati per rappresentare i
+vari contenuti specifici, dei puntatori che permettono di collegarle in modo da
+rappresentare in forma di strutture dati le informazioni necessarie a
+caratterizzare lo stato corrente dei file nel modello del VFS. Le principali
+strutture dati sono: la struttura delle directory e la struttura di accesso dai
+processi ai file aperti.
+
+#### La struttura delle directory
+
+La struttura delle directory è costituita esclusivamente da istanze di
+`struct dentry` rappresentano i nodi dell'albero delle directory.
+
+```c
+struct dentry {
+    struct inode *d_inode;
+    struct dentry *d_parent;
+    struct qstr d_name; // nome del file
+    struct list_head d_subdirs; // puntatore alla prima directory figlia
+    struct list_head d_child; // puntatore al fratello nell'albero
+    ...
+};
+```
+
+L'albero è realizzato inserendo in ogni `dentry` un puntatore alla prima delle
+sue subdirectory (`d_subdirs`) e un puntatore al prossimo fratello
+(impropriamente chiamato `d_child`). È contenuto, inoltre, il nome della
+directory rappresentata (`d_name`), un puntatore al padre (`d_parent`) e un
+puntatore allo `inode` (`d_inode`) del file fisico nella struttura di accesso.
+
+#### La struttura di accesso dai processi ai file aperti
+
+Ogni descrittore di processo contiene 2 puntatori rilevanti ai fini dell'accesso
+ai file:
+
+```c
+struct task_struct {
+    ...
+    struct fs_struct *fs;
+    struct files_struct *files;
+    ...
+};
+```
+
+Le istanze di `fs_struct` contengono i parametri che caratterizzano i singoli
+filesystem registrati nel sistema. Il campo è il puntatore alla lista dei file
+system utilizzati dal processo e permette di reperire, nei momenti di necessità,
+le informazioni relative ai filesystem.
+
+Il campo `files` è un puntatore alla struttura `files_struct`:
+
+```c
+struct files_struct {
+    ...
+    int next_fd; // prossimo descrittore utilizzabile
+    struct file *fd_array[NR_OPEN_DEFAULT]; // Tabella dei file aperti
+    ...
+};
+```
+
+Il componente fondamentale di questa struttura è la tabella dei file aperti
+`fd_array` (dimensione fissa) che contiene un elemento per ogni file aperto dal
+processo. Ogni elemento è un puntatore ad un'istanza di `struct file`.
+Analizziamo ora la struttura `struct file`:
+
+```c
+struct file {
+    ...
+    struct list_head f_list; // puntatore per la lista dei file aperti
+    struct dentry *f_dentry; // riferimento al dentry usato in apertura
+    loff_t f_pos; // posizione corrente
+    int f_count; // contatore dei riferimenti al file aperto
+    ...
+};
+```
+
+Il primo puntatore serve a collegare tutti i file aperti in una lista e non è
+utilizzato dalla struttura di accesso. Il puntatore rilevante per costruite la
+struttura di accesso è `f_dentry` che punta all'istanza di `dentry` che è stata
+utilizzata per aprire il file. Dato che la `dentry` punta allo `inode` del file,
+possiamo definire la struttura di accesso di un processo `P` a un file aperto
+con descrittore `fd` come la seguente catena:
+
+```c
+inode i = process_descriptor->files.fd_array[fd]->f_dentry->d_inode;
+```
+
+Quando un file viene aperto viene allocata una nuova istanza di `struct file` e
+un puntatore a tale nuova istanza viene inserito nella prima posizione libera
+della tabella dei file aperti dal processo. Infine `open()` restituisce
+l'indice di tale posizione (il descrittore) al chiamante. Se non sono presenti
+in memoria, vengono anche create le istanze delle strutture `struct dentry` e
+`struct inode`.
+
+#### Apertura contemporanea di più file
+
+Diverse righe nell'ambito di uno stesso processo o di più processi possono
+puntare allo stesso file. In tal caso tutte le operazioni sui relativi
+descrittori condividono la stessa posizione corrente. Il contatore dei
+riferimenti `f_count` indica i descrittori che puntano contemporaneamente sul
+file.
+
+Il modo più comune per generare due descrittori che puntano allo stesso file è
+costituito da `dup()` o `fork()`. La `fork()` duplica la tabella dei file aperti
+del processo e quindi determina l'esistenza di descrittori in diversi processi
+che puntano allo stesso file.
+
+L'apertura indipendente da parte di un processo `R` di un file già aperto da `P`
+crea sempre una nuova istanza di `struct file`, con posizione corrente e
+`f_count` indipendenti. Lo `inode` rimane, tuttavia, condiviso poiché si tratta
+dello stesso file fisico.
+
+La struttura a valle dei descrittori, costituita da `dentry` e `inode`, è
+considerata eliminabile solo quando il contatore `f_count` raggiunge lo
+zero.
+
+#### Lo `struct inode`
+
+Un file è rappresentato nel VFS da un'istanza dello `struct inode`. La
+corrispondenza tra i file e le istanze di `struct inode` è rigorosamente
+biunivoca.
+
+Un `inode` contiene tutti i metadati che caratterizzano un file:
+
+```c
+struct inode {
+    loff_t i_size; // dimensione del file
+    struct list_head i_dentry; // inizio della lista dei dentry del file
+    struct super_block *i_sb: // superblocco del FS che gestisce il file
+    struct inode_operations *i_op;
+    struct file_operations *i_fop;
+    struct address_space *i_mapping; // struttura di mapping dei blocchi
+    ...
+};
+```
+
+L'esistenza di una lista dei `dentry` che fanno riferimento al file è dovuto al
+fatto che un file può avere più di un nome nella struttura delle directory. Il
+superblocco di un filesystem è una struttura dati che contiene la definizione
+delle caratteristiche generali del filesystem stesso. Il puntatore `i_sb`
+permette di risalire ad esso.
+
+Le strutture `i_op` e `i_fop` contengono i puntatori alle funzioni dello
+specifico filesystem che implementano le funzioni generali del VFS. Queste due
+strutture sono referenziate in ogni `inode` per velocizzare l'invocazione delle
+funzioni al loro interno. La `struct inode_operations` contiene i puntatori alle
+implementazioni specifiche di operazioni quali `creat(), mknod(), link(),
+unlink(), mkdir(), rmdir()` eccetera. La `struct file_operations`, invece,
+contiene puntatori alle implementazioni specifiche di operazioni quali `open(),
+read(), write(), lseek()` eccetera.
+
+Lo `struct address_space` contiene alcune informazioni fondamentali per
+realizzare le operazioni di trasferimento dei dati dal volume alla memoria.
+
+### Accesso ai dati di un file
+
+Nel modello utente, si accede al contenuto dei file tramite `read()` e `write()`
+e le rispettive syscall. La posizione corrente fa riferimento al file come una
+sequenza continua di byte. Questo riferimento deve essere trasformato in modo
+da:
+
+- permettere di trovare i dati sul volume
+- far transitare i dati dalla memoria
+
+#### Lettura di un file
+
+La lettura di un file è basata sulla pagina: il sistema trasferisce sempre
+pagine intere di dati con ogni operazione. Se un processo esegue una syscall
+`sys_read()` anche di pochi byte il sistema esegue le seguenti operazioni:
+
+1. Determina la pagina del file alla quale il byte appartengono
+2. Verifica se la pagina è già contenuta nella page cache; se sì salta al punto
+   5
+3. Alloca una nuova pagina in page cache
+4. Riempie la pagina con la corrispondente porzione del file, caricando i
+   blocchi necessari dal volume
+5. Copia i dati richiesti nello spazio utente all'indirizzo richiesto
+
+Determinare la pagina del file richiede la trasformazione della posizione
+corrente in un numero di pagina. Il passaggio 4, invece, richiede la
+trasformazione del numero di pagina negli `LBA` dei blocchi che costituiscono la
+pagina.
+
+#### Trasformazione della posizione corrente
+
+La trasformazione dalla posizione corrente in un numero di pagina del file può
+essere realizzata con la seguente semplice conversione:
+
+```c
+/*
+ * Si ricorda che in C la divisione viene classificata come intera
+ */
+int file_page = current_position / PAGE_SIZE;
+int offset = current_position % PAGE_SIZE;
+```
+
+Il file è visto dal filesystem come una sequenza di blocchi numerati logicamente
+a partire da 0. Questo indice è chiamato `File Block Address (FBA)`. La
+conversione della posizione corrente in `FBA` e offset è anch'essa triviale:
+
+```c
+int fba = current_position / BLOCK_SIZE;
+int offset = current_position % BLOCK_SIZE:
+```
+
+La corrispondenza tra `LBA` e `FBA` è determinata dall'organizzazione del
+volume del filesystem.
+
+#### Operazioni delegate alla page cache
+
+Il meccanismo utilizzato dalla page cache per determinare se una pagina di un
+file (identificata dal numero di pagina `FPn`) è già presente in memoria si basa
+sulla struttura dati `struct address_space` a cui punta `i_mapping` nello
+`inode` del file.
+
+```c
+struct address_space {
+    struct i_node host; // puntatore allo inode che contiene questo mapping
+    struct ... page_tree;
+    struct ... a_ops; // puntatori a funzioni per operare sul mapping
+    ...
+};
+```
+
+L'elemento fondamentale di questa struttura dati è il `page_tree`, una
+particolare struttura ad albero (`radix tree`) utilizzata per puntare a tutte le
+pagine della page cache relative a questo file. Dato un `FPn`, questa struttura
+permette di determinare molto rapidamente se la pagina è già presente in page
+cache e, in caso affermativo, di trovare il suo descrittore.
+
+Se la pagina non è presente è necessario procedere a caricarla. La struttura
+`a_ops` contiene le operazioni specifiche del filesystem, per accedere alle
+pagine, in particolare `readpage()` e `writepage()`. Nella maggior parte dei
+casi, queste funzioni invocano le corrispondenti funzioni del device driver che
+accede al dispositivo fisico (il gestore a blocchi del volume).
 
