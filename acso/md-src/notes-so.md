@@ -2159,7 +2159,7 @@ delle due liste. Essa è composta da:
         if (p.A == 1) {
             p.A = 0;
             if (p.ref == 1)
-                move_to_head_in_active(p);
+                move_to_head_active(p);
             else
                 p.ref = 1;
         } else {
@@ -2182,7 +2182,7 @@ delle due liste. Essa è composta da:
             p.A = 0;
             if (p.ref == 1) {
                 p.ref = 0;
-                move_to_head_in_active(p);
+                move_to_tail_active(p);
             } else
                 p.ref = 1;
         } else {
@@ -2325,8 +2325,8 @@ la conversione tra i due tipi di indirizzi è:
 
 $$
 \begin{aligned}
-  \mathit{ind_f} &= \mathit{inf_v - PAGE_OFFSET} \\
-  \mathit{ind_v} &= \mathit{ind_f + PAGE_OFFSET}
+  \mathit{ind_f} &= \mathit{inf_v - PAGE\_OFFSET} \\
+  \mathit{ind_v} &= \mathit{ind_f + PAGE\_OFFSET}
 \end{aligned}
 $$
 
@@ -2337,7 +2337,7 @@ indirizzi.
 
 ### Paginazione nell'Intel x64
 
-Abbiamo $2^36$ pagine virtuali possibili. La tabella delle pagine deve essere
+Abbiamo $2^{36}$ pagine virtuali possibili. La tabella delle pagine deve essere
 organizzata in modo intelligente per evitare di allocare una tabella gigante per
 ogni processo.
 
@@ -2353,24 +2353,22 @@ La tabella è strutturata come un albero a 4 livelli:
 - L'indirizzo della directory principale è contenuto nel registro `CR3` della
   CPU e viene caricato ogni volta che viene mandato in esecuzione un processo
 
+```txt
+63  47           38           29           20          11                0
++---+-------------+------------+-----------+-----------+-----------------+
+| - | PML4 offset | PDP offset | PD offset | PT offset | Physical offset |
++---+-------------+------------+-----------+-----------+-----------------+
+```
+
 Una traduzione di indirizzo consiste nel cosiddetto `page walk`:
 
-- Parto dalla tabella a cui punta `CR3`
-- Usando i 9 bit più alti accedo alla `page gloabal directory` e ottengo
-  l'indirizzo della `page upper directory`
-- Usando i 9 bit successivi accedo alla `page upper directory` e ottengo
-  l'indirizzo della `page middle directory`
-- Usando i 9 bit successivi accedo alla `page middle directory` e ottengo
-  l'indirizzo della `page table`
-- Usando i 9 bit successivi accedo alla `page table` e ottengo
-  l'indirizzo della nostra pagina
-
-```txt
-63       47           38           29           20          11               0
-+--------+------------+------------+------------+-----------+----------------+
-| Unused | PGD offset | PUD offset | PMD offset | PT offset | Physcal offset |
-+--------+------------+------------+------------+-----------+----------------+
-```
+- Partendo da `PML4` (indirizzo in `CR3`), accedo alla entry con indice `PML4
+  offset` per ottenere l'indirizzo della `PDP`
+- Nella `PDP`, accedo alla entry con indice `PDP offset` per ottenere
+  l'indirizzo della `PD`
+- Nella `PD`, accedo alla entry con indice `PD offset` per ottenere la `PT`
+- Nella `PT`, accedo alla entry con indice `PT offset` per ottenere la pagina
+  cercata
 
 Le entry non usano i 12 bit meno significativi per indirizzare, li usano come
 flag:
@@ -2385,7 +2383,26 @@ flag:
 
 Questo modo di salvare la tabella delle pagine tende ad un rapporto dimensionale
 di $\frac{1}{512}$. Per esempio su una macchina con 4 GB di memoria la tabella
-occupa 8 MB. Lo spazio è significativo, ma percentualmente accettabile.
+occupa 8 MB. Lo spazio è significativo, ma percentualmente accettabile. La
+struttura ad albero che si viene a formare avrà, quindi, la seguente forma:
+
+```txt
+                       .
+PML4  PDP   PD    PT   . Programma
+                  +--+ .  
+                  |  | . 
+      +--+  +--+ /|  |---| Stack |
+      |  |--|  |/ +--+ . 
++--+ /|  |  |  |\ +--+ . 
+|  |/ +--+  +--+ \|  | . 
+|  |\ +--+  +--+  |  |---| Data |
++--+ \|  |--|  |  +--+ . 
+      |  |  |  |\ +--+ . 
+      +--+  +--+ \|  | . 
+                  |  |---| Text |
+                  +--+ . 
+                       . 
+```
 
 #### Il TLB
 
@@ -2410,6 +2427,10 @@ La gestione della paginazione è una funzione che dipende in grande parte
 dall'hardware. Linux utilizza un modello parametrizzato per adattarsi alle
 diverse architetture, caratterizzando il comportamento hardware in base a
 diversi parametri.
+
+Nel caso dello x64, il modello utilizzato è molto aderente a quello hardware.
+L'unica variazione che useremo sarà una variazione degli acronimi in `PGD, PUD,
+PMD, PT`.
 
 In x64 la tabella delle pagine è sempre residente in memoria e mappa tutto lo
 spazio di indirizzamento del processo, user e kernel. Inoltre tutta la memoria è
