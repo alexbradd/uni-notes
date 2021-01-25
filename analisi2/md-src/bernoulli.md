@@ -9,7 +9,7 @@ artificio, ad esse.
 Un'equazione di Bernoulli si presenta nella forma
 
 $$
-  y'(t) = a(t)y(t) + b(t)t^{\alpha}(t)
+  y'(t) = a(t)y(t) + b(t)y^{\alpha}(t)
 $$
 
 Con $\alpha \in \mathbb{R} - \{0,1\}$. Infatti se:
