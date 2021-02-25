@@ -1,0 +1,156 @@
+\documentclass[a4paper,11pt,oneside]{article}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[italian,english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{soulutf8}
+
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{gensymb}
+\usepackage{xfrac}
+
+\sethlcolor{yellow}
+
+\theoremstyle{plain}
+\newtheorem{lem}{Lemma}[section]
+\newtheorem{prop}{Proposizione}[section]
+\newtheorem{thm}{Teorema}[section]
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definizione}[section]
+
+\theoremstyle{remark}
+\newtheorem*{esempio}{Esempio}
+
+\title{Appunti di ``Algoritmi e Principi dell'informatica''}
+\author{Alexandru Gabriel Bradatan}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Informatica teorica}
+
+\subsection{I modelli}\label{sec:modelli}
+
+I modelli sono fondamentali nell'ingegneria. I modelli sono talvolta fisici e
+spesso sono \hl{modelli formali, ossia oggetti matematici che fungono da
+rappresentazioni astratte di entità reali complesse.} Un modello è \hl{adeguato
+se i risultati ottenuti riflettono le proprietà che ci interessano del sistema
+fisico entro i limiti della nostra approssimazione.}
+
+\hl{Le fasi dell'ingegneria del software ricalcano quelli della modellizzazione
+di un problema:}
+
+\begin{description}
+  \item[Analisi dei requisiti] Stesura della specifica del sistema
+  \item[Progetto] Architettura del software
+  \item[Implementazione] Scrittura effettiva del codice
+\end{description}
+
+I modelli dell'informatica si basano principalmente sulla matematica discreta.
+
+I sistemi informatici hanno \hl{2 requisiti fondamentali:}
+
+\begin{enumerate}
+  \item Generalità: adatti ad un contesto ampio di utilizzi
+  \item Flessibilità: possibilità di adattare un modello esistente a nuove
+    esigenze
+\end{enumerate}
+
+Definiamo i due tipi di modelli che costruiremo.
+
+\begin{defn}[\hl{Modello operazionale}]\label{def:modello-op}
+  È un modello basato sul concetto di stato e di meccanismo per la sua
+  evoluzione.
+\end{defn}
+
+\begin{defn}[\hl{Modello descrittivo}]\label{def:modello-desc}
+  È un modello che formula le proprietà desiderate o no dal sistema piuttosto
+  che il suo funzionamento.
+\end{defn}
+
+\begin{esempio}
+  Modellizziamo lo stesso problema, l'ordinamento di una sequenza di interi,
+  secondo i due criteri enunciati sopra:
+  \begin{description}
+    \item[Modello operazionale] Calcola il minimo in tutto l'array e mettilo al
+      primo posto. Continua ad eseguire l'operazione finché l'array non è in
+      ordine.
+    \item[Modello descrittivo] Individua una permutazione degli elementi
+      dell'array tale che \(\forall i a[i] \leq a[i+1]\).
+  \end{description}
+\end{esempio}
+
+\hl{Le differenze tra questi due tipi di modellizzazione non sono spesso molto
+ben definite.}
+
+\subsection{I linguaggi}\label{sec:linguaggi}
+
+Il \hl{meta-modello fondamentale che useremo sarà il linguaggio}. Il termine
+linguaggio è un termine che conosciamo già ed è utilizzabile a diversi ambiti
+diversi come la linguistica, l'informatica, la grafica e la musica.
+
+\subsubsection{Gli elementi di un linguaggio}\label{sec:linguaggi-elementi}
+
+Iniziamo a definire i vari elementi un linguaggio. Il \hl{primo elemento formale
+di un linguaggio è l'alfabeto o vocabolario}. In matematica essi sono sinonimi
+anche se in italiano naturale non lo sono.
+
+\begin{defn}[\hl{Alfabeto}]\label{def:alfabeto}
+  Si dice alfabeto un insieme finito $A$ di simboli base.
+\end{defn}
+
+Una volta definito il concetto di alfabeto possiamo anche definire il concetto
+di \hl{stringa}.
+
+\begin{defn}[\hl{Stringa}]\label{def:stringa}
+  Si dice stringa una sequenza ordinata e finita di elementi dell'alfabeto $A$.
+\end{defn}
+
+Naturalmente ogni stringa possiede una \hl{lunghezza $|a|$ pari al numero di
+elementi dell'alfabeto contenuti al suo interno}. Definiamo anche la \hl{stringa
+nulla $\varepsilon$ tale che $|\varepsilon|=0$}. Definiamo infine \hl{$A^*$
+l'insieme di tutte le stringhe scrivibili con un certo alfabeto}.
+
+Sulle stringhe possiamo definire l'operazione di \hl{concatenazione}:
+
+\begin{defn}[\hl{Concatenazione di stringhe}]\label{def:concatenazione-stringhe}
+  \[
+    \begin{array}{cccc}
+      . : & A^* \times A^* & \to & A^* \\
+          & (x, y) & \mapsto & x.y
+    \end{array}
+  \]
+\end{defn}
+
+L'operazione di concatenazione gode della proprietà \hl{associativa ma non della
+commutativa} e ha come \hl{elemento neutro la stringa vuota}. Possiamo quindi
+definire il \hl{monoide libero delle stringhe rispetto alla concatenazione
+$<A^*, .>$}.
+
+Definito tutti questi elementi possiamo finalmente definire un \hl{linguaggio}.
+
+\begin{defn}[\hl{Linugaggio}]\label{def:linguaggio}
+  Chiamiamo un linguaggio un insieme $L$ tale che: $L \subseteq A*$.
+\end{defn}
+
+Notiamo che \hl{$L$ può anche essere infinito}. Inoltre, poiché $L$ è un
+insieme, le \hl{operazioni insiemistiche sono tutte ben definite.}
+
+Possiamo \hl{estendere ai linguaggi} la definizione di \hl{concatenazione}:
+
+\begin{defn}[\hl{Concatenazione di linguaggi}]\label{def:concatenazione-ling}
+  \[
+    L_1 . L_2 = \{ x.y | x \in L_1, y \in L_2 \}
+  \]
+\end{defn}
+
+\end{document}
