@@ -1,17 +1,21 @@
 \documentclass[a4paper,11pt,oneside]{article}
 
 \usepackage[a4paper,margin=2cm]{geometry}
-\usepackage[italian,english]{babel}
+\usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 
+\usepackage[bookmarks,colorlinks]{hyperref}
 \usepackage{enumerate}
 \usepackage{xcolor}
 \usepackage{soulutf8}
 
-\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{gensymb}
-\usepackage{xfrac}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning}
 
 \sethlcolor{yellow}
 
@@ -25,6 +29,9 @@
 
 \theoremstyle{remark}
 \newtheorem*{esempio}{Esempio}
+\newtheorem*{nota}{Nota}
+
+\newcommand{\mhl}[1]{\colorbox{yellow}{$\displaystyle #1$}}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -36,36 +43,15 @@
 \tableofcontents
 \newpage
 
-\section{Informatica teorica}
-
-\subsection{I modelli}\label{sec:modelli}
+\section{Introduzione ai modelli}\label{sec:modelli}
 
 I modelli sono fondamentali nell'ingegneria. I modelli sono talvolta fisici e
 spesso sono \hl{modelli formali, ossia oggetti matematici che fungono da
 rappresentazioni astratte di entità reali complesse.} Un modello è \hl{adeguato
 se i risultati ottenuti riflettono le proprietà che ci interessano del sistema
-fisico entro i limiti della nostra approssimazione.}
-
-\hl{Le fasi dell'ingegneria del software ricalcano quelli della modellizzazione
-di un problema:}
-
-\begin{description}
-  \item[Analisi dei requisiti] Stesura della specifica del sistema
-  \item[Progetto] Architettura del software
-  \item[Implementazione] Scrittura effettiva del codice
-\end{description}
-
-I modelli dell'informatica si basano principalmente sulla matematica discreta.
-
-I sistemi informatici hanno \hl{2 requisiti fondamentali:}
-
-\begin{enumerate}
-  \item Generalità: adatti ad un contesto ampio di utilizzi
-  \item Flessibilità: possibilità di adattare un modello esistente a nuove
-    esigenze
-\end{enumerate}
-
-Definiamo i due tipi di modelli che costruiremo.
+fisico entro i limiti della nostra approssimazione.} I modelli dell'informatica
+si basano principalmente sulla matematica discreta. Definiamo i due tipi di
+modelli che costruiremo.
 
 \begin{defn}[\hl{Modello operazionale}]\label{def:modello-op}
   È un modello basato sul concetto di stato e di meccanismo per la sua
@@ -77,28 +63,37 @@ Definiamo i due tipi di modelli che costruiremo.
   che il suo funzionamento.
 \end{defn}
 
-\begin{esempio}
-  Modellizziamo lo stesso problema, l'ordinamento di una sequenza di interi,
-  secondo i due criteri enunciati sopra:
-  \begin{description}
-    \item[Modello operazionale] Calcola il minimo in tutto l'array e mettilo al
-      primo posto. Continua ad eseguire l'operazione finché l'array non è in
-      ordine.
-    \item[Modello descrittivo] Individua una permutazione degli elementi
-      dell'array tale che \(\forall i a[i] \leq a[i+1]\).
-  \end{description}
-\end{esempio}
-
 \hl{Le differenze tra questi due tipi di modellizzazione non sono spesso molto
 ben definite.}
 
-\subsection{I linguaggi}\label{sec:linguaggi}
+\begin{esempio}
+  Modellizziamo lo stesso problema, l'ordinamento di una sequenza di interi,
+  secondo i due criteri enunciati sopra:
+  \begin{itemize}
+    \item Modello operazionale: Calcola il minimo in tutto l'array e mettilo al
+      primo posto. Continua ad eseguire l'operazione finché l'array non è in
+      ordine.
+    \item Modello descrittivo: Individua una permutazione degli elementi
+      dell'array tale che \(\forall i a[i] \leq a[i+1]\).
+  \end{itemize}
+\end{esempio}
+
+\hl{Le fasi dell'ingegneria del software ricalcano quelli della modellizzazione
+di un problema:}
+
+\begin{itemize}
+  \item Analisi dei requisiti: Stesura della specifica del sistema
+  \item Progetto: Architettura del software
+  \item Implementazione: Scrittura effettiva del codice
+\end{itemize}
+
+\section{I linguaggi}\label{sec:linguaggi}
 
 Il \hl{meta-modello fondamentale che useremo sarà il linguaggio}. Il termine
 linguaggio è un termine che conosciamo già ed è utilizzabile a diversi ambiti
 diversi come la linguistica, l'informatica, la grafica e la musica.
 
-\subsubsection{Gli elementi di un linguaggio}\label{sec:linguaggi-elementi}
+\subsection{Costruzione di un linguaggio}\label{sec:linguaggi-costruzione}
 
 Iniziamo a definire i vari elementi un linguaggio. Il \hl{primo elemento formale
 di un linguaggio è l'alfabeto o vocabolario}. In matematica essi sono sinonimi
@@ -117,40 +112,369 @@ di \hl{stringa}.
 
 Naturalmente ogni stringa possiede una \hl{lunghezza $|a|$ pari al numero di
 elementi dell'alfabeto contenuti al suo interno}. Definiamo anche la \hl{stringa
-nulla $\varepsilon$ tale che $|\varepsilon|=0$}. Definiamo infine \hl{$A^*$
+nulla $\epsilon$ tale che $|\epsilon|=0$}. Definiamo infine \hl{$A^\star$
 l'insieme di tutte le stringhe scrivibili con un certo alfabeto}.
+
+\begin{nota}
+  L'operatore \hl{$\star$ è detto stella, star, iterazione o stella di Kleene.}
+  L'insieme $A^\star$ è infinito numerabile.
+\end{nota}
 
 Sulle stringhe possiamo definire l'operazione di \hl{concatenazione}:
 
 \begin{defn}[\hl{Concatenazione di stringhe}]\label{def:concatenazione-stringhe}
-  \[
+  \begin{equation}
     \begin{array}{cccc}
-      . : & A^* \times A^* & \to & A^* \\
+      . : & A^\star \times A^\star & \to & A^\star \\
           & (x, y) & \mapsto & x.y
     \end{array}
-  \]
+  \end{equation}
 \end{defn}
+
+\begin{nota}
+  La scrittura dell'operatore di concatenazione può essere omessa, scrivendo al
+  posto di $z = x.y$ $z = xy$.
+\end{nota}
 
 L'operazione di concatenazione gode della proprietà \hl{associativa ma non della
 commutativa} e ha come \hl{elemento neutro la stringa vuota}. Possiamo quindi
-definire il \hl{monoide libero delle stringhe rispetto alla concatenazione
-$<A^*, .>$}.
+definire il \hl{monoide non commutativo delle stringhe rispetto alla
+concatenazione $\langle A^\star, . \rangle$}.
 
 Definito tutti questi elementi possiamo finalmente definire un \hl{linguaggio}.
 
-\begin{defn}[\hl{Linugaggio}]\label{def:linguaggio}
-  Chiamiamo un linguaggio un insieme $L$ tale che: $L \subseteq A*$.
+\begin{defn}[\hl{Linguaggio}]\label{def:linguaggio}
+  Chiamiamo un linguaggio un insieme $L$ tale che: $L \subseteq A^\star$.
 \end{defn}
 
 Notiamo che \hl{$L$ può anche essere infinito}. Inoltre, poiché $L$ è un
 insieme, le \hl{operazioni insiemistiche sono tutte ben definite.}
 
-Possiamo \hl{estendere ai linguaggi} la definizione di \hl{concatenazione}:
+\subsection{Operazioni sui linguaggi}
 
 \begin{defn}[\hl{Concatenazione di linguaggi}]\label{def:concatenazione-ling}
-  \[
-    L_1 . L_2 = \{ x.y | x \in L_1, y \in L_2 \}
-  \]
+  \begin{equation}
+    L_1 . L_2 = \{ x.y : x \in L_1, y \in L_2 \}
+  \end{equation}
 \end{defn}
+
+\begin{defn}[\hl{Potenze di linguaggi}]\label{def:potenze-linguaggi}
+  \begin{equation}
+    \begin{aligned}
+      L^0 & = \{\epsilon\} \\
+      L^i & = L^{i-1}.L
+    \end{aligned}
+  \end{equation}
+\end{defn}
+
+\begin{defn}[\hl{Star (Linguaggi)}]\label{def:star-linguaggi}
+  \begin{equation}
+    L^\star = \bigcup^{\infty}_{i=0} L^i
+  \end{equation}
+\end{defn}
+
+\begin{defn}[\hl{Plus (Linguaggi)}]\label{def:plus-linguaggi}
+  \begin{equation}
+    L^+ = \bigcup^{\infty}_{i=1} L^i
+  \end{equation}
+\end{defn}
+
+\begin{nota}
+  La differenza tra scrivere $L^\star$ e $L^+$ è che in $L^+$ è assente il
+  linguaggio vuoto!
+\end{nota}
+
+\subsection{A cosa utilizzeremo i linguaggi?}
+
+Il nostro \hl{principale utilizzo del concetto di linguaggio sarà per definire
+in maniera astratta il concetto di problema informatico}. Il nostro \hl{primo}
+problema informatico sarà:
+
+\begin{equation}
+  \mhl{ x \in A^\star, L \subseteq A^\star \quad  x \in L? }
+\end{equation}
+
+Questa semplice questione è capace di modellizzare una grande varietà di
+problemi diversi, scelti $A$ ed $L$ in modo adatto. Un \hl{secondo} problema sarà
+quello di \hl{trovare una traduzione}, ossia una funzione così definita:
+
+\begin{defn}[\hl{Traduzione}]\label{def:traduzione}
+  \begin{equation}
+    \begin{array}{cccc}
+      \tau: & L_1 & \to     & L_2 \\
+            & x   & \mapsto & \tau(x)
+    \end{array}
+  \end{equation}
+\end{defn}
+
+\section{Modelli operazionali}\label{sec:modelli-operazionali}
+
+\subsection{Automi a stati finiti}\label{sec:fsa}
+
+Gli \hl{automi a stati finiti (FSA) sono il modello operazionale più semplice}.
+Essi sono caratterizzati da un \hl{insieme finito di stati e da un insieme di
+regole di transizione}. Gli \hl{stati} possono essere di \hl{accettazione o no}.
+Le \hl{regole di transizione permettono al nostro automa di passare da uno stato
+all'altro in base a ciò che forniamo come input}. Quando un automa riceve un
+\hl{input lo elabora e produce un output. L'elaborazione inizia in uno stato
+iniziale e consiste nel leggere l'input e spostarsi da uno stato all'altro
+secondo le leggi di transizione}. \hl{Se alla fine} della lettura l'automa
+\hl{si trova in uno stato di accettazione, diremo che esso ha accettato l'input,
+altrimenti diremo che l'ha rifiutato}.
+
+\begin{defn}[\hl{Automa a stati finiti}]\label{def:fsa}
+  Un automa a stati finiti $\mathcal{A}$ è una quintupla
+  $\langle Q, I, \delta, q_0, F \rangle$ dove:
+  \begin{enumerate}
+    \item $Q$ è l'insieme finito non vuoto di tutti gli stati
+    \item $I$ è l'alfabeto di ingresso
+    \item $\delta: Q \times I \to Q$ è la funzione (relazione) di transizione
+    \item $q_0 \in Q$ è lo stato iniziale
+    \item $F \subseteq Q$ è l'insieme degli stati di accettazione
+  \end{enumerate}
+\end{defn}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=2cm,auto]
+    \node[state,initial,accepting]  (q0)                {$q_0$};
+    \node[state]                    (q1) [right of=q0]  {$q_1$};
+
+    \path[->]
+    (q0) edge                node {0,1}  (q1)
+    (q1) edge  [loop above]  node {0,1}  ();
+  \end{tikzpicture}
+  \caption{Esempio di diagramma di stato di FSA}\label{fig:fsa-diagramma-stato}
+\end{figure}
+
+Se \hl{$\delta$ è una funzione l'automa si dice completo, altrimenti non
+completo}.  Gli \hl{automi non completi} possono facilmente \hl{resi completi
+``riempiendo'' le transizioni mancanti con delle transizioni verso uno stato di
+``sink'' dal quale non si può più uscire}.
+
+Un automa \hl{processa l'input tramite una sequenza di transizioni di stato
+effettuate iterando su ogni carattere della stringa e muovendosi allo stato
+corrispondente a $\delta(q, i)$}. Definiamo formalmente la sequenza di mosse
+eseguita da un automa a stati finiti.
+
+\begin{defn}[\hl{Sequenza di mosse}]\label{def:fsa-seq-mosse}
+  Sia un FSA $\mathcal{A}$, la sequenza di mosse è una funzione
+
+  \begin{equation}
+    \delta^\star: Q \times I^\star \to Q
+  \end{equation}
+
+  Definita induttivamente da:
+
+  \begin{enumerate}
+    \item $\delta^\star(q, \epsilon) = q$
+    \item $\delta^\star(q, y.i) = \delta(\delta^\star(q,y), i)$ con
+      $y \in I^\star, i \in I$
+  \end{enumerate}
+\end{defn}
+
+Gli \hl{FSA rappresentano dei linguaggi}, più nello specifico i \hl{linguaggi
+regolari}.  Se \hl{$L$ è un linguaggio accettato} da $\mathcal{A}$ allora diremo
+che esso è il \hl{linguaggio di $\mathcal{A}$ e lo indichiamo come
+$L(\mathcal{A})$}. Usando la definizione di \hl{sequenza di mosse possiamo scrivere
+$L(\mathcal{A})$ come}:
+
+\begin{equation}
+  L(\mathcal{A}) = \{ x \in I^\star : \delta^\star(q_0, x) \in F \}
+\end{equation}
+
+Per \hl{rappresentare il linguaggio} accettato da un FSA possiamo usare la pura
+notazione insiemistica oppure, visto che i linguaggi sono regolari, delle
+\hl{espressioni regolari}. Definiamo la sintassi delle espressioni regolari.
+
+\begin{defn}[Espressioni regolari]\label{def:regex}
+  Dato una alfabeto $A$, siano le seguenti operazioni:
+
+  \begin{itemize}
+    \item $R + S = R \cup S$ con $R \subseteq A^\star$ e $S \subseteq A^\star$
+    \item $\star$ la star di Kleene:
+      $R^\star = \{x^n : n \in \mathbb{N}, x \in R\}$
+    \item $R^+ = \{x^n : n \in \mathbb{N}^*, x \in R\}$
+    \item la concatenazione: $RS = \{xy : x \in R, y \in S\}$
+  \end{itemize}
+
+  Allora, dato un alfabeto $A$ e un insieme di simboli
+  $\{+,\star,(,),.,\emptyset\}$ si dice espressione regolare su $A$ la stringa
+  $R \in A \cup \{+,\star,(,),.,\emptyset\}$ che rende vera una delle seguenti
+  condizioni:
+
+  \begin{enumerate}
+    \item $R = \emptyset$
+    \item $R \in A$
+    \item $R = S + T$, $R = ST$, $R = S^\star$, $R = S^+$ con $S,T$ espressioni
+      regolari su $A$
+  \end{enumerate}
+\end{defn}
+
+Gli \hl{automi a stato finito sono modelli di calcolo con una memoria finita
+pari al numero di stati}. Infatti \hl{ogni stato} rappresenta una \hl{istantanea
+della situazione in cui si trova il sistema in un dato istante}. Il fatto di
+\hl{possedere una memoria finita}, come vedremo in~\ref{sec:fsa-analisi}, è uno
+degli \hl{aspetti più limitanti} degli automi a stato finito e ci costringeranno
+a costruire modelli più sofisticati.
+
+\subsubsection{Automi a stati finiti traduttori}\label{sec:fsa-trad}
+
+Un FSA può anche essere \hl{usato come traduttore tra un linguaggio ed un
+altro}. Ci basta \hl{aggiungere la capacità di dare un output} al nostro automa.
+
+Un semplice FSA si limita semplicemente ad interpretare un input senza produrre
+nessun output. Se ad un \hl{FSA} aggiungiamo la possibilità di \hl{produrre un
+output} otteniamo un \hl{trasduttore}. Un \hl{particolare tipo} di trasduttore
+che ci interessa è il \hl{traduttore}.
+
+Prima di parlare di traduttori, però, formalizziamo come un automa produce un
+output.
+
+\begin{defn}[\hl{Funzione di transizione con uscita}]\label{def:fsa-transizione-uscita}
+  Chiamiamo $\delta(q, i/w)$ con $i \in I$ e $w \in O$, $I, O$ alfabeti, una
+  funzione di transizione tra stati che restituisce il nuovo stato del FSA e
+  un simbolo complesso $w$.
+\end{defn}
+
+Ora possiamo definire il traduttore.
+
+\begin{defn}[\hl{Automa a stati finiti traduttore}]\label{def:fsa-trad}
+  Sia $\mathcal{A} = \langle Q, I, \delta, q_0, F \rangle $ un automa a stati
+  finiti con funzione di transizione $\delta(q, i/w)$, definiamo automa a
+  stati finiti traduttore $\mathcal{T}$ la terna
+  $\langle \mathcal{A}, O, \eta \rangle$ dove:
+
+  \begin{itemize}
+    \item $O$ è l'alfabeto di uscita di $\delta$
+    \item $\eta : Q \times I \to O^\star$ funzione di traduzione
+  \end{itemize}
+\end{defn}
+
+\hl{Analogamente a quanto fatto in}~\ref{def:fsa-seq-mosse} \hl{possiamo
+iterare} la funzione di traduzione usando la stella di Kleene, così da \hl{poter
+finalmente enunciare la traduzione come}:
+
+\begin{equation}
+  \mhl{\tau(x) = \eta^\star(q_0, x)}
+\end{equation}
+
+Se il \hl{traduttore conclude} la propria esecuzione \hl{su uno stato di
+accettazione}, allora possiamo dire che la \hl{stringa di input e corretta e la
+sua traduzione nel linguaggio di output è $\tau(x)$}.
+
+\subsubsection{Analisi degli automi a stati finiti}\label{sec:fsa-analisi}
+
+Gli automi a stati finiti sono un modello molto semplice ed intuitivo, applicato
+a molti settori. Abbiamo già visto in~\ref{sec:fsa} che sono adatti a modellare
+linguaggi regolari e che sono modelli a memoria finita. Studiamone ora nel
+dettaglio le proprietà ed eventuali limitazioni.
+
+Innanzitutto esiste qualche \hl{condizione affinché un automa a stati finiti sia
+o no accettore di un linguaggi finito o infinito} (il caso di linguaggio vuoto è
+banale)? Si dimostra che \hl{esistono} due condizioni \hl{necessarie e
+sufficienti} per l'accettazione dei linguaggi, \hl{una per il caso finito e un
+per l'infinito}.
+
+\begin{thm}[\hl{Condizione di accettazione di un linguaggio finito}]\label{thm:accettazione-ling-finito}
+  Condizione sufficiente e necessaria affinché un automa a stati finiti accetti
+  un linguaggio finito non vuoto è che possa accettare una stringa di lunghezza
+  inferiore al numero di stati ($|x| < |Q|$).
+\end{thm}
+
+\begin{thm}[\hl{Condizione di accettazione di un linguaggio infinito}]\label{thm:accettazione-ling-infinito}
+  Condizione sufficiente e necessaria affinché un automa a stati finiti accetti
+  un linguaggio infinito è che possa accettare una stringa tale che:
+  $|Q| \leq |x| < 2|Q|$
+\end{thm}
+
+Questo teorema deriva dall'osservazione che \hl{se un automa accetta un
+linguaggio infinito, nel suo grafo saranno presenti dei cicli che potranno
+essere percorsi un numero arbitrario di volte}. Nel \hl{caso peggiore} verranno
+\hl{ripercorsi tutti gli stati} dell'automa \hl{tranne l'ultimo} che deve essere
+di accettazione.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=2cm,auto]
+    \node[state,initial]            (q0)                {$q_0$};
+    \node[state]                    (q1) [right of=q0]  {$q_1$};
+    \node[state]                    (q2) [right of=q1]  {$q_2$};
+    \node[state]                    (q3) [right of=q2]  {$q_3$};
+    \node[state]                    (q4) [right of=q3]  {$q_4$};
+    \node[state,accepting]          (q5) [right of=q4]  {$q_5$};
+
+    \path[->]
+    (q0) edge                node {} (q1)
+    (q1) edge                node {} (q2)
+    (q2) edge                node {} (q3)
+    (q3) edge                node {} (q4)
+    (q4) edge                node {} (q5)
+    (q5) edge  [bend left]   node {} (q0);
+  \end{tikzpicture}
+  \caption{Peggior caso del teorema~\ref{thm:accettazione-ling-infinito}}\label{fig:fsa-accettazione-ling-infinito}
+\end{figure}
+
+Possiamo quindi vedere \hl{una stringa di un linguaggio infinito come composta
+da 3 parti: un preambolo al ciclo, il ciclo e l'epilogo}. Il ciclo può ripetersi
+un numero infinito di volte, generando la seguente espressione regolare:
+
+\begin{equation}
+  \mhl{x = x_i x_c^\star x_f}
+\end{equation}
+
+Questa è una \hl{condizione necessaria affinché una stringa di un linguaggio
+infinito sia riconosciuta da un FSA} e rappresenta il \hl{contenuto del
+``Pumping lemma''}:
+
+\begin{lem}[\hl{Pumping lemma}]\label{thm:pumping-lemma}
+  Sia un automa a stati finiti $\mathcal{A}$ che accetta un linguaggio
+  $L(\mathcal{A})$. Allora per ogni $x \in L$ con $|x| > |Q|$ esiste $q \in Q$
+  e $w \in I^+$ tali da verificare una di queste condizioni:
+
+  \begin{itemize}
+    \item $x = ywz$
+    \item $\delta^\star(q,w) = q$
+  \end{itemize}
+
+  Come conseguenza si ha: $\forall n \in \mathbb{N} \geq 0, y w^n z \in L$
+\end{lem}
+
+Il Pumping lemma, quindi, ci \hl{mette dei paletti sui tipi di linguaggi
+infiniti che un FSA può accettare}. Infatti consideriamo il seguente linguaggio
+infinito:
+
+\begin{equation}
+  \mhl{L = \{ a^n b^n : n \in \mathbb{N} \}}
+\end{equation}
+
+\hl{Supponiamo} che un \hl{FSA sia in grado di accettarlo}, allora consideriamo
+la stringa \hl{$x = a^m b^m$ con $m > |Q|$} e applichiamo il \hl{Pumping lemma}.
+Otterremo \hl{3 casi possibili}:
+
+\begin{enumerate}
+  \item \hl{$w = a^p$} e quindi dovrebbe essere:
+    \[
+      \mhl{
+      x = a^m b^m = a^r a^p a^s b^m = a^r w a^s b^m \in L \text{ con } r+p+s=m
+    }
+    \]
+    \hl{Se il Pumping lemma dovesse valere}, allora si dovrebbe avere che
+    \hl{$a^r w^k b^m \in L$} che ci porta ad un \hl{assurdo}.
+  \item \hl{$w = b^p$ analogo al precedente}.
+  \item \hl{$w = a^p b^q$} e quindi dovrebbe essere:
+    \[
+      \mhl{
+      x = a^m b^m = a^r a^p b^q b^s = a^r w b^s \in L \text{ con } r+p=q+s=m
+      }
+    \]
+    \hl{Se il Pumping lemma dovesse valere}, allora si dovrebbe avere che
+    \hl{$a^r w^k b^s \in L$} che ci porta ad un \hl{assurdo}.
+\end{enumerate}
+
+Ciò significa che \hl{considerare $L$ come accettato da una FSA è un assurdo}.
+Il linguaggio $L$ appena costruito ci dimostra quindi la necessità di costruire
+modelli di calcolo più potenti. \hl{Infatti per contare fino a $n$ non basta la
+memoria finita degli FSA ma servirebbe una memoria infinita!}
 
 \end{document}
