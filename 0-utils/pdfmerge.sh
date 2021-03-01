@@ -17,9 +17,5 @@ done
 echo "${parameters[@]:1}"
 echo "${parameters[0]}"
 
-gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=/tmp/tmp.pdf \
-	"${parameters[@]:1}" &&
-	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen \
-	-dNOPAUSE -dQUIET -dBATCH -dDetectDuplicateImages -dCompressFonts=true \
-	-r150 -sOutputFile="${parameters[0]}" /tmp/tmp.pdf &&
-	rm /tmp/tmp.pdf
+gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile="${parameters[0]}" \
+	"${parameters[@]:1}"
