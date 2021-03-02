@@ -4,13 +4,15 @@
 \usepackage[italian,english]{babel}
 \usepackage[utf8]{inputenc}
 
+\usepackage[bookmarks,colorlinks]{hyperref}
 \usepackage{enumerate}
+\usepackage{xcolor}
 \usepackage{soulutf8}
 
-\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{gensymb}
-\usepackage{xfrac}
 
 \sethlcolor{yellow}
 
@@ -22,9 +24,15 @@
 \theoremstyle{definition}
 \newtheorem{defn}{Definizione}[section]
 
+\theoremstyle{remark}
+\newtheorem*{esempio}{Esempio}
+\newtheorem*{nota}{Nota}
+
+\newcommand{\mhl}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+
 \title{...} % inserire titolo
 \author{Alexandru Gabriel Bradatan}
-\date{} % inserire data
+\date{\today} % inserire data
 
 \begin{document}
 
