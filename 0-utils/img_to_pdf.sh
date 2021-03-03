@@ -3,8 +3,16 @@
 [ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
 [ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
 [ -x /usr/bin/convert ] || { echo "convert is required"; exit 1; }
+[ -x /usr/bin/exiftool ] || { echo "exiftool is required"; exit 1; }
+
+[ -x /usr/bin/qpdf ] || { echo "qpdf is required"; exit 1; }
 
 TMP_FILE_NAME="/tmp/$RANDOM.pdf"
+
+err_rm_tmp() {
+	rm "$TMP_FILE_NAME"
+	exit 1
+}
 
 convert_to_tmp_pdf() {
 	input_folder="$(realpath $1)"
@@ -13,6 +21,9 @@ convert_to_tmp_pdf() {
 	# if i'll feel like i'll add options to specify quality/density
 	convert $imgs -density 264 -compress jpeg -quality 90 "$TMP_FILE_NAME" ||
 		exit 1
+	exiftool -All= -overwrite_original "$TMP_FILE_NAME" ||
+		err_rm_tmp
+	qpdf --linearize --replace-input "$TMP_FILE_NAME" || err_rm_tmp
 }
 
 add_bookmarks_to_tmp() {
