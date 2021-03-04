@@ -182,7 +182,7 @@ a stato finito riconoscitore e:
 
 Possiamo definire induttivamente l'iterazione di $\eta$ come:
 
-- $\eta*(q, \epsilon) = \espilon$
+- $\eta*(q, \epsilon) = \epsilon$
 - $\eta*(q, y.i) = \eta*(q,y).\eta(\delta*(q,y), i)$
 
 Finalmente possiamo enunciare la traduzione come:
@@ -227,4 +227,92 @@ Dal Pumping lemma derivano molte proprietà degli automi:
      poiché non si riesce a contare e garantire l'uguaglianza tra il numero di
      $a$ e $b$. Un linguaggio dove il numero di $a$ e $b$ non è rilevante,
      come ci si aspetta, è modellabile con un automa a stato finito.
+
+### Analisi della proprietà di chiusura degli FSA
+
+La chiusura rispetto ad un'operazione di un insieme è una proprietà che ci
+assicura che $a \in A, b \in A \implies a * b \in A$. La chiusura, inoltre, deve
+essere l'insieme più piccolo tra i possibili che rispettano tale proprietà
+
+Definiamo $\mathbf{L}$ una famiglia di linguaggi. Una famiglia di linguaggi è
+chiusa rispetto ad una operazione $*$ se $L_1*L_2$ appartiene alla stessa
+famiglia di linguaggi di $L_1$ ed $L_2$. Abbiamo visto che la famiglia di
+linguaggi riconosciuti dagli FSA corrisponde a quella dei linguaggi regolari
+($\mathbf{REG}$). La famiglia dei linguaggi regolari è chiusa rispetto a tutte
+le operazioni insiemistiche, alla concatenazione, alla star di Kleene e
+praticamente tutte le altre viste.
+
+Proviamo a costruire l'intersezione di due automi. Il risultato sarà un automa
+che accetta solo stringhe che entrambi gli automi di partenza accettano.
+Formalmente possiamo scriverlo così:
+
+$$
+\begin{gathered}
+  \begin{aligned}
+    A^1 &= <Q^1, I, \delta^1, q_0^1, F^1> \\
+    A^2 &= <Q^2, I, \delta^2, q_0^2, F^2> \\
+  \end{aligned} \\
+  \Downarrow \\
+  <A^1, A^2> = <Q^1 \times Q^2, I, \delta, <q_0^1, q_0^2>, F^1 \times F^2>
+    \text{ con } \delta(<q^1, q^2>, i) = <\delta(q^1, i), \delta(q^2, i)> \\
+  L(<A^1, A^2>) = L(A^1) \cap L(A^2)
+\end{gathered}
+$$
+
+<!-- Immagine di un automa intersezione -->
+
+Il risultato sopra si può dimostrare con una induzione. Come facciamo per
+l'unione invece? Dobbiamo costruire un automa che accetti stringhe che almeno
+uno dei due automi accetta. Facciamo un procedimento simile al precedente:
+
+$$
+<Q^1 \times Q^2, I, \delta, <q_0^1, q_0^2>, F^1 \times Q^2 \cup Q^1 \times F^2>
+$$
+
+C'è, però, un problema: non si può fare se l'automa non è completo. Bisogna
+quindi, prima di fare l'unione, completare entrambi gli automi.
+
+Discutiamo infine il complemento di un automa: l'automa complemento ha tutti gli
+stati che erano di accettazione resi di non accettazione e viceversa
+($\neg F = Q \setminus F$). Come anche per l'unione, il giochino sopra funziona
+solo per automi completi.
+
+### Automa a stati finiti con pila
+
+Arricchiamo i nostri FSA, aggiungendo un organo di memoria strutturato come una
+pila (stack) potenzialmente illimitata. L'automa opera sulla pila con le 2
+operazioni fondamentali per le stack: push e pop. La mossa dell'automa a pila è
+sommariamente strutturata in:
+
+1. Legge un simbolo dall'input (nastro di ingresso) (può anche non leggere)
+2. Legge un simbolo dalla pila (pop)
+3. Cambio di stato
+4. Sposta di una posizione il puntatore dell'input (la testina)
+5. Sostituisce al simbolo $A$ letto dalla pila una stringa una stringa $\alpha$
+   di simboli (anche nulla) (push)
+6. Se è un traduttore scrive una stringa (anche nulla) sul nastro di uscita
+
+Indicheremo convenzionalmente il fondo della pila con $Z_0$.
+
+La stringa in ingresso viene riconosciuta se l'automa la scandisce completamente
+e termina su uno stato di accettazione. Lo stato della pila non è rilevante. Se
+l'automa è traduttore, allora se accetta la stringa l'output corrisponde alla
+stringa tradotta, altrimenti viene detta indefinita: ($\tau(x) = \perp$).
+
+Le transizioni di stato sono più ricche di quelle degli FSA in quanto bisogna
+anche descrivere la gestione della pila. Nel diagramma di stato si usa la
+seguente notazione: $ a, A / B..., c$ dove:
+
+- $a$ è il carattere letto dall'input
+- $A$ è il carattere letto dalla pila tramite la pop
+- $B...$ sono i caratteri inseriti sulla pila dalla push
+- $c$ il carattere scritto in uscita
+
+Nel caso in cui l'automa non legge niente da input (vedi il punto 1 della mossa)
+diciamo che l'automa ha effettuato una $\epsilon$-mossa e la indichiamo con
+$\epsilon$ come carattere letto. Anche nel caso in cui l'automa non inserisce 
+nulla sulla pila lo indichiamo con $\epsilon$. Nota bene: un automa deve sempre
+leggere un carattere dalla pila!
+
+
 

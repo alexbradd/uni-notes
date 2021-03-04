@@ -6,7 +6,7 @@
 
 \usepackage[bookmarks,colorlinks]{hyperref}
 \usepackage{enumerate}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{soulutf8}
 
 \usepackage{amsmath}
@@ -17,7 +17,8 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata,positioning}
 
-\sethlcolor{yellow}
+\definecolor{hlcolor}{RGB}{253,241,98}
+\sethlcolor{hlcolor}
 
 \theoremstyle{plain}
 \newtheorem{lem}{Lemma}[section]
@@ -31,7 +32,7 @@
 \newtheorem*{esempio}{Esempio}
 \newtheorem*{nota}{Nota}
 
-\newcommand{\mhl}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\newcommand{\mhl}[1]{\colorbox{hlcolor}{$\displaystyle #1$}}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -148,7 +149,9 @@ Definito tutti questi elementi possiamo finalmente definire un \hl{linguaggio}.
 \end{defn}
 
 Notiamo che \hl{$L$ può anche essere infinito}. Inoltre, poiché $L$ è un
-insieme, le \hl{operazioni insiemistiche sono tutte ben definite.}
+insieme, le \hl{operazioni insiemistiche sono tutte ben definite.} Un
+\hl{insieme di linguaggi che condividono le stesso proprietà è detto famiglia di
+linguaggi}.
 
 \subsection{Operazioni sui linguaggi}
 
@@ -273,11 +276,11 @@ eseguita da un automa a stati finiti.
   \end{enumerate}
 \end{defn}
 
-Gli \hl{FSA rappresentano dei linguaggi}, più nello specifico i \hl{linguaggi
-regolari}.  Se \hl{$L$ è un linguaggio accettato} da $\mathcal{A}$ allora diremo
-che esso è il \hl{linguaggio di $\mathcal{A}$ e lo indichiamo come
-$L(\mathcal{A})$}. Usando la definizione di \hl{sequenza di mosse possiamo scrivere
-$L(\mathcal{A})$ come}:
+Gli \hl{FSA rappresentano dei linguaggi}, più nello specifico la famiglia dei
+\hl{linguaggi regolari} ($\mathbf{REG}$). Se \hl{$L$ è un linguaggio accettato}
+da $\mathcal{A}$ allora diremo che esso è il \hl{linguaggio di $\mathcal{A}$ e
+lo indichiamo come $L(\mathcal{A})$}. Usando la definizione di \hl{sequenza di
+mosse possiamo scrivere $L(\mathcal{A})$ come}:
 
 \begin{equation}
   L(\mathcal{A}) = \{ x \in I^\star : \delta^\star(q_0, x) \in F \}
@@ -476,5 +479,183 @@ Ciò significa che \hl{considerare $L$ come accettato da una FSA è un assurdo}.
 Il linguaggio $L$ appena costruito ci dimostra quindi la necessità di costruire
 modelli di calcolo più potenti. \hl{Infatti per contare fino a $n$ non basta la
 memoria finita degli FSA ma servirebbe una memoria infinita!}
+
+\subsubsection{Proprietà di chiusura degli automi a stati finiti}\label{sec:chiusura-fsa}
+
+Il concetto di chiusura di un insieme rispetto ad un'operazione o proprietà è
+un concetto già affrontato nel precedente corso di logica e algebra lineare. In
+questo contesto ci occupiamo della \hl{chiusura della famiglia dei linguaggi
+regolari}.
+
+\hl{La famiglia dei linguaggi regolari è chiusa rispetto a tutte le operazioni
+insiemistiche, alla concatenazione, alla star di Kleene e praticamente tutte le
+altre viste fino ad ora.} Proviamo a costruirne qualcuno.
+
+\paragraph{Intersezione} Proviamo a costruire l'intersezione di due automi. Il
+risultato sarà un automa che \hl{accetta solo stringe solo stringhe accettate da
+entrambi gli automi di partenza}. Dati i due automi di partenza:
+
+\[
+  \begin{aligned}
+    A^1 &= \langle Q^1, I, \delta^1, q_0^1, F^1 \rangle \\
+    A^2 &= \langle Q^2, I, \delta^2, q_0^2, F^2 \rangle
+  \end{aligned}
+\]
+
+Possiamo scrivere l'automa intersezione come:
+
+\begin{gather}
+  \langle A^1, A^2 \rangle = \langle Q^1 \times Q^2, I, \delta,
+    \langle q_0^1, q_0^2 \rangle, F^1 \times F^2 \rangle\label{eqn:automa-intersezione} \\
+  \delta(\langle q^1, q^2 \rangle, i) = \langle \delta(q^1, i),
+    \delta(q^2, i) \rangle
+\end{gather}
+
+Con una semplice induzione si può dimostrare che il linguaggio di un automa così
+definito è $L(\langle A^1, A^2 \rangle) = L(A^1) \cap L(A^2)$.
+
+\begin{figure}[htb]
+  \begin{tikzpicture}[node distance=2cm,auto]
+    \node[state,initial]   (q0) {$q_0$};
+    \node[state]           (q1) [right of=q0] {$q_1$};
+    \node[state]           (q2) [right of=q1] {$q_2$};
+    \node[state,accepting] (q3) [right of=q2] {$q_3$};
+    \node[] (t) [left=1.5cm of q0] {$A^1$:};
+
+    \path[->]
+      (q0) edge node {$b$} (q1)
+      (q1) edge node {$a$} (q2)
+      (q2) edge node {$a$} (q3);
+  \end{tikzpicture}
+  \begin{tikzpicture}[node distance=2cm,auto]
+    \node[state,initial]   (p0) {$p_0$};
+    \node[state]           (p1) [right of=p0] {$p_1$};
+    \node[state]           (p2) [right of=p1] {$p_2$};
+    \node[state,accepting] (p3) [right of=p2] {$p_3$};
+    \node[] (t) [left=1.5cm of p0] {$A^2$:};
+
+    \path[->]
+      (p0) edge node {$b$} (p1)
+      (p1) edge node {$a$} (p2)
+      (p2) edge node {$a$} (p3);
+  \end{tikzpicture}
+  \begin{tikzpicture}[node distance=3cm,auto]
+    \node[state,initial]   (q0) {$\langle q_0, p_0 \rangle$};
+    \node[state]           (q1) [right of=q0] {$\langle q_1, p_1 \rangle$};
+    \node[state]           (q2) [right of=q1] {$\langle q_2, p_2 \rangle$};
+    \node[state,accepting] (q3) [right of=q2] {$\langle q_3, p_3 \rangle$};
+    \node[] (t) [left=1.5cm of q0] {$\langle A^1, A^2 \rangle$:};
+
+    \path[->]
+      (q0) edge node {$b$} (q1)
+      (q1) edge node {$a$} (q2)
+      (q2) edge node {$a$} (q3);
+  \end{tikzpicture}
+  \centering
+  \caption{Due automi e la loro intersezione}%
+  \label{fig:esempio-automa-intersezione}
+\end{figure}
+
+\paragraph{Unione} Per l'unione il tutto funziona in \hl{modo analogo}. L'automa
+risultante sarà un automa che \hl{accetterà stringhe accettate da almeno uno dei due
+automi di partenza}. Eseguendo un procedimento simile a quello effettuato per
+ottenere~\ref{eqn:automa-intersezione} abbiamo:
+
+\begin{equation}
+  \langle A^1, A^2 \rangle = \langle Q^1 \times Q^2, I, \delta,
+    \langle q_0^1, q_0^2 \rangle, F^1 \times Q^2 \cup Q^1 \times F^2 \rangle
+\end{equation}
+
+Questo approccio presenta, però, un \hl{problema}: \hl{non funziona se l'automa
+di partenza non è completo}. Con l'intersezione non avevamo problemi perché
+l'automa intersezione accettava solo stringhe accettate da entrambi gli automi
+iniziali, rimuovendo il problema della non completezza. Con l'unione invece
+otterremo un automa che accetta anche quando uno degli automi iniziali non
+accetta, rendendo problematico il caso di un errore dovuto alla parzialità della
+funzione di transizione. \hl{Bisogna, quindi, ricordarsi di completare gli
+automi aggiungendo eventuali stati di errore prima di eseguirne l'unione}.
+
+\paragraph{Complemento} Per il complemento la situazione è \hl{analoga all'unione}:
+anche qui dobbiamo stare attenti alla completezza dei due automi di partenza.
+L'automa complemento sarà praticamente uguale all'automa di partenza, solo che
+\hl{gli stati di accettazione ora saranno di non accettazione e viceversa}.
+
+\begin{equation}
+  \neg A = \langle Q, I, \delta, q_0, Q \setminus F \rangle
+\end{equation}
+
+\subsection{Automi a stati finiti con pila}
+
+Arricchiamo ora i nostri automi a stati finiti con della \hl{memoria}. Questa
+memoria sarà \hl{strutturata come una pila (stack)} di dimensione potenzialmente
+illimitata. L'automa può \hl{manipolare la pila tramite le due operazioni
+fondamentali} delle pile: \hl{push e pop}. Indicheremo convenzionalmente
+\hl{l'inizio della pila con $Z_0$}.
+
+A grandi linee, una \hl{mossa} dell'automa a pila è \hl{strutturata in diversi
+passi}:
+
+\begin{enumerate}
+  \item \hl{Leggi un simbolo (o nulla) dall'input} (d'ora in poi lo chiameremo
+    nastro d'ingresso)
+  \item Esegui una \hl{pop di un elemento} dalla stack
+  \item \hl{Cambia stato}
+  \item Sposta di una posizione il puntatore del carattere corrente (la testina
+    del nastro d'ingresso)
+  \item Esegui una \hl{push di una serie di caratteri (anche nulla)}
+  \item Se è un automa traduttore, \hl{scrivi una stringa (anche nulla)
+    sull'output} (nastro d'uscita)
+\end{enumerate}
+
+Come per gli FSA, \hl{la stringa in ingresso viene riconosciuta se l'automa la
+scandisce completamente e termina su uno stato di accettazione}. Lo stato della
+\hl{pila non è rilevante}. Se l'automa è \hl{traduttore}, allora \hl{se accetta}
+la stringa \hl{l'output corrisponde alla stringa tradotta, altrimenti} viene
+detta \hl{indefinita} e lo indichiamo con \hl{$\tau(x) = \perp$}. In generale
+useremo il simbolo $\perp$ anche con la funzione $\delta$ per indicare una
+transizione indefinita.
+
+Poiché le transizioni di stato sono più ricche di quelle degli FSA, dobbiamo
+adottare una \hl{notazione ben definita per indicare le varie azioni compiute}:
+
+\begin{equation}
+  \mhl{a, A / B\ldots, c}
+\end{equation}
+
+\begin{itemize}
+  \item \hl{$a$} il carattere \hl{letto in input}
+  \item \hl{$A$} il carattere \hl{letto dalla pila tramite stack}
+  \item \hl{$B\ldots$} i caratteri \hl{reinseriti nella pila} tramite la push
+  \item \hl{$c$} il carattere \hl{scritto sull'output}
+\end{itemize}
+
+Nel caso in cui l'automa \hl{non leggesse nulla} dal nastro d'ingresso diciamo
+che l'automa \hl{ha effettuato una $\epsilon$-mossa} e la indichiamo
+\hl{riportando $\epsilon$ come carattere letto} dal nastro d'ingresso. Vale
+\hl{lo stesso anche con il carattere della push}.
+
+\begin{nota}
+  Un automa a pila \hl{non può non leggere nessun carattere dalla pila!}
+  Scrivere, quindi, \hl{$a, \epsilon/B$ è sbagliato}.
+\end{nota}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=3cm,auto]
+    \node[state,initial]   (q0) []            {$q_0$};
+    \node[state]           (q1) [right of=q0] {$q_1$};
+    \node[state]           (q2) [right of=q1] {$q_2$};
+    \node[state,accepting] (q3) [right of=q2] {$q_3$};
+
+    \path[->]
+    (q0) edge              node {$a, Z_0/Z_0 A$} (q1)
+    (q1) edge [loop above] node {$a, A/AA$} ()
+    (q1) edge              node {$b, A/\epsilon$} (q2)
+    (q2) edge [loop above] node {$b, A/\epsilon$} ()
+    (q2) edge              node {$\epsilon, Z_0/\epsilon$} (q3);
+  \end{tikzpicture}
+  \caption{Esempio di un automa a pila}%
+  \label{fig:automa-pila}
+\end{figure}
 
 \end{document}
