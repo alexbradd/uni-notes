@@ -1,12 +1,12 @@
 \documentclass[a4paper,11pt,oneside]{article}
 
 \usepackage[a4paper,margin=2cm]{geometry}
-\usepackage[italian,english]{babel}
+\usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 
 \usepackage[bookmarks,colorlinks]{hyperref}
 \usepackage{enumerate}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{soulutf8}
 
 \usepackage{amsmath}
@@ -14,7 +14,8 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 
-\sethlcolor{yellow}
+\definecolor{hlcolor}{RGB}{253,241,98}
+\sethlcolor{hlcolor}
 
 \theoremstyle{plain}
 \newtheorem{lem}{Lemma}[section]
@@ -28,7 +29,7 @@
 \newtheorem*{esempio}{Esempio}
 \newtheorem*{nota}{Nota}
 
-\newcommand{\mhl}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\newcommand{\mhl}[1]{\colorbox{hlcolor}{$\displaystyle #1$}}
 
 \title{...} % inserire titolo
 \author{Alexandru Gabriel Bradatan}
