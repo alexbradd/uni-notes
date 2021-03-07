@@ -658,4 +658,232 @@ che l'automa \hl{ha effettuato una $\epsilon$-mossa} e la indichiamo
   \label{fig:automa-pila}
 \end{figure}
 
+Formalizziamo ora i concetti introdotti.
+
+\begin{defn}[\hl{Automa a stati finiti a pila}]\label{defn:automa-pila}
+  Definiamo un automa a stati finiti con pila $\mathcal{A}$ una eptupla
+  $\langle I, \Gamma, \delta, q_0, Z_0, F \rangle$ dove:
+
+  \begin{itemize}
+    \item $Q, I, q_0, F$ sono definiti alla stessa maniera di un FSA
+    \item $\Gamma$ è l'alfabeto di pila
+    \item $Z_0$ è il simbolo iniziale di pila
+    \item
+      $\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times \Gamma^\star$
+      è la funzione di transizione
+  \end{itemize}
+\end{defn}
+
+\begin{defn}[\hl{Automa a stati finiti a pila traduttore}]\label{defn:automa-pila-trad}
+  Definiamo un automa a stati finiti con pila $\mathcal{A}$ una ennupla
+  $\langle I, \Gamma, \delta, q_0, Z_0, F, 0, \eta \rangle$ dove:
+
+  \begin{itemize}
+    \item $Q, I, q_0, F, O$ sono definiti alla stessa maniera di un FSA
+    \item $\Gamma$ è l'alfabeto di pila
+    \item $Z_0$ è il simbolo iniziale di pila
+    \item
+      $\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times \Gamma^\star$
+      è la funzione di transizione
+    \item $\eta: Q \times (I \cup \epsilon) \times \Gamma \to O^\star$ è la
+      funzione di traduzione
+  \end{itemize}
+\end{defn}
+
+\begin{nota}
+  La funzione $\eta$ è definita ovunque lo è anche $\delta$.
+\end{nota}
+
+La funzione di \hl{$\delta$ deve essere parziale} perché l'esistenza delle
+\hl{$\epsilon$-mosse causerebbe non-determinismo} in caso di completezza
+dell'automa: \hl{non possono esistere una $\epsilon$-mossa tra due stati $q, q'$
+se tra questi due stati esiste già un'altra mossa che legge lo stesso simbolo
+dalla pila}. Un automa a stati finiti non può decidere deterministicamente tra
+una $\epsilon$-mossa e una regolare. Ciò che abbiamo detto fino ad ora può
+essere formalizzato come:
+
+\begin{equation}
+  \mhl{
+  \forall q, A \delta(q, \epsilon, A) \neq \perp \implies
+    \forall i \delta(q,i,A) = \perp
+  }
+\end{equation}
+
+Il concetto intuitivo di stato che avevamo introdotto con gli FSA oramai non è
+più adeguato in quanto è troppo semplicistico. Negli automi a pila, infatti, si
+aggiunge anche lo stato della pila che anch'esso contribuisce allo stato
+generale dell'automa. Formalizziamo, quindi, \hl{la generalizzazione dello
+stato: la configurazione}.
+
+\begin{defn}[Configurazione]\label{def:configurazione}
+  Chiamiamo configurazione di un automa a pila la tripla (se traduttore
+  quadrupla) $c = \langle q, x \gamma \rangle$
+  ($\langle q, x \gamma, z \rangle$) dove:
+
+  \begin{itemize}
+    \item $q \in Q$ è lo stato dell'organo di controllo
+    \item $x$ è la stringa ancora da leggere nel nastro d'ingresso
+    \item $\gamma$ è la stringa di caratteri nella pila (rappresentati usando la
+      convenzione ``alto-destra basso-sinistra'')
+    \item $z$ la stringa già scritta sul nastro di uscita
+  \end{itemize}
+\end{defn}
+
+Tra le configurazioni di un automa a pila è presente una \hl{relazione di
+transizione indicata con $\vdash$}. Possiamo esprimere il passaggio di stato
+come:
+
+\begin{equation}
+  \mhl{
+  c = \langle q, x, \gamma \rangle \vdash c' = \langle q', x', \gamma' \rangle
+  }
+\end{equation}
+
+Indichiamo con \hl{$\vdash^*$ la chiusura transitiva e riflessiva di $\vdash$}. Essa
+non è altro che l'insieme delle nostre \hl{vecchie sequenze di mosse}. Usando
+$\vdash^*$ possiamo anche \hl{formalizzare l'accettazione di una stringa} (e la sua
+eventuale traduzione) come:
+
+\begin{equation}
+  c_0 = \langle q_0, x, Z_0, (\epsilon) \rangle \vdash^*
+    c_f = \langle q, \epsilon, \gamma , (z) \rangle
+\end{equation}
+
+\begin{nota}
+  D'ora in poi indicheremo la chiusura transitiva e riflessiva di una relazione
+  $A$ con $A^*$. La chiusura solo transitiva sarà $A^+$.
+\end{nota}
+
+\subsubsection{Analisi degli automi a pila}\label{sec:automi-pila-analisi}
+
+Come anche per gli FSA, è facile trovare un \hl{linguaggi non riconosciuti dagli
+automi a pila}. Uno di questi è:
+
+\begin{equation}
+  L = \{ a^n b^n c^n \}\label{eqn:automi-pila-lang-non-ric}
+\end{equation}
+
+L'incapacità di riconoscere il linguaggio~\ref{eqn:automi-pila-lang-non-ric} può
+essere ricondotta al fatto che \hl{la pila è una memoria distruttiva}: bisogna
+distruggere ciò che ci è salvato dentro per leggerla (pop). \hl{Quanto appena
+detto si dimostra con una estensione al Pumping lemma}. Noi non la tratteremo.
+
+Studiamo ora la chiusura della famiglia dei linguaggi riconosciuti da un automa
+a pila. Prendiamo due linguaggi $L_1 = \{ a^n b^n \}, L_2 = \{ a^n b^{2n} \}$.
+Essi sono individualmente riconosciuti dagli automi a pila, la loro unione però
+non lo è (ovviamente si può dimostrare). Ciò ci indica che \hl{la famiglia dei
+linguaggi riconosciuti dagli automi a pila non è chiusa rispetto all'unione e
+(per motivi analoghi) neanche rispetto all'intersezione}. Per quanto riguarda
+invece il \hl{complemento}? Usiamo la \hl{stessa idea degli automi a stati
+finiti}: scambiamo gli stati di accettazione con quelli di non accettazione.
+Anche in questo caso \hl{$\delta$ va ``completata'' cercando di evitare di
+cadere nel non-determinismo}. Le \hl{$\epsilon$-mosse possono ancora causare
+problemi}:
+
+\begin{itemize}
+  \item Si può creare un \hl{ciclo di $\epsilon$-mosse} che fa entrare l'automa
+    in blocco
+  \item Può esserci una \hl{sequenza di $\epsilon$-mosse in cui si alternano
+    stati di accettazione e di non accettazione}
+\end{itemize}
+
+In entrambi i casi \hl{si possono costruire automi equivalenti che eliminano
+questi problemi}, nel primo caso eliminando i cicli, nel secondo forzando
+l'accettazione alla fine di una sequenza di $\epsilon$-mosse.
+
+\subsection{Macchine di Turing}\label{sec:macchine-turing}
+
+L'ultimo automa che tratteremo sarà la macchina di Turing. Partiamo dalla
+\hl{versione a $k$-nastri}, un po' più semplice di quella originaria, ma che
+gode delle stesse proprietà.
+
+Come indica il nome, la macchina di Turing a $k$-nastri è \hl{analoga a un
+automa a stati finiti al quale aggiungiamo $k$ nastri di memoria}. Le
+\hl{testine dei nastri possono muoversi in ambo le direzioni} arbitrariamente.
+Come anche per gli altri automi avremo i \hl{soliti stati e alfabeti}. Per
+convenzione storica, \hl{i nastri sono rappresentati da sequenze infinite di
+celle} invece che da stringhe finite. Per rappresentare una \hl{cella
+inutilizzata} usiamo il simbolo speciale \hl{``blank''}, rappresentato da
+\hl{uno spazio vuoto, $\_$ o $\not{b}$}. Assumeremo che ogni nastro \hl{contenga
+solo un numero finito di celle non contenenti blank}. Come nel caso degli automi
+a pila indichiamo \hl{l'inizio del nastro con $Z_0$}.
+
+La mossa della macchina di Turing è simile a quella dell'automa a pila ma un po'
+più articolata. Possiamo suddividerla in \hl{due ``fasi''}:
+
+\begin{enumerate}
+  \item \hl{Lettura}
+    \begin{itemize}
+      \item \hl{Legge} il carattere in corrispondenza della testina del
+        \hl{nastro d'ingresso}
+      \item \hl{Legge} i $k$ caratteri dai \hl{nastri}
+      \item Valuta lo \hl{stato} dell'organo di controllo
+    \end{itemize}
+  \item \hl{Scrittura}
+    \begin{itemize}
+      \item Cambia \hl{stato}
+      \item \hl{Scrittura} di un carattere sui \hl{nastri di memoria}
+      \item Eventuale \hl{scrittura} di un carattere sul \hl{nastro di uscita}
+      \item \hl{Spostamento delle testine} di una posizione
+    \end{itemize}
+\end{enumerate}
+
+Introduciamo anche la \hl{nuova notazione per le transizioni} (tra parentesi è
+riportata la parte aggiuntiva nel caso di presenza di output):
+
+\[
+  \mhl{
+  i, \langle A_1, \ldots, A_k \rangle/(o),
+    \langle A'_1, \ldots, A'_k \rangle,
+    \langle M_0, \ldots, M_k, (M_{k+1}) \rangle
+  }
+\]
+
+\begin{itemize}
+  \item $i$: carattere letto dal nastro di ingresso
+  \item $\langle A_1, \ldots, A_k \rangle$: le letture dai vari nastri
+  \item $o$: il carattere scritto sul nastro di uscita
+  \item $\langle A'_1, \ldots, A'_k \rangle$: le scritture sui vari nastri
+  \item $\langle M_1, \ldots, M_k \rangle$: i movimenti effettuati dai vari
+    nastri dove:
+    \begin{itemize}
+      \item $M_0$ è il movimento della testina di ingresso
+      \item $M_{k+1}$ è il movimento della testina di output
+    \end{itemize}
+\end{itemize}
+
+Le nuove funzioni di transizione e traduzioni saranno le seguenti:
+
+\begin{align}
+  \delta&: Q \times I \times \Gamma^k \to
+    Q \times \Gamma^k \times {\{R,L,S\}}^{k+1} \\
+  \eta&: Q \times I \times \Gamma^k \to
+    Q \times \Gamma^k \times {\{R,L,S\}}^{k+1} \times O \times \{R,S\}
+\end{align}
+
+Lo \hl{stato iniziale} di una macchina di Turing è \hl{come ce lo
+immagineremmo}: $Z_0$ seguito da blank nei nastri, uscita tutta blank, testine
+in posizione 0 per ogni nastro, organo di controllo nello stato iniziale e
+stringa iniziale scritta sul nastro iniziale a partire dalla posizione 0 seguita
+da blank. \hl{Le condizioni di terminazione, e quindi di accettazione, sono
+leggermente diverse da quelle viste fino ad ora}:
+
+\begin{itemize}
+  \item Gli \hl{stati di accettazione} sono sempre \hl{$F \subseteq Q$}
+  \item Per convenzione la \hl{$\delta (\eta)$ non è definita a partire dagli
+    stati finali}:
+
+    \[
+      \forall q \in F \delta(q, \ldots) = \perp (\eta (q, \ldots) = \perp)
+    \]
+
+  \item La macchina si \hl{ferma in uno stato $q$ quando
+    $\delta(q, \ldots) = \perp$}
+  \item La stringa in ingresso è \hl{accettata se e solo se dopo un numero
+    finito di transizioni la macchina si ferma in uno stato di accettazione}
+\end{itemize}
+
+Ciò significa che una stringa in ingresso non è accettata se la macchina si
+ferma in uno stato di accettazione o se la macchina non si ferma.
+
 \end{document}

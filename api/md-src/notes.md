@@ -310,9 +310,155 @@ seguente notazione: $ a, A / B..., c$ dove:
 
 Nel caso in cui l'automa non legge niente da input (vedi il punto 1 della mossa)
 diciamo che l'automa ha effettuato una $\epsilon$-mossa e la indichiamo con
-$\epsilon$ come carattere letto. Anche nel caso in cui l'automa non inserisce 
+$\epsilon$ come carattere letto. Anche nel caso in cui l'automa non inserisce
 nulla sulla pila lo indichiamo con $\epsilon$. Nota bene: un automa deve sempre
 leggere un carattere dalla pila!
 
+Formalizziamo ora la definizione:
 
+#### Definizione - automa a pila
+
+$$<Q, I, \Gamma, \delta, q_0, Z_0, F, [O, \eta]>$$
+
+Dove:
+
+- $<Q, I, q_0, F, [O]>$ come in un FSA
+- $\Gamma$ alfabeto di pila
+- $Z_0$ simbolo iniziale di pila
+- $\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times \Gamma*$
+  - $\delta$ è per forza parziale
+- $\eta: Q \times (I \cup \epsilon) \times \Gamma \to O*$
+  - $\eta$ è definita dove anche $\delta$ è definita
+
+Definiamo anche la configurazione, ossia la generalizzazione di stato:
+
+#### Definizione - configurazione
+
+$$c = <q, x, \gamma, [z]>$$
+
+Dove:
+
+- $q$ è lo stato dell'organo di controllo
+- $x$ è la stringa ancora da leggere nel nastro di ingresso
+- $\gamma$ stringa dei caratteri in pila (alto-destra, basso-sinistra)
+- $z$ stringa già scritta nel nastro di uscita
+
+Tra le varie configurazioni vi è una relazione di transizione indicata con
+$\vdash$. Quindi otteniamo che:
+
+$$
+c = <q, x, \gamma, [z]> \vdash c' = <q', x', \gamma', [z']>
+$$
+
+Notiamo il perché della parzialità di $\delta$:
+
+$$
+\forall q, A, \delta(q, \epsilon, A) \neq \perp \implies
+  \forall i \delta(q,i,A) = \perp
+$$
+
+Ciò significa che per qualsiasi stato non devono esserci sia una
+$\epsilon$-mossa sia una mossa normale, sennò cadremo in non determinismo perché
+l'automa dovrebbe effettuare una decisione.
+
+Indichiamo con $\vdash*$ la chiusura transitiva e riflessiva di $\vdash$. Essa
+non è altro che la nostra vecchia sequenza di mosse. Definiamo formalmente
+accettazione [traduzione] di una stringa $x \in L, [z\tau(x)]$ come:
+
+$$
+c_0= <q_0, x, Z_0, [\epsilon]> \vdash* c_f = <q, \epsilon, \gamma, [z]>
+$$
+
+Nota: D'ora in poi indicheremo con $A*$ la chiusura transitiva e riflessiva di
+$A$ e con $A+$ la sola chiusura transitiva.
+
+### Automi a pila - proprietà
+
+Come anche per gli FSA, è facile trovare un linguaggio non riconosciuto dagli
+automi a pila: $L = \{ a^n b^n c^n \}$ non è più riconoscibile da un automa a
+pila. Questo è dovuto al fatto che la pila è una memoria distruttiva: per
+leggerla occorre distruggerla! Ciò si dimostra tramite un'estensione del Pumping
+Lemma.
+
+Prendiamo due linguaggi: $\{a^nb^n\}$ e $\{a^nb^2n\}$. Entrambi i linguaggi sono
+riconoscibili da automi a pila, ma si può dimostrare che la loro unione non lo
+è. Questo risultato ci dice che la famiglia dei linguaggi riconosciuti dagli
+automi a pila ($\mathbf{LP}$) non è chiusa rispetto all'unione. Per un motivo
+analogo si può anche dimostrare la non chiusura rispetto all'intersezione.
+
+Riguardo invece al complemento? Come negli FSA, l'idea è la stessa: scambiamo
+gli stati di accettazione con quelli di non accettazione. Anche qui $\delta$ va
+completata cercando di evitare il non determinismo (attenzione alle
+$\epsilon$-mosse). Le $\espilon$-mosse, però, possono causare un ciclo. In
+questo caso, però, se l'automa entra in questo ciclo esso non progredisce mai e
+non completa. Perciò è possibile creare una costruzione equivalente che eviti
+queste $\espilon$-mosse. Analogamente accade per le sequenze di $\epsilon$-mosse
+a fine scansione con alcuni stati di accettazione. Anche qui può essere
+costruita una apposita costruzione che forza l'automa a decidere l'accettazione
+solo alla fine di una sequenza di $\epsilon$-mosse.
+
+### Macchine di Turing
+
+L'ultimo automa che tratteremo sarà la macchina di Turing. Partiamo dalla
+versione a $k$-nastri, un po' più semplice di quella originaria.
+
+Come dice il nome, la macchina di Turing a $k$-nastri è analoga a un automa a
+stati finiti al qual e aggiungiamo $k$ nastri di memoria. Le testine dei nastri
+possono muoversi in ambo le direzioni arbitrariamente. Come anche per gli altri
+automi avremo i soliti stati e alfabeti. Per convenzione storica, i nastri sono
+rappresentati da sequenze infinite di celle invece che da stringhe finite. Però
+esiste un simbolo speciale "blank" (rappresentato da uno spazio vuoto, $\_$ o
+$\not{b}$) e si assume che ogni nastro contenga solo un numero finito di celle
+non contenenti blank. Come nel caso degli automi a pila indichiamo l'inizio del
+nastro con $Z_0$.
+
+La Mossa della macchina di Turing è simile a quella dell'automa a pila:
+
+- Lettura:
+  - Legge il carattere in corrispondenza della testina del nastro di ingresso
+  - Legge i $k$ caratteri in corrispondenza dei nastri
+  - Stato dell'organo di controllo
+- Scrittura:
+  - Cambiamento di stato
+  - Riscrittura di una carattere al posto di quello letto su ogni nastro di
+    memoria
+  - Eventuale scrittura di un carattere sul nastro di uscita
+  - Spostamento delle testine di una posizione
+
+Le nuove funzioni di transizione e output saranno le seguenti:
+
+$$\beign{align}
+\delta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k \times {R,L,S}^{k+1} \\
+\eta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k \times {R,L,S}^{k+1}
+  \times O \times {R,S}
+\end{align}$$
+
+Per accomodare questa mossa più complesso, introduciamo la nuova notazione:
+
+$$
+i, <A_1, \ldots, A_k>/[o], <A'_1, \ldots, A'_k>, <M_0, \ldots, M_k, [M_{k+1}]>
+$$
+
+Dove:
+
+- $i$: carattere letto dal nastro di ingresso
+- $<A_1, \ldots, A_k>$: le letture dai vari nastri
+- $o$: il carattere scritto sul nastro di uscita
+- $<A'_1, \ldots, A'_k>$: le scritture sui vari nastri
+- $<M_1, \ldots, M_k>$: i movimenti effettuati dai vari nastri dove:
+  - $M_0$ è il movimento della testina di ingresso
+  - $M_{k+1}$ è il movimento della testina di output
+
+Lo stato iniziale di una macchina di Turing è come ce lo immagineremmo: $Z_0$
+seguito da blank nei nastri, uscita tutta blank, testine in posizione 0 per ogni
+nastro, organo di controllo nello stato iniziale e stringa iniziale scritta sul
+nastro iniziale a partire dalla posizione 0 seguita da blank. Lo stato di
+terminazione, invece, è diverso da quello visto fino ad ora:
+
+- Gli stati di accettazione sono sempre $F \subseteq Q$
+- Per convenzione la $\delta (\eta)$ non è definita a partire dagli stati
+  finali: $\forall q \in F \delta(q, \ldots) = \perp (\eta (q, \ldots) = \perp)$
+- La macchina si ferma in uno stato $q$ quando $\delta(q, \ldots) = \perp$
+- La stringa in ingresso è accettata se e solo se dopo un numero finito di
+  transizioni la macchina si ferma in uno stato di accettazione
 
