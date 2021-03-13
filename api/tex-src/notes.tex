@@ -584,13 +584,14 @@ L'automa complemento sarà praticamente uguale all'automa di partenza, solo che
   \neg A = \langle Q, I, \delta, q_0, Q \setminus F \rangle
 \end{equation}
 
-\subsection{Automi a stati finiti con pila}
+\subsection{Automi a stati finiti con pila}\label{sec:pda}
 
 Arricchiamo ora i nostri automi a stati finiti con della \hl{memoria}. Questa
 memoria sarà \hl{strutturata come una pila (stack)} di dimensione potenzialmente
 illimitata. L'automa può \hl{manipolare la pila tramite le due operazioni
-fondamentali} delle pile: \hl{push e pop}. Indicheremo convenzionalmente
-\hl{l'inizio della pila con $Z_0$}.
+fondamentali} delle pile: \hl{push e pop}. L'automa così strutturato si chiama
+``automa a pila'', in breve PDA (dall'inglese ``Push Down Automata'').
+Indicheremo convenzionalmente \hl{l'inizio della pila con $Z_0$}.
 
 A grandi linee, una \hl{mossa} dell'automa a pila è \hl{strutturata in diversi
 passi}:
@@ -844,8 +845,8 @@ riportata la parte aggiuntiva nel caso di presenza di output):
   \item $\langle A_1, \ldots, A_k \rangle$: le letture dai vari nastri
   \item $o$: il carattere scritto sul nastro di uscita
   \item $\langle A'_1, \ldots, A'_k \rangle$: le scritture sui vari nastri
-  \item $\langle M_1, \ldots, M_k \rangle$: i movimenti effettuati dai vari
-    nastri dove:
+  \item $\langle M_0, \ldots, M_k, (M_{k+1}) \rangle$: i movimenti effettuati
+    dai vari nastri dove:
     \begin{itemize}
       \item $M_0$ è il movimento della testina di ingresso
       \item $M_{k+1}$ è il movimento della testina di output
@@ -885,5 +886,220 @@ leggermente diverse da quelle viste fino ad ora}:
 
 Ciò significa che una stringa in ingresso non è accettata se la macchina si
 ferma in uno stato di accettazione o se la macchina non si ferma.
+
+\subsubsection{Proprietà di chiusura delle macchine di Turing}\label{sec:analisi-mt}
+
+La famiglia dei linguaggi riconosciuti dalle macchine di Turing è \hl{chiusa}
+per:
+
+\begin{itemize}
+  \item \hl{$\cup$} simulazione di \hl{esecuzione ``in parallelo''}
+  \item \hl{$\cap$} simulazione di \hl{esecuzione ``in serie''}
+  \item \hl{$ . $} simile a $\cap$
+  \item \hl{$\star$} come concatenazione
+\end{itemize}
+
+Per quanto riguarda il \hl{complemento} la situazione è diversa. Il principale
+problema sta nel fatto che \hl{non esistono macchine di Turing loop-free}, ossia
+macchine di Turing equivalenti ad una data ma con eventuali cicli rimossi (come
+si poteva fare per PDA e FSA). A causa di ciò il \hl{rischio di generare
+computazioni infinite} non è eliminabile. La \hl{dimostrazione} di ciò verrà
+vista in seguito nella \hl{parte di computabilità del corso}.
+
+\subsubsection{Modelli equivalenti di macchine di Turing}\label{sec:modelli-mt}
+
+Noi abbiamo introdotto il modello della macchina di Turing a $k$ nastri. \hl{Si
+può dimostrare, però, che esistono diverse formulazioni equivalenti della
+macchina di Turing. Queste diverse tipologie di macchina sono funzionalmente
+equivalenti, con unica differenza la complessità dell'organo di controllo.}
+
+\paragraph{MT a singolo nastro} Il primo modello, e anche il \hl{più
+vecchio}, che enunceremo è quello della MT a singolo nastro. Essa, come implica
+il nome, \hl{possiede un singolo nastro di memoria infinito sul quale la testina
+si può muovere in entrambe le direzioni}. Questo unico nastro \hl{viene usato
+come memoria, input ed eventualmente output}. Attenzione a \hl{non confonderla
+con la MT con $k=1$ nastri} (chiamata ``ad un nastro di memoria'').
+
+\paragraph{MT con nastro di memoria bidimensionale} Un altro modello
+interessante è quello in cui il \hl{nastro di memoria è organizzato come una
+tabella e la testina si può muovere in entrambe e 4 le direzioni cardinali
+sequenzialmente}. Si ricorda che l'accesso randomico alla memoria non è
+possibile con una semplice MT\@.
+
+\paragraph{Macchine di von Neumann} La macchina di von Neumann è il
+\hl{modello astratto di un computer con processore, memoria ad accesso randomico
+e periferiche}. Le macchine di Turing \hl{possono simulare anche questo modello}
+già più complesso. Il \hl{risultato} però è una macchina \hl{molto più complessa
+e lenta}. Ciò vale in generale: \hl{si possono costruire modelli più prestanti e
+complessi della macchina di Turing, ma essi non ne aumentano la capacità
+espressiva}.
+
+\subsection{Modelli operazionali non deterministici}\label{sec:modelli-non-det}
+
+I modelli visti \hl{fino ad ora} sono detti \hl{deterministici}: \hl{in un certo
+stato e con certi ingressi la mossa eseguita è sempre la stessa}. Se
+\hl{neghiamo questa ipotesi} creiamo dei \hl{modelli} detti \hl{non
+deterministici}. Ciò significa che \hl{per un certo stato l'automa potrà
+eseguire più mosse diverse ed è lui a scegliere quale di queste eseguire}. Si
+vengono a \hl{creare}, quindi, dei \hl{fili (thread) di esecuzione che l'automa
+può seguire}. Il modello dell'esecuzione di un automa non deterministico può
+visto come:
+
+\begin{description}
+  \item[Parallelo] L'automa esegue \hl{tutte le strade contemporaneamente}.
+    L'automa si ferma quando tutti le fili di esecuzione hanno terminato o per
+    esaurimento dell'input o per la parzialità delle funzione di transizione.
+  \item[Sequenziale] L'automa \hl{esegue solo un filo, ma ad ogni biforcazione
+    sceglie uno dei fili di esecuzione in modo casuale}.
+\end{description}
+
+Di solito i modelli non deterministici \hl{tendono ad essere più compatti
+sacrificando l'operatività}. In un \hl{contesto pratico} essi possono essere
+\hl{realizzati utilizzando più esecutori, seguendo il modello parallelo}.
+Vediamo le varianti non deterministiche dei modelli già noti.
+
+\subsubsection{Automi a stati finiti non deterministici}\label{sec:nfa}
+
+Iniziamo con il primo modello, e il più semplice gli automi a stati finiti non
+deterministici o NFA (``nondeterministic finite automata''). Diciamo che un
+\hl{FSA è non deterministico se esiste $\delta(q, a) = \{q_1, q_2\}$} ossia
+\hl{associati ad uno stato e ad un carattere è associato un insieme di
+transizioni}. Sarà quindi necessario \hl{ridefinire $\delta$ e $\delta^\star$}.
+
+\begin{gather}
+  \mhl{ \delta: \; Q \times I \to \mathcal{P}(Q) } \\
+  \mhl{
+    \delta^\star(q,x) =
+    \begin{cases}
+      \delta^\star(q, \epsilon) = \{q\} & x = \epsilon \\
+      \delta^\star(q, y.i) = \bigcup_{q' \in \delta^\star(q, y)} \delta(q', i) &
+        x=y.i, i \in I
+    \end{cases}
+  }
+\end{gather}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=3cm,auto]
+    \node[state,initial]   (q0)  []                                  {$q_0$};
+    \node[state]           (q1)  [above right of=q0, yshift=-0.25cm] {$q_1$};
+    \node[state,accepting] (q11) [above right of=q1, yshift=-1cm]    {$q_{11}$};
+    \node[state]           (q12) [below right of=q1, yshift=+1cm]    {$q_{12}$};
+    \node[state]           (q2)  [below right of=q0, yshift=+0.25cm] {$q_2$};
+    \node[state,accepting] (q21) [above right of=q2, yshift=-1cm]    {$q_{21}$};
+    \node[state]           (q22) [below right of=q2, yshift=+1cm]    {$q_{22}$};
+
+    \path[->]
+    (q0) edge node {$a$} (q1)
+    (q1) edge node {$a$} (q11)
+    (q1) edge node {$a$} (q12)
+    (q0) edge node {$a$} (q2)
+    (q2) edge node {$b$} (q21)
+    (q2) edge node {$a$} (q22);
+  \end{tikzpicture}
+  \caption{Un esempio di NFA}\label{fig:nfa}
+\end{figure}
+
+Una \hl{stringa $x \in L$ appartiene al linguaggio modellato} da un NFA se:
+
+\begin{equation}
+  \mhl{ \delta*(q_0, x) \cap F \neq \emptyset }
+\end{equation}
+
+Ossia c'è \hl{almeno una sequenza di mosse che ci porta allo stato finale}. È
+possibile anche considerare $\delta^\star(q_0, x) \subseteq F$.
+
+È importante sottolineare che \hl{gli NFA non possiedono un potere riconoscitivo
+maggiore dei semplici FSA}\@. Infatti \hl{possiamo sempre sintetizzare un FSA
+equivalente ad uno non deterministico}. Intuitivamente, possiamo trasformare un
+automa non deterministico in uno deterministico \hl{semplicemente unendo in un
+singolo stato l'insieme di arrivo della $\delta$ e mantenendo gli archi}.
+
+\subsubsection{Automi a pila non deterministici}\label{sec:npda}
+
+Seguendo l'evoluzione svolta nella parte che tratta gli automi deterministici,
+introduciamo gli automi a pila non deterministici o NPDA\@. Il concetto di \hl{non
+determinismo è analogo a quello trattato in}~\ref{sec:nfa}. L'avevamo \hl{già
+incontrato quando avevamo parlato delle $\epsilon$-mosse}. La nuova funzione di
+transizione è:
+
+\begin{equation}
+  \mhl{
+    \delta: Q \times (I \cup \{\epsilon\}) \times \Gamma \to
+      \mathcal{P}_f(Q \times \Gamma^\star)
+  }
+\end{equation}
+
+Il \hl{pedice $f$} dell'insieme delle parti sta per \hl{``finito''}. Infatti i possibili
+sottoinsiemi di $Q \times \Gamma^\star$ sono infiniti, ma noi \hl{consideriamo
+solamente quelli ottenibili nell'immagine di $\delta$, ottenendo un insieme
+delle parti finito}. Un \hl{NPDA accetta se} esiste una sequenza di mosse tale che:
+
+\begin{equation}
+  \mhl{
+    c_0 \vdash^\star \{c_0, \ldots, c_n \}, \quad
+      c_0 = \langle q_0, \epsilon, Z_0 \rangle,
+      c_1 = \langle q, \epsilon, \gamma \rangle, \ldots, q \in F
+  }
+\end{equation}
+
+\hl{Quindi la relazione $\vdash$ non è più univoca!}
+
+Una \hl{semplice costruzione} come quella in \hl{figura}~\ref{fig:npda-unione}
+ci permette di \hl{costruire sempre l'unione di due NPDA} e quindi di
+\hl{dimostrare la chiusura degli NPDA rispetto all'unione}. Questa \hl{proprietà
+non è condivisa dagli PDA}\@. Gli \hl{NPDA non sono, però, chiusi rispetto
+all'intersezione}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=3cm,auto]
+    \node[state,initial]   (q0)  []             {$q_0$};
+    \node[state]           (q01) [above of=q0]  {$q_0'$};
+    \node[state]           (q11) [right of=q01] {$q_1'$};
+    \node[state]           (q21) [right of=q11] {$q_2'$};
+    \node[state,accepting] (qf)  [right of=q21] {$q_f$};
+    \node[state]           (q02) [below of=q0]  {$q_0''$};
+    \node[state]           (q12) [right of=q02] {$q_1''$};
+    \node[state]           (q22) [right of=q12] {$q_2''$};
+    \node[state]           (q32) [right of=q22] {$q_3''$};
+
+    \path[->]
+    (q0)  edge []           node {$\epsilon,Z_0/Z_0$}      (q01)
+    (q01) edge []           node {$a,Z_0/Z_0A$}            (q11)
+    (q11) edge [loop above] node {$a,A/AA$}                ()
+    (q11) edge []           node {$b,A/\epsilon$}          (q21)
+    (q21) edge []           node {$\epsilon,Z_0/\epsilon$} (qf)
+    (q21) edge [loop above] node {$b,A/\epsilon$}          ()
+    (q0)  edge []           node {$\epsilon,Z_0/Z_0$}      (q02)
+    (q02) edge []           node {$a,Z_0/Z_0A$}            (q12)
+    (q12) edge []           node {$b,A/A$}                 (q22)
+    (q12) edge [loop above] node {$a,A/AA$}                ()
+    (q22) edge [bend left]  node {$b,A/\epsilon$}          (q32)
+    (q32) edge []           node {$b,A/A$}                 (q22)
+    (q32) edge []           node {$\epsilon,Z_0/\epsilon$} (qf);
+  \end{tikzpicture}
+  \caption{NPDA unione di due PDA\@. Lo NPDA riconosce $L = \{a^n b^n\} \cup
+  \{a^n b^{2n}\}$. Da notare \hl{la $\epsilon$-mossa non deterministica che
+  parte da $q_0$ e lega i due automi}, ognuno corrispondente ad uno dei due
+  rami}%
+  \label{fig:npda-unione}
+\end{figure}
+
+Se la famiglia dei linguaggi riconosciuti dagli NPDA è \hl{chiusa rispetto a
+$\cup$ ma non rispetto a $\cap$ non può esserlo rispetto al complemento}.
+
+Proviamo a dimostrare il risultato sopra. Procedendo con le \hl{stesse modalità
+del caso deterministico}, possiamo ottenere una \hl{computazione che termina e
+accetta il linguaggio complemento}. Se però \hl{consideriamo} il caso:
+
+\[
+  \langle q_0, x, z_0 \rangle = c_0 \vdash^\star \{
+    \langle q_1, \epsilon, \gamma_1 \rangle,
+    \langle q_2, \epsilon, \gamma_2 \rangle \}, \mhl{ q_1 \in F, q_2 \notin F }
+\]
+
+La stringa \hl{$x$ è accettata anche se scambio $F$ con $Q \setminus F$},
+rendendo impossibile la costruzione del complemento.
 
 \end{document}

@@ -445,9 +445,11 @@ Dove:
 - $<A_1, \ldots, A_k>$: le letture dai vari nastri
 - $o$: il carattere scritto sul nastro di uscita
 - $<A'_1, \ldots, A'_k>$: le scritture sui vari nastri
-- $<M_1, \ldots, M_k>$: i movimenti effettuati dai vari nastri dove:
+- $<M_0, \ldots, M_k, [M_{k+1}]>$: i movimenti effettuati dai vari nastri dove:
   - $M_0$ è il movimento della testina di ingresso
   - $M_{k+1}$ è il movimento della testina di output
+    - a differenza delle altre testine la testina di output non può tornare
+      indietro
 
 Lo stato iniziale di una macchina di Turing è come ce lo immagineremmo: $Z_0$
 seguito da blank nei nastri, uscita tutta blank, testine in posizione 0 per ogni
@@ -461,4 +463,79 @@ terminazione, invece, è diverso da quello visto fino ad ora:
 - La macchina si ferma in uno stato $q$ quando $\delta(q, \ldots) = \perp$
 - La stringa in ingresso è accettata se e solo se dopo un numero finito di
   transizioni la macchina si ferma in uno stato di accettazione
+
+Il modello di macchina di Turing è adatto a modellare la computabilità di un
+problema, però la sua semplicità la rende anche assai complessa e lenta da
+utilizzare per problemi più elaborati.
+
+### Proprietà di chiusura delle macchine di Turing
+
+La famiglia dei linguaggi riconosciuti dalle macchine di Turing è chiusa per
+tutte le operazioni viste tranne il complemento. Il principale problema sta nel
+fatto che non esistono le macchine di Turing loop-free, come gli automi a pila e
+si rischia di generare computazioni infinite. La dimostrazione di questo
+risultato verrà vista in seguito nella parte di computabilità del corso.
+
+### Modelli equivalenti della macchina di Turing
+
+Il primo modello equivalente di MT (e anche il più vecchio) è quello della MT a
+singolo nastro. Essa ha un unico nastro di memoria infinito sul quale la testina
+si può muovere in entrambe le direzioni. Attenzione: non va confusa con la
+macchina di Turing con $k=1$ nastri (ad un nastro di memoria). Un altro modello
+è quello di una macchina di Turing con un nastro di memoria bidimensionale in
+cui la testina si può muovere liberamente nelle 4 direzioni cardinali. Ne
+esistono altri, ma essi sono tutti equivalenti tra di loro per quanto riguarda
+la capacità espressiva/traduttiva.
+
+Le macchine di Turing possono simulare anche le macchine di von Neumann (modello
+astratto di un computer con RAM). La differenza tra le due è l'accesso alla
+memoria: sequenziale nel primo e diretto nel secondo. L'impatto non è nella
+capacità espressiva ma nella complessità del calcolo. Come detto anche prima,
+infatti, le macchine di Turing sono fin troppo semplici e per compiti abbastanza
+complessi diventano molto complicate e lente.
+
+## Modelli operazionali non deterministici
+
+I modelli visti fino ad ora sono detti deterministici: in certo stato e con
+certi ingressi la mossa eseguita è sempre la stessa. Vediamo le varianti non
+deterministiche dei modelli già noti.
+
+### FSA non deterministici
+
+Diciamo che un FSA è non deterministico se esiste $\delta(q, a) = \{q_1, q_2\}$
+ossia associati ad uno stato e ad un carattere è associato un insieme di
+transizioni. Quindi $\delta: Q \times I \to P(Q)$. Ovviamente la sequenza di
+mosse andrà ridefinita:
+
+$$
+  \delta*(q, \epsilon) = \{q\} \quad \delta*(q, y.i) =
+    \bigcup_{q' \in \delta*(q, y)} \delta(q', i)
+$$
+
+Una stringa $x \in L$ appartiene al linguaggio modellato da un NFA (dall'inglese
+"nondeterministic finite automata") non deterministico se:
+
+$$\delta*(q_0, x) \cap F \neq \emptyset$$
+
+Ossia c'è almeno una sequenza di mosse che ci porta allo stato finale.
+
+### Automi a pila non deterministici
+
+Il non determinismo negli automi a pila è simile a quello degli NFA. L'avevamo
+già incontrato quando avevamo parlato delle $\epsilon$-mosse. La nuova funzione
+di transizione è:
+
+$$
+  \delta: Q \times (I \cup \{\epsilon\}) \times \Gamma \to P_f(Q\times\Gamma*)
+$$
+
+L'indice $f$ nell'insieme delle parti sta per "finito". Un NPDA
+("nondeterministic push down automata") accetta se esiste una sequenza di mosse
+tale che:
+
+$$ c_0 \vdash* <q, \epsilon, \gamma>, q \in F $$
+
+Quindi la relazione $\vdash$ non è più univoca! Una semplice costruzione ci
+permette di costruire sempre l'unione di due NPDA e quindi di dimostrare la
+chiusura degli NPDA rispetto all'unione.
 
