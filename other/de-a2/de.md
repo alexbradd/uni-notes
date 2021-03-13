@@ -26,7 +26,7 @@ gehen? Ich habe am Freitag frei. Wann habt du frei? Bitte ruf zurück. Tschüs!
 
 ## AB Übung 4 Seite 68
 
-1. Julia und Sonja sagen, dass sie auf unserer Reise einen Blog schrieben
+1. Julia und Sonja sagen, dass sie auf ihrer Reise einen Blog schrieben
    möchten.
 2. Torsten sagt, dass zwei Monate ohne Computer eine interessant Erfahrung für
    ihm waren.
