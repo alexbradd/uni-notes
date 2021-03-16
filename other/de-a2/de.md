@@ -53,3 +53,70 @@ gehen? Ich habe am Freitag frei. Wann habt du frei? Bitte ruf zurück. Tschüs!
 | haben gemacht  | machen    |
 | haben gegessen | essen     |
 
+## Übung 2 Seite 70
+
+| ge-...-en                   | ge-...-t               |
+|-----------------------------|------------------------|
+| ist geworden (werden)       | hat gedacht (denken)   |
+| hat gesehen (sehen)         | haben gemacht (machen) |
+| ist geblieben (bleiben)     | -                      |
+| sind gegangen (gehen)       | -                      |
+| haben gesprochen (sprechen) | -                      |
+
+## Übung 3 Seite 70
+
+| ge-...-en             | ge-...-t              |
+|-----------------------|-----------------------|
+| finden - hat gefunden | wartet - hat gewartet |
+| fahren - ist gefahren | zählen - hat gezählt  |
+| geben - hat gegeben   | suchen - hat gesucht  |
+| nehmen - hat genommen | fragen - hat gefragt  |
+| -                     | kauft - hat gekauft   |
+| -                     | leben - hat gelebt    |
+| -                     | hören - hat gehört    |
+
+## Übung c Seite 73
+
+1. Der regnen hat aufgehört.
+2. Meine Rechnung hat bekommen.
+3. Wir haben das Spiel gewonnen.
+
+## Übung d Seite 73
+
+| Infinitiv    | Partizip    | Bedeutung                               |
+|--------------|-------------|-----------------------------------------|
+| anfangen     | angefangen  | iniziare                                |
+| anrufen      | angerufen   | chiamare                                |
+| aufmachen    | aufgemacht  | aprire                                  |
+| erkennen     | erkannt     | riconoscere                             |
+| benutzen     | benutzt     | usare                                   |
+| besichtigen  | besichtigt  | visitare                                |
+| besuchen     | besucht     | visitare qualcuno                       |
+| bezahlen     | bezahlt     | pagare                                  |
+| erlauben     | erlaubt     | permettere                              |
+| gefallen     | gefallen    | piacere                                 |
+| gewinnen     | gewonnen    | vincere                                 |
+| mitbringen   | mitgebracht | portare con sé                          |
+| mitkommen    | mitgekommen | venire con qualcuno                     |
+| mitmachen    | mitgemacht  | fare qualcosa con qualcuno, partecipare |
+| telefonieren | telefoniert | telefonare                              |
+| verkaufen    | verkauft    | vendere                                 |
+| abholen      | abgeholt    | andare a prendere qualcuno              |
+
+## Übung d Seite 74
+
+1. Soll ich die Einladung annehmen? Ja, du sollst die Einladung annehmen.
+2. Warum lädt sie mich ein? Vielleicht sie dich besser kennen lernen.
+3. Was soll ich anziehen? Hose und ein Pullover.
+4. Was soll ich mitbringen? Schokolade und Blumen.
+5. Wie lange fährt man nach Grossdorf? Zwanzig Minuten.
+6. Kann ich früher kommen? Nein, komm nicht früher.
+
+## Übung f Seite 75
+
+1. Marie will wissen, wer angerufen hat.
+2. Marie will wissen, ob Bernhard seine Tante besucht.
+3. Marie will wissen, ob Bernhard seiner Tante das gesagt hat.
+4. Marie will wissen, was Bernhard seiner Tante gesagt hat.
+5. Marie will wissen, was Bernhards Tante geantwortet hat.
+
