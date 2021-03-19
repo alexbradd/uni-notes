@@ -517,7 +517,13 @@ Una stringa $x \in L$ appartiene al linguaggio modellato da un NFA (dall'inglese
 
 $$\delta*(q_0, x) \cap F \neq \emptyset$$
 
-Ossia c'è almeno una sequenza di mosse che ci porta allo stato finale.
+Ossia c'è almeno una sequenza di mosse che ci porta allo stato finale. Si noti
+che gli NFA non sono più potenti della controparte deterministica. Infatti
+possiamo sempre trasformare un NFA in un FSA tramite un algoritmo.
+Intuitivamente, possiamo trasformare un automa non deterministico in uno
+deterministico semplicemente unendo in un singolo stato l'insieme di arrivo
+della $\delta$ e mantenendo gli archi. Possiamo anche operare nell'altro senso,
+ossia costruire un automa non deterministico a partire da uno deterministico.
 
 ### Automi a pila non deterministici
 
@@ -537,5 +543,69 @@ $$ c_0 \vdash* <q, \epsilon, \gamma>, q \in F $$
 
 Quindi la relazione $\vdash$ non è più univoca! Una semplice costruzione ci
 permette di costruire sempre l'unione di due NPDA e quindi di dimostrare la
-chiusura degli NPDA rispetto all'unione.
+chiusura degli NPDA rispetto all'unione. Ciò significa che la classe dei
+linguaggi riconosciuti dagli NPDA è più ampia di quella dei PDA e quindi che gli
+NPDA sono più potenti rispetto ai PDA.  Anche se sono chiusi rispetto
+all'unione, essi non sono chiusi rispetto all'intersezione. Di conseguenza non
+sono chiusi anche rispetto al complemento (per le leggi di De Morgan). Proviamo
+a dimostrare il risultato sopra. Procedendo con le stesse modalità del caso
+deterministico, possiamo ottenere una computazione che termina e accetta il
+linguaggio complemento. Se però consideriamo il caso:
+
+$$
+  \langle q_0, x, z_0 \rangle = c_0 \vdash^\star \{
+    \langle q_1, \epsilon, \gamma_1 \rangle,
+    \langle q_2, \epsilon, \gamma_2 \rangle \}, \mhl{ q_1 \in F, q_2 \notin F }
+$$
+
+La stringa $x$ è accettata anche se scambio $F$ con $Q \setminus F$, rendendo
+impossibile la costruzione del complemento.
+
+### Macchine di Turing non deterministiche
+
+Come anche nei casi precedenti, la macchina di Turing non deterministica può
+assumere diversi stati contemporaneamente. Definiamo la $\delta$:
+
+$$
+  \delta : Q \times I \times \Gamma^k \to
+    P(Q\times \Gamma^k \times \{ L,S,R \})
+$$
+
+Il concetto di configurazione, transizione e sequenza di transizione e
+accettazione sono definite come negli altri casi.
+
+Come anche nel caso del NFA le macchine di Turing non deterministiche non sono
+più potenti della controparte deterministica. Per dimostrare ciò possiamo
+pensare al cosiddetto "albero delle computazioni":
+
+```txt
+                              c0
+                              |
+                        |-----|-----|
+                       c11   c12   c13
+                 |------|     |     |----|----|
+                c11    c22   !f    ...   f   c23
+           |-----|      |                     |------|
+          !f    ...     f                     f     !f
+
+f   : stato in cui termina accettando
+!f  : stato in cui termina non accettando
+... : computazione infinita
+```
+
+Quindi per simulare una macchina di Turing non deterministica con una
+deterministica ci basterà percorrere l'albero in ampiezza (breadth-first serch),
+scandendo le varie configurazioni. Appena trovo una configurazione di
+accettazione, mi posso fermare.
+
+## Le grammatiche
+
+Gli automi sono un modello riconoscitivo dei linguaggi: essi ricevono una
+stringa nel loro ingresso e la elaborano in vari modi. Le grammatiche, invece,
+sono un modello generativo: una grammatica produce le stringhe di un linguaggio.
+In generale una grammatica o sintassi è un insieme di regole per costruire frasi
+di un linguaggio (stringhe). Esso può essere applicato a a qualsiasi nozione di
+linguaggio nel senso più lato. In modo simile alle grammatiche dei normali
+meccanismi linguistici, una grammatica formale genera le stringhe di un
+linguaggio attraverso un processo di riscrittura.
 

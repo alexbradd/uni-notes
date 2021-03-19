@@ -612,8 +612,8 @@ Come per gli FSA, \hl{la stringa in ingresso viene riconosciuta se l'automa la
 scandisce completamente e termina su uno stato di accettazione}. Lo stato della
 \hl{pila non è rilevante}. Se l'automa è \hl{traduttore}, allora \hl{se accetta}
 la stringa \hl{l'output corrisponde alla stringa tradotta, altrimenti} viene
-detta \hl{indefinita} e lo indichiamo con \hl{$\tau(x) = \perp$}. In generale
-useremo il simbolo $\perp$ anche con la funzione $\delta$ per indicare una
+detta \hl{indefinita} e lo indichiamo con \hl{$\tau(x) = \bot$}. In generale
+useremo il simbolo $\bot$ anche con la funzione $\delta$ per indicare una
 transizione indefinita.
 
 Poiché le transizioni di stato sono più ricche di quelle degli FSA, dobbiamo
@@ -705,8 +705,8 @@ essere formalizzato come:
 
 \begin{equation}
   \mhl{
-  \forall q, A \delta(q, \epsilon, A) \neq \perp \implies
-    \forall i \delta(q,i,A) = \perp
+  \forall q, A \delta(q, \epsilon, A) \neq \bot \implies
+    \forall i \delta(q,i,A) = \bot
   }
 \end{equation}
 
@@ -740,19 +740,19 @@ come:
   }
 \end{equation}
 
-Indichiamo con \hl{$\vdash^*$ la chiusura transitiva e riflessiva di $\vdash$}. Essa
+Indichiamo con \hl{$\vdash^\star$ la chiusura transitiva e riflessiva di $\vdash$}. Essa
 non è altro che l'insieme delle nostre \hl{vecchie sequenze di mosse}. Usando
-$\vdash^*$ possiamo anche \hl{formalizzare l'accettazione di una stringa} (e la sua
+$\vdash^\star$ possiamo anche \hl{formalizzare l'accettazione di una stringa} (e la sua
 eventuale traduzione) come:
 
 \begin{equation}
-  c_0 = \langle q_0, x, Z_0, (\epsilon) \rangle \vdash^*
+  c_0 = \langle q_0, x, Z_0, (\epsilon) \rangle \vdash^\star
     c_f = \langle q, \epsilon, \gamma , (z) \rangle
 \end{equation}
 
 \begin{nota}
   D'ora in poi indicheremo la chiusura transitiva e riflessiva di una relazione
-  $A$ con $A^*$. La chiusura solo transitiva sarà $A^+$.
+  $A$ con $A^\star$. La chiusura solo transitiva sarà $A^+$.
 \end{nota}
 
 \subsubsection{Analisi degli automi a pila}\label{sec:automi-pila-analisi}
@@ -875,11 +875,11 @@ leggermente diverse da quelle viste fino ad ora}:
     stati finali}:
 
     \[
-      \forall q \in F \delta(q, \ldots) = \perp (\eta (q, \ldots) = \perp)
+      \forall q \in F \delta(q, \ldots) = \bot (\eta (q, \ldots) = \bot)
     \]
 
   \item La macchina si \hl{ferma in uno stato $q$ quando
-    $\delta(q, \ldots) = \perp$}
+    $\delta(q, \ldots) = \bot$}
   \item La stringa in ingresso è \hl{accettata se e solo se dopo un numero
     finito di transizioni la macchina si ferma in uno stato di accettazione}
 \end{itemize}
@@ -967,7 +967,7 @@ deterministici o NFA (``nondeterministic finite automata''). Diciamo che un
 transizioni}. Sarà quindi necessario \hl{ridefinire $\delta$ e $\delta^\star$}.
 
 \begin{gather}
-  \mhl{ \delta: \; Q \times I \to \mathcal{P}(Q) } \\
+  \mhl{ \delta: \; Q \times I \to \wp(Q) } \\
   \mhl{
     \delta^\star(q,x) =
     \begin{cases}
@@ -1003,7 +1003,7 @@ transizioni}. Sarà quindi necessario \hl{ridefinire $\delta$ e $\delta^\star$}.
 Una \hl{stringa $x \in L$ appartiene al linguaggio modellato} da un NFA se:
 
 \begin{equation}
-  \mhl{ \delta*(q_0, x) \cap F \neq \emptyset }
+  \mhl{ \delta^\star(q_0, x) \cap F \neq \emptyset }
 \end{equation}
 
 Ossia c'è \hl{almeno una sequenza di mosse che ci porta allo stato finale}. È
@@ -1014,6 +1014,8 @@ maggiore dei semplici FSA}\@. Infatti \hl{possiamo sempre sintetizzare un FSA
 equivalente ad uno non deterministico}. Intuitivamente, possiamo trasformare un
 automa non deterministico in uno deterministico \hl{semplicemente unendo in un
 singolo stato l'insieme di arrivo della $\delta$ e mantenendo gli archi}.
+Possiamo anche operare nell'altro senso, ossia costruire un automa non
+deterministico a partire da uno deterministico.
 
 \subsubsection{Automi a pila non deterministici}\label{sec:npda}
 
@@ -1026,7 +1028,7 @@ transizione è:
 \begin{equation}
   \mhl{
     \delta: Q \times (I \cup \{\epsilon\}) \times \Gamma \to
-      \mathcal{P}_f(Q \times \Gamma^\star)
+      \wp_f(Q \times \Gamma^\star)
   }
 \end{equation}
 
@@ -1049,7 +1051,8 @@ Una \hl{semplice costruzione} come quella in \hl{figura}~\ref{fig:npda-unione}
 ci permette di \hl{costruire sempre l'unione di due NPDA} e quindi di
 \hl{dimostrare la chiusura degli NPDA rispetto all'unione}. Questa \hl{proprietà
 non è condivisa dagli PDA}\@. Gli \hl{NPDA non sono, però, chiusi rispetto
-all'intersezione}.
+all'intersezione}. Ciò implica che gli NPDA hanno un potere riconoscitivo
+maggiore della controparte deterministica.
 
 \begin{figure}[htb]
   \centering
@@ -1087,7 +1090,8 @@ all'intersezione}.
 \end{figure}
 
 Se la famiglia dei linguaggi riconosciuti dagli NPDA è \hl{chiusa rispetto a
-$\cup$ ma non rispetto a $\cap$ non può esserlo rispetto al complemento}.
+$\cup$ ma non rispetto a $\cap$ non può esserlo rispetto al complemento a causa
+delle leggi di De Morgan}.
 
 Proviamo a dimostrare il risultato sopra. Procedendo con le \hl{stesse modalità
 del caso deterministico}, possiamo ottenere una \hl{computazione che termina e
@@ -1101,5 +1105,94 @@ accetta il linguaggio complemento}. Se però \hl{consideriamo} il caso:
 
 La stringa \hl{$x$ è accettata anche se scambio $F$ con $Q \setminus F$},
 rendendo impossibile la costruzione del complemento.
+
+\subsubsection{Macchine di Turing non deterministiche}\label{sec:ntm}
+
+Definiamo il concetto di \hl{non determinismo} in una macchina di Turing in modo
+\hl{analogo ai casi precedenti}, ossia la capacità di poter \hl{assumere diversi
+stati contemporaneamente}. Definiamo la relazione di \hl{transizione} per le NTM
+(dall'inglese ``nondeterministic Turing machines''):
+
+\begin{equation}
+  \mhl{
+    \delta : Q \times I \times \Gamma^k \to
+      \wp(Q \times \Gamma^k \times \{ L,S,R \})
+  }
+\end{equation}
+
+Non ripeteremo la definizione di \hl{configurazione, transizione, sequenza di
+transizioni e accettazioni} poiché la loro \hl{definizione è invariata}.
+
+Come nel caso degli NFA, le \hl{NTM non aggiungono capacità riconoscitiva}. Per
+dimostrare ciò, costruiamo un \hl{algoritmo che permetta ad una macchina di
+Turing deterministica di emulare il comportamento di una non deterministica}.
+Poiché una stringa è accettata da una NTM solo se esiste un calcolo che termina
+in uno stato di accettazione, rappresentiamo la \hl{computazione sotto forma di
+un albero chiamato appunto albero delle computazioni}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=1cm and 3cm,every node/.style={scale=1.3}]
+    \node[] (c0)  [] {$c_0$};
+    \node[] (cx)  [below left=of c0] {$c_x$};
+    \node[] (cy)  [below=of c0] {$c_y$};
+    \node[] (cz)  [below right=of c0] {$c_z$};
+    \node[] (cb)  [below right=of cx, xshift=-2.0cm] {\color{red}$c_b$};
+    \node[] (cx2) [below=of cx] {$c_x$};
+    \node[] (cd)  [below left=of cx, xshift=+2.0cm] {\color{ForestGreen}$c_d$};
+    \node[] (cxi) [below=of cx2] {};
+    \node[] (ce)  [below=of cy] {$c_e$};
+    \node[] (cyi) [below right=of cy, xshift=-2.0cm] {};
+    \node[] (cf)  [below right=of cz, xshift=-2.0cm] {\color{ForestGreen}$c_f$};
+    \node[] (ca)  [below=of cz] {$c_a$};
+    \node[] (ci)  [below left=of cz, xshift=+2.0cm] {\color{ForestGreen}$c_i$};
+    \node[] (cf2) [below=of ce] {\color{ForestGreen}$c_f$};
+    \node[] (cm)  [below=of ca] {\color{red}$c_m$};
+
+    \path[->]
+    (c0)  edge         (cx)
+    (c0)  edge         (cy)
+    (c0)  edge         (cz)
+    (cx)  edge         (cb)
+    (cx)  edge         (cx2)
+    (cx)  edge         (cd)
+    (cy)  edge         (ce)
+    (cy)  edge[dotted] (cyi)
+    (cz)  edge         (cf)
+    (cz)  edge         (ca)
+    (cz)  edge         (ci)
+    (cx2) edge[dotted] (cxi)
+    (ce)  edge         (cf2)
+    (ca)  edge         (cm);
+  \end{tikzpicture}
+  \caption{Un esempio di albero delle computazioni. In verde sono indicati gli
+  stati di accettazione, in rosso gli stati di non accettazione e con le linee
+  tratteggiati i percorsi che porterebbero ad una computazione infinita.}%
+  \label{fig:albero-computazioni}
+\end{figure}
+
+Per emulare una NTM con una MT ci \hl{basterà}, quindi, \hl{percorrere in
+larghezza questo albero, scandendo le varie configurazioni finché non ne
+troveremo una di accettazione}. Per eseguire questa operazione in alberi
+tradizionali esistono degli algoritmi ben consolidati
+\hl{(``breadth first search'')}.
+
+\section{Le grammatiche}\label{sec:grammatiche}
+
+Le grammatiche sono un \hl{altro tipo di modello che possiamo usare per
+modellare i linguaggi}. A differenza degli automi, le grammatiche sono un
+\hl{modello generativo} più che riconoscitivo. Una automa, infatti, legge una
+stringa in ingresso, la elabora e determina se appartiene al linguaggio; una
+grammatica, invece, \hl{descrive una serie di regole per generare le stringhe
+del linguaggio}.
+
+Come anticipato, possiamo \hl{intuitivamente definire le grammatiche come un
+insieme di regole usato per costruire le ``frasi''}, sinonimo di stringhe,
+\hl{del linguaggio} di interesse. In modo \hl{analogo alle grammatiche dei
+normali meccanismi linguistici}, una grammatica formale \hl{genera le stringe}
+di un linguaggio attraverso un \hl{processo di riscrittura}. Esse \hl{descrivono
+un oggetto principale} (la frase) come un \hl{insieme ordinato di componenti, a
+loro volta descritti come composti da altri componenti fino ad arrivare agli
+elementi fondamentali dell'alfabeto considerato}.
 
 \end{document}
