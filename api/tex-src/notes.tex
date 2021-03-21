@@ -4,11 +4,13 @@
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 
+\usepackage{booktabs}
 \usepackage[bookmarks,colorlinks]{hyperref}
 \usepackage{enumerate}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{soulutf8}
 
+\usepackage{mathtools}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -29,10 +31,12 @@
 \newtheorem{defn}{Definizione}[section]
 
 \theoremstyle{remark}
-\newtheorem*{esempio}{Esempio}
+\newtheorem{esempio}{Esempio}[section]
 \newtheorem*{nota}{Nota}
 
 \newcommand{\mhl}[1]{\colorbox{hlcolor}{$\displaystyle #1$}}
+\newcommand*{\deriv}[1][]{\xRightarrow[#1]{}}
+\newcommand*{\derivstar}[1][]{\xRightarrow[#1]{\star}}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -875,7 +879,7 @@ leggermente diverse da quelle viste fino ad ora}:
     stati finali}:
 
     \[
-      \forall q \in F \delta(q, \ldots) = \bot (\eta (q, \ldots) = \bot)
+      \forall q \in F \delta(q, \ldots) = \bot, (\eta (q, \ldots) = \bot)
     \]
 
   \item La macchina si \hl{ferma in uno stato $q$ quando
@@ -1165,9 +1169,9 @@ un albero chiamato appunto albero delle computazioni}.
     (ce)  edge         (cf2)
     (ca)  edge         (cm);
   \end{tikzpicture}
-  \caption{Un esempio di albero delle computazioni. In verde sono indicati gli
-  stati di accettazione, in rosso gli stati di non accettazione e con le linee
-  tratteggiati i percorsi che porterebbero ad una computazione infinita.}%
+  \caption{Un esempio di albero delle computazioni. In verde sono indicati le
+  configurazioni di accettazione, in rosso quelle di non accettazione e con le
+  linee tratteggiati i percorsi che porterebbero ad una computazione infinita.}%
   \label{fig:albero-computazioni}
 \end{figure}
 
@@ -1194,5 +1198,186 @@ di un linguaggio attraverso un \hl{processo di riscrittura}. Esse \hl{descrivono
 un oggetto principale} (la frase) come un \hl{insieme ordinato di componenti, a
 loro volta descritti come composti da altri componenti fino ad arrivare agli
 elementi fondamentali dell'alfabeto considerato}.
+
+\subsection{Formalizzazione di una grammatica}\label{sec:form-grammatica}
+
+\begin{defn}[\hl{Grammatica}]\label{def:grammatica}
+  Si definisce grammatica $G$ la quadrupla $(V_n, V_t, P, S)$ dove:
+
+  \begin{itemize}
+    \item $V_n$ è l'alfabeto o vocabolario non terminale
+    \item $V_t$ è l'alfabeto o vocabolario terminale
+    \item $S \in V_n$ è l'assioma o simbolo iniziale
+    \item
+      $P \subseteq V_n^+ \times {(V_t \cup V_n)}^\star =
+      \{S \to \alpha, \alpha \to \beta, \ldots\}$ l'insieme di riscrittura o
+      delle produzioni
+  \end{itemize}
+\end{defn}
+
+\begin{nota}
+  Per comodità indicheremo con \hl{$V$} l'insieme \hl{$V_t \cup V_n$}.
+\end{nota}
+
+\begin{defn}[\hl{Relazione di derivazione immediata}]\label{def:deriv}
+  Definiamo la relazione di derivazione immediata $\deriv[G]$ per una grammatica
+  $G = (V_t, V_n, P, S)$ come $\alpha \deriv[G] \beta$ se e solo se dati
+  $\alpha \in V^+$, $\beta \in V^\star$:
+
+  \begin{enumerate}
+    \item $\alpha = \alpha_1 \alpha_2 \alpha_3$
+    \item $\beta = \alpha_1 \beta_2 \alpha_3$
+    \item $\alpha_2 \to \beta_2 \in P$
+  \end{enumerate}
+\end{defn}
+
+\begin{nota}
+  Dove non ambiguo ometteremo il pedice indicante la grammatica per alleggerire
+  la notazione. Indicheremo inoltre con \hl{$\derivstar$ la chiusura riflessiva
+  e transitiva di $\deriv$}.
+\end{nota}
+
+\begin{defn}[Linguaggio generato da una grammatica]\label{def:ling-gen-grammatica}
+  Definiamo $L(G)$ il linguaggio generato dalla grammatica
+  $G = (V_t, V_n, P, S)$ un linguaggio tale che:
+
+  \[
+    L(G) = \{ x \in V_t^\star : S \derivstar x \}
+  \]
+\end{defn}
+
+\begin{esempio}
+  Definiamo una prima grammatica semplice: $V_t = \{a,b,c\}$, $V_n =
+  \{S,A,B,C\}$ con assioma $S$ e produzioni $P = \{S \to A, A \to Aa, A \to B,
+  B \to bB, B \to C, C \to cC, C \to \epsilon \}$. Una possibile derivazione
+  consiste in $S \deriv A \deriv aA \deriv aaA \deriv aaB \deriv aaC \deriv aacC
+  \deriv aaccC \deriv aacccC \deriv aaccc$ oppure $S \deriv A \deriv B \deriv bB
+  \deriv bC \deriv b$. Evidentemente il linguaggio modellato è $L(G) =
+  \{a^*b^*c^*\}$.
+\end{esempio}
+
+\begin{esempio}
+  Definiamo una grammatica un po' più elaborata: $V_t = \{a,b\}$, $V_n = \{S\}$,
+  assioma $S$ e produzioni $P = \{S \to aSbS, S \to \epsilon\}$. Studiando le
+  varie derivazioni si vede che il linguaggio modellato è quello delle coppie di
+  $a,b$ ``ben parentetizzate''.
+\end{esempio}
+
+\begin{esempio}
+  Definiamo, infine, un'ultima grammatica ancora più complessa: $V_t =
+  \{a,b,c\}$, $V_n = \{S,A,B,C,D\}$, assioma $S$ e produzioni
+  $P = \{S \to aACD, A \to aAC, A \to \epsilon, B \to b, CD \to BDc, CB \to BC,
+  D \to \epsilon\}$. Il linguaggio generato da questa grammatica sarà $L(G) =
+  \{a^n b^n c^n \}$.
+\end{esempio}
+
+\subsection{Espressività di una grammatica}\label{sec:espressivita-grammatica}
+
+Nella \hl{sezione precedente} abbiamo mostrato con degli \hl{esempi} che è
+possibile \hl{generare linguaggi che sappiamo essere riconosciuti da degli
+automi} (usando la potenza minima): il primo da un FSA, il secondo da un PDA e
+il terzo da una MT\@.  È possibile organizzare le \hl{grammatiche} in una
+\hl{gerarchia in base al loro potere generativo} e inoltre \hl{è possibile che
+ci sia una relazione tra le potenze riconoscitive dei vari autonomi e le
+grammatiche}?
+
+Alla \hl{prima domanda} ha già risposto \hl{Noam Chomsky con la sua gerarchia
+delle grammatiche}. Essa è divisa in \hl{4 classi} a seconda delle
+\hl{limitazioni imposte sulla forma delle produzioni} $\alpha \to \beta$
+(tabella~\ref{tab:gerarchia-grammatiche}).
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    Tipo & Nome            & Forma delle produzioni \\
+    \midrule
+    0    & \hl{Non limitate}    & --- \\
+    1    & \hl{Contestuali}     & \hl{$|\alpha| \leq |\beta|$} \\
+    2    & \hl{Non contestuali} & \hl{$|\alpha| = 1$} \\
+    3    & \hl{Regolari}        & \hl{$|\alpha| = 1 \vee \beta \in V_t . V$} \\
+    \bottomrule
+  \end{tabular}
+  \caption{La gerarchia delle grammatiche di Chomsky}%
+  \label{tab:gerarchia-grammatiche}
+\end{table}
+
+Utilizzando questa gerarchia una \hl{grammatica più potente genera tutti i
+linguaggi di una meno potente}, andando a creare una situazione come in
+figura~\ref{fig:gerarchia-grammatiche}. \hl{L'inclusione della famiglia di
+grammatiche meno potenti in quella di grammatiche più potenti è però stretta}?
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \draw[line width=0.4mm] (5,5) ellipse (5cm and 3cm)       node (0) {};
+    \draw[line width=0.4mm] (5,5) ellipse (3.75cm and 2.25cm) node (1) {};
+    \draw[line width=0.4mm] (5,5) ellipse (2.5cm and 1.5cm)   node (2) {};
+    \draw[line width=0.4mm] (5,5) ellipse (1.25cm and 0.75cm) node (3) {};
+
+    \node at (5, 2.25cm) {Non limitate};
+    \node at (5, 3cm)    {Contestuali};
+    \node at (5, 4cm)    {Non contestuali};
+    \node at (5, 4.5cm)  {Regolari};
+  \end{tikzpicture}
+  \caption{Diagramma di Venn rappresentante la gerarchia delle grammatiche}%
+  \label{fig:gerarchia-grammatiche}
+\end{figure}
+
+\subsection{Legame tra grammatiche e automi}\label{sec:gramamtiche-automi}
+
+\hl{Generalizziamo ora l'osservazione della corrispondenza grammatica-automa}
+fatta negli esempi in~\ref{sec:form-grammatica}.
+
+\paragraph{Linguaggi regolari} Come si potrebbe intuire, i \hl{linguaggi
+regolari sono quelli riconosciuti dagli FSA (deterministici e non)}. Poiché
+automa e grammatica sono in relazione di equivalenza \hl{possiamo passare da un
+all'altro} (le due proposizioni si dimostrano con una semplice induzione):
+
+\begin{prop}[\hl{Passaggio da FSA a grammatica}]
+  Per ottenere la grammatica equivalente ad un FSA\@:
+
+  \begin{itemize}
+    \item Poniamo $V_n = Q, V_t = I, S = \langle q_0 \rangle$
+    \item Per ogni $\delta(q, i) = q'$ diciamo che $\langle q \rangle \to i
+      \langle q' \rangle \in P $. Se $q' \in F$ aggiungiamo anche $\langle q
+      \rangle \to  i \in P$.
+  \end{itemize}
+\end{prop}
+
+\begin{prop}[\hl{Passaggio da grammatica a NFA}]
+  Per ottenere lo NFA corrispondente alla grammatica:
+
+  \begin{itemize}
+    \item Poniamo $Q = V_n \cup \{q_f\}, I = V_t, q_0 = S, F = \{q_f\} $
+    \item Se $A \to bC \in P$ allora $\delta(A,b) = C$. Invece se $A \to b \in
+      P$ allora $\delta(A, b) = q_f$.
+  \end{itemize}
+\end{prop}
+
+\paragraph{Linguaggi non contestali} I linguaggi generati dalle \hl{grammatiche
+libere dal contesto} coincidono con quelli riconosciuti dagli \hl{NPDA}\@. La
+\hl{dimostrazione} di questa affermazione \hl{non è affatto banale}, perciò
+diamo \hl{solamente l'intuizione} con la
+\hl{figura}~\ref{fig:esempio-grammatica-to-npda}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[node distance=3cm,auto]
+    \node[state,initial]   (q0) []            {$q_0$};
+    \node[state]           (q1) [right=of q0] {$q_1$};
+    \node[state,accepting] (q2) [right=of q1] {$q_2$};
+
+    \path[->]
+    (q0) edge []                      node {$\epsilon, Z_0/Z_0S$}     (q1)
+    (q1) edge []                      node {$\epsilon, Z_0/\epsilon$} (q2)
+    (q1) edge [out=45,in=75,loop]     node [above,xshift=+0.25cm] {$\epsilon, S/\underline{b}S\underline{a}$} ()
+    (q1) edge [out=105,in=135,loop]   node [above,xshift=-0.25cm] {$\epsilon, S/\underline{ba}$} ()
+    (q1) edge [out=-105,in=-135,loop] node {$a,\underline{a}/\epsilon$} ()
+    (q1) edge [out=-45,in=-75,loop]   node {$b,\underline{b}/\epsilon$} ();
+  \end{tikzpicture}
+  \caption{NPDA corrispondente a $(\{S\}, \{a,b\} \{S \to aSb, S \to ab\}, S)$}%
+  \label{fig:esempio-grammatica-to-npda}
+\end{figure}
 
 \end{document}

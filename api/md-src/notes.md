@@ -594,7 +594,7 @@ f   : stato in cui termina accettando
 ```
 
 Quindi per simulare una macchina di Turing non deterministica con una
-deterministica ci basterà percorrere l'albero in ampiezza (breadth-first serch),
+deterministica ci basterà percorrere l'albero in ampiezza (breadth-first search),
 scandendo le varie configurazioni. Appena trovo una configurazione di
 accettazione, mi posso fermare.
 
@@ -607,5 +607,111 @@ In generale una grammatica o sintassi è un insieme di regole per costruire fras
 di un linguaggio (stringhe). Esso può essere applicato a a qualsiasi nozione di
 linguaggio nel senso più lato. In modo simile alle grammatiche dei normali
 meccanismi linguistici, una grammatica formale genera le stringhe di un
-linguaggio attraverso un processo di riscrittura.
+linguaggio attraverso un processo di riscrittura: le grammatiche descrivono un
+oggetto principale come un insieme ordinato di componenti e questa descrizione è
+fornita fino ad arrivare al livello di dettaglio desiderato.
+
+### Definizione formale di grammatica
+
+Definiamo formalmente una grammatica:
+
+#### Definizione - grammatica
+
+$$
+G= (V_N, V_T, P, S)
+$$
+
+- $V_N$: alfabeto o vocabolario non terminale
+- $V_T$: alfabeto o vocabolario terminale
+- $S \in V_N$ elemento particolare di $V_N$ detto assioma o simbolo iniziale
+- $P \subseteq V_N \times (V_T \cup V_N)*$ l'insieme di regole (relazione) di
+  riscrittura o produzioni. Per comodità scriveremo $\alpha \to \beta$ al posto
+  che $(\alpha, \beta)$
+
+Per comodità indicheremo $V = V_T \cup V_N$
+
+#### Definizione - Relazione di derivazione immediata
+
+Diciamo che $\alpha \implies \beta$ (da $\alpha$ si deriva $\beta$) con
+$\alpha \in V+$ e $\beta in V*$ se e solo se:
+
+- $\alpha = \alpha_1 \alpha_2 \alpha_3$
+- $\beta = \alpha_1 \beta_2 \alpha_3$
+- $\alpha_2 \to \beta_2 \in P$, ossia $\alpha_2$ si riscrive come $\beta_2$ nel
+  contesto $(\alpha_1, \alpha_2)$
+
+Della relazione di derivazione immediata possiamo, ovviamente, eseguire al
+chiusura riflessiva e transitiva e la indichiamo con $\implies^*$.
+
+#### Definizione - Linguaggio generato da una grammatica
+
+$$
+  L(G) =  \{x\in V_T* : S \implies^* x \}
+$$
+
+Notiamo che è sempre possibile creare una grammatica che descriva un qualunque
+linguaggio, infatti basta porre $P = \{ S \to x \| x \in L \}$. Inoltre possiamo
+costruire un automa (FSA, PDA o MT) che possa riconosce il linguaggio generato
+dalle varie grammatiche. È possibile allora classificare le varie grammatiche in
+base alla loro espressività?
+
+### Espressività delle grammatiche
+
+Introduciamo delle classi di grammatiche basate sulla forma delle produzioni.
+
+#### Definizione - Grammatiche non contestuali
+
+Le produzioni hanno la forma $\alha \to \beta$ dove $|\alpha| = 1$, cioè
+$\alpha \in V_N$.
+
+Le grammatiche non contestuali prendono il loro nome dal fatto che la
+riscrittura dei $\alpha$ non dipende dal contesto in cui si trova. Esse sono
+equivalenti di fatto alla BNF usata per definire la sintassi dei linguaggi di
+programmazione.
+
+#### Definizione - Grammatiche regolari
+
+Le produzioni hanno forma $\alpha \to \beta$ dove $|\alpha| = 1$,
+$\beta \in V_T . V_N \cup V_T$.
+
+Le grammatiche regolari sono anche non contestuali, ma non viceversa.
+
+#### Definizione - Grammatiche monotone
+
+Le produzioni hanno forma $\alpha \to \beta$ dove $|\alpha| \leq |\beta|$. Per
+includere la stringa vuota si ammette $S \ to \epsilon$ ma $\epsilon$ non può
+apparire nel membro di destra della produzione.
+
+Le grammatiche regolari sono montone, ma quelle non contestuali non lo sono
+poiché non ammesse produzioni del tipo $A \to \epsilon$. Queste produzioni, però
+si possono eliminare facilmente creando una grammatica equivalente. I linguaggi
+generati dalle grammatiche monotone sono anche detti contestuali e sono definiti
+da automi lineari, ossia macchine di Turing con lunghezza del nastro limitata.
+
+Possiamo, quindi, costruire la gerarchia delle grammatiche di Chomsky (dalla più
+libera alla meno libera):
+
+1. Grammatiche non ristrette (tipo 0)
+2. Grammatiche monotone (tipo 1)
+3. Grammatiche non contestuali (tipo 2)
+4. Grammatiche regolari (tipo 3)
+
+Con $L_3 \subseteq L_2 \subseteq L_1 \subseteq L_0$. I contenimenti sono, però,
+stretti?
+
+### Relazioni tra grammatiche e automi
+
+Come si potrebbe intuire, le grammatiche regolari sono equivalenti agli automi a
+stati finiti. Come lo dimostriamo? Dato un automa a stati finiti, possiamo
+costruire una grammatica regolare equivalente considerando: $V_n = Q$, $V_T =
+I$, $S = q_0$ e per ogni $\delta(q, i)=q'$ posiamo $q \to iq'$; inoltre se $q'
+\in F$ aggiungiamo $q \to i$. Con una facile induzione possiamo dimostrare che
+$q \implies^* xq'$. La costruzione inversa si esegue in modo analogo:
+$Q = V_N \cup \{q_f\}$, $I = V_t$, $q_0 = S$, $F - \{q_f\}$ con
+$\forall A \to bC \delta(A,b) = C$ e $\forall A \to b \in P \delta(A, b) = q_f$.
+Nota bene: lo FSA risultante non è deterministico!
+
+Nel caso dei linguaggi non contestuali abbiamo una equivalenza con gli NPDA. La
+dimostrazione costituisce il cuore della costruzione di un compilatore.
+Intuitivamente, usiamo la pila per simulare le varie produzioni.
 
