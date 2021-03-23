@@ -143,3 +143,31 @@ Ich kenne Francesca sehr gut. Sie ist nicht gross und ihre Haare sind rot und
 lang. Sie ist immer lustig und das gefällt mir. Sie studiert auch viel. Deshalb
 ist sie am Abend immer müde.
 
+## AB, Übung 3, Seite 76
+
+1. Tinas Nase ist kürzer als Steffis Nase.
+2. Tinas Nase ist länger als Davids Nase.
+3. Steffis Augen sind grosser als Davids Augen.
+4. Steffis Augen sind kleiner als Tinas Augen.
+5. Steffis Mund ist grosser als Tinas Mund.
+
+## KB, Übung c, Seite 75
+
+Hallo Andrea,
+wir hat eine Party organisiert: wir feiert Brunos achtzehnte Geburtstag.
+Deshalb mochten wir dich zu unser Party einladen. Die Feier ist an diesem
+Samstag Abend am 21 Uhr bei unserer Lieblingsdisco. Wir hoffen dass du Zeit hast
+und dass du kannst kommen.
+
+Viele Grüsse,
+Carlo
+
+## AB, Übung 5, Seite 78
+
+1. Könntest du bitte Getränke mitbringen?
+2. Würdet ihr bitte für mich bezahlen?
+3. Könnten Sie einsteigen?
+4. Würdest du am Nachmittag das Paket abholen?
+5. Könntet ihr mir die Fotos zeigen?
+6. Würden Sie mir zuhören?
+
