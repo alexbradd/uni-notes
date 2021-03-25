@@ -17,7 +17,7 @@
 \usepackage{amsthm}
 
 \usepackage{tikz}
-\usetikzlibrary{arrows,automata,positioning}
+\usetikzlibrary{arrows,arrows.meta,automata,positioning}
 
 \definecolor{hlcolor}{RGB}{253,241,98}
 \sethlcolor{hlcolor}
@@ -37,6 +37,7 @@
 \newcommand{\mhl}[1]{\colorbox{hlcolor}{$\displaystyle #1$}}
 \newcommand*{\deriv}[1][]{\xRightarrow[#1]{}}
 \newcommand*{\derivstar}[1][]{\xRightarrow[#1]{\star}}
+\newcommand*{\termsep}[0]{\blacklozenge}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -1233,8 +1234,8 @@ elementi fondamentali dell'alfabeto considerato}.
 
 \begin{nota}
   Dove non ambiguo ometteremo il pedice indicante la grammatica per alleggerire
-  la notazione. Indicheremo inoltre con \hl{$\derivstar$ la chiusura riflessiva
-  e transitiva di $\deriv$}.
+  la notazione. Indicheremo inoltre con $\derivstar$ la chiusura riflessiva
+  e transitiva di $\deriv$.
 \end{nota}
 
 \begin{defn}[Linguaggio generato da una grammatica]\label{def:ling-gen-grammatica}
@@ -1329,7 +1330,7 @@ grammatiche meno potenti in quella di grammatiche più potenti è però stretta}
 \hl{Generalizziamo ora l'osservazione della corrispondenza grammatica-automa}
 fatta negli esempi in~\ref{sec:form-grammatica}.
 
-\paragraph{Linguaggi regolari} Come si potrebbe intuire, i \hl{linguaggi
+\paragraph{Grammatiche regolari} Come si potrebbe intuire, i \hl{linguaggi
 regolari sono quelli riconosciuti dagli FSA (deterministici e non)}. Poiché
 automa e grammatica sono in relazione di equivalenza \hl{possiamo passare da un
 all'altro} (le due proposizioni si dimostrano con una semplice induzione):
@@ -1355,10 +1356,10 @@ all'altro} (le due proposizioni si dimostrano con una semplice induzione):
   \end{itemize}
 \end{prop}
 
-\paragraph{Linguaggi non contestali} I linguaggi generati dalle \hl{grammatiche
-libere dal contesto} coincidono con quelli riconosciuti dagli \hl{NPDA}\@. La
-\hl{dimostrazione} di questa affermazione \hl{non è affatto banale}, perciò
-diamo \hl{solamente l'intuizione} con la
+\paragraph{Grammatiche non contestali} I linguaggi generati dalle
+\hl{grammatiche libere dal contesto} coincidono con quelli riconosciuti dagli
+\hl{NPDA}\@. La \hl{dimostrazione} di questa affermazione \hl{non è affatto
+banale}, perciò diamo \hl{solamente l'intuizione} con la
 \hl{figura}~\ref{fig:esempio-grammatica-to-npda}.
 
 \begin{figure}[htb]
@@ -1379,5 +1380,134 @@ diamo \hl{solamente l'intuizione} con la
   \caption{NPDA corrispondente a $(\{S\}, \{a,b\} \{S \to aSb, S \to ab\}, S)$}%
   \label{fig:esempio-grammatica-to-npda}
 \end{figure}
+
+\paragraph{Grammatiche non ristrette} Le \hl{grammatiche non ristrette} sono
+equivalenti alla \hl{macchine di Turing}. \hl{Costruire una macchina di Turing
+(a nastro singolo) non deterministica a partire da una grammatica non ristretta}
+$G$ non è assai difficile: con la \hl{stringa} $x$ posizionata sul \hl{nastro
+d'ingresso} eseguiamo un \hl{ciclo}:
+
+\begin{enumerate}
+  \item \hl{Scandiamo} il nastro \hl{finché non troviamo una parte destra}
+    $\beta$ di una \hl{produzione} $\alpha \to \beta$ della grammatica;
+  \item \hl{Quando se ne trova una}, scegliendola non deterministicamente, essa
+    \hl{viene sostituita} dalla corrispondente \hl{parte sinistra} $\alpha$
+\end{enumerate}
+
+Questo ciclo è chiamato \hl{``processo di riduzione''} della stringa. Per come
+abbiamo strutturato il ciclo abbiamo che \hl{$\alpha \deriv \beta$ se e solo se
+$\langle q, Z_0, \alpha \rangle \vdash^\star \langle q, Z_0, \beta \rangle$}. Se
+e quando il \hl{contenuto del nastro d'ingresso} diviene \hl{l'assioma $S$}
+della grammatica, la \hl{stringa} d'ingresso verrà \hl{accettata}. Il
+procedimento descritto \hl{non garantisce che la macchina di Turing generata
+riesca a concludere sempre la computazione}.
+
+\subparagraph{Grammatica equivalente a MT} Eseguire il processo inverso è più
+complicato. Poiché una \hl{grammatica non può ricevere una stringa in input e
+può manipolare solo gli elementi non terminali di una stringa}, dobbiamo fare in
+modo che essa \hl{generi tutte le possibili stringhe del tipo $x \termsep X$}
+con $x \in V_t^\star$, $\termsep \in V_n$ un separatore  e \hl{$X$ una ``copia''
+di $x$ fatta solo di elementi non terminali}. Il nostro \hl{obiettivo} è
+ottenere una \hl{derivazione $x \termsep X \derivstar x$ se e solo se $x$ è
+accettata dalla MT}\@.  Innanzitutto la grammatica deve possedere le
+\hl{produzioni che generano $x \termsep X$} (consideriamo $V_t = \{a,b\}$):
+
+\begin{align}
+  \mhl{S \to SA'A, S \to SB'B, S \to \termsep} & \quad
+    \text{(genero coppie di simboli)}\\
+  \mhl{AA' \to A'A, BA' \to A'B} & \quad \text{(scorro le $A'$ a sx)}\\
+  \mhl{AB' \to B'A, BB' \to B'B} & \quad \text{(scorro le $B'$ a sx)}\\
+  \mhl{\termsep A' \to a\termsep, B'\termsep \to b\termsep} & \quad
+    \text{(quando scorro attraverso $\termsep$ trasformo)}
+\end{align}
+
+Dobbiamo ora \hl{simulare ogni possibile mossa della macchina di Turing con una
+derivazione}. Consideriamo una \hl{macchina di Turing con configurazione pari a
+quella rappresentata in figura}~\ref{fig:grammatica-mt-stato}. Tale
+configurazione è \hl{rappresentata dalla stringa $\termsep\alpha BqAC\beta$}. In
+base ai valori assunti da $\delta$ \hl{possiamo agire in 3 diversi modi}:
+
+\begin{enumerate}
+  \item \hl{$\delta(q, A) = \langle q', A', R \rangle$} aggiungo \hl{$qA \to
+    A'q'$} alle produzioni
+  \item \hl{$\delta(q, A) = \langle q', A', S \rangle$} aggiungo \hl{$qA \to
+    q'A'$} alle produzioni
+  \item \hl{$\delta(q, A) = \langle q', A', L \rangle$} aggiungo \hl{per ogni
+    $B$} nell'alfabeto della MT la produzione \hl{$BqA \to q'B'A'$}
+\end{enumerate}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \draw[black,thin] (0,0) grid (13, 1);
+
+    \node[xshift=-0.05cm] at (0.5 ,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (1.5 ,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (2.5 ,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (3.5 ,0.5) [] ()  {\huge $\not{b}$};
+    \node[]               at (4.5 ,0.5) [] ()  {\huge $\alpha$};
+    \node[]               at (5.5 ,0.5) [] ()  {\huge $B$};
+    \node[]               at (6.5 ,0.5) [] (A) {\huge $A$};
+    \node[]               at (7.5 ,0.5) [] ()  {\huge $C$};
+    \node[]               at (8.5 ,0.5) [] ()  {\huge $\beta$};
+    \node[xshift=-0.05cm] at (9.5 ,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (10.5,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (11.5,0.5) [] ()  {\huge $\not{b}$};
+    \node[xshift=-0.05cm] at (12.5,0.5) [] ()  {\huge $\not{b}$};
+
+    \node[anchor=north,draw] at (6.5,-1) [] (q) {\Huge $q$};
+
+    \draw[-{Stealth[length=3mm,width=3mm]}] (q) -- (6.5,0);
+  \end{tikzpicture}
+  \caption{Configurazione della macchina di Turing in esame}%
+  \label{fig:grammatica-mt-stato}
+\end{figure}
+
+Per come abbiamo scritto le produzioni, i \hl{due stati in
+figura}~\ref{fig:grammatica-mt-stati} sono in \hl{relazione se e solo se
+$\termsep\alpha BqAC\beta \deriv \termsep\alpha BA'q'C\beta$}. La costruzione
+della grammatica va, infine, \hl{completata aggiungendo le regole che cancellano
+tutto ciò che sta a destra del separatore $\termsep$ (separatore incluso) se e
+solo se la configurazione della macchina di Turing è accettante}, ad esempio
+$\termsep\alpha Bq_f AC\beta$.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \draw[black,thin] (0,0) grid (5, 1);
+    \draw[black,thin] (6,0) grid (11, 1);
+
+    \node[] at (0.5,0.5) [] () {\huge $\alpha$};
+    \node[] at (1.5,0.5) [] () {\huge $B$};
+    \node[] at (2.5,0.5) [] () {\huge $A$};
+    \node[] at (3.5,0.5) [] () {\huge $C$};
+    \node[] at (4.5,0.5) [] () {\huge $\beta$};
+
+    \node[] at (6.5 ,0.5) [] () {\huge $\alpha$};
+    \node[] at (7.5 ,0.5) [] () {\huge $B$};
+    \node[] at (8.5 ,0.5) [] () {\huge $A$};
+    \node[] at (9.5 ,0.5) [] () {\huge $C$};
+    \node[] at (10.5,0.5) [] () {\huge $\beta$};
+
+    \node[anchor=north,minimum size=1cm,draw] at (2.5,-1) [] (q)  {\huge $q$};
+    \node[anchor=north,minimum size=1cm,draw] at (8.5,-1) [] (q') {\huge $q'$};
+
+    \node[anchor=north] at (5.5, -1) [] () {\huge $\vdash$};
+
+    \draw[-{Stealth[length=3mm,width=3mm]}] (q)  -- (2.5,0);
+    \draw[-{Stealth[length=3mm,width=3mm]}] (q') -- (9.5,0);
+  \end{tikzpicture}
+  \caption{Due configurazioni della macchina di Turing in esame che sono legate
+  dalla transizione}\label{fig:grammatica-mt-stati}
+\end{figure}
+
+\paragraph{Grammatiche monotone} Possiamo notare che le \hl{produzioni si
+accorciano man mano che vengono ``espanse''}. Quindi se \hl{costruiamo} una
+\hl{macchina di Turing equivalente} utilizzando i \hl{metodi descritti} in
+questa sezione, essa \hl{userà al massimo la memoria occupata inizialmente dalla
+stringa} in ingresso $x$.  Possiamo, allora, \hl{limitare la potenza} della
+nostra macchina fornendogli una \hl{memoria di dimensione finita}, ottenendo
+così la macchina a minore potenza equivalente alle grammatiche monotone. Un
+\hl{automa così definito è detto automa lineare}.
 
 \end{document}

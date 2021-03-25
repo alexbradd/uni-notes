@@ -73,7 +73,7 @@ Chiamiamo un linguaggio un insieme $L$ tale che: $L \subseteq A*$.
 Notiamo che $L$ può essere anche infinito. Poiché $L$ è un insieme, allora tutte
 le operazioni insiemistiche sono ben definite. Inoltre è anche definibile la
 concatenazione tra due linguaggi diversi:
-$L_1 . L_2 = \{ x.y | x \in L_1, y \in L_2 \}$. Nota bene la differenza tra la
+$L_1 . L_2 = \{ x.y : x \in L_1, y \in L_2 \}$. Nota bene la differenza tra la
 stringa vuota e l'insieme vuota: ${\epsilon} . L = L$ ma
 $\emptyset . L = \emptyset$.
 
@@ -86,7 +86,7 @@ Altre operazioni che possiamo definire sui linguaggi sono:
 Noi utilizzeremo il concetto di linguaggio per definire un in maniera astratta
 il concetto di problema informatico. Il nostro primo problema sarà:
 
-$$ x \text{stringa; } L \text{linguaggio; } x \in L? $$
+$$ x \text{ stringa}, \quad L \text{ linguaggio} \quad x \in L? $$
 
 Questo problema può modellizzare una grande varietà di problemi diversi come:
 
@@ -218,7 +218,7 @@ Dal Pumping lemma derivano molte proprietà degli automi:
 2. Il linguaggio è infinito se e solo se $\exists x \in L |Q| \leq |x| < 2|Q|$
    - Implica che la lunghezza massima di un ciclo è $|Q|$
 3. Non esiste un automa a stati finiti che accetti linguaggi del tipo
-   $L = \{a^n b^n | n > 0\}$
+   $L = \{a^n b^n : n > 0\}$
    - Il linguaggio sopra non è un caso limitato, esso modella un caso
      particolare delle strutture a parentesi, utilizzate ad esempio nei
      linguaggi di programmazione. Ciò è dovuto al fatto che gli automi a stato
@@ -389,10 +389,10 @@ analogo si può anche dimostrare la non chiusura rispetto all'intersezione.
 Riguardo invece al complemento? Come negli FSA, l'idea è la stessa: scambiamo
 gli stati di accettazione con quelli di non accettazione. Anche qui $\delta$ va
 completata cercando di evitare il non determinismo (attenzione alle
-$\epsilon$-mosse). Le $\espilon$-mosse, però, possono causare un ciclo. In
+$\epsilon$-mosse). Le $\epsilon$-mosse, però, possono causare un ciclo. In
 questo caso, però, se l'automa entra in questo ciclo esso non progredisce mai e
 non completa. Perciò è possibile creare una costruzione equivalente che eviti
-queste $\espilon$-mosse. Analogamente accade per le sequenze di $\epsilon$-mosse
+queste $\epsilon$-mosse. Analogamente accade per le sequenze di $\epsilon$-mosse
 a fine scansione con alcuni stati di accettazione. Anche qui può essere
 costruita una apposita costruzione che forza l'automa a decidere l'accettazione
 solo alla fine di una sequenza di $\epsilon$-mosse.
@@ -427,11 +427,14 @@ La Mossa della macchina di Turing è simile a quella dell'automa a pila:
 
 Le nuove funzioni di transizione e output saranno le seguenti:
 
-$$\beign{align}
-\delta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k \times {R,L,S}^{k+1} \\
-\eta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k \times {R,L,S}^{k+1}
-  \times O \times {R,S}
-\end{align}$$
+$$
+  \begin{align}
+    \delta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k
+      \times {R,L,S}^{k+1} \\
+    \eta&: Q \times I \times \Gamma^k \to Q \times \Gamma^k \times {R,L,S}^{k+1}
+      \times O \times {R,S}
+  \end{align}
+$$
 
 Per accomodare questa mossa più complesso, introduciamo la nuova notazione:
 
@@ -555,7 +558,7 @@ linguaggio complemento. Se però consideriamo il caso:
 $$
   \langle q_0, x, z_0 \rangle = c_0 \vdash^\star \{
     \langle q_1, \epsilon, \gamma_1 \rangle,
-    \langle q_2, \epsilon, \gamma_2 \rangle \}, \mhl{ q_1 \in F, q_2 \notin F }
+    \langle q_2, \epsilon, \gamma_2 \rangle \}, q_1 \in F, q_2 \notin F
 $$
 
 La stringa $x$ è accettata anche se scambio $F$ con $Q \setminus F$, rendendo
@@ -580,12 +583,11 @@ pensare al cosiddetto "albero delle computazioni":
 
 ```txt
                               c0
-                              |
-                        |-----|-----|
+                        ┌─────┼─────┐
                        c11   c12   c13
-                 |------|     |     |----|----|
+                 ┌──────┤     │     ├────┬────┐
                 c11    c22   !f    ...   f   c23
-           |-----|      |                     |------|
+           ┌─────┤      │                     ├──────┐
           !f    ...     f                     f     !f
 
 f   : stato in cui termina accettando
@@ -650,7 +652,7 @@ $$
 $$
 
 Notiamo che è sempre possibile creare una grammatica che descriva un qualunque
-linguaggio, infatti basta porre $P = \{ S \to x \| x \in L \}$. Inoltre possiamo
+linguaggio, infatti basta porre $P = \{ S \to x : x \in L \}$. Inoltre possiamo
 costruire un automa (FSA, PDA o MT) che possa riconosce il linguaggio generato
 dalle varie grammatiche. È possibile allora classificare le varie grammatiche in
 base alla loro espressività?
@@ -661,7 +663,7 @@ Introduciamo delle classi di grammatiche basate sulla forma delle produzioni.
 
 #### Definizione - Grammatiche non contestuali
 
-Le produzioni hanno la forma $\alha \to \beta$ dove $|\alpha| = 1$, cioè
+Le produzioni hanno la forma $\alpha \to \beta$ dove $|\alpha| = 1$, cioè
 $\alpha \in V_N$.
 
 Le grammatiche non contestuali prendono il loro nome dal fatto che la
@@ -706,12 +708,93 @@ stati finiti. Come lo dimostriamo? Dato un automa a stati finiti, possiamo
 costruire una grammatica regolare equivalente considerando: $V_n = Q$, $V_T =
 I$, $S = q_0$ e per ogni $\delta(q, i)=q'$ posiamo $q \to iq'$; inoltre se $q'
 \in F$ aggiungiamo $q \to i$. Con una facile induzione possiamo dimostrare che
-$q \implies^* xq'$. La costruzione inversa si esegue in modo analogo:
-$Q = V_N \cup \{q_f\}$, $I = V_t$, $q_0 = S$, $F - \{q_f\}$ con
-$\forall A \to bC \delta(A,b) = C$ e $\forall A \to b \in P \delta(A, b) = q_f$.
-Nota bene: lo FSA risultante non è deterministico!
+$q \implies^* xq'$. La costruzione inversa si esegue in modo analogo: $Q = V_N
+\cup \{q_f\}$, $I = V_t$, $q_0 = S$, $F - \{q_f\}$ con $\forall A \to bC \;
+\delta(A,b) = C$ e $\forall A \to b \in P \; \delta(A, b) = q_f$.  Nota bene: lo
+FSA risultante non è deterministico!
 
 Nel caso dei linguaggi non contestuali abbiamo una equivalenza con gli NPDA. La
 dimostrazione costituisce il cuore della costruzione di un compilatore.
 Intuitivamente, usiamo la pila per simulare le varie produzioni.
+
+Nel caso delle grammatiche non ristrette, esse sono equivalenti alle macchine di
+Turing. Costruiamo una macchina di Turing a nastro singolo non deterministica a
+partire da una grammatica G. Innanzitutto la la stringa $x$ è posizionata nel
+nastro di partenza. Eseguiamo, dopo, un ciclo:
+
+- Il nastro viene scandito alla ricerca di una parte destra $\beta$ di qualche
+  produzione $\alpha \to \beta$ di P.
+- Quando se ne trova una, non necessariamente la prima, operando una scelta non
+  deterministica, essa viene sostituita dalla corrispondente parte sinistra
+  $\alpha$ (processo di riduzione).
+
+Per come abbiamo costruito la macchina, sappiamo che:
+
+$$
+  \alpha \implies \beta \iff c = <q, Z_0, \alpha> \vdash* <q, Z_o, \beta>
+$$
+
+Se e quando il contenuto del nastro diviene l'assioma $S$, la stringa in
+ingresso verrà accettata, altrimenti questa particolare sequenza non porta
+all'accettazione.
+
+Possiamo anche fare il viceversa, ossia data una MT, generare una grammatica
+equivalente. Poiché una grammatica può manipolare solo gli elementi non
+terminali della stringa, dobbiamo fare in modo che generi tutte le possibili
+stringe del tipo $x \diamond X, x \in V_t*$ con $\diamond$ un separatore, $X$
+una copia di $x$ costituita da caratteri non terminali. Il nostro obiettivo è
+ottenere una derivazione $x \diamond X \implies* x$ se e solo se $x$ è accettata
+dalla MT. Innanzitutto le produzioni che generano la nostra stringa sono
+($V_t = \{a,b\}$):
+
+$$
+  \begin{aligned}
+    S \to SA'A, S \to SB'B, S \to \diamond & \quad
+      \text{(genero coppie di simboli)}\\
+    AA' \to A'A, BA' \to A'B & \quad \text{(scorro le $A'$ a sx)}\\
+    AB' \to B'A, BB' \to B'B & \quad \text{(scorro le $B'$ a sx)}\\
+    \diamond A' \to a\diamond, B'\diamond \to b\diamond & \quad
+      \text{(quando scorro attraverso $\diamond$ trasformo)}
+  \end{aligned}
+$$
+
+Ora il primo passo è simulare ogni mossa della macchina di Turing con una
+derivazione. Consideriamo il seguente stato:
+
+```txt
+┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
+│ƀ│ƀ│ƀ│ƀ│α│B│A│C│β│ƀ│ƀ│ƀ│ƀ│
+└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
+             ↑
+             q
+```
+
+La configurazione sopra è rappresentata dalla stringa
+$\diamond\alpha BqAC \beta$. Se è definita:
+
+- $\delta(q, A) = <q', A', R>$ aggiungo $qA \to A'q'$ alle produzioni
+- $\delta(q, A) = <q', A', S>$ aggiungo $qA \to q'A'$ alle produzioni
+- $\delta(q, A) = <q', A', L>$ aggiungo per ogni $B$ nell'alfabeto della MT la
+  produzione $BqA \to q'B'A'$
+
+Quindi i due stati che ho provato a disegnare sotto:
+
+```txt
+ ┌─┬─┬─┬─┬─┐   ┌─┬─┬─┬─┬─┐
+ │α│B│A│C│β│   │α│B│A│C│β│
+ └─┴─┴─┴─┴─┘   └─┴─┴─┴─┴─┘
+      ↑              ↗
+      q      ⊦      q'
+```
+
+Sono in relazione se e solo se $\diamond \alpha BqAC\beta \implies
+\diamond\alpha BA'q'C\beta$. La costruzione della grammatica va completata
+aggiungendo le regole che cancellano tutto ciò che sta a destra del separatore
+$\diamond$ (separatore incluso) se e solo se la configurazione della MT è
+accettante, ad esempio ($\diamond\alpha Bq_f AC \beta$).
+
+Nel caso delle grammatiche monotone, visto che le produzioni si accorciano se
+lette da destra a sinistra, allora usare solamente la memoria usata inizialmente
+da $x$. Le grammatiche monotone sono, quindi, equivalenti ad un automa lineare,
+ossia una MT con memoria finita.
 
