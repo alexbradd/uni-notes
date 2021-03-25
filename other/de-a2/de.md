@@ -171,3 +171,75 @@ Carlo
 5. Könntet ihr mir die Fotos zeigen?
 6. Würden Sie mir zuhören?
 
+## AB, Übung 6, Seite 76
+
+1. Alexanders Wohnung ist kleiner las Susannes Wohnung.
+2. Sommerurlaub ist so lange wie Winterurlaub.
+3. Der Flugzeug ist schneller als der Zug.
+4. Herr Meier ist so alt wie Frau Schober.
+5. Der "Bali" Orangensaft ist billiger als der "Moli" Orangensaft.
+
+## AB, Übung 9, Seite 77
+
+1. Meine Heimatstadt ist kleiner als New York.
+2. Der Winter in meinem Heimatland ist wärmer als der Winter in Deutschland.
+3. Meine Lieblingsmusik ist besser als andere Musik.
+4. Mein Lieblingsrestaurant ist besser als andere Restaurants.
+5. Die Urlaubszeit ist interessanter als die Arbeitszeit.
+6. Ich bin dicker als mein Freund.
+
+## AB, Übung 2, Seite 78
+
+1. Könnte ich die Schuhe eine Nummer kleiner haben?
+2. Könnte ich die Rechnung haben?
+3. Könnte ich ein Einzelzimmer haben?
+4. Könnte ich mit euch im Auto mitfahren?
+5. Könnte ich noch ein Mineralwasser haben?
+6. Könnte ich mit Ihnen den Platz tauschen?
+7. Könnte ich ein Medikament gegen Kopfschmerz bekommen?
+
+## AB, Übung 7, Seite 79
+
+1. Ich nehme die Kappe. Die passt mir.
+2. Die Pizza schmeckt mir gern, die nehme ich.
+3. Die Hose sieht schrecklich aus. Die nehme ich sicher nicht.
+4. Ich nehme das Hemd. Das gefallt mir.
+5. Ich schmecke den Orangensaft nicht. Ich nehme den nicht.
+
+## KB, Übung D, Seite 82
+
+Antworten:
+
+1. Jürgen
+2. Verena
+3. Mario
+4. Lasse
+5. Dorit
+6. Jürgen
+
+Fragen:
+
+1. Wer ist am energischsten?
+2. Wer ist am intelligentesten?
+3. Wer ist am müdesten?
+4. Wer ist hübschesten?
+5. Wer ist am faulsten?
+6. Wer ist am sympathischsten?
+
+## KB, Übung c, Seite 83
+
+1. Verena sieht müde aus, aber ihre Stimme klingt energisch.
+2. Jürgen sieht aktiv aus, aber seine Stimme klingt faul.
+3. Nele sieht energisch aus, aber ihre Stimme klingt müde.
+
+## KB, Übung d, Seite 83
+
+1. Ich fahre lieber mit dem Fahrrad als mit dem Zug, aber am liebsten fahre ich
+   mit das Auto.
+2. Ich mag lieber den Sommer als den Winter, aber am liebsten mag ich den
+   Frühling.
+3. Ich mag lieber das Meer als die Stadt, aber am liebsten mag ich die Berge.
+4. Ich lese lieber die Zeitung als die Zeitschrift, aber am liebsten lese ich
+   die Bücher.
+5. Ich esse lieber Gemüse als Nudeln, aber am liebsten esse ich den Fisch.
+
