@@ -3,6 +3,8 @@
 \usepackage[a4paper,margin=2cm]{geometry}
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 
 \usepackage{booktabs}
 \usepackage[bookmarks,colorlinks]{hyperref}
@@ -300,6 +302,7 @@ notazione insiemistica oppure, visto che i linguaggi sono regolari, delle
 
   \begin{itemize}
     \item $R + S = R \cup S$ con $R \subseteq A^\star$ e $S \subseteq A^\star$
+      (notazione equivalente: $R | S$)
     \item $\star$ la star di Kleene:
       $R^\star = \{x^n : n \in \mathbb{N}, x \in R\}$
     \item $R^+ = \{x^n : n \in \mathbb{N}^*, x \in R\}$
@@ -1182,7 +1185,9 @@ troveremo una di accettazione}. Per eseguire questa operazione in alberi
 tradizionali esistono degli algoritmi ben consolidati
 \hl{(``breadth first search'')}.
 
-\section{Le grammatiche}\label{sec:grammatiche}
+\section{Modelli descrittivi}\label{sec:modelli-descrittivi}
+
+\subsection{Le grammatiche}\label{sec:grammatiche}
 
 Le grammatiche sono un \hl{altro tipo di modello che possiamo usare per
 modellare i linguaggi}. A differenza degli automi, le grammatiche sono un
@@ -1199,8 +1204,6 @@ di un linguaggio attraverso un \hl{processo di riscrittura}. Esse \hl{descrivono
 un oggetto principale} (la frase) come un \hl{insieme ordinato di componenti, a
 loro volta descritti come composti da altri componenti fino ad arrivare agli
 elementi fondamentali dell'alfabeto considerato}.
-
-\subsection{Formalizzazione di una grammatica}\label{sec:form-grammatica}
 
 \begin{defn}[\hl{Grammatica}]\label{def:grammatica}
   Si definisce grammatica $G$ la quadrupla $(V_n, V_t, P, S)$ dove:
@@ -1328,12 +1331,13 @@ grammatiche meno potenti in quella di grammatiche più potenti è però stretta}
 \subsection{Legame tra grammatiche e automi}\label{sec:gramamtiche-automi}
 
 \hl{Generalizziamo ora l'osservazione della corrispondenza grammatica-automa}
-fatta negli esempi in~\ref{sec:form-grammatica}.
+fatta negli esempi in~\ref{sec:grammatiche}.
 
 \paragraph{Grammatiche regolari} Come si potrebbe intuire, i \hl{linguaggi
-regolari sono quelli riconosciuti dagli FSA (deterministici e non)}. Poiché
-automa e grammatica sono in relazione di equivalenza \hl{possiamo passare da un
-all'altro} (le due proposizioni si dimostrano con una semplice induzione):
+generati fa grammatiche regolari coincidono con i linguaggi riconosciuti dagli
+FSA (i linguaggi regolari)}. Poiché automa e grammatica sono in relazione di
+equivalenza \hl{possiamo passare da un all'altro} (le due proposizioni si
+dimostrano con una semplice induzione):
 
 \begin{prop}[\hl{Passaggio da FSA a grammatica}]
   Per ottenere la grammatica equivalente ad un FSA\@:
@@ -1509,5 +1513,86 @@ stringa} in ingresso $x$.  Possiamo, allora, \hl{limitare la potenza} della
 nostra macchina fornendogli una \hl{memoria di dimensione finita}, ottenendo
 così la macchina a minore potenza equivalente alle grammatiche monotone. Un
 \hl{automa così definito è detto automa lineare}.
+
+\section{Altri modelli utili}\label{sec:altri-modelli}
+
+Degli \hl{altri modelli molto usati per descrivere i linguaggi sono i pattern e le
+espressioni regolari}. Non andremo per nulla del dettaglio e ci limiteremo a
+\hl{enunciare solo la definizione e al massimo qualche proprietà}.
+
+\subsection{I pattern}\label{sec:pattern}
+
+\begin{defn}[Sistema di pattern]
+  Un sistema di pattern è una tripla $\langle A, V, p \rangle$ dove $A$ è un
+  alfabeto, $V$ è un insieme di variabili disgiunto con $A$ e $p$ è una stringa
+  su $A \cup V$ detta pattern.
+\end{defn}
+
+\subsection{Le espressioni regolari}\label{sec:regex}
+
+Le espressioni regolari, o regex, le abbiamo \hl{già incontrate nella
+sezione}~\ref{sec:fsa} e definite con la definizione~\ref{def:regex}. Esse
+seguono la \hl{stessa idea generale dei pattern, ma hanno un potere espressivo
+molto diverso}. Le regex hanno la\hl{ stessa espressività dei linguaggi regolari
+e delle grammatiche regolari}. Faremo solo una \hl{dimostrazione veloce di un
+solo senso dell'implicazione} in quanto l'altro è più complesso e oggetto di
+altri corsi:
+
+\begin{proof}[$\mathcal{L}\in\mathbf{RE} \implies \mathcal{L}\in\mathbf{REG}$]%
+  \label{proof:equiv-re-reg-1}
+  Guardando la definizione di espressione regolare si può notare che ciascuno
+  dei casi base definisce un linguaggio regolare. Poiché le regex sono anche
+  chiuse rispetto alle operazioni definite tutte le regex generalo linguaggi
+  regolari.
+\end{proof}
+
+Con un semplice \hl{esempio} si può anche vedere che \hl{la famiglia dei linguaggi
+descrivibili da una regex non coincide con quella dei linguaggi generati dai
+sistemi di pattern}:
+
+\begin{itemize}
+  \item $L = \{xx : x \in \{0,1\}\}$ non è un linguaggio regolare, ma può essere
+    descritto con il pattern $\langle \{0,1\}, \{x\}, xx\rangle$
+  \item Il linguaggio generato da $0^* 1^*$ è, ovviamente, regolare ma non è
+    esprimibile con un pattern
+\end{itemize}
+
+\hl{Quindi non è contenimento tra le due famiglie. Diciamo che esse sono non
+confrontabili}.
+
+\section{Modelli dichiarativi}\label{sec:modelli-dichairativi}
+
+\subsection{La logica}\label{sec:logica}
+
+La logica è un \hl{elemento fondamentale dell'informatica}. Esistono molti
+linguaggi logici, ognuno con diversi livelli di espressività e utilizzo.
+Nell'ambito di questo corso \hl{useremo la logica del primo ordine} con due
+scopi: \hl{definizione di linguaggi e specifica della proprietà dei programmi}.
+La logica, infatti, ci \hl{permetterà} sia di \hl{definire i linguaggi
+specificandone le proprietà} e di esprimere le condizioni che le nostre
+computazioni devono rispettare.
+
+\begin{esempio}
+  Consideriamo il linguaggio $\{a^n b^n : n \geq 0\}$, come possiamo descriverlo
+  con una formula del primo ordine? Una forma è:
+
+  \[
+    \forall x (x \in L \iff \exists n (N \geq 0 \land a = a^n . b^n))
+  \]
+  Definendo opportunamente i predicati $\in L$, $\geq$ e $=$ e le funzioni di
+  concatenazione ed elevamento a potenza.
+\end{esempio}
+
+\begin{esempio}
+  Caratterizziamo un altro linguaggio: $L_1 = a^*b^*$. Uno strumento utile per
+  caratterizzare un linguaggio con la logica è quello di pensare in modo
+  induttivo. Ragionando induttivamente possiamo ricavare una forma logica
+  corrispondente a $L_1$:
+
+  \[
+    \forall x (x \in L_1 \iff (x = \epsilon) \lor
+    \exists y (x = ay \land y \in L_1) \lor \exists y (x = yb \land y \in L_1))
+  \]
+\end{esempio}
 
 \end{document}

@@ -798,3 +798,80 @@ lette da destra a sinistra, allora usare solamente la memoria usata inizialmente
 da $x$. Le grammatiche monotone sono, quindi, equivalenti ad un automa lineare,
 ossia una MT con memoria finita.
 
+## I pattern ed espressioni regolari
+
+I pattern e le espressioni regolari (regex) sono due altri modelli utilizzati
+per descrivere il linguaggi.
+
+### I pattern
+
+Un sistema di pattern è una tripla $<A, V, p>$ dove $A$ è un alfabeto, $V$ è un
+insieme di variabili disgiunto con $A$ e $p$ è una stringa su $A \cup V$ detta
+pattern. Il linguaggio generato dal sistema di pattern consiste di tutte le
+stringhe su $A$ ottenute da $p$ sostituendo ogni variabile in $p$ con una
+stringa su A.
+
+### Le espressioni regolari
+
+Dato un alfabeto $A$ e un insieme di simboli $\{+,\star,(,),.,\emptyset\}$ si
+dice espressione regolare su $A$ la stringa
+$R \in A \cup \{+,\star,(,),.,\emptyset\}$ che rende vera una delle seguenti
+condizioni:
+
+- $R = \emptyset$
+- $R \in A$
+- $R = S + T$, $R = ST$, $R = S^\star$, $R = S^+$ con $S,T$ espressioni
+  regolari su $A$
+
+Una notazione equivalente per indicare $+$ (unione) è il pipe $|$.
+
+Le espressioni regolari seguono la stessa idea dei pattern ma hanno un potere
+espressivo diverso. Infatti la famiglia dei linguaggi scrivibili come
+espressione regolare non coincide con quella dei sistemi di pattern:
+
+- $L = \{xx:x\in \{0,1\}*\}$ non è un linguaggio regolare, ma possiamo
+  descriverla con il pattern $<\{0,1\}, \{x\}, xx>$
+- Viceversa il linguaggio denotato da $o^*1^*$ non è un linguaggio
+  esprimibile mediante un sistema di pattern
+
+Quindi non c'è contenimento tra le due famiglie, ma hanno dei linguaggi in
+comune. Si dice che le due famiglie sono non confrontabili.
+
+Le espressioni regolari possiedono la stessa espressività delle grammatiche
+regolari. L'equivalenza è facile da mostrare:
+
+1. Dimostrare che le espressioni regolari denotino grammatiche regolari si
+   dimostra: i casi base di espressione regolare denotano
+   linguaggi regolari e poiché le regex sono chiuse rispetto alle 3 operazioni
+   possibili, tutte le regex denotano grammatiche regolari
+2. Dimostrare che le grammatiche regolari corrispondo ad espressioni regolari
+   si farà in altri corsi più avanzati. Informalmente, si tratta di convertire
+   i vari rami dell'albero delle derivazioni in espressioni regolari.
+
+## Modello dichiarativo: logica
+
+La logica è un elemento fondamentale dell'informatica. Esistono molti linguaggi
+logici, ognuno con diversi livelli di espressività e utilizzo. Nell'ambito di
+questo corso useremo la logica del primo ordine con due scopi: definizione di
+linguaggi e specifica della proprietà dei programmi. La logica, infatti, ci
+permetterà di definire i linguaggi specificandone le proprietà e di esprimere
+delle condizioni che le nostre computazioni devono rispettare.
+
+Consideriamo il linguaggio $\{a^n b^n : n \geq 0\}$, come possiamo descriverlo
+con una formula del primo ordine? Una forma è:
+
+$$
+  \forall x (x \in L \iff \exists n (N \geq 0 \land a = a^n . b^n))
+$$
+
+Usando i predicati $\in L$, $\geq$ e $=$ e le funzioni di concatenazione ed
+elevamento a potenza. Occorrerebbe definire tutti i predicati e le funzioni
+utilizzate. Caratterizziamo un altro linguaggio: $L_1 = a^*b^*$. Uno strumento
+utile per caratterizzare il linguaggio con la logica è quello di pensare in modo
+induttivo. La forma logica corrispondente a $L_1$ è:
+
+$$
+  \forall x (x \in L_1 \iff (x = \epsilon) \lor
+    \exists y (x = ay \land y \in L_1) \lor \exists y (x = yb \land y \in L_2))
+$$
+
