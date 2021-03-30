@@ -243,3 +243,56 @@ Fragen:
    die Bücher.
 5. Ich esse lieber Gemüse als Nudeln, aber am liebsten esse ich den Fisch.
 
+## AB, Übung 9, Seite 79
+
+1. Dialoge:
+   A: Guten Tag. Kann ich Ihnen helfen?  
+   B: Ja, könnte ich eine Hose probieren?  
+   A: Welche Grösse brauchen Sie?  
+   B: Ich habe Grösse 56.  
+   A: Einen Moment, Ich bringe Ihnen die Hose sofort. Passt Ihnen die Hose?  
+   B: Ja, aber die sind ein bisschen zu lang.  
+   A: Keine Probleme, wir können die Hose kurzer machen.  
+   B: Gut, dann die nehme ich.  
+   A: Möchten Sie bar oder mit Kreditkarte bezahlen?
+2. Dialoge:
+   A: Guten Tag, kann ich Ihnen helfen?  
+   B: Ja, könnte ich die Schuhe probieren, ich habe Grösse 41.  
+   A: Ja, sicher. Ich bringe Ihnen die Schuhe sofort. Passen Ihnen die?  
+   B: Nein, Die passt mir nicht. Die sind zu eng, könnte ich eine Nummer grösser
+   haben?
+3. Dialoge:
+   A: Guten Tag, kann ich Ihnen helfen?  
+   B: Ja könnte ich einen Pullover probieren?  
+   A: Versuchen Sie mal Grösse M?  
+   B: Nein, ich habe Grösse L.  
+   A: Einen Moment, ich bringe ihnen den sofort. Passt ihnen der Pullover?  
+   B: Nein, der passt nicht. Der ist zu weit.  
+   A: Versuchen Sie mal Grösse M?
+4. Dialoge:
+   A: Guten Tag, kann ich Ihnen helfen?  
+   B: Ja könnte ich einen T-Shirt probieren?  
+   A: Welche Grösse brauchen Sie?  
+   B: Ich habe Grösse S.  
+   A: Einen Moment. Passt Ihnen das?  
+   B: Nein, das pass mir nicht. Das T-Shirt ist zu klein.  
+   A: Versuchen Sie mal Grösse M
+
+## AB, Übung 4, Seite 80
+
+Am ältesten, am attraktivsten, am besten, am grössten, am liebsten, am
+schnellsten, am billigsten, am schwierigsten.
+
+## AB, Übung 6, Seite 80
+
+1. Die Jacke ist wärmer als der Pullover. Am wärmsten ist der Mantel.
+2. Das Auto ist billiger als das Flugzeug. Am billigsten ist das Fahrrad.
+3. Der Fisch ist gesunder als der Kuchen. Am gesundsten ist der Salat
+4. Das Handy ist interessanter als der Fernseher. Am interessantesten ist das
+   Computer.
+
+## KB, Übung c, Seite 85
+
+Ich bin ein Stadtmensch. Ich gehe lieber im Park mit Freunden aus. Ich mag ein
+Film in Kino sehen und in meiner Lieblingskneipe meinen Freunde treffen. Für
+mich es ist wichtiger mit anderer Personen sein als allein sein.
