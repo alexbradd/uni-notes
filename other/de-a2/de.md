@@ -296,3 +296,47 @@ schnellsten, am billigsten, am schwierigsten.
 Ich bin ein Stadtmensch. Ich gehe lieber im Park mit Freunden aus. Ich mag ein
 Film in Kino sehen und in meiner Lieblingskneipe meinen Freunde treffen. Für
 mich es ist wichtiger mit anderer Personen sein als allein sein.
+
+## AB, Übung 2, Seite 82
+
+Liebe Tanja,
+ich kaufe gern im Internet ein. Es ist sehr einfacher als gehen zum
+Einkaufzentrum. Man kann auch am Sonntag oder in der Nacht einkaufen. Ausserdem
+dir Produkte sind manchmal billiger. Man bezahlt am besten mit der Kreditkarte.
+Ich finde das praktischer als bezahlen in bar. Man bekommt die Produkte mit der
+Post: die Geschäft schickt ihr die Produkte. Ich hoffe, dass alles jetzt klar
+ist.
+
+Liebe Grüsse,
+Alex
+
+## AB, Übung 7, Seite 85
+
+1. Er sollte um sechs Uhr aufstehen, aber er wollte bis 9:00 Uhr schlafen.
+2. Er sollte im Büro arbeiten, aber er wollte spazieren gehen.
+3. Er sollte den Fernseher reparieren, aber er wollte ins Kino gehen.
+4. Er sollte Lebensmittel einkaufen, aber er wollte ein Buch lesen.
+5. Er sollte im Garten arbeiten, aber er wollte Rad fahren.
+6. Er sollte kochen, aber er wollte ins Restaurant gehen.
+
+## KB, Übung b, Seite 87
+
+1. Knuts Mutter wollte ihre beiden Jungen nicht annehmen.
+2. Millionen Zoobesucher wollten den Star im Berliner Zoo sehen.
+3. Thomas Dörflein durfte Seinen Eisbären nicht mehr besuchen.
+4. Knut musste mit anderen Eisbären zusammenleben.
+5. Mit vier Jahre musste Knut sterben.
+
+## KB, Übung a, Seite 87
+
+1. Als Kind wollte ich in Fluss schwimmen.
+2. Als Kind durfte ich nicht Schokolade essen.
+3. Als Kind wollte ich Arzt werden.
+4. Als Kind wollte ich am Abend lange wach bleiben.
+
+## KB, Übung d, Seite 89
+
+1. Ich bin für einen Hund, weil ein Hund Spass macht.
+2. Ich bin für einen Hund, weil unsere Kunden Hunde lieben.
+3. Ich bin gegen einen Hund, weil ein Hund nicht gut riecht.
+4. Ich bin gegen einen Hund, weil ein Hund bei der Arbeit stört.
