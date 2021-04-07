@@ -41,6 +41,9 @@
 \newcommand*{\derivstar}[1][]{\xRightarrow[#1]{\star}}
 \newcommand*{\termsep}[0]{\blacklozenge}
 
+\DeclareMathOperator{\succc}{succ}
+\DeclareMathOperator{\last}{last}
+
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
 \date{\today}
@@ -1593,6 +1596,177 @@ computazioni devono rispettare.
     \forall x (x \in L_1 \iff (x = \epsilon) \lor
     \exists y (x = ay \land y \in L_1) \lor \exists y (x = yb \land y \in L_1))
   \]
+\end{esempio}
+
+\begin{esempio}
+  Consideriamo il linguaggio $L_2 = a^* b^* c^*$. Possiamo vederlo come $a^* b^*
+  .  b^* c^*$ dove entrambi questi sotto-linguaggi, chiamiamoli $L_1$ ed $L_3$,
+  hanno struttura simile a $L_1$. Quindi una stringa appartiene ad $L_2$ se
+  appartiene ad uno dei due linguaggi oppure se la prima sotto-stringa inizia
+  con `a' seguita da un suffisso $y$ composto sia da `a' e `b' e la seconda
+  sotto-stringa è composta da un prefisso $y$ di `b' e `c' seguito da una c. Una
+  formula del primo ordine che caratterizza la seguente è:
+
+  \[
+    \forall x (x \in L_2 \iff x\in L_1 \lor x \in L_3 \lor
+      \exists y (x = ay \land (y \in L_2 \lor y \in L_3)) \lor
+      \exists y (x = yc \land (y \in L_2 \lor y \in L_3)))
+  \]
+
+  Si può ridurre questa formula? Certo. Mantenendo la struttura come
+  concatenazione possiamo scrivere
+
+  \[
+    \forall x (x \in L_2 \iff \exists z \exists y
+     (y \in L_1 \land z \in L_3 \land x = y.z))
+  \]
+\end{esempio}
+
+\begin{esempio}
+  Consideriamo l'ulteriore esempio del linguaggio:
+
+  \[
+    L_4 = \{x \in \{a,b\} : \text{ numero di } a \text{ è uguale al numero di } b\}
+  \]
+
+  Per indicare ``il numero di'' introduciamo la funzione di arietà 2 $\#(x,a)$ che
+  indica il numero di occorrenze del carattere `a' nella stringa $x$ così
+  formalmente definita:
+
+  \begin{align*}
+    & \forall x \forall y ((x = \epsilon \implies \#(x,a)=0) \land \\
+      & \quad (x = a.y \implies \#(x,a) = \#(y,a)+1) \land \\
+      & \quad (x=b.y \implies \#(x,a) = \#(y,a))) \land \\
+      & \quad \forall x \forall y ((x = \epsilon \implies \#(x,b)=0) \land \\
+      & \quad (x = b.y \implies \#(x,b) = \#(y,b)+1) \land \\
+      & \quad (x=a.y \implies \#(x,b) = \#(y,b)))
+  \end{align*}
+
+  Il nostro linguaggio in formula del primo ordine sarà
+  $\forall x (x \in L_4 \iff \#(x,a)=\#(x,b))$.
+\end{esempio}
+
+\subsection{La logica monadica del primo ordine}\label{sec:mfo}
+
+Consideriamo un \hl{frammento di logica del primo ordine} che ci permette di
+\hl{descrivere parole su un alfabeto $I$}. Chiamiamo questa logica \hl{``logica
+monadica del primo ordine''} o MFO\@. La sintassi di questa logica è la
+seguente:
+
+\begin{defn}[\hl{Sintassi della MFO}]\label{def:mfo-sintassi}
+  Una formula $\phi$ fa parte della logica monadica del primo ordine se:
+
+  \[
+    \phi\coloneqq a(x) \mid x < y \mid\neg\phi\mid\phi\land\phi\mid\forall x(\phi)
+  \]
+
+  Con:
+  \begin{enumerate}
+    \item $a \in I$ e $a(x)$ un predicato per ogni singolo simbolo dell'alfabeto
+    \item $<$ la relazione di minore
+    \item $\mathbb{N}$ dominio delle variabili
+  \end{enumerate}
+\end{defn}
+
+Data una \hl{parola $w \in I^+$} ed un \hl{simbolo $a\in I$, $a(x)$} è \hl{vera
+se e solo se l'$x$-esimo simbolo di $w$ è $a$} (il primo simbolo di $w$ ha
+indice 0). Per esempio una formula che è vera su tutte e solo le parole il cui
+primo simbolo esiste ed è `a' è: $\exists x(x = 0 \land a(x))$. Considereremo
+solo parole non vuote nelle definizioni poiché alleggerisce molto la notazione.
+I concetti possono, però, essere estesi anche a parole vuote.
+
+\hl{Il resto dei predicati consueti viene definito con}:
+
+\begin{align}
+  \mhl{\phi_1 \lor \phi_2}     & \mhl{\triangleq \neg(\neg\phi_1\land\neg\phi_2)} \\
+  \mhl{\phi_1 \implies \phi_2} & \mhl{\triangleq \neg\phi_1\lor\phi_2} \\
+  \mhl{\exists x(\phi)}        & \mhl{\triangleq \neg \forall x(\neg\phi)} \\
+  \mhl{x = y}                  & \mhl{\triangleq \neg(x<y) \land \neg(y<x)} \\
+  \mhl{x \leq y}               & \mhl{\triangleq \neg(y<x)}
+\end{align}
+
+Possiamo anche definire \hl{altri predicati utili}:
+
+\begin{itemize}
+  \item La \hl{costante $0$} tale che \hl{$x = 0 \triangleq \forall y(\neg(y<x))$}
+  \item Il predicato \hl{``$y$ successore di  $x$''}
+    \hl{$\succc(x,y) \triangleq x<y \land \neq\exists z(x<z \land z<y)$}
+  \item Le \hl{costanti $1,2,3,\ldots$ come i successori di $0,1,2,\ldots$}
+\end{itemize}
+
+Per comodità possiamo \hl{definire} altre \hl{abbreviazioni} del tipo
+\hl{$y=x+1$ per indicare $\succc(x,y)$}, \hl{$y=x+k$} per indicare lo
+\hl{spiazzamento di $k$}, \hl{$y=x-1$ per indicare $\succc(y,x)$},
+\hl{analogamente $y=x-k$} e \hl{$\last(x)$ per indicare l'ultima posizione}.
+
+Per definire la \hl{semantica} introduciamo la definizione di \hl{assegnamento}.
+
+\begin{defn}[\hl{Assegnamento}]\label{def:mfo-assegnamento}
+  Siano $w\in I^+$ e $V_1$ l'insieme delle variabili. Un assegnamento è una
+  funzione $\nu_1 : V_1 \to \{0,1,\ldots,|w|-1\}$ tale che:
+
+  \begin{itemize}
+    \item $w,\nu_1 \models a(x)$ se e solo se $w = uav$ e $|u| = \nu_1(x)$
+    \item $w,\nu_1 \models x < y$ se e solo se $\nu_1(x) < \nu_1(y)$
+    \item $w,\nu_1 \models \neg\phi$ se e solo se non $w\nu_1 \models \phi$
+    \item $w,\nu_1 \models \phi_1 \land \phi_2$ se e solo se
+      $w,\nu_1 \models \phi_1$ e $w,\nu_1 \models \phi_2$
+    \item $w,\nu_1 \models a(x)$ se e solo se $w,\nu_1' \models \phi$ per ogni
+      $v_1'$ con $\nu_1'(y) = \nu_1(y)$, $y \neq x$
+  \end{itemize}
+\end{defn}
+
+Possiamo così definire il \hl{linguaggio corrispondente ad una formula chiusa
+$\phi$ come}:
+
+\[
+  L(\phi) = \{w\in I^+ : \exists\nu_1 (w, \nu_1 \models \phi)\}
+\]
+
+\subsubsection{Proprietà}\label{sec:mfo-proprietà}
+
+I \hl{linguaggi esprimibili tramite MFO} sono \hl{chiusi rispetto a unione,
+intersezione e complemento come potrebbe far intendere la buona definizione di
+$land$, $lor$ e $\neg$}. Essi però \hl{non sono chiusi rispetto alla star di
+Kleene}. I linguaggi esprimibili da MFO sono perciò detti \hl{``star-free''}.
+
+Un altra peculiarità delle formule MFO è il fatto che siano \hl{meno potenti
+degli FSA\@}. Essi infatti \hl{non possono rappresentare un particolare
+linguaggio regolare $L_p$ fatto di tutte e sole le parole di lunghezza pari su
+un alfabeto di una singola lettera}. Quindi possiamo dire che i \hl{linguaggi
+``star-free'' sono un sottoinsieme dei linguaggi regolari}.
+
+\subsection{Logica monadica del secondo ordine}\label{sec:mso}
+
+Per permettere alla logica \hl{MFO} di avere lo stesso potere espressivo degli
+FSA bisogna \hl{aumentarne la potenza}. Un modo per fare ciò è \hl{permettere di
+quantificare i predicati monadici}. Ammettiamo quindi \hl{formule del tipo
+$\exists X(\phi)$ dove $X$ è una variabile il cui dominio è l'insieme dei
+predicati monadici}.
+
+In questo caso la \hl{semantica} prevede anche un \hl{secondo assegnamento}
+\hl{$\nu_2: V_2 \to \wp(\{0,1,\ldots,|w|-1\})$} con le seguenti \hl{regole
+aggiuntive}:
+
+\begin{itemize}
+  \item $w, \nu_1, \nu_2 \models X(x)$ se solo se $\nu_2(x) \in \nu_2(X)$
+  \item $w, \nu_1, \nu_2 \models \exists X(\phi)$ se e solo se
+    $w, \nu_1, \nu_2' \models \phi$ per qualche
+    $\nu_2'$ con $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$
+\end{itemize}
+
+\begin{esempio}
+  Possiamo allora descrivere il linguaggio $L_p$ visto precedentemente
+  (perdonate la lisp-syntax ma la formula era troppo lunga):
+
+  \begin{align*}
+    & \exists P( \\
+    &   \quad \forall x(a(x) \land \neg P(0) \land \\
+    &   \quad \quad \forall y (y = x+1 \implies (\neg P(x) \iff P(y))) \land \\
+    &   \quad \quad (\last(x) \implies P(x)))) \\
+  \end{align*}
+
+  Dove $P$ indica un insieme di posizioni dispari.
 \end{esempio}
 
 \end{document}

@@ -875,3 +875,133 @@ $$
     \exists y (x = ay \land y \in L_1) \lor \exists y (x = yb \land y \in L_2))
 $$
 
+Consideriamo il linguaggio $L_2 = a^* b^* c^*$. Possiamo vederlo come $a^* b^* .
+b^* c^*$ dove entrambi questi sotto-linguaggi, chiamiamoli $L_1$ ed $L_3$, hanno
+struttura simile a $L_1$. Quindi una stringa appartiene ad $L_2$ se appartiene
+ad uno dei due linguaggi oppure se la prima sotto-stringa inizia con 'a' seguita
+da un suffisso $y$ composto sia da 'a' e 'b' e la seconda sotto-stringa è
+composta da un prefisso $y$ di 'b' e 'c' seguito da una c. Una formula del primo
+ordine che caratterizza la seguente è:
+
+$$
+  \forall x (x \in L_2 \iff x\in L_1 \lor x \in L_3 \lor
+    \exists y (x = ay \land (y \in L_2 \lor y \in L_3)) \lor
+    \exists y (x = yc \land (y \in L_2 \lor y \in L_3)))
+$$
+
+Si può ridurre questa formula? Certo. Mantenendo la struttura come
+concatenazione possiamo scrivere $\forall x (x \in L_2 \iff \exists z \exists y
+(y \in L_1 \land z \in L_3 \land x = y.z))$.
+
+Consideriamo l'ulteriore esempio del linguaggio
+$L_4 = \{x \in \{a,b\} : \text{ numero di } a \text{ è uguale al numero di } b\}$.
+Per indicare "il numero di" introduciamo la funzione di arietà 2 $\#(x,a)$ che
+indica il numero di occorrenze del carattere 'a' nella stringa $x$ così
+formalmente definita:
+
+$$
+\begin{align}
+  \forall x \forall y & ((x = \epsilon \implies \#(x,a)=0) \land
+    (x = a.y \implies \#(x,a) = \#(y,a)+1) \land (x=b.y \implies \#(x,a) = \#(y,a)))
+    \land \\
+  \forall x \forall y & ((x = \epsilon \implies \#(x,b)=0) \land
+    (x = b.y \implies \#(x,b) = \#(y,b)+1) \land (x=a.y \implies \#(x,b) = \#(y,b)))
+\end{align}
+$$
+
+Il nostro linguaggio in formula del primo ordine sarà
+$\forall x (x \in L_4 \iff \#(x,a)=\#(x,b))$.
+
+### Logica monadica del primo ordine
+
+Consideriamo un frammento di logica del primo ordine che ci permette di
+descrivere parole su un alfabeto $I$: la logica monadica del primo ordine o MFO.
+La sintassi di questa logica è la seguente:
+
+$$
+  \phi := a(x) | x < y | \neg \phi | \phi \land \phi | \forall x (\phi)
+$$
+
+Con $a \in I$, cioè introduciamo un predicato unario per ogni singolo
+dell'alfabeto, $<$ solita relazione di minore e $\mathbb{N}$ come dominio delle
+variabili. Il resto dei predicati che usavamo può essere definito usando solo
+gli elementi precedenti:
+
+$$
+\begin{align}
+  \phi_1 \lor \phi_2 & \triangleq \neg(\neg\phi_1\land\neg\phi_2) \\
+  \phi_1 \implies \phi_2 & \triangleq \neq\phi_1\lor\phi_2 \\
+  \exists x(\phi) & \triangleq \neg \forall x(\neg\phi) \\
+  x = y & \triangleq \neg(x<y) \land \neg(y<x) \\
+  x \leq y & \triangleq \neg(y<x)
+\end{align}
+$$
+
+Possiamo anche definire:
+
+- costante $0$: $x = 0 \triangleq \forall y(\neg(y<x))$
+- il predicato per il successore $succ(x,y)$: $succ(x,y) \triangleq x<y \land
+  \neg\exists z(x<z \land z<y)$
+- le costanti 1,2,3 come i successori di 0,1,2
+
+#### Interpretazione come parola sull'alfabeto
+
+Data una parola $w \in I^+$ ed un simbolo $a\in I$, $a(x)$ è vera se e solo se
+l'$x$-esimo simbolo di $w$ è $a$ (il primo simbolo di $w$ ha indice 0). Per
+esempio una formula che è vera su tutte e solo le parole il cui primo simbolo
+esiste ed è 'a' è: $\exists x(x = 0 \land a(x))$.
+
+Per comodità possiamo definire altre abbreviazioni del tipo $y=x+1$ per indicare
+$succ(x,y)$, $y=x+k$ per indicare lo spiazzamento di $k$, $y=x-1$ per indicare
+$succ(y,x)$ e analogamente $y=x-k$ e $last(x)$ per indicare l'ultima posizione.
+
+#### Semantica
+
+Siano $w\in I^+$ e $V_1$ l'insieme delle variabili. UN assegnamento è una
+funzione $\nu_1 : V_1 \to \{0,1,\ldots,|w|-1\}$ tale che:
+
+- $w \nu_1 \models a(x)$ se e solo se $w = uav$ e $|u| = \nu_1(x)$
+- $w \nu_1 \models x < y$ se e solo se $\nu_1(x) < \nu_1(y)$
+- $w \nu_1 \models \neg\phi$ se e solo se non $w\nu_1 \models \phi$
+- $w \nu_1 \models \phi_1 \land \phi_2$ se e solo se $w,\nu_1 \models \phi_1$ e
+  $w,\nu_1 \models \phi_2$
+- $w \nu_1 \models a(x)$ se e solo se $w,\nu_1' \models \phi$ per ogni $v_1'$
+  con $\nu_1'(y) = \nu_1(y)$, $y \neq x$
+
+Possiamo così definire il linguaggio corrispondente ad una formula $\phi$ come:
+$L(\phi) = \{w\in I^+ : \exists \nu_1 w, \nu_1 \models \phi \}$.
+
+#### Proprietà della MFO
+
+- I linguaggi esprimibili tramite MFO sono chiusi rispetto a unione,
+  intersezione e complemento.
+- In MFO non si può esprimere un particolare linguaggio $L_p$ fatto di tutte e
+  sole le parole di lunghezza pari su un alfabeto di una singola lettera. Ciò è
+  dovuto alla limitatezza espressiva della MFO: è meno potente degli FSA.
+- I linguaggi definiti da MFO non sono chiusi rispetto alla $\star$ di Kleene.
+  Infatti se consideriamo il semplicissimo linguaggio $L=a(0) \land a(1) \land
+  last(1)$ (composto solo da 'aa'), possiamo scrivere che $L_p = L^*$. Le MFO,
+  quindi, esprimo i linguaggi 'star-free'
+
+### Logica monadica del secondo ordine
+
+Per permettere alla logica monadica si avere lo stesso potere espressivo degli
+FSA bisogna di permette di quantificare i predicati monadici. Ammettiamo quindi
+formule del tipo $\exists X(\phi)$ dove $X$ è una variabile il cui dominio è
+l'insieme dei predicati monadici.
+
+In questo caso la semantica prevede anche un secondo assegnamento $\nu_2: V_2
+\to \wp([0..w-1])$ con
+
+- $w, \nu_1, \nu_2 \models X(x)$ se solo se $\nu_2(x) \in \nu_2(X)$
+- $w, \nu_1, \nu_2 \models \exists X(\phi)$ se e solo se $w, \nu_1, \nu_2'
+  \models \phi$ per qualche $\nu_2'$ con $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$
+
+Possiamo allora descrivere il linguaggio $L_p$ visto precedentemente:
+
+$$
+  \exists P(\forall x(\neg P(0) \land (\neg P(x) \iff P(x+1) \land a(x) \land
+    (last(x) \implies P(x))))
+$$
+
+Dove $P$ indica un insieme di posizioni dispari.
