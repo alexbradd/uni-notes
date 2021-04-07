@@ -340,3 +340,71 @@ Alex
 2. Ich bin für einen Hund, weil unsere Kunden Hunde lieben.
 3. Ich bin gegen einen Hund, weil ein Hund nicht gut riecht.
 4. Ich bin gegen einen Hund, weil ein Hund bei der Arbeit stört.
+
+## AB, Übung 9, Seite 85
+
+1. Früher mochte ich Käse, aber heute mag ich nicht Käse.
+2. Als Kind wollte ich nicht studieren, aber heute will ich gern studieren.
+3. Als Kind konnte ich mit dem Computer viel spielen, aber heute kann ich
+   nicht mit damit spielen.
+4. Als Kind durfte ich nicht lange wach bleiben und heute darf ich lange
+   wach bleiben auch nicht.
+
+## AB, Übung 5, Seite 86
+
+1. Weil meine Kinder in der Schule sind. Weil mein Mann nach Italien fliegen
+   muss. Weil meine Eltern im Urlaub sind.
+2. Weil sie krank war. Weil gestern ein Feiertag war. Weil sie beruflich ins
+   Ausland fahren musst.
+3. Weil ich die Farbe nicht mag. Weil ich einen Pullover lieber ziehe an. Weil
+   die Hose zu kurz ist.
+4. Weil ich kein Geschenk hatte. Weil ich arbeiten musste. Weil ich kein
+   Einladung bekommen habe.
+
+## AB, Übung 7, Seite 87
+
+1. Kevin ist nicht mehr zur Schuhe gegangen, weil er das Opfer von Cyber-Mobbing
+   geworden ist.
+2. Kevin geht heute wieder gern zur Schuhe, weil die Schulleiterin eine Lösung
+   finden konnte.
+3. Schönheitsoperationen sind in Deutschland sehr beliebt, weil viele Menschen
+   mit ihrem Aussehen nicht zufrieden sind.
+4. Nach einem Unfall muss man für eine Schönheitsoperation nichts bezahlen, weil
+   die Krankenkasse die Arztrechnung bezahlt.
+5. Das Internet macht Mobbing für die Täter einfach, weil sie anonym bleiben
+   können.
+6. Frau Peters sieht "Pinguin, Robbe & Co." jede Woche, weil sie Zoosendungen
+   mag.
+7. Der Tierpfleger Thomas Dörflein musste Knut mit der Flasche füttern, weil die
+   Eisbärenmutter ihr Kind nach der Geburt nicht annehmen wollte.
+8. Thomas Dörflein durfte mit Knut bald nicht mehr spielen, weil der Eisbär
+   schnell gross und gefährlich geworden ist.
+
+## KB, Übung d, Seite 90
+
+Ich finde, dass die Wölfe in der Schweiz bleiben sollen, weil sie gut für die
+Ökosystem und für den Wald sind.
+
+## KB, Übung b, Seite 91
+
+| Tiere     | Landschaft   | Pflanzen       | Wetter     |
+|-----------|--------------|----------------|------------|
+| der Fisch | der Weg      | die Blume      | der Regeln |
+| der Schaf | der Garten   | das Obst       | die Sonne  |
+| der Hund  | das Meer     | der Wein       | der Wind   |
+| -         | die Stadt    | das Gemüse     | -          |
+| -         | die Autobahn | der Salat      | -          |
+| -         | die Strasse  | der Apfel      | -          |
+| -         | der Fluss    | die Kartoffeln | -          |
+| -         | der Berg     | -              | -          |
+| -         | der See      | -              | -          |
+
+## KB, Übung d, Seite 91
+
+1. Über das Meer sind drei Wolken. Sie sind wütend. Es gibt zwei Fische und ein
+   Boot im Meer. Ein Strand liegt links neben dem Meer. Am Strand gibt es einen
+   Sonnenschirm.
+2. Auf dem Bild sehe ich ein Feld mit zwei Bäume, viele Tiere und ein Haus. Die
+   Sonne scheint. Vor das Haus gibt es einen Garten. Viele Büsche liegen links
+   neben dem Haus.
+
