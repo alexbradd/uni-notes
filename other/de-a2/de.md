@@ -408,3 +408,34 @@ Ich finde, dass die Wölfe in der Schweiz bleiben sollen, weil sie gut für die
    Sonne scheint. Vor das Haus gibt es einen Garten. Viele Büsche liegen links
    neben dem Haus.
 
+## AB, Übung 2, Seite 88
+
+1. Die Wölfe müssen weg, weil sie auch für Menschen gefährlich werden können.
+2. Früher konnten Wölfe in den Alpen gut leben und auch heute können wir mit ihnen
+   zusammenleben.
+3. Wir sind sicher, dass auch die Touristen in der Nacht keine Wölfe hören
+   wollen.
+4. Wölfe sind Wildtiere, aber sind sie nicht gefährlich für die Menschen.
+5. Wir wissen am Abend nie, ob alle Tiere am am nächsten Tag noch leben.
+6. Wir können nicht verstehen, wieso die Bauern keine Hunde kaufen.
+
+## AB, Übung 3, Seite 88
+
+Das Meer -e, der Dorf (Dörfer), die Stadt (Städte), das Land (Länder), der Berg
+-e, der Strand (Strände), das Tal (Täler), das Feld -er, der Wald (Wälder), der
+Fluss (Flüsse), der See -n, die Autobahn -en.
+
+## AB, Übung 5, Seite 88
+
+Mein Heimatland ist ungefähr 300 000 Quadratkilometer gross und hat fast 60 000
+000 Einwohner. Im Norden liegen die Alpen und umher gibt es das Mittelmeer. Im
+Norden gibt es auch meine Heimatstadt: Milan. In der Mitte ist der grösste
+Bergkette aus der Italien, der Apennin. Nach rechts den Apennin liegt die
+Kapital, Rom. Die meisten Menschen leben im Norden. Im Norden gibt es auch die
+zwei bevölkerungsreichsten Kommunen: Milan und Turin.
+
+## KB, Übung c, Seite 93
+
+Die Sommer ist bei uns heiss. Es sind bis zu 40 Grad. Das ist zu warm für mich.
+Ich mag den Frühling am liebsten, weil es nicht zu warm ist und man am
+Nachmittag aus dem Haus gehen kann. Am liebsten wandere und radfahre ich.
