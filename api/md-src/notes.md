@@ -28,7 +28,7 @@ Dividiamo i modelli in due tipi:
 - Modelli operazionali: basati sul concetto di stato e di meccanismi per la sua
   evoluzione. Esempio: "Calcola il minimo e mettilo al primo posto"
 - Modelli descrittivi: tesi a formulare le proprietà desiderato o temute del
-  sistema piuttosto che del suo funzionamento.  Esempio: "Individua una
+  sistema piuttosto che del suo funzionamento. Esempio: "Individua una
   permutazione della sequenza data che $\forall i a[i] \leq a[i+1]$"
 
 Le differenze tra questi due tipi di modellizzazione non sono spesso molto ben
@@ -127,7 +127,7 @@ tutti gli stati con una freccia.
 Un automa a stato finito possiede uno stato iniziale ed una sequenza di mosse
 che parte da questo stato iniziale e si conclude su uno stato finale dopo che ha
 processato l'ingresso del sistema. Lo stato finale viene detto anche stato di
-accettazione.  Lo stato iniziale viene indicato con una freccia che lo collega
+accettazione. Lo stato iniziale viene indicato con una freccia che lo collega
 all'esterno, lo stato finale con una doppia bolla.
 
 ### Automi - automi come riconoscitori di linguaggi
@@ -258,8 +258,6 @@ $$
   L(<A^1, A^2>) = L(A^1) \cap L(A^2)
 \end{gathered}
 $$
-
-<!-- Immagine di un automa intersezione -->
 
 Il risultato sopra si può dimostrare con una induzione. Come facciamo per
 l'unione invece? Dobbiamo costruire un automa che accetti stringhe che almeno
@@ -548,7 +546,7 @@ Quindi la relazione $\vdash$ non è più univoca! Una semplice costruzione ci
 permette di costruire sempre l'unione di due NPDA e quindi di dimostrare la
 chiusura degli NPDA rispetto all'unione. Ciò significa che la classe dei
 linguaggi riconosciuti dagli NPDA è più ampia di quella dei PDA e quindi che gli
-NPDA sono più potenti rispetto ai PDA.  Anche se sono chiusi rispetto
+NPDA sono più potenti rispetto ai PDA. Anche se sono chiusi rispetto
 all'unione, essi non sono chiusi rispetto all'intersezione. Di conseguenza non
 sono chiusi anche rispetto al complemento (per le leggi di De Morgan). Proviamo
 a dimostrare il risultato sopra. Procedendo con le stesse modalità del caso
@@ -710,7 +708,7 @@ I$, $S = q_0$ e per ogni $\delta(q, i)=q'$ posiamo $q \to iq'$; inoltre se $q'
 \in F$ aggiungiamo $q \to i$. Con una facile induzione possiamo dimostrare che
 $q \implies^* xq'$. La costruzione inversa si esegue in modo analogo: $Q = V_N
 \cup \{q_f\}$, $I = V_t$, $q_0 = S$, $F - \{q_f\}$ con $\forall A \to bC \;
-\delta(A,b) = C$ e $\forall A \to b \in P \; \delta(A, b) = q_f$.  Nota bene: lo
+\delta(A,b) = C$ e $\forall A \to b \in P \; \delta(A, b) = q_f$. Nota bene: lo
 FSA risultante non è deterministico!
 
 Nel caso dei linguaggi non contestuali abbiamo una equivalenza con gli NPDA. La
@@ -1005,3 +1003,123 @@ $$
 $$
 
 Dove $P$ indica un insieme di posizioni dispari.
+
+#### Da FSA a MSO
+
+In generale, grazie alle quantificazioni del secondo ordine, per ogni FSA, è
+possibile scrivere una formula MSO equivalente.
+
+Innanzitutto ogni predicato monadico quantificato corrisponde a ciascuno stato.
+Se nell'automa avviene, mettiamo i vari stati in esclusione mutua. Infine
+codifico tutte le transizioni usando $last(x)$ e $\neg last(x)$ per
+caratterizzare gli stati finali e non finali rispettivamente.
+
+#### Da MSO a FSA
+
+Si può eseguire anche la trasformazione inversa tramite un processo ben definito
+(teorema di Büchi-Elgot-Trakhtenbrot). Noi non la vedremo poiché molto tecnica.
+Insieme alla precedente trasformazione possiamo finalmente sancire l'equivalenza
+tra FSA e MSO.
+
+### Precondizioni e postcondizioni
+
+Vediamo infine un ultimo uso della logica: quello di caratterizzazione di alcune
+condizioni che il nostro programma deve rispettare. Infatti, quando si programma
+una funzione è più importante specificare cosa il programma fra invece di come
+lo fa. Per specificare il tutto useremo la notazione di Hoare:
+
+$$
+\begin{aligned}
+  & \{ \mathtt{Precondizione} \} \\
+  & \text{Programma } P \\
+  & \{ \mathtt{Postcondizione} \}
+\end{aligned}
+$$
+
+Se valgono le precondizioni, dopo l'esecuzione del programma varranno le
+postcondizioni. Le precondizioni e le postcondizioni possono essere definite in
+modi diversi nella pratica: linguaggio naturale (commenti), asserzioni e
+linguaggi ad-hoc. Noi useremo la logica del primo ordine
+
+Facciamo un esempio. Sia un programma $P$ che implementa la ricerca di un
+elemento $x$ in un array ordinato di $n$ elementi. La precondizione sarà che
+l'array sia ordinato e la postcondizione che la variabile logica
+$\mathtt{found}$ deve essere vera se e solo se l'elemento $x$ esiste nell'array
+$a$. Notiamo che non ci interessa che tipo di algoritmo è implementato da $P$.
+Usando la notazione di Hoare otteniamo:
+
+$$
+\begin{aligned}
+  & \{ \forall i (1 \leq i \leq n-1 \implies a[i] \leq a[i+1] \} \\
+  & P \\
+  & \{ \mathtt{found} \iff \exists i (1 \leq u \leq n \land a[i] = x \}
+\end{aligned}
+$$
+
+## Teoria della computazione
+
+Automi, grammatiche e altri formalismi possono essere considerati meccanici per
+risolvere problemi matematici. Alcuni di questi sono più potenti di altri, ad
+esempio le MT riconosco una famiglia di linguaggi che non riconoscibili da PDA.
+Inoltre nessun formalismo è più potente delle macchine di Turing. Possiamo,
+quindi, chiederci se questi modelli possono catturare l'essenza di un generico
+solutore meccanico? Inoltre se un problema è stato formalizzato adeguatamente,
+possiamo sempre risolverlo mediante dispositivi meccanici?
+
+### I problemi
+
+Prima di parlare di risolverli, dobbiamo definire bene il concetto di problema.
+Molti problemi possono essere formalizzati come riconoscimento di linguaggi o
+traduzione: $x \in L$ o $y = \tau(x)$. Con questi due formalismi possiamo
+descrivere tutti i problemi con domini numerabili. Infatti tutti gli elementi
+di tali domini possono essere messi in corrispondenza biunivoca con gli elementi
+di $\mathbb{N}$. Un problema di questo tipo è ridotto al calcolo di una funzione
+$f: \mathbb{N} \to \mathbb{N}$. Si può anche dimostrare che riconoscimento e
+traduzione possono ridotte l'una all'altra:
+
+- Se ho una macchina che può risolvere tutti i problemi della forma $y = \tau
+  (x)$ e voglio usarla per risolvere il problema $x \in L$ è sufficiente
+  definire $\tau(x) = 1$ se $x \in L$ e $0$ altrimenti
+- Se ho una macchina che può risolvere tutti i problemi della forma $x \in L$,
+  posso definire un linguaggio $L_{\tau} = \{ x\diamond y : y = \tau(x) \}$. Per
+  una $x$ fissata, posso enumerare tutte le possibili stringhe $y$ sull'alfabeto
+  di uscita e per ognuna di esse posso chiedere alla macchina se $x\diamond y
+  \in L_{\tau}$.
+
+Tutti i nostri modelli esaminati sono discreti, in accordo con la tecnologia
+digitale. La classe dei problemi che possono essere risolti da una MT è
+indipendente dall'alfabeto scelto, sempre che ci siano almeno due simboli.
+Inoltre data una MT, si può costruire un programma in Java, C o FORTRAN che la
+simula e viceversa. Questi linguaggi di programmazione hanno, quindi, la stessa
+espressività delle macchine di Turing e vengono detti "Turing completi".
+
+Prima abbiamo detto che le macchine di Turing sono il più potente formalismo di
+calcolo automatico. Questa è la cosiddetta tesi di Church. Esso non è un
+teorema poiché andrebbe verificato ogni volta che qualcuno inventa un nuovo
+modello computazionale. Nonostante ciò è largamente accettato dagli studiosi
+come teorema.
+
+### Gli algoritmi
+
+Introduciamo un altro concetto fondamentale per l'informatica: l'algoritmo.
+Intuitivamente con un algoritmo intendiamo una procedura per risolvere problemi
+mediante un dispositivo di calcolo automatico. Gli algoritmi godono di alcune
+proprietà (qui enunciate in modo informale):
+
+1. La sequenza di istruzioni dev'essere finita
+2. Qualunque istruzione dev'essere eseguibile mediante un processore meccanico
+   per il calcolo
+3. Il processore è dotato di memoria per immagazzinare risultati intermedi
+4. La computazione è discreta: l'informazione è codificata digitalmente e
+   la computazione procede attraverso passi discreti
+5. Gli algoritmi sono eseguiti in modo deterministico
+6. Non c'è limite sulla quantità di dati in ingresso e in uscita
+7. Non c'è limite sulla quantità di memoria richiesta per effettuare una
+   computazione
+8. Non c'è limite sul numero di passi discreti richiesti per effettuare una
+   computazione
+
+A questo punto possiamo riformulare la tesi di Church come: "Ogni algoritmo si
+può codificare con un macchina di Turing". Possiamo quindi dire che non esiste
+algoritmo che non possa essere risolto da una macchina di Turing. La MT è,
+quindi, il più potente calcolatore che avremo mai.

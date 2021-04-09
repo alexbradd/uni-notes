@@ -65,17 +65,24 @@ si basano principalmente sulla matematica discreta. Definiamo i due tipi di
 modelli che costruiremo.
 
 \begin{defn}[\hl{Modello operazionale}]\label{def:modello-op}
-  È un modello basato sul concetto di stato e di meccanismo per la sua
+  È un modello basato sul \hl{concetto di stato e di meccanismo} per la sua
   evoluzione.
 \end{defn}
 
 \begin{defn}[\hl{Modello descrittivo}]\label{def:modello-desc}
-  È un modello che formula le proprietà desiderate o no dal sistema piuttosto
+  È un modello che \hl{formula le proprietà desiderate o no del sistema} piuttosto
   che il suo funzionamento.
 \end{defn}
 
 \hl{Le differenze tra questi due tipi di modellizzazione non sono spesso molto
-ben definite.}
+ben definite}. Le fasi dell'ingegneria del software ricalcano quelli della
+modellizzazione di un problema:
+
+\begin{itemize}
+  \item Analisi dei requisiti: Stesura della specifica del sistema
+  \item Progetto: Architettura del software
+  \item Implementazione: Scrittura effettiva del codice
+\end{itemize}
 
 \begin{esempio}
   Modellizziamo lo stesso problema, l'ordinamento di una sequenza di interi,
@@ -88,15 +95,6 @@ ben definite.}
       dell'array tale che \(\forall i a[i] \leq a[i+1]\).
   \end{itemize}
 \end{esempio}
-
-\hl{Le fasi dell'ingegneria del software ricalcano quelli della modellizzazione
-di un problema:}
-
-\begin{itemize}
-  \item Analisi dei requisiti: Stesura della specifica del sistema
-  \item Progetto: Architettura del software
-  \item Implementazione: Scrittura effettiva del codice
-\end{itemize}
 
 \section{I linguaggi}\label{sec:linguaggi}
 
@@ -111,14 +109,15 @@ di un linguaggio è l'alfabeto o vocabolario}. In matematica essi sono sinonimi
 anche se in italiano naturale non lo sono.
 
 \begin{defn}[\hl{Alfabeto}]\label{def:alfabeto}
-  Si dice alfabeto un insieme finito $A$ di simboli base.
+  Si dice alfabeto un \hl{insieme finito} $A$ di \hl{simboli base}.
 \end{defn}
 
 Una volta definito il concetto di alfabeto possiamo anche definire il concetto
 di \hl{stringa}.
 
 \begin{defn}[\hl{Stringa}]\label{def:stringa}
-  Si dice stringa una sequenza ordinata e finita di elementi dell'alfabeto $A$.
+  Si dice stringa una \hl{sequenza ordinata e finita di elementi dell'alfabeto}
+  $A$.
 \end{defn}
 
 Naturalmente ogni stringa possiede una \hl{lunghezza $|a|$ pari al numero di
@@ -155,7 +154,8 @@ concatenazione $\langle A^\star, . \rangle$}.
 Definito tutti questi elementi possiamo finalmente definire un \hl{linguaggio}.
 
 \begin{defn}[\hl{Linguaggio}]\label{def:linguaggio}
-  Chiamiamo un linguaggio un insieme $L$ tale che: $L \subseteq A^\star$.
+  Chiamiamo un linguaggio un \hl{insieme $L$} tale che:
+  \hl{$L \subseteq A^\star$}.
 \end{defn}
 
 Notiamo che \hl{$L$ può anche essere infinito}. Inoltre, poiché $L$ è un
@@ -167,7 +167,7 @@ linguaggi}.
 
 \begin{defn}[\hl{Concatenazione di linguaggi}]\label{def:concatenazione-ling}
   \begin{equation}
-    L_1 . L_2 = \{ x.y : x \in L_1, y \in L_2 \}
+    \mhl{ L_1 . L_2 = \{ x.y : x \in L_1, y \in L_2 \} }
   \end{equation}
 \end{defn}
 
@@ -182,13 +182,13 @@ linguaggi}.
 
 \begin{defn}[\hl{Star (Linguaggi)}]\label{def:star-linguaggi}
   \begin{equation}
-    L^\star = \bigcup^{\infty}_{i=0} L^i
+    \mhl{ L^\star = \bigcup^{\infty}_{i=0} L^i }
   \end{equation}
 \end{defn}
 
 \begin{defn}[\hl{Plus (Linguaggi)}]\label{def:plus-linguaggi}
   \begin{equation}
-    L^+ = \bigcup^{\infty}_{i=1} L^i
+    \mhl{ L^+ = \bigcup^{\infty}_{i=1} L^i }
   \end{equation}
 \end{defn}
 
@@ -236,14 +236,15 @@ secondo le leggi di transizione}. \hl{Se alla fine} della lettura l'automa
 altrimenti diremo che l'ha rifiutato}.
 
 \begin{defn}[\hl{Automa a stati finiti}]\label{def:fsa}
-  Un automa a stati finiti $\mathcal{A}$ è una quintupla
+  Un automa a stati finiti $\mathcal{A}$ è una \hl{quintupla}
   $\langle Q, I, \delta, q_0, F \rangle$ dove:
   \begin{enumerate}
-    \item $Q$ è l'insieme finito non vuoto di tutti gli stati
-    \item $I$ è l'alfabeto di ingresso
-    \item $\delta: Q \times I \to Q$ è la funzione (relazione) di transizione
-    \item $q_0 \in Q$ è lo stato iniziale
-    \item $F \subseteq Q$ è l'insieme degli stati di accettazione
+    \item \hl{$Q$} è \hl{l'insieme finito non vuoto di tutti gli stati}
+    \item \hl{$I$} è \hl{l'alfabeto} di ingresso
+    \item \hl{$\delta: Q \times I \to Q$} è la \hl{funzione (relazione) di
+      transizione}
+    \item \hl{$q_0 \in Q$} è lo \hl{stato iniziale}
+    \item \hl{$F \subseteq Q$} è l'insieme degli \hl{stati di accettazione}
   \end{enumerate}
 \end{defn}
 
@@ -274,14 +275,14 @@ eseguita da un automa a stati finiti.
   Sia un FSA $\mathcal{A}$, la sequenza di mosse è una funzione
 
   \begin{equation}
-    \delta^\star: Q \times I^\star \to Q
+    \mhl{ \delta^\star: Q \times I^\star \to Q }
   \end{equation}
 
-  Definita induttivamente da:
+  Definita \hl{induttivamente} da:
 
   \begin{enumerate}
-    \item $\delta^\star(q, \epsilon) = q$
-    \item $\delta^\star(q, y.i) = \delta(\delta^\star(q,y), i)$ con
+    \item \hl{$\delta^\star(q, \epsilon) = q$}
+    \item \hl{$\delta^\star(q, y.i) = \delta(\delta^\star(q,y), i)$} con
       $y \in I^\star, i \in I$
   \end{enumerate}
 \end{defn}
@@ -301,27 +302,27 @@ notazione insiemistica oppure, visto che i linguaggi sono regolari, delle
 \hl{espressioni regolari}. Definiamo la sintassi delle espressioni regolari.
 
 \begin{defn}[Espressioni regolari]\label{def:regex}
-  Dato una alfabeto $A$, siano le seguenti operazioni:
+  Dato una \hl{alfabeto $A$}, siano le \hl{seguenti operazioni}:
 
   \begin{itemize}
-    \item $R + S = R \cup S$ con $R \subseteq A^\star$ e $S \subseteq A^\star$
-      (notazione equivalente: $R | S$)
-    \item $\star$ la star di Kleene:
+    \item \hl{$R + S = R \cup S$} con $R \subseteq A^\star$ e
+      $S \subseteq A^\star$ (notazione equivalente: $R | S$)
+    \item \hl{$\star$ la star di Kleene:}
       $R^\star = \{x^n : n \in \mathbb{N}, x \in R\}$
-    \item $R^+ = \{x^n : n \in \mathbb{N}^*, x \in R\}$
-    \item la concatenazione: $RS = \{xy : x \in R, y \in S\}$
+    \item \hl{$R^+ = \{x^n : n \in \mathbb{N}^*, x \in R\}$}
+    \item la \hl{concatenazione}: $RS = \{xy : x \in R, y \in S\}$
   \end{itemize}
 
-  Allora, dato un alfabeto $A$ e un insieme di simboli
-  $\{+,\star,(,),.,\emptyset\}$ si dice espressione regolare su $A$ la stringa
-  $R \in A \cup \{+,\star,(,),.,\emptyset\}$ che rende vera una delle seguenti
-  condizioni:
+  Allora, dato un \hl{alfabeto $A$} e un \hl{insieme di simboli}
+  \hl{$\{+,\star,(,),.,\emptyset\}$} si dice \hl{espressione regolare su $A$} la
+  \hl{stringa} $R \in A \cup \{+,\star,(,),.,\emptyset\}$ che \hl{rende vera una
+  delle seguenti condizioni}:
 
   \begin{enumerate}
-    \item $R = \emptyset$
-    \item $R \in A$
-    \item $R = S + T$, $R = ST$, $R = S^\star$, $R = S^+$ con $S,T$ espressioni
-      regolari su $A$
+    \item \hl{$R = \emptyset$}
+    \item \hl{$R \in A$}
+    \item \hl{$R = S + T$, $R = ST$, $R = S^\star$, $R = S^+$} con $S,T$
+      espressioni regolari su $A$
   \end{enumerate}
 \end{defn}
 
@@ -346,22 +347,22 @@ Prima di parlare di traduttori, però, formalizziamo come un automa produce un
 output.
 
 \begin{defn}[\hl{Funzione di transizione con uscita}]\label{def:fsa-transizione-uscita}
-  Chiamiamo $\delta(q, i/w)$ con $i \in I$ e $w \in O$, $I, O$ alfabeti, una
-  funzione di transizione tra stati che restituisce il nuovo stato del FSA e
-  un simbolo complesso $w$.
+  Chiamiamo \hl{$\delta(q, i/w)$} con \hl{$i \in I$ e $w \in O$, $I, O$
+  alfabeti}, una \hl{funzione di transizione tra stati che restituisce il nuovo
+  stato del FSA e un simbolo complesso $w$}
 \end{defn}
 
 Ora possiamo definire il traduttore.
 
 \begin{defn}[\hl{Automa a stati finiti traduttore}]\label{def:fsa-trad}
-  Sia $\mathcal{A} = \langle Q, I, \delta, q_0, F \rangle $ un automa a stati
-  finiti con funzione di transizione $\delta(q, i/w)$, definiamo automa a
-  stati finiti traduttore $\mathcal{T}$ la terna
-  $\langle \mathcal{A}, O, \eta \rangle$ dove:
+  Sia $\mathcal{A} = \langle Q, I, \delta, q_0, F \rangle $ un \hl{automa a
+  stati finiti} con funzione di transizione \hl{$\delta(q, i/w)$}, definiamo
+  \hl{automa a stati finiti traduttore} $\mathcal{T}$ la \hl{terna} \hl{$\langle
+  \mathcal{A}, O, \eta \rangle$} dove:
 
   \begin{itemize}
-    \item $O$ è l'alfabeto di uscita di $\delta$
-    \item $\eta : Q \times I \to O^\star$ funzione di traduzione
+    \item \hl{$O$} è \hl{l'alfabeto di uscita} di $\delta$
+    \item \hl{$\eta : Q \times I \to O^\star$} \hl{funzione di traduzione}
   \end{itemize}
 \end{defn}
 
@@ -391,15 +392,15 @@ sufficienti} per l'accettazione dei linguaggi, \hl{una per il caso finito e un
 per l'infinito}.
 
 \begin{thm}[\hl{Condizione di accettazione di un linguaggio finito}]\label{thm:accettazione-ling-finito}
-  Condizione sufficiente e necessaria affinché un automa a stati finiti accetti
-  un linguaggio finito non vuoto è che possa accettare una stringa di lunghezza
-  inferiore al numero di stati ($|x| < |Q|$).
+  \hl{Condizione sufficiente e necessaria} affinché un \hl{automa a stati finiti
+  accetti un linguaggio finito non vuoto} è che possa accettare una stringa di
+  lunghezza inferiore al numero di stati (\hl{$|x| < |Q|$}).
 \end{thm}
 
 \begin{thm}[\hl{Condizione di accettazione di un linguaggio infinito}]\label{thm:accettazione-ling-infinito}
-  Condizione sufficiente e necessaria affinché un automa a stati finiti accetti
-  un linguaggio infinito è che possa accettare una stringa tale che:
-  $|Q| \leq |x| < 2|Q|$
+  \hl{Condizione sufficiente e necessaria} affinché un \hl{automa a stati finiti accetti
+  un linguaggio infinito} è che possa accettare una stringa tale che:
+  \hl{$|Q| \leq |x| < 2|Q|$}.
 \end{thm}
 
 Questo teorema deriva dall'osservazione che \hl{se un automa accetta un
@@ -442,16 +443,17 @@ infinito sia riconosciuta da un FSA} e rappresenta il \hl{contenuto del
 ``Pumping lemma''}:
 
 \begin{lem}[\hl{Pumping lemma}]\label{thm:pumping-lemma}
-  Sia un automa a stati finiti $\mathcal{A}$ che accetta un linguaggio
-  $L(\mathcal{A})$. Allora per ogni $x \in L$ con $|x| > |Q|$ esiste $q \in Q$
-  e $w \in I^+$ tali da verificare una di queste condizioni:
+  Sia un \hl{automa a stati finiti} $\mathcal{A}$ che accetta un linguaggio
+  $L(\mathcal{A})$. Allora per ogni \hl{$x \in L$ con $|x| > |Q|$ esiste $q \in
+  Q$ e $w \in I^+$} tali da verificare una di queste condizioni:
 
   \begin{itemize}
-    \item $x = ywz$
-    \item $\delta^\star(q,w) = q$
+    \item \hl{$x = ywz$}
+    \item \hl{$\delta^\star(q,w) = q$}
   \end{itemize}
 
-  Come conseguenza si ha: $\forall n \in \mathbb{N} \geq 0, y w^n z \in L$
+  Come \hl{conseguenza} si ha: \hl{$\forall n \in \mathbb{N} \geq 0, y w^n z \in
+  L$}
 \end{lem}
 
 Il Pumping lemma, quindi, ci \hl{mette dei paletti sui tipi di linguaggi
@@ -468,20 +470,24 @@ Otterremo \hl{3 casi possibili}:
 
 \begin{enumerate}
   \item \hl{$w = a^p$} e quindi dovrebbe essere:
-    \[
+
+    \begin{equation}
       \mhl{
       x = a^m b^m = a^r a^p a^s b^m = a^r w a^s b^m \in L \text{ con } r+p+s=m
-    }
-    \]
+      }
+    \end{equation}
+
     \hl{Se il Pumping lemma dovesse valere}, allora si dovrebbe avere che
     \hl{$a^r w^k b^m \in L$} che ci porta ad un \hl{assurdo}.
   \item \hl{$w = b^p$ analogo al precedente}.
   \item \hl{$w = a^p b^q$} e quindi dovrebbe essere:
-    \[
+
+    \begin{equation}
       \mhl{
       x = a^m b^m = a^r a^p b^q b^s = a^r w b^s \in L \text{ con } r+p=q+s=m
       }
-    \]
+    \end{equation}
+
     \hl{Se il Pumping lemma dovesse valere}, allora si dovrebbe avere che
     \hl{$a^r w^k b^s \in L$} che ci porta ad un \hl{assurdo}.
 \end{enumerate}
@@ -506,12 +512,10 @@ altre viste fino ad ora.} Proviamo a costruirne qualcuno.
 risultato sarà un automa che \hl{accetta solo stringe solo stringhe accettate da
 entrambi gli automi di partenza}. Dati i due automi di partenza:
 
-\[
-  \begin{aligned}
-    A^1 &= \langle Q^1, I, \delta^1, q_0^1, F^1 \rangle \\
-    A^2 &= \langle Q^2, I, \delta^2, q_0^2, F^2 \rangle
-  \end{aligned}
-\]
+\begin{align}
+  A^1 &= \langle Q^1, I, \delta^1, q_0^1, F^1 \rangle \\
+  A^2 &= \langle Q^2, I, \delta^2, q_0^2, F^2 \rangle
+\end{align}
 
 Possiamo scrivere l'automa intersezione come:
 
@@ -673,20 +677,20 @@ che l'automa \hl{ha effettuato una $\epsilon$-mossa} e la indichiamo
 Formalizziamo ora i concetti introdotti.
 
 \begin{defn}[\hl{Automa a stati finiti a pila}]\label{defn:automa-pila}
-  Definiamo un automa a stati finiti con pila $\mathcal{A}$ una eptupla
-  $\langle I, \Gamma, \delta, q_0, Z_0, F \rangle$ dove:
+  Definiamo un \hl{automa a stati finiti con pila} $\mathcal{A}$ una
+  \hl{eptupla} \hl{$\langle I, \Gamma, \delta, q_0, Z_0, F \rangle$} dove:
 
   \begin{itemize}
-    \item $Q, I, q_0, F$ sono definiti alla stessa maniera di un FSA
-    \item $\Gamma$ è l'alfabeto di pila
-    \item $Z_0$ è il simbolo iniziale di pila
-    \item
-      $\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times \Gamma^\star$
-      è la funzione di transizione
+    \item \hl{$Q, I, q_0, F$} sono definiti alla \hl{stessa maniera} di un
+      \hl{FSA}
+    \item \hl{$\Gamma$} è l'\hl{alfabeto di pila}
+    \item \hl{$Z_0$} è il \hl{simbolo iniziale di pila}
+    \item \hl{$\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times
+      \Gamma^\star$} è la \hl{funzione di transizione}
   \end{itemize}
 \end{defn}
 
-\begin{defn}[\hl{Automa a stati finiti a pila traduttore}]\label{defn:automa-pila-trad}
+\begin{defn}[Automa a stati finiti a pila traduttore]\label{defn:automa-pila-trad}
   Definiamo un automa a stati finiti con pila $\mathcal{A}$ una ennupla
   $\langle I, \Gamma, \delta, q_0, Z_0, F, 0, \eta \rangle$ dove:
 
@@ -728,16 +732,16 @@ generale dell'automa. Formalizziamo, quindi, \hl{la generalizzazione dello
 stato: la configurazione}.
 
 \begin{defn}[Configurazione]\label{def:configurazione}
-  Chiamiamo configurazione di un automa a pila la tripla (se traduttore
+  Chiamiamo \hl{configurazione} di un automa a pila la \hl{tripla} (se traduttore
   quadrupla) $c = \langle q, x \gamma \rangle$
   ($\langle q, x \gamma, z \rangle$) dove:
 
   \begin{itemize}
-    \item $q \in Q$ è lo stato dell'organo di controllo
-    \item $x$ è la stringa ancora da leggere nel nastro d'ingresso
-    \item $\gamma$ è la stringa di caratteri nella pila (rappresentati usando la
-      convenzione ``alto-destra basso-sinistra'')
-    \item $z$ la stringa già scritta sul nastro di uscita
+    \item \hl{$q \in Q$} è lo \hl{stato} dell'organo di controllo
+    \item \hl{$x$} è la \hl{stringa ancora da leggere} nel nastro d'ingresso
+    \item \hl{$\gamma$} è la \hl{stringa di caratteri nella pila} (rappresentati
+      usando la convenzione ``alto-destra basso-sinistra'')
+    \item \hl{$z$} la \hl{stringa già scritta sul nastro di uscita}
   \end{itemize}
 \end{defn}
 
@@ -843,13 +847,13 @@ più articolata. Possiamo suddividerla in \hl{due ``fasi''}:
 Introduciamo anche la \hl{nuova notazione per le transizioni} (tra parentesi è
 riportata la parte aggiuntiva nel caso di presenza di output):
 
-\[
+\begin{equation}
   \mhl{
   i, \langle A_1, \ldots, A_k \rangle/(o),
     \langle A'_1, \ldots, A'_k \rangle,
     \langle M_0, \ldots, M_k, (M_{k+1}) \rangle
   }
-\]
+\end{equation}
 
 \begin{itemize}
   \item $i$: carattere letto dal nastro di ingresso
@@ -885,9 +889,9 @@ leggermente diverse da quelle viste fino ad ora}:
   \item Per convenzione la \hl{$\delta (\eta)$ non è definita a partire dagli
     stati finali}:
 
-    \[
+    \begin{equation}
       \forall q \in F \delta(q, \ldots) = \bot, (\eta (q, \ldots) = \bot)
-    \]
+    \end{equation}
 
   \item La macchina si \hl{ferma in uno stato $q$ quando
     $\delta(q, \ldots) = \bot$}
@@ -1108,11 +1112,11 @@ Proviamo a dimostrare il risultato sopra. Procedendo con le \hl{stesse modalità
 del caso deterministico}, possiamo ottenere una \hl{computazione che termina e
 accetta il linguaggio complemento}. Se però \hl{consideriamo} il caso:
 
-\[
+\begin{equation}
   \langle q_0, x, z_0 \rangle = c_0 \vdash^\star \{
     \langle q_1, \epsilon, \gamma_1 \rangle,
     \langle q_2, \epsilon, \gamma_2 \rangle \}, \mhl{ q_1 \in F, q_2 \notin F }
-\]
+\end{equation}
 
 La stringa \hl{$x$ è accettata anche se scambio $F$ con $Q \setminus F$},
 rendendo impossibile la costruzione del complemento.
@@ -1209,16 +1213,19 @@ loro volta descritti come composti da altri componenti fino ad arrivare agli
 elementi fondamentali dell'alfabeto considerato}.
 
 \begin{defn}[\hl{Grammatica}]\label{def:grammatica}
-  Si definisce grammatica $G$ la quadrupla $(V_n, V_t, P, S)$ dove:
+  Si definisce \hl{grammatica $G$} la \hl{quadrupla $(V_n, V_t, P, S)$} dove:
 
   \begin{itemize}
-    \item $V_n$ è l'alfabeto o vocabolario non terminale
-    \item $V_t$ è l'alfabeto o vocabolario terminale
-    \item $S \in V_n$ è l'assioma o simbolo iniziale
-    \item
-      $P \subseteq V_n^+ \times {(V_t \cup V_n)}^\star =
-      \{S \to \alpha, \alpha \to \beta, \ldots\}$ l'insieme di riscrittura o
-      delle produzioni
+    \item \hl{$V_n$} è l'alfabeto o \hl{vocabolario non terminale}
+    \item \hl{$V_t$} è l'alfabeto o \hl{vocabolario terminale}
+    \item \hl{$S \in V_n$} è l'\hl{assioma} o simbolo iniziale
+    \item L'insieme di riscrittura o delle \hl{produzioni}:
+
+      \begin{equation}
+        P \subseteq V_n^+ \times {(V_t \cup V_n)}^\star =
+          \{S \to \alpha, \alpha \to \beta, \ldots\}
+      \end{equation}
+
   \end{itemize}
 \end{defn}
 
@@ -1227,14 +1234,14 @@ elementi fondamentali dell'alfabeto considerato}.
 \end{nota}
 
 \begin{defn}[\hl{Relazione di derivazione immediata}]\label{def:deriv}
-  Definiamo la relazione di derivazione immediata $\deriv[G]$ per una grammatica
-  $G = (V_t, V_n, P, S)$ come $\alpha \deriv[G] \beta$ se e solo se dati
-  $\alpha \in V^+$, $\beta \in V^\star$:
+  Definiamo la \hl{relazione di derivazione immediata $\deriv[G]$} per una
+  grammatica $G = (V_t, V_n, P, S)$ come \hl{$\alpha \deriv[G] \beta$ se e solo
+  se} dati $\alpha \in V^+$, $\beta \in V^\star$:
 
   \begin{enumerate}
-    \item $\alpha = \alpha_1 \alpha_2 \alpha_3$
-    \item $\beta = \alpha_1 \beta_2 \alpha_3$
-    \item $\alpha_2 \to \beta_2 \in P$
+    \item \hl{$\alpha = \alpha_1 \alpha_2 \alpha_3$}
+    \item \hl{$\beta = \alpha_1 \beta_2 \alpha_3$}
+    \item \hl{$\alpha_2 \to \beta_2 \in P$}
   \end{enumerate}
 \end{defn}
 
@@ -1248,9 +1255,9 @@ elementi fondamentali dell'alfabeto considerato}.
   Definiamo $L(G)$ il linguaggio generato dalla grammatica
   $G = (V_t, V_n, P, S)$ un linguaggio tale che:
 
-  \[
+  \begin{equation}
     L(G) = \{ x \in V_t^\star : S \derivstar x \}
-  \]
+  \end{equation}
 \end{defn}
 
 \begin{esempio}
@@ -1346,10 +1353,10 @@ dimostrano con una semplice induzione):
   Per ottenere la grammatica equivalente ad un FSA\@:
 
   \begin{itemize}
-    \item Poniamo $V_n = Q, V_t = I, S = \langle q_0 \rangle$
-    \item Per ogni $\delta(q, i) = q'$ diciamo che $\langle q \rangle \to i
-      \langle q' \rangle \in P $. Se $q' \in F$ aggiungiamo anche $\langle q
-      \rangle \to  i \in P$.
+    \item Poniamo \hl{$V_n = Q, V_t = I, S = \langle q_0 \rangle$}
+    \item \hl{Per ogni $\delta(q, i) = q'$} diciamo che
+      \hl{$\langle q \rangle \to i \langle q' \rangle \in P$}. Se
+      \hl{$q' \in F$} aggiungiamo anche \hl{$\langle q \rangle \to i \in P$}.
   \end{itemize}
 \end{prop}
 
@@ -1357,9 +1364,9 @@ dimostrano con una semplice induzione):
   Per ottenere lo NFA corrispondente alla grammatica:
 
   \begin{itemize}
-    \item Poniamo $Q = V_n \cup \{q_f\}, I = V_t, q_0 = S, F = \{q_f\} $
-    \item Se $A \to bC \in P$ allora $\delta(A,b) = C$. Invece se $A \to b \in
-      P$ allora $\delta(A, b) = q_f$.
+    \item Poniamo \hl{$Q = V_n \cup \{q_f\}, I = V_t, q_0 = S, F = \{q_f\}$}
+    \item Se \hl{$A \to bC \in P$} allora \hl{$\delta(A,b) = C$}. Invece se
+      \hl{$A \to b \in P$} allora \hl{$\delta(A, b) = q_f$}.
   \end{itemize}
 \end{prop}
 
@@ -1646,6 +1653,54 @@ computazioni devono rispettare.
   $\forall x (x \in L_4 \iff \#(x,a)=\#(x,b))$.
 \end{esempio}
 
+\subsubsection{Precondizioni e postcondizioni}
+
+Approfondiamo qui un uso della logica che ci interessa ai fini del corso: la
+specifica di condizioni che il nostri programma deve rispettare. Si preferisce
+specificare le condizioni iniziali e finali dell'ambiente invece di specificare
+il funzionamento specifico del programma perché di solito è più importante e
+flessibile definire correttamente cosa un programma faccia rispetto a definire
+una specifica implementazione. Infatti diverse implementazione possono
+rispettare le stesse precondizioni e postcondizioni, portando a programmi
+ottimizzati per diverse situazioni (uso minore di memoria, velocità di
+esecuzione maggiore, uso di particolari costrutti ecc\ldots) che però sono
+funzionalmente equivalenti.
+
+Per la specifica delle condizioni useremo la notazione di Hoare:
+
+\begin{equation}
+  \begin{aligned}
+    & \{ \mathit{Precondizione} \} \\
+    & \mathit{Programma} \\
+    & \{ \mathit{Postcondizione} \}
+  \end{aligned}
+\end{equation}
+
+Se valgono le precondizioni, affinché il programma sia considerato corretto
+dopo l'esecuzione dovranno valere le postcondizioni. Nella pratica la condizioni
+possono essere definite tramite linguaggio naturale nei commenti, funzioni di
+\texttt{assert} o linguaggi ad-hoc. Nel nostro contesto teorico le definiremo
+usando la logica del primo ordine arricchita dei necessari predicati.
+
+\begin{esempio}
+  Sia un programma $P$ che implementa la ricerca di un
+  elemento $x$ in un array ordinato di $n$ elementi. La precondizione sarà che
+  l'array sia ordinato e la postcondizione che la variabile logica
+  $\mathtt{found}$ debba essere vera se e solo se l'elemento $x$ esiste
+  nell'array $a$. Notiamo che non ci interessa che tipo di algoritmo è
+  implementato da $P$. Usando la notazione di Hoare, scriveremo:
+
+  \[
+    \begin{aligned}
+      & \{ \forall i (1 \leq i \leq n-1 \implies a[i] \leq a[i+1] ) \} \\
+      & P \\
+      & \{ \mathtt{found} \iff \exists i (1 \leq u \leq n \land a[i] = x ) \}
+    \end{aligned}
+  \]
+
+  Dove abbiamo definito ``implicitamente'' $a[i]$ l'$i$-esimo elemento di $a$.
+\end{esempio}
+
 \subsection{La logica monadica del primo ordine}\label{sec:mfo}
 
 Consideriamo un \hl{frammento di logica del primo ordine} che ci permette di
@@ -1654,15 +1709,19 @@ monadica del primo ordine''} o MFO\@. La sintassi di questa logica è la
 seguente:
 
 \begin{defn}[\hl{Sintassi della MFO}]\label{def:mfo-sintassi}
-  Una formula $\phi$ fa parte della logica monadica del primo ordine se:
+  Una \hl{formula} $\phi$ fa parte della \hl{logica monadica del primo ordine}
+  se:
 
-  \[
+  \begin{equation}
+    \mhl{
     \phi\coloneqq a(x) \mid x < y \mid\neg\phi\mid\phi\land\phi\mid\forall x(\phi)
-  \]
+    }
+  \end{equation}
 
   Con:
   \begin{enumerate}
-    \item $a \in I$ e $a(x)$ un predicato per ogni singolo simbolo dell'alfabeto
+    \item \hl{$a \in I$ e $a(x)$} un predicato per ogni singolo simbolo
+      dell'alfabeto
     \item $<$ la relazione di minore
     \item $\mathbb{N}$ dominio delle variabili
   \end{enumerate}
@@ -1702,26 +1761,28 @@ Per comodità possiamo \hl{definire} altre \hl{abbreviazioni} del tipo
 Per definire la \hl{semantica} introduciamo la definizione di \hl{assegnamento}.
 
 \begin{defn}[\hl{Assegnamento}]\label{def:mfo-assegnamento}
-  Siano $w\in I^+$ e $V_1$ l'insieme delle variabili. Un assegnamento è una
-  funzione $\nu_1 : V_1 \to \{0,1,\ldots,|w|-1\}$ tale che:
+  Siano \hl{$w\in I^+$ e $V_1$ l'insieme delle variabili}. Un \hl{assegnamento}
+  è una \hl{funzione $\nu_1 : V_1 \to \{0,1,\ldots,|w|-1\}$} tale che:
 
   \begin{itemize}
-    \item $w,\nu_1 \models a(x)$ se e solo se $w = uav$ e $|u| = \nu_1(x)$
-    \item $w,\nu_1 \models x < y$ se e solo se $\nu_1(x) < \nu_1(y)$
-    \item $w,\nu_1 \models \neg\phi$ se e solo se non $w\nu_1 \models \phi$
-    \item $w,\nu_1 \models \phi_1 \land \phi_2$ se e solo se
-      $w,\nu_1 \models \phi_1$ e $w,\nu_1 \models \phi_2$
-    \item $w,\nu_1 \models a(x)$ se e solo se $w,\nu_1' \models \phi$ per ogni
-      $v_1'$ con $\nu_1'(y) = \nu_1(y)$, $y \neq x$
+    \item \hl{$w,\nu_1 \models a(x)$} se e solo se \hl{$w = uav$} e
+      $|u| = \nu_1(x)$
+    \item \hl{$w,\nu_1 \models x < y$} se e solo se \hl{$\nu_1(x) < \nu_1(y)$}
+    \item \hl{$w,\nu_1 \models \neg\phi$} se e solo se \hl{non
+      $w\nu_1 \models \phi$}
+    \item \hl{$w,\nu_1 \models \phi_1 \land \phi_2$} se e solo se
+      \hl{$w,\nu_1 \models \phi_1$ e $w,\nu_1 \models \phi_2$}
+    \item \hl{$w,\nu_1 \models a(x)$} se e solo se \hl{$w,\nu_1' \models \phi$
+      per ogni $v_1'$ con $\nu_1'(y) = \nu_1(y)$, $y \neq x$}
   \end{itemize}
 \end{defn}
 
 Possiamo così definire il \hl{linguaggio corrispondente ad una formula chiusa
 $\phi$ come}:
 
-\[
-  L(\phi) = \{w\in I^+ : \exists\nu_1 (w, \nu_1 \models \phi)\}
-\]
+\begin{equation}
+  \mhl{ L(\phi) = \{w\in I^+ : \exists\nu_1 (w, \nu_1 \models \phi)\} }
+\end{equation}
 
 \subsubsection{Proprietà}\label{sec:mfo-proprietà}
 
@@ -1749,10 +1810,11 @@ In questo caso la \hl{semantica} prevede anche un \hl{secondo assegnamento}
 aggiuntive}:
 
 \begin{itemize}
-  \item $w, \nu_1, \nu_2 \models X(x)$ se solo se $\nu_2(x) \in \nu_2(X)$
-  \item $w, \nu_1, \nu_2 \models \exists X(\phi)$ se e solo se
-    $w, \nu_1, \nu_2' \models \phi$ per qualche
-    $\nu_2'$ con $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$
+  \item \hl{$w, \nu_1, \nu_2 \models X(x)$} se solo se
+    \hl{$\nu_2(x) \in \nu_2(X)$}
+  \item \hl{$w, \nu_1, \nu_2 \models \exists X(\phi)$} se e solo se
+    \hl{$w, \nu_1, \nu_2' \models \phi$ per qualche $\nu_2'$ con
+    $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$}
 \end{itemize}
 
 \begin{esempio}
@@ -1768,5 +1830,126 @@ aggiuntive}:
 
   Dove $P$ indica un insieme di posizioni dispari.
 \end{esempio}
+
+\subsubsection{Trasformare da MSO a FSA}\label{sec:mso-fsa}
+
+In generale, grazie alle quantificazioni del secondo ordine, \hl{per ogni FSA},
+è possibile scrivere una \hl{formula MSO equivalente}. In modo non rigoroso
+possiamo procedere così. Innanzitutto \hl{ogni predicato monadico quantificato
+corrisponde a ciascuno stato}. \hl{Se} nell'automa \hl{non è possibile essere in
+diversi stati contemporaneamente (determinismo), mettiamo i vari stati in
+esclusione mutua}.  Infine \hl{codifichiamo} tutte le \hl{transizioni} usando
+\hl{$last(x)$} e \hl{$\neg last(x)$} per \hl{caratterizzare gli stati finali e
+non finali} rispettivamente.
+
+Si può eseguire anche la \hl{trasformazione inversa} tramite un processo ben
+definito, il \hl{teorema di Büchi-Elgot-Trakhtenbrot}. Noi \hl{non lo vedremo}
+poiché è un teorema molto tecnico.
+
+Le due trasformazioni descritte ci premettono, quindi, di \hl{sancire
+l'equivalenza tra FSA e MSO}\@.
+
+\section{Teoria della computazione}\label{sec:teoria-computazione}
+
+Automi, grammatiche e altri formalismi possono essere considerati modelli
+meccanici per risolvere problemi matematici. Alcuni di questi sono più potenti
+di altri, ad esempio le MT riconosco una famiglia di linguaggi che contiene
+linguaggi non riconoscibili dai PDA\@. Abbiamo inoltre affermato che nessun
+formalismo sarà più potente di una macchina di Turing. \hl{Questi modelli
+possono, però, catturare l'essenza di un generico solutore meccanico?} Inoltre
+se un \hl{problema è stato formalizzato adeguatamente, possiamo sempre
+risolverlo mediante dispositivi meccanici?}
+
+\subsection{Formalizzazione di problema}
+
+Prima di parlare di risoluzione e risolvibilità, dobbiamo definire bene il
+concetto di problema.  Nei precedenti capitoli abbiamo \hl{già incontrato la
+formalizzazione di un problema come riconoscimento} ($x \in L$) \hl{o
+traduzione} ($y = \tau(x)$) \hl{di stringhe} su un alfabeto. Con questi due
+formalismi \hl{è possibile descrivere tutti problemi con dominio numerabile}.
+Infatti un \hl{problema con dominio numerabile può essere sempre ricondotto al
+calcolo di una funzione $f: \mathbb{N} \to \mathbb{N}$}. Si può inoltre
+dimostrare che riconoscimento e traduzione possono ridotte l'una all'altra:
+
+\begin{thm}[Equivalenza tra traduzione e riconoscimento]\label{thm:equiv-trad-ric}
+  Se una macchina può \hl{risolvere tutti i problemi del tipo $y = \tau(x)$} allora
+  può \hl{risolvere anche i problemi del tipo $x \in L$ e viceversa}.
+\end{thm}
+\begin{proof}[Dimostrazione teorema~\ref{thm:equiv-trad-ric}]
+  Dimostriamo i due versi dell'implicazione separatamente:
+
+  \begin{description}
+    \item[$\implies$] Se ho una macchina che può risolvere tutti i problemi
+      della forma $y = \tau (x)$ e voglio usarla per risolvere il problema $x
+      \in L$ è sufficiente definire $\tau(x) = 1$ se $x \in L$ e $0$ altrimenti
+    \item[$\impliedby$] Se ho una macchina che può risolvere tutti i problemi
+      della forma $x \in L$, posso definire un linguaggio $L_{\tau} = \{
+      x\termsep y : y = \tau(x) \}$. Per una $x$ fissata, posso enumerare
+      tutte le possibili stringhe $y$ sull'alfabeto di uscita e per ognuna di
+      esse posso chiedere alla macchina se $x\termsep y \in L_{\tau}$.
+  \end{description}
+\end{proof}
+
+La \hl{classe dei problemi che possono essere risolti da una MT è indipendente
+dall'alfabeto scelto, sempre che ci siano almeno due simboli}. Prima abbiamo
+detto che le macchine di Turing sono il più potente formalismo di calcolo
+automatico. Questa è la cosiddetta tesi di Church. Esso non è un teorema poiché
+andrebbe verificato ogni volta che qualcuno inventa un nuovo modello
+computazionale. Nonostante ciò è largamente accettato dagli studiosi come
+teorema.
+
+\begin{prop}[\hl{Tesi di Church}]\label{thm:tesi-church-1}
+  \hl{Se un problema è umanamente calcolabile, allora esisterà una macchina di
+  Turing in grado di risolverlo}.
+\end{prop}
+
+Tutti i \hl{modelli che abbiamo esaminato sono discreti}, in accordo con la
+tecnologia digitale nel quale vengono impiegati. Inoltre \hl{data una MT, si può
+costruire un programma in Java, C o FORTRAN che la simula e viceversa}. Questi
+\hl{linguaggi di programmazione} hanno, quindi, la stessa espressività delle
+macchine di Turing e \hl{vengono detti ``Turing-completi''}. Esistono anche dei
+linguaggi che non sono Turing-completi come ad esempio il Datalog.
+
+\subsection{Gli algoritmi}
+
+Introduciamo un altro concetto fondamentale per l'informatica: l'algoritmo.
+
+\begin{defn}[Algoritmo (intuitivo)]\label{def:alg-non-formale}
+  Con algoritmo intendiamo una \hl{procedura per risolvere problemi} mediante un
+  dispositivo di \hl{calcolo automatico}
+\end{defn}
+
+Gli \hl{algoritmi} godono di alcune \hl{importanti proprietà}, anche queste
+enunciate in modo informale.
+
+\begin{prop}
+  Sia \hl{$A$ un algoritmo} in esecuzione su una \hl{macchina $M$ dotata di un
+  processore meccanico (digitale) e di una memoria utilizzabile dal processore
+  in modo arbitrario}. Si ha che:
+
+  \begin{enumerate}
+    \item La \hl{sequenza di istruzioni} di $A$ dev'essere \hl{finita}
+    \item \hl{Qualunque istruzione} di $A$ dev'essere \hl{eseguibile dal
+      processore} meccanico di $M$
+    \item La \hl{computazione è discreta}, ossia l'informazione è codificata
+      digitalmente e la computazione procede attraverso passi discreti
+    \item $A$ è \hl{eseguito in modo deterministico}
+    \item \hl{Non c'è limite} sulla quantità di \hl{dati in ingresso e in
+      uscita}
+    \item \hl{Non c'è limite} sulla quantità di \hl{memoria richiesta} per
+      effettuare una computazione
+    \item \hl{Non c'è limite} sul \hl{numero di passi discreti richiesti} per
+      effettuare una computazione
+  \end{enumerate}
+\end{prop}
+
+Possiamo \hl{descrivere ogni problema calcolabile tramite un sistema di calcolo
+automatico con un algoritmo} e quindi, per la tesi di Church, \hl{ogni algoritmo
+potrà essere eseguito da una macchina di Turing}. Possiamo allora
+\hl{riformulare} la tesi di Church come:
+
+\begin{prop}[Tesi di Church]\label{thm:tesi-church-2}
+  \hl{Ogni algoritmo si può codificare con un macchina di Turing}.
+\end{prop}
 
 \end{document}
