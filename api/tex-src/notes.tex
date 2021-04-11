@@ -262,7 +262,7 @@ altrimenti diremo che l'ha rifiutato}.
 \end{figure}
 
 Se \hl{$\delta$ è una funzione l'automa si dice completo, altrimenti non
-completo}.  Gli \hl{automi non completi} possono facilmente \hl{resi completi
+completo}. Gli \hl{automi non completi} possono facilmente \hl{resi completi
 ``riempiendo'' le transizioni mancanti con delle transizioni verso uno stato di
 ``sink'' dal quale non si può più uscire}.
 
@@ -1290,7 +1290,7 @@ elementi fondamentali dell'alfabeto considerato}.
 Nella \hl{sezione precedente} abbiamo mostrato con degli \hl{esempi} che è
 possibile \hl{generare linguaggi che sappiamo essere riconosciuti da degli
 automi} (usando la potenza minima): il primo da un FSA, il secondo da un PDA e
-il terzo da una MT\@.  È possibile organizzare le \hl{grammatiche} in una
+il terzo da una MT\@. È possibile organizzare le \hl{grammatiche} in una
 \hl{gerarchia in base al loro potere generativo} e inoltre \hl{è possibile che
 ci sia una relazione tra le potenze riconoscitive dei vari autonomi e le
 grammatiche}?
@@ -1423,7 +1423,7 @@ modo che essa \hl{generi tutte le possibili stringhe del tipo $x \termsep X$}
 con $x \in V_t^\star$, $\termsep \in V_n$ un separatore  e \hl{$X$ una ``copia''
 di $x$ fatta solo di elementi non terminali}. Il nostro \hl{obiettivo} è
 ottenere una \hl{derivazione $x \termsep X \derivstar x$ se e solo se $x$ è
-accettata dalla MT}\@.  Innanzitutto la grammatica deve possedere le
+accettata dalla MT}\@. Innanzitutto la grammatica deve possedere le
 \hl{produzioni che generano $x \termsep X$} (consideriamo $V_t = \{a,b\}$):
 
 \begin{align}
@@ -1519,7 +1519,7 @@ $\termsep\alpha Bq_f AC\beta$.
 accorciano man mano che vengono ``espanse''}. Quindi se \hl{costruiamo} una
 \hl{macchina di Turing equivalente} utilizzando i \hl{metodi descritti} in
 questa sezione, essa \hl{userà al massimo la memoria occupata inizialmente dalla
-stringa} in ingresso $x$.  Possiamo, allora, \hl{limitare la potenza} della
+stringa} in ingresso $x$. Possiamo, allora, \hl{limitare la potenza} della
 nostra macchina fornendogli una \hl{memoria di dimensione finita}, ottenendo
 così la macchina a minore potenza equivalente alle grammatiche monotone. Un
 \hl{automa così definito è detto automa lineare}.
@@ -1607,7 +1607,7 @@ computazioni devono rispettare.
 
 \begin{esempio}
   Consideriamo il linguaggio $L_2 = a^* b^* c^*$. Possiamo vederlo come $a^* b^*
-  .  b^* c^*$ dove entrambi questi sotto-linguaggi, chiamiamoli $L_1$ ed $L_3$,
+  . b^* c^*$ dove entrambi questi sotto-linguaggi, chiamiamoli $L_1$ ed $L_3$,
   hanno struttura simile a $L_1$. Quindi una stringa appartiene ad $L_2$ se
   appartiene ad uno dei due linguaggi oppure se la prima sotto-stringa inizia
   con `a' seguita da un suffisso $y$ composto sia da `a' e `b' e la seconda
@@ -1838,7 +1838,7 @@ In generale, grazie alle quantificazioni del secondo ordine, \hl{per ogni FSA},
 possiamo procedere così. Innanzitutto \hl{ogni predicato monadico quantificato
 corrisponde a ciascuno stato}. \hl{Se} nell'automa \hl{non è possibile essere in
 diversi stati contemporaneamente (determinismo), mettiamo i vari stati in
-esclusione mutua}.  Infine \hl{codifichiamo} tutte le \hl{transizioni} usando
+esclusione mutua}. Infine \hl{codifichiamo} tutte le \hl{transizioni} usando
 \hl{$last(x)$} e \hl{$\neg last(x)$} per \hl{caratterizzare gli stati finali e
 non finali} rispettivamente.
 
@@ -1863,7 +1863,7 @@ risolverlo mediante dispositivi meccanici?}
 \subsection{Formalizzazione di problema}
 
 Prima di parlare di risoluzione e risolvibilità, dobbiamo definire bene il
-concetto di problema.  Nei precedenti capitoli abbiamo \hl{già incontrato la
+concetto di problema. Nei precedenti capitoli abbiamo \hl{già incontrato la
 formalizzazione di un problema come riconoscimento} ($x \in L$) \hl{o
 traduzione} ($y = \tau(x)$) \hl{di stringhe} su un alfabeto. Con questi due
 formalismi \hl{è possibile descrivere tutti problemi con dominio numerabile}.
@@ -1951,5 +1951,198 @@ potrà essere eseguito da una macchina di Turing}. Possiamo allora
 \begin{prop}[Tesi di Church]\label{thm:tesi-church-2}
   \hl{Ogni algoritmo si può codificare con un macchina di Turing}.
 \end{prop}
+
+Quali sono però i problemi che possiamo risolvere tramite un algoritmo? Una
+risposta un po' banale è: quelli risolvibili dalle macchine di Turing.
+
+\subsection{Enumerazione algoritmica}\label{sec:enum-alg}
+
+\begin{defn}[\hl{Insieme enumerabile algoritmicamente}]\label{def:enum-alg}
+  Un \hl{insieme} $S$ può essere \hl{enumerato algoritmicamente} se possiamo
+  trovare una \hl{biezione $E$ tra $S$ $\mathbb{N}$ calcolabile con un
+  algoritmo}.
+\end{defn}
+
+Dimostriamo che l'insieme delle macchine di Turing è un insieme enumerabile
+algoritmicamente:
+
+\begin{prop}[\hl{Enumerazione delle MT}]\label{thm:enum-alg-MT}
+  L'\hl{insieme} di \hl{tutte le macchine di Turing} a \hl{nastro singolo} con
+  alfabeto \hl{$A = \{ 0,1,\not{b}\}$} è un \hl{insieme enumerabile
+  algoritmicamente}.
+\end{prop}
+\begin{proof}
+  Consideriamo le MT con solo due stati. Iniziamo con il calcolare la
+  cardinalità dell'insieme di tutte le possibili funzioni di transizione
+  realizzabili. Sappiamo che $\delta$ ha forma:
+
+  \[
+    \delta : Q \times A \to Q \times A \times \{R,L,S\} \cup \{\bot\}
+  \]
+
+  Sfruttando un risultato della teoria insiemistica che ci dice che il numero di
+  funzioni $f: D \to R$ è $|R|^{|D|}$, otteniamo che il numero di funzioni sarà:
+
+  \[
+    {[|Q|*|A|*(3+1)]}^{2*3} = 19^6
+  \]
+
+  Considerando che abbiamo 4 possibili scelte di stati finali, otteniamo un
+  numero di $4*19^6$ macchine di Turing a 2 stati. Iterando il procedimento,
+  otterremo sempre un numero finito e al più numerabile di MT\@. Ora ci basta
+  ordinare secondo un ordine arbitrario e quindi scrivere un algoritmo che le
+  enumeri.
+\end{proof}
+
+Il numero \hl{$E(M)$} è detto \hl{numero di Gödel} della MT $M$ ed indica il suo
+\hl{indice nella enumerazione algoritmica} di tutte le MT creabili. La \hl{$E$}
+è detta la \hl{gödelizzazione} dell'insieme delle MT\@.
+
+\subsection{Macchina di Turing universale}\label{sec:utm}
+
+Chiediamoci ora se le \hl{macchine di Turing} riescano a \hl{modellare i
+calcolatori programmabili}. Una MT con queste caratteristiche è \hl{detta
+macchina di Turing universale (UTM)}. La \hl{UTM computa} la funzione
+\hl{$g(y,x) = f_y(x)$} dove $f_y$ è la funzione calcolata dalla MT di indice
+$y$.
+
+Per come è definita, sembrerebbe che la UTM sia un diverso tipo di automa
+rispetto alla MT\@: la prima lavora $\mathbb{N}^2$ mentre la seconda si
+$\mathbb{N}$. Sappiamo però che la \hl{cardinalità di $\mathbb{N}^2$ è uguale a
+quella di $\mathbb{N}$} in quanto esiste la biezione:
+
+\begin{equation}
+  d(x,y) = \frac{(x+y)(x+y+1)}{2} + x
+\end{equation}
+
+Possiamo quindi esprimere $g(y,x)$ come $\hat{g}(n) = g(d^{-1}(n))$ con $n =
+d(y,x)$.
+
+Una \hl{UTM} che calcola $\hat{g}$ \hl{opererà in questo modo}:
+
+\begin{enumerate}
+  \item Dato $n$ calcola \hl{$\langle y,x \rangle = d^{-1}(n)$}
+  \item Costruisce la \hl{funzione di transizione $M_y$} calcolando
+    \hl{$E^{-1}$} e la memorizza sul nastro
+  \item In un'altra porzione di nastro \hl{memorizza una codifica della
+    configurazione di $M_y$}
+  \item Lascia sul nastro \hl{$f_y(x)$ se e solo se $M_y(x)$ termina la
+    computazione}
+\end{enumerate}
+
+\subsection{Funzioni calcolabili e problemi definibili}\label{sec:func-calc}
+
+\hl{È possibile calcolare tutte le funzioni da $\mathbb{N}$ a $\mathbb{N}$?} In
+caso \hl{negativo}, per la tesi di Church, \hl{esisterebbero problemi non
+risolvibili tramite algoritmi}. Calcoliamo la cardinalità dell'insieme di
+funzioni naturali a variabile naturale. Consideriamo il sottoinsieme di $f:
+\mathbb{N} \to \{0,1\}$. È possibile calcolare la cardinalità di questo insieme
+ed essa è pari a quella di $\wp{\mathbb{N}}$ ossia $2^{\aleph_0}$ ossia la
+cardinalità del continuo. Visto che abbiamo considerato un sottoinsieme, la
+\hl{cardinalità che cerchiamo è sicuramente maggiore di quella del continuo}.
+Poiché l'\hl{insieme di funzioni calcolabili dalle macchine di Turing è per
+definizione numerabile} (di cardinalità $\aleph_0$) \hl{non abbiamo abbastanza
+MT} per risolvere tutti i problemi possibili.
+
+Precedentemente abbiamo detto che i problemi di dominio naturale sono sempre
+traducibili come la computazioni di una funzione di dominio naturale. Abbiamo
+però visto che non tutte le funzioni di questo tipo sono computabili. \hl{Per
+definire un problema}, infatti, \hl{ci serve una frase}, una stringa, \hl{di
+qualche linguaggio} che li caratterizzi. Per definizione, \hl{ogni linguaggio è
+un insieme numerabile} e ciò renderà anche l'\hl{insieme dei problemi definibili
+numerabile}. Quindi esistono problemi che non sono nemmeno definibili.
+
+Concentriamoci sui problemi che sono \hl{definibili}. \hl{Essi sono sempre
+risolvibili?} La risposta è \hl{negativa}. Un famoso problema definibile ma non
+risolvibile è il \hl{``Halting Problem''}.
+
+\begin{prop}[\hl{Halting problem}]
+  \hl{Costruito un programma che, dati dei dati in ingresso, esegue una
+  computazione che potrebbe terminare, è possibile determinare in anticipo se
+  terminerà?}
+\end{prop}
+\begin{proof}
+  Formalmente ci stiamo cheidendo se esiste una MT tale che data $f_y$, calcola
+  $g(y,x)$ totale tale che:
+
+  \[
+    g(y,x) =
+    \begin{cases}
+      1 \quad \text{se } f_y(x) \neq \bot \\
+      0 \quad \text{se } f_y(x) = \bot
+    \end{cases}
+  \]
+
+  Esistono diversi metodi di dimostrazione. Noi useremo quello per
+  diagonalizzazione a quello usato da Cantor per dimostrare la cardinalità del
+  continuo.
+
+  Enumeriamo tutte le funzione calcolabili da una macchina di Turing e i loro
+  valori:
+
+  \[
+    \begin{array}{c|ccc} % chktex 44
+          & 1      & 2      & \ldots \\
+      f_1 & f_1(1) & f_1(1) & \ldots \\
+      f_2 & f_2(1) & f_2(1) & \ldots \\
+      f_3 & f_3(1) & f_3(1) & \ldots \\
+      \vdots & \vdots & \vdots & \ddots
+    \end{array}
+  \]
+
+  Ipotizziamo allora per assurdo che la nostra funzione $g$ sia calcolabile.
+  Definiamo
+
+  \[
+    h(x) =
+    \begin{cases}
+      1 \quad \text{se } g(x,x) = 0\\
+      \bot \quad \text{altrimenti} \\
+    \end{cases}
+  \]
+
+  La funzione $h$ è ovviamente calcolabile se anche $g$ lo sarà. Abbiamo quindi
+  definito una funzione che si pone sulla diagonale della nostra tavola delle
+  funzioni.
+
+  Se $h$ è calcolabile, e lo è visto che per ipotesi anche $g$ è calcolabile,
+  esisterà una MT di indice $i$ tale che $h = f_i$. Provando a calcolare $h(i)$
+  otteniamo:
+
+  \begin{enumerate}
+    \item Se $h(i) = f_i(i) = 1$ allora $g(i,i)=0$, ossia $f_i(i)=\bot$ che è
+      una contraddizione
+    \item Se $h(i) = f_i(i) = 0$ allora $g(i,i)=1$, ossia $f_i(i)\neq\bot$ che è
+      una contraddizione
+  \end{enumerate}
+
+  Siamo arrivati così ad un assurdo e quindi $g$ non è calcolabile.
+\end{proof}
+
+L'Halting Problem ci permette di affermare con fermezza che l'insieme dei
+\hl{problemi risolvibili è strettamente incluso in quello dei problemi
+descrivibili.}
+
+\subsubsection{Specializzazioni e generalizzazioni}\label{sec:spec-gen}
+
+Consideriamo la funzione:
+
+\begin{equation}
+  h'(x) =
+  \begin{cases}
+    1 \quad \text{se } f_y(x) = \bot \\
+    0 \quad \text{altrimenti}
+  \end{cases}
+\end{equation}
+
+Essa è un \hl{caso particolare del Halting Problem} dove abbiamo imposto che in
+$g(y,x)$ sarà $y=x$. Si dimostra che \hl{$h'$ non è computabile}. Nota bene che
+$h'$ \hl{non è un corollario e non deriva dal Halting problem}. Infatti un
+\hl{caso specifico} di un problema \hl{non risolvibile non è detto che sia
+anch'esso non risolvibile} e, viceversa, la \hl{generalizzazione di un problema
+risolvibile non per forza mantiene la risolvibilità}. Se un problema è già
+\hl{risolvibile}, però, la \hl{sua specializzazione sarà anch'essa risolvibile}
+e viceversa la \hl{generalizzazione di un problema non risolvibile sarà ancora
+non risolvibile}.
 
 \end{document}

@@ -1123,3 +1123,160 @@ A questo punto possiamo riformulare la tesi di Church come: "Ogni algoritmo si
 può codificare con un macchina di Turing". Possiamo quindi dire che non esiste
 algoritmo che non possa essere risolto da una macchina di Turing. La MT è,
 quindi, il più potente calcolatore che avremo mai.
+
+Quali sono però i problemi che possiamo risolvere tramite un algoritmo? Una
+risposta un po' banale è: quelli risolvibili dalle macchine di Turing.
+
+### Enumerazione algoritmica
+
+Un insieme $S$ può essere enumerato algoritmicamente se possiamo trovare una
+biezione $E$ tra $S$ e $\mathbb{N}$ e può essere calcolata con un algoritmo.
+
+Un risultato importante è che tutte le macchine di Turing possono essere
+enumerate algoritmicamente. Per dimostrare ciò bisogna trovare un algoritmo
+capace di associare ad ogni MT un intero. Alcune ipotesi aggiunti che ci
+semplificano la vita, ma non ledono la generalità sono considerare una MT a
+nastro singolo e considerare un alfabeto fissato $A = \{ 0,1,\not{b}\}$.
+Consideriamo le MT con solo due stati. Calcoliamo la cardinalità dell'insieme di
+tutte le possibili funzioni di transizione. Innanzitutto le funzioni di
+transizione avranno forma:
+
+| Stato | $0$    | $1$    | $\not{b}$ |
+|-------|--------|--------|-----------|
+| $q_0$ | $\bot$ | $\bot$ | $\bot$    |
+| $q_1$ | $\bot$ | $\bot$ | $\bot$    |
+
+| Stato | $0$    | $1$           | $\not{b}$ |
+|-------|--------|---------------|-----------|
+| $q_0$ | $\bot$ | $\bot$        | $\bot$    |
+| $q_1$ | $\bot$ | $<q_0, 0, S>$ | $\bot$    |
+
+Consideriamo al segnatura di $\delta$:
+
+$$
+  \delta : Q \times A \to Q \times A \times \{R,L,S\} \cup \{\bot\}
+$$
+
+In generale, usando il teorema che afferma che il numero di funzioni $f: D \to
+R$ è $|R|^{|D|}$. Otteniamo quindi $|Q| = 2, |A|=3 \implies (2*3*3+1)^{(2*3)} =
+19^6$. Infine, considerando le 4 possibili scelte di stati finali otteniamo un
+massimo di $19^6*2^2$ macchine possibili. Ora possiamo ordinare l'insieme di
+macchine così ottenuto secondo un ordinamento arbitrario.
+
+Iterando il procedimento, possiamo sempre ricavare un numero finito di macchine
+di Turing a $n$ stati. Quindi possiamo scrivere un algoritmo che le conti e
+quindi enumerare algoritmicamente le macchine di Turing.
+
+Il numero $E(M)$ è detto numero di Gödel della macchina $M$ ed indica il suo
+indice. $E$ è detta Gödelizzazione.
+
+### Macchina di Turing universale
+
+Chiediamoci ora se le macchine di Turing siano in grado di modellare i
+calcolatori programmabili. Per ciò consideriamo la macchina di Turing
+universale (UTM). La UTM computa la funzione $g(y,x) = f_y (x)$ dove $f_y$ è la
+funzione calcolata dalla macchina di Turing con indice $y$.
+
+Per come l'abbiamo definita, sembrerebbe che la UTM è un altro tipo di automa
+rispetto alle MT poiché la prima lavora su $\mathbb{N}^2$ e l'altra su
+$\mathbb{N}$. Sappiamo però che $|\mathbb{N}^2| = |\mathbb{N}|$ poiché esiste
+una biezione tra i due membri:
+
+$$
+  d(x,y) = \frac{(x+y)(x+y+1)}{2} + x
+$$
+
+Possiamo così codificare $g(y,x)$ come una $\hat{g}(n) = g(d^{-1}(n))$ con $n =
+d(y,x)$ e $<y,x> = d^{-1}(n)$.
+
+Una UTM che calcola $\hat{g}$ è così organizzata:
+
+1. Dato $n$ calcola $d^{-1} = <y,x>$
+2. Costruisce la funzione di transizione $M_y$ calcolando $E^{-1}$ e la
+   memorizza sul suo nastro
+3. In un'altra porzione di nastro memorizza una codifica della configurazione
+   di $M_Y$
+4. Infine lascia sul nastro $f_y(x)$ se e solo se $M_y$ termina la sua
+   computazione su $x$
+
+### Funzioni calcolabili
+
+È possibile calcolare tutte le funzioni da $\mathbb{N}$ a $\mathbb{N}$? La
+risposta è purtroppo negativa. Quindi, per la tesi di Church, esistono problemi
+non risolvibili tramite algoritmi. Cerchiamo di capire il perché di ciò.
+Calcoliamo la cardinalità dell'insieme di funzioni naturali a variabile
+naturale. Consideriamo il sottoinsieme di $f: \mathbb{N} \to \{0,1\}$. È
+possibile calcolare la cardinalità di questo insieme ed essa è pari a quella di
+$\wp{\mathbb{N}}$ ossia $2^{\aleph_0}$ ossia la cardinalità del continuo. Visto
+che abbiamo considerato un sottoinsieme, la cardinalità che cerchiamo è
+sicuramente maggiore di quella del continuo. Poiché l'insieme di funzioni
+calcolabili dalle macchine di Turing è per definizione numerabile ($\aleph_0$)
+non abbiamo abbastanza MT per risolvere tutti i problemi possibili.
+
+### Problemi definibili
+
+Per definire un problema ci serve una frase, o stringa, di qualche linguaggio
+che li caratterizzi. Quindi ogni linguaggio è un sottoinsieme di $A*$, che è un
+insieme numerabile. L'insieme di tutti i problemi che posso definire è quindi
+numerabile. Sorge quindi la seguente domanda: tutti i problemi che posso
+definire sono risolvibili. L'implicazione inversa è ovviamente vera.
+
+Un famoso problema definibile ma non risolvibile algoritmicamente è lo "Halting
+Problem": costruito un programma che, dati dei dati in ingresso, esegue una
+computazione che potrebbe terminare, è possibile determinare in anticipo se
+terminerà? Formalmente ci chiediamo se esiste una macchina di Turing che data
+una funzione $f_y$ calcola la funzione $g(y,x)$ totale tale che $g(y,x) = 1$ se
+$f_y(x) \neq \bot$ e $g(y,x)=0$ se $f_y(x) = \bot$. Nota bene: non ci stiamo
+chiedendo se è possibile determinare l'arresto di uno specifico programma, ma di
+determinare l'arresto in generale.
+
+Esistono diversi metodi di dimostrazione. Noi
+useremo quello per diagonalizzazione analogo a quello usato da Cantor.
+Analogamente all'enumerazione delle cifre eseguita da Cantor, noi eseguiremo
+l'enumerazione di tutte le funzioni calcolabili da un macchina di Turing:
+
+```txt
+    | 1     | 2     | ... |
+----+-------+-------+-----|
+f1  | f1(1) | f1(2) | ... |
+f2  | f2(1) | f2(2) | ... |
+f3  | f3(1) | f3(2) | ... |
+... | ...   | ...   | ... |
+```
+
+Ipotizziamo per assurdo che la nostra funzione $g$ sia calcolabile. Da $g$
+definiamo una funzione $h$ tale che $h(x) = 1$ se $g(x,x) = 0$ e $\bot$
+altrimenti. È facile dimostrare che se $g$ è calcolabile lo è anche $h$.
+Definendo così $h$, abbiamo definito una funzione che si pone sulla diagonale
+della nostra tavola delle funzioni e altera i valori $g$. Se $h$ è computabile,
+allora esisterà una MT che la calcola, ossia per qualche $i$ $h = f_i$. Provando
+a calcolare $h(i)$ otteniamo:
+
+- Se $h(i) = f_i(i) = 1$ allora $g(i,i) = 0$ cioè $f_i(i)=\bot$, che è una
+  contraddizione
+- Se $h(i) = f_i(i) = \bot$ allora $g(i,i) = 1$ cioè $f_i(i)\neq\bot$ che è una
+  contraddizione
+
+Siamo arrivati, così, all'assurdo e quindi $g$ non è calcolabile.
+
+Possiamo quindi affermare con fermezza che l'insieme dei problemi decidibili è
+strettamente incluso in quello dei problemi descrivibili.
+
+La funzione:
+
+$$
+  h'(x) =
+  \begin{cases}
+    1 \quad f_y(x) = \bot \\
+    0 \quad \text{altrimenti}
+  \end{cases}
+$$
+
+Non è computabile. Essa un caso particolare del "Halting Problem" dove abbiamo
+imposto che in $g(y,x)$ sarà $y=x$. Nota bene che $h'$ non è un corollario dello
+"Halting Problem" e non deriva da esso. Infatti un caso specifico di un problema
+non risolvibile non è detto che sia anche esso non risolvibile, ma potrebbe
+diventare risolvibile e viceversa se un problema è risolvibile la sua
+generalizzazione non rimane generalmente risolvibile. Se un problema è già non
+risolvibile, invece, la sua generalizzazione sarà sempre non risolvibile e se
+un problema è risolvibile lo sarà sicuramente anche la sua specializzazione.
