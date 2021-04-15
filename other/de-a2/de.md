@@ -471,3 +471,46 @@ Nachmittag aus dem Haus gehen kann. Am liebsten wandere und radfahre ich.
 4. Was machen wir, wenn wir die Prüfungsfragen nicht verstehen?
 5. Was machen wir, wenn wir keinen Urlaub bekommen?
 6. Was machen wir, wenn das Wetter schlecht ist?
+
+## AB, Übung 2, Seite 94
+
+Ich habe 3 Wochen im Jahr Ferien. Ich mache immer im Sommer und im Winter
+Urlaub. Im Winter bleibe ich am liebsten bei mir zu Hause. Im Sommer fahre ich
+gern ans Meer oder in die Bergen. Für mich sind Ruhe und gut Freunde am
+wichtigsten.
+
+## AB, Übung 4, Seite 94
+
+1. Wenn es am 2.2. stürmt und scheint, ist der Frühling nicht mehr weit.
+2. Wenn es am 14.2. regnet, regnet es den ganzen Frühling.
+3. Wenn es im März Schnee gibt, ist das für die Felder schlecht.
+4. Wenn es im Mai regnet, ist das für die Felder gut.
+5. Wenn es im Juli heiss ist, wird der September sonnig und warm.
+6. Wenn es im November kalt ist, gibt es einen langen und kalten Winter.
+
+## AB, Übung 7, Seite 95
+
+1. Gehen wir gemeinsam einkaufen?  
+   Nein danke, ich habe kein Geld auf dem Konto.
+2. Sollen wir am Wochenende gemeinsam wandern gehen?  
+   Lieber nicht, die Wetterbericht sagt, dass es sicher regnet.
+3. Wir brauchen neue Möbel, sollen wir sie gemeinsam Kaufen?  
+   Das geht nicht, wir haben viele alte Möbel.
+4. Sollen wir ein Campingurlaub gemeinsam machen?  
+   Leider nicht, wir haben kein Zelt.
+5. Sollen wir zum Rockkonzert gemeinsam gehen?  
+   Nein danke, der Musik ist zu laut.
+
+## KB, Übung a, Seite 97 (B3)
+
+1. Es stört Veronika, wenn es am Wochenende regnet und viele Besucher im Museum
+   sind.
+2. Es stört Leonard, wenn niemand Geschirr spült und jemand seine Getränke aus
+   dem Kühlschrank nimmt.
+
+## KB, Übung b, Seite 97
+
+1. Es stört mich, wenn jemand schmutzige Kleidung tragt und zu langsam
+   Autofahren.
+2. Es stört mich nicht, wenn jemand bei Essen telefoniert und jemand mit vollem
+   Mund spricht.
