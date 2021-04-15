@@ -439,3 +439,35 @@ zwei bevölkerungsreichsten Kommunen: Milan und Turin.
 Die Sommer ist bei uns heiss. Es sind bis zu 40 Grad. Das ist zu warm für mich.
 Ich mag den Frühling am liebsten, weil es nicht zu warm ist und man am
 Nachmittag aus dem Haus gehen kann. Am liebsten wandere und radfahre ich.
+
+## AB, Übung 5, Seite 92
+
+1. waren,war - sein; gab - geben;
+2. sahen an - ansehen;
+3. stand - stehen; sah aus - aussehen; kam - kommen
+4. sprachen - sprechen;
+5. lief - laufen; waren - war; kamen - kommen;
+6. nahm - nehmen;
+7. fand - finden;
+8. ass - essen; trank - trinken; war - sein; rief an - anrufen;
+9. schrieb - schreiben; war - sein;
+10. fuhr - fahren; wurde - werden;
+
+## KB, Übung e, Seite 95
+
+| +      | ~               | -               |
+|--------|-----------------|-----------------|
+| Schnee | Sonne und Hitze | Wind            |
+| .      | .               | Gewitter        |
+| .      | .               | Hagel           |
+| .      | .               | Nebel           |
+| .      | .               | Regen und Kälte |
+
+## KB, Übung a, Seite 97
+
+1. Was machen wir, wenn die Kantine geschlossen ist?
+2. Was machen wir, wenn die Freunde keine zeit haben?
+3. Was machen wir, wenn wir keine billigen Tickets bekommen?
+4. Was machen wir, wenn wir die Prüfungsfragen nicht verstehen?
+5. Was machen wir, wenn wir keinen Urlaub bekommen?
+6. Was machen wir, wenn das Wetter schlecht ist?
