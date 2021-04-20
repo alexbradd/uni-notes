@@ -514,3 +514,60 @@ wichtigsten.
    Autofahren.
 2. Es stört mich nicht, wenn jemand bei Essen telefoniert und jemand mit vollem
    Mund spricht.
+
+## KB, Übung b, Seite 98
+
+1. Anita Pöschl hat kaum Zeit für ihre Freunde, weil sie bis zu 240 Stunden im
+   Monat unterwegs ist.
+2. Anita Pöschl fahrt gern durch Deutschland, weil das Land ihr gefällt.
+3. Anita Pöschl mag Schnee,Gewitter und Starkregen nicht gern, weil glatte
+   Strassen gefährlich sind und man meistens in Sau ist.
+
+## AB, Übung 8, Seite 95
+
+1. Gehen wir gemeinsam einkaufen?  
+   Nein danke, ich habe kein Geld auf dem Konto.  
+   Wenn wir mit Kreditkarte bezahlen, können wir schon etwas kaufen.  
+   Du hast recht.
+2. Sollen wir am Wochenende gemeinsam wandern gehen?  
+   Lieber nicht, die Wetterbericht sagt, dass es sicher regnet.  
+   Wenn wir in den Süden fahren, sehen wir wahrscheinlich die Sonne.  
+   Du hast recht.
+3. Wir brauchen neue Möbel, sollen wir sie gemeinsam Kaufen?  
+   Das geht nicht, wir haben viele alte Möbel.  
+   Wenn wir jemandem die alten Möbel schenken, haben wir wieder Platz.  
+   Du hast recht.
+4. Sollen wir ein Campingurlaub gemeinsam machen?  
+   Leider nicht, wir haben kein Zelt.  
+   Wenn wir ein Zelt auf den Campingplatz mieten, können wir Campingurlaub
+   machen.  
+   Du hast recht.
+5. Sollen wir zum Rockkonzert gemeinsam gehen?  
+   Nein danke, der Musik ist zu laut.  
+   Wenn wir ganz hinten einen Platz suchen, ist es nicht so laut.
+   Du hast rechts.
+
+## AB, Übung 9, Seite 95
+
+1. Es stört mich, wenn ich jeden Samstag im Kaufhaus arbeiten muss.  
+   Es stört mich, wenn der Chef nicht tolerant ist.
+2. Es stört mich, wenn die Geschäfte beim Bezahlen keine Kreditkarte
+   akzeptieren.  
+   Es stört mich, wenn kein Verkäufer Zeit hat.
+3. Es stört mich, wenn die Angestellten zu lange Mittagspausen machen.  
+   Es stört mich, wenn die Angestellten nicht pünktlich kommen.
+
+## AB, Übung 10, Seite 95
+
+1. Es stört mich, wenn jemand schmutzige Kleidung tragt.
+2. Es stört mich, wenn jemand zu langsam Auto fährt.
+3. Es stört mich, wenn mein Chef alles besser wisst.
+4. Es stört mich, wenn mein Freunde immer ängstlich ist.
+5. Es stört mich, wenn meine Mutter nicht zuhört.
+
+## KB, Übung c, Seite 101
+
+Ich habe keine Wohnung, nur ein Zimmer. Ich wohne mit meine Eltern. Die Wohnung
+ist ist klein und meine Zimmer ist auch klein. Ich habe einen Bett, einen Regal
+und einen Schreibtisch mit mein Computer. Ich studiere Ingenieurwissen bei
+Politecnico di Milano. Ich will später ein Technische Informatik werden.
