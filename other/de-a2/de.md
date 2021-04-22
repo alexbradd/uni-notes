@@ -571,3 +571,12 @@ Ich habe keine Wohnung, nur ein Zimmer. Ich wohne mit meine Eltern. Die Wohnung
 ist ist klein und meine Zimmer ist auch klein. Ich habe einen Bett, einen Regal
 und einen Schreibtisch mit mein Computer. Ich studiere Ingenieurwissen bei
 Politecnico di Milano. Ich will später ein Technische Informatik werden.
+
+## AB, Übung 2, Seite 96
+
+1. Wenn Anita Pöschl zum Bahnhof fährt, nimmt sie den grossen LKW.
+2. Wenn Anita Pöschl zum Post fährt, nimmt sie den kleinen LKW.
+3. Wenn Anita Pöschl zum Flughafen fährt, nimmt sie den kleinen LKW.
+4. Wenn Anita Pöschl nach Italien fährt, nimmt sie den grossen LKW.
+5. Wenn Anita Pöschl nach Zürich fährt, nimmt sie den grossen LKW.
+6. Wenn Anita Pöschl in die Türkei fährt, nimmt sie den grossen LKW.
