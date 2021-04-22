@@ -584,9 +584,9 @@ pensare al cosiddetto "albero delle computazioni":
                         ┌─────┼─────┐
                        c11   c12   c13
                  ┌──────┤     │     ├────┬────┐
-                c11    c22   !f    ...   f   c23
+                c11    c22   !f    ...  f   c23
            ┌─────┤      │                     ├──────┐
-          !f    ...     f                     f     !f
+          !f    ...    f                     f     !f
 
 f   : stato in cui termina accettando
 !f  : stato in cui termina non accettando
@@ -1230,34 +1230,34 @@ $f_y(x) \neq \bot$ e $g(y,x)=0$ se $f_y(x) = \bot$. Nota bene: non ci stiamo
 chiedendo se è possibile determinare l'arresto di uno specifico programma, ma di
 determinare l'arresto in generale.
 
-Esistono diversi metodi di dimostrazione. Noi
-useremo quello per diagonalizzazione analogo a quello usato da Cantor.
-Analogamente all'enumerazione delle cifre eseguita da Cantor, noi eseguiremo
-l'enumerazione di tutte le funzioni calcolabili da un macchina di Turing:
+> Esistono diversi metodi di dimostrazione. Noi useremo quello per
+> diagonalizzazione analogo a quello usato da Cantor. Analogamente
+> all'enumerazione delle cifre eseguita da Cantor, noi eseguiremo l'enumerazione
+> di tutte le funzioni calcolabili da un macchina di Turing:
 
 ```txt
-    | 1     | 2     | ... |
-----+-------+-------+-----|
-f1  | f1(1) | f1(2) | ... |
-f2  | f2(1) | f2(2) | ... |
-f3  | f3(1) | f3(2) | ... |
-... | ...   | ...   | ... |
+     | 1     | 2     | ... |
+ ----+-------+-------+-----|
+ f1  | f1(1) | f1(2) | ... |
+ f2  | f2(1) | f2(2) | ... |
+ f3  | f3(1) | f3(2) | ... |
+ ... | ...  | ...  | ... |
 ```
 
-Ipotizziamo per assurdo che la nostra funzione $g$ sia calcolabile. Da $g$
-definiamo una funzione $h$ tale che $h(x) = 1$ se $g(x,x) = 0$ e $\bot$
-altrimenti. È facile dimostrare che se $g$ è calcolabile lo è anche $h$.
-Definendo così $h$, abbiamo definito una funzione che si pone sulla diagonale
-della nostra tavola delle funzioni e altera i valori $g$. Se $h$ è computabile,
-allora esisterà una MT che la calcola, ossia per qualche $i$ $h = f_i$. Provando
-a calcolare $h(i)$ otteniamo:
-
-- Se $h(i) = f_i(i) = 1$ allora $g(i,i) = 0$ cioè $f_i(i)=\bot$, che è una
-  contraddizione
-- Se $h(i) = f_i(i) = \bot$ allora $g(i,i) = 1$ cioè $f_i(i)\neq\bot$ che è una
-  contraddizione
-
-Siamo arrivati, così, all'assurdo e quindi $g$ non è calcolabile.
+> Ipotizziamo per assurdo che la nostra funzione $g$ sia calcolabile. Da $g$
+> definiamo una funzione $h$ tale che $h(x) = 1$ se $g(x,x) = 0$ e $\bot$
+> altrimenti. È facile dimostrare che se $g$ è calcolabile lo è anche $h$.
+> Definendo così $h$, abbiamo definito una funzione che si pone sulla diagonale
+> della nostra tavola delle funzioni e altera i valori $g$. Se $h$ è
+> computabile, allora esisterà una MT che la calcola, ossia per qualche $i$ $h =
+> f_i$. Provando a calcolare $h(i)$ otteniamo:
+>
+> - Se $h(i) = f_i(i) = 1$ allora $g(i,i) = 0$ cioè $f_i(i)=\bot$, che è una
+>   contraddizione
+> - Se $h(i) = f_i(i) = \bot$ allora $g(i,i) = 1$ cioè $f_i(i)\neq\bot$ che è
+>   una contraddizione
+>
+> Siamo arrivati, così, all'assurdo e quindi $g$ non è calcolabile.
 
 Possiamo quindi affermare con fermezza che l'insieme dei problemi decidibili è
 strettamente incluso in quello dei problemi descrivibili.
@@ -1280,3 +1280,119 @@ diventare risolvibile e viceversa se un problema è risolvibile la sua
 generalizzazione non rimane generalmente risolvibile. Se un problema è già non
 risolvibile, invece, la sua generalizzazione sarà sempre non risolvibile e se
 un problema è risolvibile lo sarà sicuramente anche la sua specializzazione.
+
+Consideriamo un'altra funzione dagli interessanti riscontri pratici:
+
+$$
+  k(y) =
+  \begin{cases}
+    1 & \text{ se } f_y(x) \neq \bot\\
+    0 & \text{ altrimenti}\\
+  \end{cases}
+$$
+
+La funzione $k(y)$ non è computabile. Questo problema presenta un
+quantificazione su tutti i possibili dati in ingresso. In qualche caso potremmo
+essere in grado di stabilire, per uno specifico valore di $x$, se $f_y(x) \neq
+\bot$. Anche se potessimo farlo per ogni singolo valore specifico di x non
+saremmo necessariamente in grado di rispondere alla domanda "$f_y$ è un
+funzione totale?". Se trovo qualche $x$ tale che $f_y(x) = \bot$ allora posso
+dire che $f_y$ non è totale, ma se non lo trovassi? Da un punto di vista
+pratico, questo problema è forse ancora più importante di quello dell'arresto.
+In questo caso, infatti, ci chiediamo se il programma non termini per qualsiasi
+ingresso, invece di chiedercelo solo per uno come nel problema dell'arresto.
+
+> Dimostriamo che la funzione $k$ non è computabile. Ipotizziamo per assurdo che
+> sia computabile e per definizione totale. Definiamo allora $g(x) = w$ pari
+> all'indice della $x-esima$ MT che calcola una funzione totale. Se $k$ sarà
+> computabile e totale allora lo sarà anche $g$. Sia $w_0$ il primo valore tale
+> che $k(w_0) = 1$, allora sia $g(0) = w_0$. La funzione $g$ sarà sia totale che
+> monotona crescente in quanto $w_{x+1} > w_x$. Sarà una funzione anche $g^{-1}$
+> anch'essa strettamente monotona ma non totale in quanto è definita solo se $w$
+> è l'indice di una funzione totale. Definiamo allora $h(x) = f_{g(x)}(x) + 1$
+> con $f_{g(x)}$ computabile e totale, quindi anche $h$ sarà computabile e
+> totale. Pertanto abbiamo $h = f_i$ per qualche $i$. Poiché $h$ è totale, è
+> definita $g(i)^{-1}$. Sia allora $g^{-1}(i) = j$, qual è il valore di $j$?
+>
+> - $h(j) = f_{g(j)}(j) + 1 = f_i (i) + 1$
+> - $h = f_i \implies h(j) = f_i (j)$
+>
+> Siamo così arrivati ad un assurdo, dimostrando la nostra tesi.
+
+### Problema di decisione
+
+Un problema di decisione è una domanda che ah due possibili risposte: vero o
+falso. La domanda riguarda un qualche ingresso. Un problema è detto
+semidecidibile se esiste una algoritmo che ritorni "vero" se la risposta è
+"vero" (può entrare in loop se la risposta è "falso"). Tornando al problema
+dell'arresto, possiamo capire se esso è semidecidibile? Sì, infatti possiamo
+osservare se la MT si ferma su uno stato di accettazione. Se essa non si ferma,
+neanche il nostro algoritmo si fermerà, ma ciò permesso dalla definizione di
+semidecidibilità. Ciò si può dimostrare usando un procedimento simile alla
+tecnica diagonale.
+
+C'è un gran numero di problemi indecidibili che sono semidecidibili. Notiamo che
+il problema semidecidibili descrive la presenza dell'errore e non la sua
+assenza! Questo fatto ha un importante implicazione nella verifica di programmi
+basata su testing. Secondo Dijkstra, infatti, il testing può dimostrare la
+presenza di errori non la loro assenza (asserzione di Dijkstra).
+
+### Insiemi ricorsivi
+
+Concentriamoci sui problemi a risposta binaria. Tutti i problemi di questo tipo
+possono essere riformulati come $x \in S$. La funzione caratteristica di un
+insieme $S$ $c_S(x) = 1$ se $x \in S$ e $0$ altrimenti. Se $c_S(x)$ è
+computabile allora l'insieme $S$ è detto ricorsivo (o decidibile). Un insieme è,
+invece, ricorsivamente enumerabile (o semidecidibile) se e solo se:
+
+- $S$ è vuoto
+- $S$ è l'immagine di una funzione $g_S$ totale e computabile
+
+#### Teorema - 0.5 + 0.5 = 1
+
+1. Se $S$ è ricorsivo, allora è anche ricorsivamente enumerabile
+2. $S$ è ricorsivo se e solo se sia $S$ e il suo complemento $\bar{S} =
+   \mathbb{N} \setminus S$ sono ricorsivamente enumerabili.
+
+> 1. Dimostriamo che se è ricorsivo allora è ricorsivamente enumerabile.
+>    - Se $S$ è vuoto, allora è ricorsivamente enumerabile per definizione
+>    - Se $S$ non è vuoto, sia la sua funzione caratteristica $c_s$. Possiamo
+>      allora definire la funzione generatrice $g_S$ ponendola pari a $x$ se
+>      $c_S(x) = 1$ e $k$ altrimenti
+>    $S$ è ricorsivamente enumerabile.
+> 2. Poiché l'unione tra $S$ e il suo complementare è $\mathbb{N}$ e
+>    l'intersezione è nulla, possiamo dire che possiamo trovare qualunque $x$
+>    naturale in una delle enumerazioni di $S$ o $\bar{S}$. Posso quindi
+>    costruire una enumerazione $\{ g_S(0), g_{\bar{S}}(0), g_S(1),
+>    g_{\bar{S}}(1), \ldots \}$ e calcolare la la caratteristica di $S$ vedendo
+>    se la posizione di $x$ è pari ($x\in S$) o dispari.
+
+Consideriamo l'insieme $S$ tale che:
+
+- $i \in S \implies f_i$ totale
+- $f$ totale e computabile $\implies \exists i \in S : f_i -f$
+
+Esso non è nemmeno ricorsivamente enumerabile (si può dimostrare). Questo
+significa che non esiste un formalismo semidecidibile che possa definire tutte
+le funzioni computabili totali e solo quelle. Possiamo però, sbarazzarci delle
+funzioni parziali, estendendole oppure arricchendo $\mathbb{N}$ con un nuovo
+simbolo. Questo trucchetto però non funziona perché si può dimostrare che non
+esiste una funzione totale e computabile che sia un'estensione della seguente
+funzione:
+
+$$
+  g(x) =
+  \begin{cases}
+    f_x(x) + 1 & \text{ se } f_x(x) \neq \bot \\
+    \bot & \text{ altrimenti}
+  \end{cases}
+$$
+
+L'estensione di una funzione quindi no preserva la computabilità. Inoltre
+possiamo dimostrare che esistono insiemi che sono semidecidibili senza essere
+decidibili. Possiamo costruire quindi un gerarchia di inclusioni strette tra
+vari tipi di insiemi:
+
+$$
+  \text{Ricorsivi} \subset \text{RE} \subset \wp(\mathbb{N})
+$$

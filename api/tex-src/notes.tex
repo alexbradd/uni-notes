@@ -2068,8 +2068,8 @@ risolvibile è il \hl{``Halting Problem''}.
   \[
     g(y,x) =
     \begin{cases}
-      1 \quad \text{se } f_y(x) \neq \bot \\
-      0 \quad \text{se } f_y(x) = \bot
+      1 & \quad \text{se } f_y(x) \neq \bot \\
+      0 & \quad \text{se } f_y(x) = \bot
     \end{cases}
   \]
 
@@ -2096,8 +2096,8 @@ risolvibile è il \hl{``Halting Problem''}.
   \[
     h(x) =
     \begin{cases}
-      1 \quad \text{se } g(x,x) = 0\\
-      \bot \quad \text{altrimenti} \\
+      1    & \quad \text{se } g(x,x) = 0\\
+      \bot & \quad \text{altrimenti} \\
     \end{cases}
   \]
 
@@ -2130,8 +2130,8 @@ Consideriamo la funzione:
 \begin{equation}
   h'(x) =
   \begin{cases}
-    1 \quad \text{se } f_y(x) = \bot \\
-    0 \quad \text{altrimenti}
+    1 & \quad \text{se } f_y(x) = \bot \\
+    0 & \quad \text{altrimenti}
   \end{cases}
 \end{equation}
 
@@ -2144,5 +2144,285 @@ risolvibile non per forza mantiene la risolvibilità}. Se un problema è già
 \hl{risolvibile}, però, la \hl{sua specializzazione sarà anch'essa risolvibile}
 e viceversa la \hl{generalizzazione di un problema non risolvibile sarà ancora
 non risolvibile}.
+
+\subsubsection{Il problema delle funzioni totali}\label{sec:func-tot}
+
+Consideriamo un'altra funzione:
+
+\begin{equation}\label{eqn:func-k}
+  k(y) =
+  \begin{cases}
+    1 & \quad \text{se } \forall x \in \mathbb{N}, f_y(x) \neq \bot\\
+    0 & \quad \text{altrimenti}\\
+  \end{cases}
+\end{equation}
+
+La \hl{funzione, in pratica, vale $1$ se la funzione $f_y(x)$ è totale e 0
+altrimenti}. Da un punto di vista pratico, questa funzione è ancora più
+importante di quella derivata dal problema dell'arresto. In questo caso,
+infatti, ci chiediamo se il programma non termini per qualsiasi ingresso, invece
+di chiedercelo solo per uno. Dimostriamo che la \hl{funzione $k$ non è
+computabile}.
+
+\begin{prop}
+  \hl{La funzione}~\ref{eqn:func-k} \hl{non è computabile}.
+\end{prop}
+\begin{proof}
+  Ipotizziamo per assurdo che la funzione sia computabile. Definiamo $g(x) = w$
+  con $w$ pari al numero di Gödel della $x$-esima MT che calcola una funzione
+  totale. Se $k$ è computabile, allora lo sarà ang $g$. Infatti possiamo trovare
+  una procedura algoritmica che calcola $g(x)$:
+
+  \begin{enumerate}
+    \item Calcoliamo $k(x)$ al crescere di $x$. Trovato $x_0|_{k(x_0)=1}$
+      poniamo $g(0) = x_0$ e riprendiamo a calcolare $k$ da $x_0 + 1$ in avanti
+    \item Trovato $x_1|_{k(x_1)=1}$ poniamo $g(1) = x_1$ e iteriamo
+  \end{enumerate}
+
+  È facile vedere che $g$ è strettamente monotona. Possiamo calcolare $g^{-1}$
+  anch'essa strettamente monotona ma non totale. Definiamo
+
+  \[
+    f_{g(x)}(x) +1 = f_w(x) +1
+  \]
+
+  Sappiamo che $f_w(x)$ è calcolabile e totale per definizione di $g$ e quindi
+  anche $h$ lo sarà. Esisterà allora un $\bar{w}|_{f_{\bar{w}}(\cdot)=h(\cdot)}$
+  Dato che $h$ è totale, sicuramente anche $g^{-1} \neq \bot$. Poniamo allora
+  $g^{-1}(\bar{w})=\bar{x}$. Studiamo la forma di $h$: per definizione avremo
+
+  \[
+    h(\bar{x})=f_{g(\bar{x})}(\bar{x}) + 1 = f_{\bar{w}}(\bar{x}) +1
+  \]
+
+  Ma, siccome $h(\cdot) = f_{\bar{w}}(\cdot)$, abbiamo anche $h(\bar{x}) =
+  f_{\bar{w}}(\bar{x})$. Cadiamo allora in un assurdo e quindi la funzione $k$
+  non è calcolabile.
+\end{proof}
+
+Nota bene che la \hl{definizione di $k$ ha una quantificazione universale}.
+Potrebbe essere, quindi, che \hl{per qualche valore specifico di $x$ possiamo
+stabilire il valore di $k(y)$. Non siamo però in grado di dire se possiamo farlo
+per ogni singolo ingresso possibile}.
+
+\subsection{Decidibilità e semidecidibilità}\label{sec:problemi-decisione}
+
+Concentriamoci sui problemi \hl{con risposta binaria, detti anche di decisione}.
+Questo tipo di problemi hanno \hl{due risposte possibili ``vero'' e ``falso''}.
+Un problema di questo tipo \hl{può essere decidibile, semidecidibile o
+indecidibile}. La prima e la ultima hanno significato ovvio, approfondiamo la
+seconda.
+
+\begin{defn}[\hl{Problema semidecidibile}]\label{def:problema-semidecidibile}
+  Un problema si dice \hl{semidecidibile} se esiste un \hl{algoritmo che ritorni
+  ``vero'' se il problema ha risposta affermativa}.
+\end{defn}
+
+\begin{nota}
+  La definizione di semidecidibilità \hl{non ci impone limiti su quello che fa
+  l'algoritmo in caso di esito negativo}. Esso può ritornare il valore ``falso''
+  oppure anche non terminare.
+\end{nota}
+
+\paragraph{Semidecidibilità e testing} Un \hl{gran numero di problemi
+indecidibili} si può dimostrare che \hl{sono semidecidibili}. Uno di questi è il
+\hl{problema dell'arresto}: l'algoritmo basta che guardi se la MT si ferma su
+uno stato di accettazione. \hl{L'utilità della proprietà di semidecidibilità è
+che ci permette di rilevare se c'è un errore invece di garantirne la sua
+assenza}. Ciò ha importanti applicazioni pratiche nella verifica di programmi
+basata sul \hl{testing}:
+
+\begin{lem}[Asserzione di Dijkstra]
+  Il testing può dimostrare la presenza di errori, non la loro assenza.
+\end{lem}
+
+Tutti i \hl{problemi di decisione} possono essere \hl{riformulati come ``dato un
+insieme $S$, $x \in S$''}. Alternativamente possiamo calcolare la \hl{funzione
+caratteristica} dell'insieme $S$:
+
+\begin{equation}
+  \mhl{
+    \mathbf{1}_{S} =
+    \begin{cases}
+      1 & \quad \text{se } x \in S \\
+      0 & \quad \text{altrimenti}
+    \end{cases}
+  }
+\end{equation}
+
+L'insieme \hl{$S$} può essere \hl{ricorsivo (decidibile) oppure ricorsivamente
+numerabile (semidecidibile)}.
+
+\begin{defn}[\hl{Insieme ricorsivo (decidibile)}]\label{def:insieme-decidibile}
+  Un insieme $S$ si dice \hl{ricorsivo} o decidibile se e solo se la sua
+  \hl{funzione caratteristica è computabile}.
+\end{defn}
+
+\begin{defn}[\hl{Insieme ricorsivamente enumerabile (semidecidibile)}]\label{def:insieme-semidecidibile}
+  Un insieme $S$ si dice \hl{ricorsivamente enumerabile} (RE) o semidecidibile
+  se e solo se:
+
+  \begin{itemize}
+    \item $S$ è l'insieme \hl{vuoto}
+    \item $S$ è l'\hl{immagine di una funzione totale computabile}:
+
+      \begin{equation}
+        S = I_{g_S} = \{ x: g_S(y), y \in \mathbb{N} \}
+      \end{equation}
+  \end{itemize}
+\end{defn}
+
+Il termine di insieme semidecidibile deriva dal fatto che se $x \in S$
+enumerando gli elementi di $S$ prima o poi lo troverò, altrimenti sono mai certo
+di poter rispondere ``falso'' enumerando in quanto potrei non aver ancora
+trovato $x$.
+
+Tra la decidibilità e la semidecidibilità ci sono diversi importanti legami:
+
+\begin{thm}[\hl{Decidibilità implica semidecidibilità}]\label{thm:dec-semidec}
+  Se un insieme $S$ è \hl{ricorsivo (decidibile), esso è ricorsivamente
+  enumerabile (semidecidibile)}.
+\end{thm}
+\begin{proof}
+  Studiamo i vari casi possibili nella definizione di semidecidibilità:
+
+  \begin{itemize}
+    \item Se $S$ è vuoto, è RE per definizione
+    \item Se $S$ non è vuoto, costruiamo una funzione totale e computabile di
+      cui $S$ è immagine. Poiché sappiamo che esisterà un $k \in S$ tale che
+      $\mathbf{1}_S(k) = 1$, possiamo definire la funzione come
+
+      \[
+        g_S(x) =
+        \begin{cases}
+          x & \quad \text{se } \mathbf{1}_S(x) = 1 \\
+          k & \quad \text{se } \mathbf{1}_S(x) = 0
+        \end{cases}
+      \]
+
+      Con $g_S$ totale, computabile e $\mathbf{I}_{g_S} = S$. $S$ sarà, quindi,
+      RE\@.
+  \end{itemize}
+\end{proof}
+
+\begin{thm}[\hl{semidecidibilità + semidecidibilità = decidibilità}]\label{thm:0.5+0.5=1}
+  Si un insieme $S$, esso sarà \hl{ricorsivo se e solo se sono ricorsivamente
+  enumerabili sia $S$ che $\bar{S} = \mathbb{N} \setminus S$}.
+\end{thm}
+\begin{proof}
+  Dimostriamo che se $S$ è ricorsivo allora $S$ e $\bar{S}$ sono RE\@.
+  Innanzitutto $S$ è ricorsivo, per il teorema~\ref{thm:dec-semidec} esso è
+  anche RE\@. Inoltre possiamo osservare che anche $\mathbf{1}_{\bar{S}}$ è
+  calcolabile in quanto è pari a $\mathbf{1}_S$ con 1 e 0 scambiati,
+  permettendoci di affermare che anche $\bar{S}$ è RE\@.
+
+  Dimostriamo ora l'implicazione inversa. Osserviamo che $S \cup \bar{S} =
+  \mathbb{N}$ e $S \cap \bar{S} = \emptyset$ e quindi una qualunque $x \in
+  \mathbb{N}$ appartiene a una e una sola delle due enumerazioni di $S$ e
+  $\bar{S}$:
+
+  \[
+    (\forall x \in \mathbb{N}, \exists y : x = g_{\bar{S}}(y) \lor x = g_S(y))
+      \land (\neg \exists z : g_{\bar{S}}(z) = g_S(z))
+  \]
+
+  Posso essere, quindi, certo di trovare qualsiasi $x$ nell'enumerazione
+
+  \[
+    \{ g_S(0), g_{\bar{S}}(0), g_S(1), g_{\bar{S}}(1), \ldots \}
+  \]
+
+  Nel momento in cui trovo $x$ in posizione dispari concludo che $x \notin S$,
+  altrimenti $x \in S$. So quindi calcolare $\mathbf{1}_S$, rendendo $S$
+  ricorsivo.
+\end{proof}
+
+Da questi due teoremi possiamo trarre un po' di risvolti importanti.
+Innanzitutto possiamo affermare che gli \hl{insiemi decidibili sono chiusi
+rispetto al complemento}. Possiamo usare la teoria degli insiemi ricorsivi per
+cercare di capire se possiamo enumerare tutte le funzioni calcolabili e totali.
+
+\begin{prop}[\hl{Definione delle funzioni calcolabili e totali}]\label{thm:def-func-tot}
+  Dato un insieme \hl{$S$} per cui:
+
+  \begin{enumerate}
+    \item \hl{Se $i \in S$ allora $f_i$ e calcolabile e totale}
+    \item \hl{Se $f$ e totale e computabile allora $\exists i \in S : f_i = f_i$}
+  \end{enumerate}
+
+  Esso \hl{non sarà ricorsivamente enumerabile}.
+\end{prop}
+\begin{proof}
+  Ipotizziamo per assurdo che esista una funzione caratteristica
+  $\mathbf{1}_S(i)$ computabile. Definiamo:
+
+  \[
+    h(x) =
+    \begin{cases}
+      f_x(x) + 1 & \quad \text{se } \mathbf{1}_S(x) = 1 \\
+      0          & \quad \text{altrimenti}
+    \end{cases}
+  \]
+
+  Abbiamo che per ogni $x$ $h(x) \neq f_{\mathbf{1}_S(x)}(x)$. Quindi $h(x)$ è
+  calcolabile ma diversa da tutte le funzioni calcolabili, il che è un assurdo.
+\end{proof}
+
+\hl{Non è possibile quindi definire con un formalismo RE} (automi, grammatiche e
+funzioni ricorsive) \hl{capace di definire l'insieme dei tutte e sole le
+funzioni calcolabili totali}. Quindi non posso descrivere in nessun modo
+descrivere come è fatto l'insieme di tutti e soli i programmi che terminano
+sempre:
+
+\begin{itemize}
+  \item Gli FSA e i PDA definiscono solo funzioni totali ma non tutte
+  \item Le MT definiscono tutte le funzioni calcolabili, ma anche quelle non
+    totali
+  \item Il C mi permette di scrivere qualunque algoritmo, ma anche che non
+    terminato
+\end{itemize}
+
+Riusciamo, però, ad \hl{aggirare il problema e considerare l'insieme di tutte le
+funzioni e rimuovere con un artificio le funzioni parziali?} Arricchiamo
+$\mathbb{N}$ con un nuovo valore $\bot$ oppure assegnamo un calore convenzionale
+ad $f$ quando non è definita. \hl{Matematicamente questa operazione non causa
+problemi, però si può dimostrare che per la funzione}:
+
+\begin{equation}
+  \mhl{
+    g(x) =
+    \begin{cases}
+      f_x(x) + 1 & \quad \text{se } f_x(x) \neq \bot \\
+      \bot       & \quad \text{altrimenti}
+    \end{cases}
+  }
+\end{equation}
+
+\hl{Non è possibile costruire una funzione computabile e totale che la estenda}.
+Inoltre possiamo dimostrare che \hl{esistono insiemi che sono semidecidibili senza
+essere decidibili}.
+
+\begin{proof}[Dimostrazione. Esistenza di insiemi semidecidibili non decidibili]
+  Consideriamo
+
+  \[
+    S = \{ x : f_x(x) \neq \bot \}
+  \]
+
+  Essa è il dominio della funzione $h(x) = f_x(x)$ che è computabile ma
+  parziale. Poiché è possibile riscrivere questa affermazione in termini di
+  immagine di una $g$ totale computabile, $S$ è RE\@. Sappiamo anche che la
+  funzione caratteristica $\mathbf{1}_S = 1$ se $f_x(x) \neq \bot$, e 0
+  altrimenti non è computabile e quindi $S$ non è decidibile.
+\end{proof}
+
+Possiamo costruire quindi un \hl{gerarchia di inclusioni strette} tra vari tipi di
+insiemi:
+
+\begin{equation}
+  \mhl{
+    \text{Ricorsivi} \subset \text{RE} \subset \wp(\mathbb{N})
+  }
+\end{equation}
 
 \end{document}
