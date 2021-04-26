@@ -1396,3 +1396,5 @@ vari tipi di insiemi:
 $$
   \text{Ricorsivi} \subset \text{RE} \subset \wp(\mathbb{N})
 $$
+
+!!: **APPUNTI PRESI DIRETTAMENTE IN BELLA COPIA**

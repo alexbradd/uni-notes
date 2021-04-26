@@ -2425,4 +2425,226 @@ insiemi:
   }
 \end{equation}
 
+\subsection{Stabilire decidibilità e semidecidibilità di un problema}\label{sec:stabilire-dec-sec-}
+
+Enunciamo il \hl{primo risultato importante che ci servirà per capire se e come
+possiamo stabilire la decidibilità (semidecidibilità)} di un problema.
+
+\begin{thm}[\hl{Teorema di Kleene del punto fisso}]\label{thm:kleene-punto-fisso}
+  Sia una \hl{funzione $t(\cdot)$ totale e computabile}. È \hl{sempre possibile
+  trovare un $p \in \mathbb{N}$} tale che \hl{$f_p = f_{t(p)}$}. La funzione
+  \hl{$f_p$ è detta punto fisso di $t(\cdot)$}.
+\end{thm}
+\begin{proof}
+  Dato $u \in \mathbb{N}$ definiamo una MT che effettua il seguente calcolo
+  sull'ingresso $x$: calcola $f_u(u) = z$ e quando il calcolo termina calcola
+  $f_z(x)$. Possiamo costruire questa MT e cercare il suo numero di Gödel $g(u)$
+  per una qualsiasi $u$. Otteniamo che la funzione della MT sarà esprimibile
+  come:
+
+  \[
+    f_{g(u)}(x) =
+    \begin{cases}
+      f_{f_u(u)}(x) & \quad \text{se } f_u(u) \neq \bot \\
+      \bot          & \quad \text{altrimenti}
+    \end{cases}
+  \]
+
+  Sappiamo che data $g(\cdot)$ totale e calcolabile e $t(\cdot)$ anch'essa
+  totale e computabile, lo sarà anche $t(g(\cdot))$. Chiamiamo $v$ il numero di
+  Gödel di $t(g(\cdot))$, ottenendo $t(g(\cdot)) = f_v(\cdot)$. Ripetendo la
+  costruzione che abbiamo fatto precedentemente otteniamo che:
+
+  \[
+    f_{g(v)} =
+    \begin{cases}
+      f_{f_v(v)}(x) & \quad \text{se } f_v(v) \neq \bot \\
+      \bot          & \quad \text{altrimenti}
+    \end{cases}
+  \]
+
+  Ricordando che $t(g(\cdot))$ è totale e computabile, otteniamo che
+  $f_{g(v)}(x) = f_{f_v(v)}(x)$ per ogni $x$. Sostituendo nel secondo membro
+  otteniamo:
+
+  \[
+    f_{g(v)} = f_{t(g(v))}
+  \]
+
+  Rendendo, quindi $f_{g(v)}$ il punto fisso di $t(\cdot)$.
+\end{proof}
+
+Possiamo ora enunciare una \hl{condizione per la decidibilità di un insieme}.
+
+\begin{thm}[\hl{Teorema di Rice}]\label{thm:rice}
+  Siano \hl{$F$ un'insieme di funzioni computabili} e l'insieme \hl{$S$ degli
+  indici delle MT che calcolano le funzioni di $F$}. L'insieme \hl{$S = \{x:f_x
+  \in F\}$} è \hl{decidibile se e solo se}:
+
+  \begin{itemize}
+    \item \hl{$F = \emptyset$}
+    \item \hl{$F$ è l'insieme di tutte le funzioni computabili}
+  \end{itemize}
+\end{thm}
+\begin{proof}
+  Supponiamo per assurdo che $S$ sia decidibile con $F$ non vuoto e diverso
+  dall'insieme di tutte le funzioni computabili. Consideriamo la funzione
+  caratteristica di $S$ $\mathbf{1}_S(x)$, essa sarà calcolabile per ipotesi.
+  Possiamo quindi calcolare:
+
+  \begin{enumerate}
+    \item Il più piccolo $i \in \mathbb{N}$ tale che $f_i \in F$
+    \item Il più piccolo $j \in \mathbb{N}$ tale che $f_j \notin F$
+  \end{enumerate}
+
+  Per quanto detto, la funzione:
+
+  \[
+    h_S(x) =
+    \begin{cases}
+      i & \quad \text{se } f_x \notin F \\
+      j & \quad \text{altrimenti}
+    \end{cases}
+  \]
+
+  Sarà anch'essa calcolabile e totale. Applicando il teorema di Kleene alla
+  funzione appena definita otteniamo che esiste un punto fisso $f_{\bar{x}}$ tale
+  per cui $f_{\bar{x}} = f_{h_s(\bar{x})}$. Siamo così arrivati ad una
+  contraddizione in quanto:
+
+  \begin{itemize}
+    \item Se $h_S(\bar{x}) = i$: per definizione di $h_S$ abbiamo che
+      $f_{\bar{x}} \notin F$, ma da quanto detto per il teorema di Kleene
+      $f_{\bar{x}} = f_{h_S(\bar{x})} = f_i$ da cui, per come definito $i$, $f_i
+      \in F$
+    \item Se $h_S(\bar{x}) = j$: per definizione di $h_S$ abbiamo che
+      $f_{\bar{x}} \in F$, ma da quanto detto per il teorema di Kleene
+      $f_{\bar{x}} = f_{h_S(\bar{x})} = f_j$ da cui, per come definito $j$, $f_j
+      \notin F$
+  \end{itemize}
+\end{proof}
+
+Quindi \hl{in tutti i casi non banali l'insieme delle funzioni calcolabili con una
+data caratteristica desiderata non è decidibile!} Quindi non sarà possibile
+rispondere a molti quesiti importanti:
+
+\begin{itemize}
+  \item Il programma $P$ è corretto? Risolve un dato problema?
+  \item È possibile stabilire l'equivalenza tra due programmi?
+  \item È possibile stabilire se un generico programma gode di una qualsiasi
+    proprietà non banale riferita alla funzione che calcola?
+\end{itemize}
+
+\hl{Stabilire se un generico problema è decidibile (semidecidibile) o meno è
+indecidibile}. Ragionando in \hl{modo pratico} abbiamo \hl{tre possibili
+alternative} per \hl{stabilire la decidibilità di} un problema:
+
+\begin{enumerate}
+  \item Se \hl{troviamo un algoritmo che termina sempre}, allora il problema è
+    \hl{decidibile}
+  \item Se \hl{troviamo un algoritmo che termina sempre se la risposta è
+    ``vero'' ma può non terminare se la risposta è ``falso''}, allora il
+    problema è \hl{semidecidibile}
+  \item Se riusciamo a \hl{trovare una dimostrazione diagonale della
+    indecidibilità} del problema allora esso è \hl{indecidibile}.
+\end{enumerate}
+
+La \hl{terza opzione} è \hl{molto laboriosa ma fattibile}. Il \hl{teorema di
+Rice} ci permette facilmente di \hl{stabilire se un problema non è decidibile},
+ma esso \hl{può} lo stesso \hl{essere semidecidibile}. Una \hl{tecnica
+alternativa}, molto generale, è quella della \hl{riduzione dei problemi}: ci
+permette di \hl{dimostrare in modo agevole l'indecidibilità di alcuni problemi}.
+
+\subsubsection{La tecnica di riduzione di un problema}\label{sec:riduzione}
+
+Consideriamo prima una visione operativa della tecnica di riduzione. Se abbiamo
+un algoritmo per risolvere un problema $P$, possiamo riusarlo modificandolo per
+risolvere problemi $P'$ simili a $P$. In generale se trovo un algoritmo che,
+dato un esemplare di $P'$ ne costruisce la soluzione usando un esemplare di $P$
+che so risolvere, ho ridotto $P'$ a $P$. Ciò significa che affinché $P'$ sia
+riducibile a $P$, si dovrà avere che:
+
+\begin{enumerate}
+  \item $P$ risolvibile
+  \item C'è un algoritmo che per ogni istanza di $P'$ determina una
+    corrispondente istanza di $P$ e costruisce algoritmicamente la soluzione
+    dell'istanza di $P'$ usando la soluzione dell'istanza di $P$
+\end{enumerate}
+
+Formalizziamo il tutto:
+
+\begin{prop}[\hl{Tecnica di riduzione}]\label{thm:riduzione}
+  \hl{Consideriamo due problemi: $y \in S'$ e $x \in S$} di cui il \hl{secondo è
+  quello che vogliamo risolvere}. \hl{Se troviamo un a funzione $t$ calcolabile
+  e totale} per cui:
+
+  \begin{equation}
+    \mhl{
+      x \in S \iff t(x) \in S'
+    }
+  \end{equation}
+
+  Il \hl{problema d'interesse è risolvibile}. Inoltre, dato $x$, \hl{calcolare
+  $\mathbf{1}_{S'}(t(x))$ equivale a calcolare $\mathbf{1}_S(x)$}.
+
+  La proposizione \hl{funziona anche in direzione inversa}: se so che \hl{$y \in
+  S'$ non è risolvibile, se trovo la $t$ che rispetta la precedente condizione
+  allora anche $x \in S$ non sarà risolvibile}.
+\end{prop}
+
+\begin{esempio}
+  Dall'indecidibilità del problema dell'arresto della MT deduciamo
+  l'indecidibilità del problema della terminazione del calcolo in generale. I
+  passaggi operativi per dimostrare ciò che possiamo eseguire sono:
+
+  \begin{enumerate}
+    \item Costruiamo un programma $P$ che simuli una MT $M_i$ e memorizziamo il
+      numero $x$ in un file $f$.
+    \item Il programma $P$ termina la computazione su $f$ se e solo se $g(i,x)
+      \neq \bot$.
+    \item Se riuscissimo a scrivere un programma che riesce a predire il
+      contenuto di $f$ avremmo risolto il problema dell'arresto, ma ciò non è
+      possibile.
+  \end{enumerate}
+\end{esempio}
+
+\begin{esempio}
+  È decidibile dire se, durante l'esecuzione di un generico programma $P$ si
+  accede ad una variabile non inizializzata?
+
+  Supponiamo per assurdo che questo problema sia decidibile. Riduciamolo al
+  problema dell'arresto:
+
+  \begin{enumerate}
+    \item Dato un generico programma $Q(n)$, costruisco un programma $P$ fatto
+      in questo modo:
+
+      \begin{align*}
+        & \{ \\
+        & \quad \mathtt{int \; x,y;} \\
+        & \quad \mathtt{Q(n);} \\
+        & \quad \mathtt{y=x;} \\
+        & \}
+      \end{align*}
+
+      Avendo cura di usare variabili non presenti in $\mathtt{Q}$.
+    \item L'accesso $\mathtt{y=x}$ alla variabile non inizializzata $x$ da parte
+      di $P$ è fatto se e solo se $\mathtt{Q}$ termina.
+  \end{enumerate}
+
+  Se fossi in grado di decidere il problema dell'accesso a variabile non
+  inizializzata, potrei decidere il problema della terminazione del calcolo, che
+  è un assurdo.
+\end{esempio}
+
+\hl{Le proprietà dimostrate nei precedenti esempi non sono decidibili, ma sono
+semidecidibili. Abbiamo un metodo operativo per determinare la semidecidibilità
+di un problema?}
+
+Innanzitutto il problema \hl{$\exists z : f_x(z) \neq \bot$ è semidecidibile}.
+Una \hl{idea di dimostrazione è simulare l'azione della funzione ``in
+diagonale''} eseguendo \hl{una sola mossa alla volta per ogni input} finché non
+troviamo l'input per la quale la computazione non si arresta. \hl{Simulando
+abbastanza passi di $f_x$, eventualmente lo troverò}.
+
 \end{document}
