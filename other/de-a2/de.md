@@ -580,3 +580,51 @@ Politecnico di Milano. Ich will später ein Technische Informatik werden.
 4. Wenn Anita Pöschl nach Italien fährt, nimmt sie den grossen LKW.
 5. Wenn Anita Pöschl nach Zürich fährt, nimmt sie den grossen LKW.
 6. Wenn Anita Pöschl in die Türkei fährt, nimmt sie den grossen LKW.
+
+## AB, Übung 3, Seite 100
+
+1. die Serviette, -n
+2. das Messer, -
+3. der Pfeffer, -
+4. das Besteck, -e
+5. der Teller, -
+6. der Essig, -e
+7. die Gabel, -n
+8. das Glas, Gläser
+9. der Salz, -e
+10. das Öl, -e
+11. der Löffel, -
+
+## AB, Übung 6, Seite 101
+
+1. Herr Kraus kann nicht surfen.
+2. Herr Braun lebt in einem Hochhaus in Berlin.
+3. Finn hat ein VW Golf.
+4. Frau Möller arbeitet am Computer.
+5. Leonie ist nicht pünktlich und hat viele Streit mit ihrer Chefin.
+6. Maximilian hat nicht Tanjas Telefonnummer.
+
+## AB, Übung 7, Seite 101
+
+1. Frau Fuchs hätte gern schönen Schmuck.
+2. Sabine hätte gern eine grösser Wohnung.
+3. Herr Fischer wäre gern in den Bergen.
+4. Frau Ernst hätte gern ein Fahrrad.
+5. Herr und Frau Geller hätten gern eine Eintrittskarten.
+6. Irina würde gern mitspielen.
+
+## AB, Übung 6, Seite 103
+
+1. An der Bushaltestelle liegt in Rucksack.
+2. Neben der Haustür stehen zwei Weinflaschen.
+3. Auf dem Flur hängt ein Wintermantel.
+4. Auf dem Tisch liegen die Radiergummi und der Bleistift.
+5. Auf dem Stuhl steht Julias Tasche.
+
+## AB, Übung 7, Seite 103
+
+1. Jemand hat den Rucksack auf die Bank gelegt.
+2. Jemand hat zwei Weinflaschen neben die Haustür gestellt.
+3. Jemand hat ein Wintermantel an die Garderobe gehängt.
+4. Manola hat die Radiergummi und den Bleistift auf das Deutschbuch gelegt.
+5. Julia hat ihre Tasche auf dem Stuhl gestellt.
