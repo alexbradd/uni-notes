@@ -2647,4 +2647,125 @@ diagonale''} eseguendo \hl{una sola mossa alla volta per ogni input} finché non
 troviamo l'input per la quale la computazione non si arresta. \hl{Simulando
 abbastanza passi di $f_x$, eventualmente lo troverò}.
 
+\section{Complessità del calcolo}\label{sec:complessita}
+
+Calcolare la \hl{complessità} di una computazione significa \hl{calcolare
+l'efficienza e il costo in tempo di una computazione}. Come possiamo misurare
+questi parametri?  Dobbiamo prima definire degli strumenti per valutare la
+complessità e successivamente potremmo enunciare degli algoritmi e strutture
+dati notevoli. Il nostro obiettivo sarà sviluppare gli strumenti per saper
+progettare e combinare algoritmi e strutture dati che realizzano soluzioni
+efficienti.
+
+Per \hl{quantificare l'efficienza} di un algoritmo, faremo \hl{analisi
+qualitative di due metriche}:
+
+\begin{itemize}
+  \item \hl{Tempo di calcolo impiegato}
+  \item \hl{Spazio occupato} (registri, cache, RAM, disco o nastro)
+\end{itemize}
+
+Si possono fare analisi anche su altri aspetti come i costi di sviluppo, ma noi
+non li considereremo. Per la \hl{tesi Church}, un \hl{problema è calcolabile
+indipendentemente dallo strumento usato}, purché tale strumento sia \hl{Turing
+completo}. Possiamo dire lo \hl{stesso per la complessità}? Purtroppo \hl{no}.
+Dobbiamo, quindi, costruire uno \hl{strumento che tralasci considerazioni
+superflue e sia utilizzabile per la maggioranza dei modelli di calcolo}. Noi
+considereremo per convenzione quello della \hl{macchina di Turing
+deterministica}.
+
+Formalizziamo le nostre due metriche:
+
+\begin{defn}[\hl{Complessità temporale}]\label{def:comp-temporale}
+  Data la \hl{computazione $c_1 \vdash^\star c_r$} di una \hl{macchina di Turing
+  $M$} (a $k$ nastri) \hl{deterministica} la \hl{complessità temporale è $T_M(x)
+  = r$ se} $M$ \hl{termina} in $c_r$, \hl{$\infty$ altrimenti}.
+\end{defn}
+
+\begin{defn}[Complessità spaziale]\label{def:comp-spaziale}
+  Data la \hl{computazione $c_1 \vdash^\star c_r$ di $M$} (a $k$ nastri)
+  \hl{deterministica}, la \hl{complessità spaziale} è:
+
+  \begin{equation}
+    \mhl{
+      S_M(x) = \sum_{j=1}^{k} \max_{i \in \{0, \ldots, r\}}(|\alpha_{ij}|)
+    }
+  \end{equation}
+
+  Con $\alpha_{ij}$ il contenuto del $j$-esimo nastro alla $i$-esima mossa.
+\end{defn}
+
+\begin{nota}
+  \hl{Complessità spaziale e temporale} sono \hl{legate} dalla seguente
+  relazione:
+
+  \begin{equation}
+    \mhl{
+      \forall x \quad \frac{S_M(x)}{k} \leq T_M(x)
+    }
+  \end{equation}
+\end{nota}
+
+Ad eseguire l'analisi su una MT, dobbiamo gestire \hl{un po' troppi dettagli}.
+Effettuiamo, allora, delle \hl{semplificazioni}: esprimeremo la \hl{complessità
+in base alla ``dimensione'' $n$ dei dati in ingresso}. A causa di questa
+semplificazione dobbiamo \hl{considerare 3 casi per gestire la variazione di
+ingressi diversi ma di stessa lunghezza}:
+
+\begin{description}
+  \item[\hl{Caso pessimo}]
+    \begin{equation}
+      \mhl{
+        T_M(n) = \max_{|x|=n} T_M(x)\label{def:caso-pessimo}
+      }
+    \end{equation}
+
+  \item[\hl{Caso ottimo}]
+    \begin{equation}
+      \mhl{
+        T_M(n) = \min_{|x|=n} T_M(x)\label{def:caso-ottimo}
+      }
+    \end{equation}
+
+  \item[\hl{Caso medio}]
+    \begin{equation}
+      \mhl{
+        T_M(n) = \frac{\sum_{|x|=n} T_M(x)}{|I|^n}\label{def:caso-medio}
+      }
+    \end{equation}
+\end{description}
+
+Noi \hl{considereremo sempre il caso pessimo in quanto è il più rilevante}.
+Inoltre \hl{l'analisi del caso medio risulta assai complessa} in quanto dovrebbe
+tenere conto di ipotesi probabilistiche sulla distribuzione dei dati.
+
+I \hl{valori esatti} delle due complessità per un dato $n$ \hl{non sono
+particolarmente utili}. La prima (e più forte) semplificazione che facciamo è
+quella di \hl{considerare solo il comportamento asintotico, ossia $n \to
+\infty$}. Per esprimere il comportamento asintotico abbiamo \hl{3 notazioni}:
+
+\begin{itemize}
+  \item \hl{$\mathcal{O}$-grande}: limite asintotico \hl{superiore}
+  \item \hl{$\Omega$-grande}: limite asintotico \hl{inferiore}
+  \item \hl{$\Theta$-grande}: limite asintotico \hl{sia superiore che inferiore}
+\end{itemize}
+
+Eseguire una approssimazione di questo genere causa \hl{due problemi pratici}.
+Il primo è che il \hl{comportamento asintotico potrebbe essere un pessimo
+modello per valori piccoli di $n$}; il secondo è che \hl{in qualche raro caso la
+complessità per $n$ piccolo non corrisponde alla nostra intuizione, ossia una
+algoritmo con complessità asintotica minore può essere più lento per valori
+piccoli di $n$ rispetto ad uno con complessità asintotica maggiore}.
+
+\begin{defn}[$\mathcal{O}$-grande]\label{def:o-grande}
+  Data una \hl{funzione $g(n)$, $\mathcal{O}(g(n))$ è l'insieme}:
+
+  \begin{equation}
+    \mhl{
+      \mathcal{O}(g(n)) = \{ f(n) : \exists c>0, n_0>0 \; (\forall n>n_0 \;
+        0 \leq f(n) \leq cg(n)) \}
+    }
+  \end{equation}
+\end{defn}
+
 \end{document}

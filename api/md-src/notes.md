@@ -1398,3 +1398,79 @@ $$
 $$
 
 !!: **APPUNTI PRESI DIRETTAMENTE IN BELLA COPIA**
+
+## Complessità del calcolo
+
+Calcolare la complessità di una computazione significa calcolare l'efficienza e
+il costo in tempo di una computazione. Come lo possiamo misurare? Dobbiamo prima
+definire degli strumenti per valutare la complessità e successivamente potremmo
+enunciare degli algoritmi e strutture dati notevoli.
+
+Per quantificare l'efficienza di un algoritmo, faremo analisi qualitative su:
+
+1. Tempo di calcolo impiegato
+2. Spazio occupato (registri, cache, RAM, disco o nastro)
+
+Si possono fare analisi anche su altri aspetti come i costi di sviluppo, ma noi
+non li considereremo.
+
+Per la tesi Church, un problema è calcolabile indipendentemente dallo strumento
+usato, purché tale strumento sia Turing completo. Possiamo dire lo stesso per la
+complessità? Purtroppo no. Noi considereremo per convenzione quello della
+macchina di Turing deterministica.
+
+### Complessità temporale e spaziale
+
+#### Definizione -  Complessità temporale
+
+Data la computazione di $M$ (a $k$ nastri) deterministica, la complessità
+temporale è $T_M(x) = r$ se $M$ termina in $c_r$ ($c_i$ le configurazioni). Se
+la computazione non termina, allora $T_M(x) = \infty$.
+
+#### Definizione - Complessità spaziale
+
+Data la computazione di $M$ (a $k$ nastri) deterministica, la complessità
+spaziale è:
+
+$$
+  S_M(x) = \sum_{j=1}^{k} max_{i \in \{0,...,r\}}(|\alpha_{ij}|
+$$
+
+Con $\alpha_{ij}$ il contenuto del $j$-esimo nastro alla $i$-esima mossa.
+
+NB: $\forall x \frac{S_M(x)}{k} \leq T_M(x)$
+
+Dobbiamo gestire un po' troppi dettagli considerando solo le definizioni.
+Effettuiamo delle semplificazioni: esprimeremo la complessità in base alla
+"dimensione" dei dati in ingresso $n$. A causa di questa semplificazione
+dobbiamo considerare 3 casi per gestire la variazione di ingressi diversi ma di
+stessa lunghezza:
+
+1. Caso pessimo: $T_M(n) = max_{|x|=n} T_M(x)$
+2. Caso ottimo: $T_M(n) = min_{|x|=n} T_M(x)$
+3. Caso medio: $T_M(n) = \frac{\sum_{|x|=n} T_M(x)}{|I|^n}$
+
+Noi considereremo sempre il caso pessimo in quanto è il più rilevante. Inoltre
+l'analisi del caso medio risulta assai più complessa in quanto dovrebbe tenere
+conto di ipotesi probabilistiche sulla distribuzione dei dati.
+
+### Comportamento asintotico
+
+I valori esatti delle due complessità per un dato $n$ non sono particolarmente
+utili. La prima (e più forte) semplificazione che facciamo è quella di
+considerare solo il comportamento asintotico, ossia $n \to \infty$. Per
+esprimere il comportamento asintotico abbiamo 3 notazioni:
+
+1. $\mathcal{O}$-grande: limite asintotico superiore
+2. $\Omega$-grande: limite asintotico inferiore
+3. $\Theta$-grande: limite asintotico sia superiore che inferiore
+
+#### Definizione - $\mathcal{O}$-grande
+
+Data una funzione $g(n)$, $\mathcal{O}(g(n))$ è l'insieme
+
+$$
+  \mathcal{O}(g(n)) = \{ f(n) : \exists c>0, n_0>0 \forall n>n_0 0 \leq f(n)
+    \leq cg(n)\}
+$$
+
