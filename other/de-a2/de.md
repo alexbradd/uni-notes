@@ -628,3 +628,48 @@ Politecnico di Milano. Ich will später ein Technische Informatik werden.
 3. Jemand hat ein Wintermantel an die Garderobe gehängt.
 4. Manola hat die Radiergummi und den Bleistift auf das Deutschbuch gelegt.
 5. Julia hat ihre Tasche auf dem Stuhl gestellt.
+
+## AB, Übung 8, Seite 103
+
+1. An meinem Schreibtisch liegt mein Bildschirm. Hinter ihn habe ich meine
+   Bleistifte und meine Radiergummi gestellt.
+2. In mein Regal liegen Bücher. Ich studiere und danach meine Bücher ins Regal
+   gesteckt.
+3. Auf meinem Bett liegen Kissen. Am morgen stecke ich sie auf das Bett.
+4. Im Flur steht der Schuhschrank. Wenn ich zu Hause angekommen habe, ich stecke
+   meine Schuhe in ihn.
+5. Über dem Bett hängt meine Gitarre. Wenn ich mit dem Gitarrenspiel fertig bin,
+   ich hängt sie auf es.
+
+## KB, Übung c, Seite 107
+
+Flur: Neue Lampen werden montiert. Die Spiegel wird verkauft.
+Küche: Die Spüle wird umgebaut.
+Wohnzimmer: Die Bücher werden in den Keller geräumt. Die Pflanzen werden ans
+Fenster gestellt. Die Zimmerdecke wird gestrichen.
+
+## KB, Übung a, Seite 107
+
+1. Meine Haare werden vom Friseur geschnitten.
+2. Meine alten Möbel  werden auf dem Flohmarkt verkauft.
+3. Die Fenster werden einmal im Jahr geputzt.
+4. Wenn es Kaputt ist, wird mein Fahrrad repariert.
+5. Meine Auto wird einmal im Monat gewaschen.
+
+## KB, Übung b, Seite 107
+
+1. Ich wasche mein Auto selbst.
+2. Ich lass mein Auto reparieren.
+3. Ich installiere Computerprogramme selbst.
+4. Ich putze das Haus selbst.
+5. Ich lass kochen.
+
+## AB, Übung 7, Seite 105
+
+Herr Schulz ist auf eine Dienstreise.
+
+## KB, Übung c, Seite 109
+
+Als Kind wollte ich Rennfahrer werden. Heute finde ich, dass der Beruf ist zu
+gefährlich. Heute würde ich gern ein Informatik. Ich würde lieber in einem Büro
+gearbeitet als mit einem F1 Auto gefahren.
