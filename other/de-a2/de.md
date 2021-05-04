@@ -1,6 +1,6 @@
 # Deutschkurs
 
-## KB. Übung c Seite 69
+## KB, Übung c Seite 69
 
 Ich chatte immer mit meinen Freunden. Ich skypen manchmal mit ihnen auch.
 Ich treffe meine Familie zweimal pro Woche. Ich treffe selten meinen Freunden
@@ -673,3 +673,35 @@ Herr Schulz ist auf eine Dienstreise.
 Als Kind wollte ich Rennfahrer werden. Heute finde ich, dass der Beruf ist zu
 gefährlich. Heute würde ich gern ein Informatik. Ich würde lieber in einem Büro
 gearbeitet als mit einem F1 Auto gefahren.
+
+## AB, Übung 4, Seite 104
+
+1. Die Spüle wird in die Küche gebracht.
+2. Das Bett wird ins Schlafzimmer gebracht.
+3. Der Esstisch wird ins Wohnzimmer gebracht.
+4. Der Kleiderschrank wird ins Schlafzimmer gebracht.
+5. Der Herd wird in die Küche gebracht.
+6. Die Stühle wird ins Wohnzimmer gebracht.
+
+## AB, Übung 5, Seite 104
+
+Spaghetti: Zuerst wird Wasser heiss gemacht. Dann werden die Nudeln ins Wasser
+gegeben. Die Nudeln werden acht Minuten gekocht. Zum Schluss wird eine Sosse
+über die Nudeln gegeben.
+
+Schinken-Käse-Toast: Zuerst werden die Toasts mit Schinken und Käse gefüllt.
+Dann werden de Toasts fünf Minuten getoastet. Am ende werden die Toasts auf den
+Tisch gestellt.
+
+## KB, Übung c, Seite 111
+
+Ich bin Student. Ich studiere Ingenieurwissen im Politecnico. Ich bin zufrieden,
+obwohl es oft sehr schwierig sein kann, weil die Unterrichte sehr lang und
+langweilig sind. Ich möchte nach dem Studium ein Informatik werden, weil ich mit
+Computers arbeitet gern, obwohl es manchmal langweilig ist.
+
+## KB, Übung a, Seite 111
+
+1. Ich würde gern Gitarrenspiel lernen.
+2. Ich wäre gern ein Monat im Urlaub.
+3. Ich würde gern ein Sportauto fahren.
