@@ -705,3 +705,44 @@ Computers arbeitet gern, obwohl es manchmal langweilig ist.
 1. Ich würde gern Gitarrenspiel lernen.
 2. Ich wäre gern ein Monat im Urlaub.
 3. Ich würde gern ein Sportauto fahren.
+
+## AB, Übung 5, Seite 108
+
+1. Obwohl Susanne Grippe hat, will sie zur Arbeit gehen. :(
+2. Obwohl Mark ganz schrecklich singt, will er Sänger in einer Rockband werden.
+   :(
+3. Herr Kröger will einen Ferrari kaufen, obwohl er dann einen Kredit braucht.
+   :(
+4. Gerda und Hannes wollen Urlaub auf einem Kreuzfahrschiff machen, obwohl ihre
+   Kinder nicht schwimmen können. :)
+5. Maria will Auslandsjournalistin werden, obwohl sie dann auch in gefährlicher
+   Ländern arbeiten muss. :|
+6. Anita will KFZ-Mechanikerin werden, obwohl fast nur Männer in dem Beruf
+   arbeiten. :)
+
+## KB, Übung a, Seite 112
+
+1. Herr Weber arbeitet als Mechaniker bei VW.
+2. Maria arbeitet als Lehrerin in einer Schule.
+3. Klaus arbeitet als Projektmanager bei Siemens.
+4. Rita arbeitet als Sekretärin im Büro.
+5. Lukas und Alexander Bosch arbeiten als Selbständige in der eigenem Firma.
+
+## KB, Übung b, Seite 112
+
+1. Andrea ist mein Cousin. Er arbeitet als Krankenpfleger im einem Krankenhaus.
+2. Sebastian ist mein Freund. Er arbeitet als Kurier bei Bartolini.
+3. Maria ist meine Tante. Sie arbeitet als Putzfrau in einem Hotel.
+
+## KB, Übung d, Seite 112
+
+1. Wenn man selbständig ist, muss man Künden suchen. Das finde ich nicht so gut.
+2. Wenn man angestellt ist, bekommt man jeden Monat Gehalt. Das finde ich gut.
+3. Wenn man selbständig ist, hat man keinen Chef. Das finde ich gut.
+
+## KB, Übung a, Seite 113
+
+1. Wie viel Freizeit hast du?
+2. Musst du eine Fremdsprache sprachen oder lernen?
+3. Hast du viel Kontakt mit Menschen?
+4. Wie viel musst du reisen?
