@@ -27,7 +27,9 @@
   showspaces=false,
   showstringspaces=false,
   showtabs=false,
-  tabsize=2
+  tabsize=2,
+  mathescape=true,
+  escapechar=`
 }
 \lstset{style=mystyle}
 
@@ -53,6 +55,9 @@
 \newcommand*{\deriv}[1][]{\xRightarrow[#1]{}}
 \newcommand*{\derivstar}[1][]{\xRightarrow[#1]{\star}}
 \newcommand*{\termsep}[0]{\blacklozenge}
+
+\newcommand{\peq}{$\gets$}
+\newcommand{\pcomment}{$\triangleright$}
 
 \DeclareMathOperator{\succc}{succ}
 \DeclareMathOperator{\last}{last}
@@ -2866,7 +2871,7 @@ carattere alla volta.
 degli FSA, \hl{$T_{PDA}(n) \in \Theta(n)$}.
 
 \paragraph{TM a nastro singolo} La complessità spaziale \hl{non potrà mai
-scendere sotto la linearità ($S_\mathcal{M}(n) \in \Theta(n)$)} mentre quella
+scendere sotto la linearità} ($S_\mathcal{M}(n) \in \Theta(n)$) mentre quella
 temporale si dimostra essere \hl{al massimo $T_\mathcal{M}(n) \in \Theta(n^2)$}.
 Le TM a nastro singolo sono, quindi, più potenti dei PDA ma anche più lente.
 
@@ -3029,5 +3034,257 @@ tener conto del \hl{numero di cifre necessarie per rappresentare un intero,
 perdendo il costo costante del salvataggio di interi e delle operazioni
 elementari su di essi}. In questi casi eseguire operazioni su un intero $i$
 costa tanto quanto il suo numero di cifre in base $b$.
+
+Forniamo allora una \hl{criterio di costo più realistico}: il \hl{costo
+logaritmico}. Una \hl{operazione} su un intero $i$ \hl{costerà tanto più sono le
+sue cifre in una base $b \geq 2$}, ossia $\log_b(i) = \Theta(\log(i))$. Possiamo
+\hl{omettere la base} del logaritmo poiché i \hl{logaritmi in diverse basi
+differiscono tra di loro solo per una costante} (vedasi la formula di
+cambiamento di base del logaritmo).
+
+Applichiamo il nuovo criterio di costo alle principali operazioni aritmetiche.
+Consideriamo $d = \log_2(i)$:
+
+\begin{itemize}
+  \item Le \hl{addizioni} e sottrazioni sono operazioni effettuate bit per bit,
+    quindi avranno costo \hl{$\Theta(d)$}
+  \item La \hl{moltiplicazione} eseguita con il \hl{metodo scolastico} richiede
+    di iterare sulle cifre 2 volte, quindi avrà costo \hl{$\Theta(d^2)$}. Studi
+    sull'aritmetica ci dicono che la complessità è migliorabile, sebbene con un
+    compromesso nella facilità di calcolo:
+
+    \begin{itemize}
+      \item \hl{Primo miglioramento: $\Theta(d^{\log_2(3)}) \approx
+        \Theta(d^{1.58})$}
+      \item \hl{Secondo miglioramento: $\Theta(d\log(d)\log(\log(d)))$}
+      \item \hl{Miglior costo attualmente scoperto: $\Theta(d\log(d))$}
+    \end{itemize}
+
+  \item Le \hl{divisioni} con il \hl{metodo scolastico}, analogamente alle
+    moltiplicazioni, hanno costo \hl{$\Theta(d^2)$}. Si è dimostrato che la
+    complessità \hl{può essere migliorata} a \hl{$\Theta(\log^2(d)) \cdot
+    \mathit{costo\_mul}$} dove $\mathit{costo\_mul}$ è il costo dell'algoritmo
+    di moltiplicazione scelto
+\end{itemize}
+
+Le operazioni di \hl{\texttt{JUMP} e \texttt{HALT}} hanno \hl{costo costante},
+così come \hl{anche le istruzioni di salto condizionale}.
+
+\hl{Per scegliere} tra i due criteri basta che \hl{controlliamo l'accuratezza
+dell'approssimazione a costo costante}: se la dimensione di ogni singolo
+elemento in ingresso non varia in modo significativo durante l'esecuzione usiamo
+il costo cotante e altrimenti quello logaritmico.
+
+\subsection{Legami tra le complessità dei vari modelli di calcolo}
+
+Quanto effetto ha sulla complessità cambiare modello di calcolo? \hl{Sotto
+ragionevoli ipotesi di criteri di costo, se un problema è risolvibile da una TM
+$\mathcal{M}$ in $T_\mathcal{M}(n)$, allora è risolvibile da un qualsiasi altro
+modello Turing-completo in $\pi(T_\mathcal{M})$ dove $\pi(\cdot)$ è un opportuno
+polinomio}. Questa affermazione è detta \hl{``tesi di correlazione lineare''}.
+Noi la dimostreremo solo tra i due modelli più importanti, la macchina \hl{RAM}
+e la \hl{macchina di Turing}.
+
+Prima di passare alla tesi di correlazione lineare, dimostriamo un \hl{risultato
+intermedio} che useremo.
+
+\begin{lem}[\hl{Occupazione sul nastro principale}]\label{thm:occupazione-nastro}
+  Sia una macchina di Turing e una macchina RAM\@. Lo \hl{spazio occupato sul
+  nastro principale è $\mathcal{O}(T_{RAM}(n))$}.
+\end{lem}
+\begin{proof}
+  Ogni cella della RAM occupa $\log(i_j)+\log(\mathtt{M}[i_j])$ spazio e viene
+  materializzata se e solo se la RAM effettua un operazione di \texttt{STORE}.
+  L'istruzione di \texttt{STORE} costa alla RAM $\log(i_j) +
+  \log(\mathtt{M}[i_j])$, quindi per riempire $r$ celle la RAM impiegherà
+  $\sum_{j=1}^r \log(i_j) + \log(\mathtt{M}[i_j])$. Questa quantità di tempo è
+  identica allo spazio che $r$ celle di memoria occuperanno sul nastro della
+  TM\@.
+\end{proof}
+
+\begin{thm}[\hl{Correlazione temporale tra TM a $k$ nastri e RAM}]\label{thm:corr-tm-ram}
+  Se un \hl{problema è risolvibile da una TM a $k$ nastri $\mathcal{M}$ in
+  $T_\mathcal{M}(n)$ e da una macchina RAM in $T_{RAM}(n)$}, allora si avrà:
+
+  \begin{equation}
+    \mhl{ T_\mathcal{M}(n) = \pi(T_{RAM}(n)) }
+  \end{equation}
+
+  Dove $\pi(\cdot)$ è un opportuno polinomio.
+\end{thm}
+\begin{proof}
+  Come primo passo dimostriamo che possiamo emulare un TM con una RAM in tempo
+  polinomiale. Mappiamo innanzitutto le varie parti di una TM su una RAM\@:
+
+  \begin{itemize}
+    \item Lo stato della TM corrisponderà all'accumulatore della RAM
+    \item Una cella della RAM corrisponderà ad una cella di nastro
+    \item La RAM è suddivisa in blocchi da $k$ celle
+  \end{itemize}
+
+  I blocchi saranno riempiti secondo questa strategia: nel blocco $0$ saranno
+  salvate in ogni cella le posizioni delle $k$ testine; nei rimanenti $n>0$
+  blocchi sarà salvato lo $n$-esimo blocco di ognuno dei $k$ nastri. La RAM
+  emulerà la lettura di un carattere sotto la testina con un accesso indiretto,
+  usando l'indice contenuto nel blocco $0$. Studiamo ora il costo
+  dell'emulazione delle due operazioni che può effettuare una macchina di
+  Turing:
+
+  \begin{description}
+    \item[Lettura] La lettura del blocco $0$ e dello stato avviene in
+      $\Theta(k)$ mosse. La lettura dei valori sui nastri in corrispondenza
+      delle testine avverrà in $\Theta(k)$ accessi indiretti.
+    \item[Scrittura] La scrittura dello stato avviene in una mossa
+      ($\Theta(1)$). Le scritture sui nastri e nel blocco $0$, come anche le
+      letture, impiegano rispettivamente $\Theta(k)$ accessi indiretti e
+      $\Theta(k)$ mosse.
+  \end{description}
+
+  La RAM è quindi capace di emulare una mossa della TM con $k$ mosse:
+
+  \[
+    T_{RAM}(n) = \Theta(T_\mathcal{M}(n))
+      [ = \Theta(T_\mathcal{M}(n)\log(T_\mathcal{M}(n))) \text{ costo logaritmico} ]
+  \]
+
+  Studiamo ora l'emulazione da parte di una MT di una macchina RAM\@. Per
+  semplicità ometteremo l'emulazione delle operazione di \texttt{MUL} e
+  \texttt{DIV} in quanto non ledono alla generalità della dimostrazione.
+  Organizziamo il nastro della TM come in figura~\ref{fig:thm-corr-tm-ram}
+
+  \begin{figure}[htb]
+    \centering
+    \begin{tikzpicture}
+      \draw[black,thin,step=0.9] (0,0) grid (11.7, 0.9);
+
+      \node[] at (0.45,  0.45) [] () {$\ldots$};
+      \node[] at (1.35,  0.45) [] () {\Large$\triangleleft$};
+      \node[] at (2.25,  0.45) [] () {\large$i_j$};
+      \node[] at (3.15,  0.45) [] () {\Large$\ddagger$};
+      \node[] at (4.05,  0.45) [] () {$\mathtt{M}[i_j]$};
+      \node[] at (4.95,  0.45) [] () {\Large$\triangleright$};
+      \node[] at (5.85,  0.45) [] () {$\ldots$};
+      \node[] at (6.75,  0.45) [] () {\Large$\triangleleft$};
+      \node[] at (7.65,  0.45) [] () {\large$i_k$};
+      \node[] at (8.55,  0.45) [] () {\Large$\ddagger$};
+      \node[] at (9.45,  0.45) [] () {$\mathtt{M}[i_k]$};
+      \node[] at (10.35, 0.45) [] () {\Large$\triangleright$};
+      \node[] at (11.25, 0.45) [] () {$\ldots$};
+    \end{tikzpicture}
+    \caption{Configurazione del nastro della TM}%
+    \label{fig:thm-corr-tm-ram}
+  \end{figure}
+
+  Il nastro è inizialmente vuoto, salveremo solo le celle in cui è avvenuta una
+  \texttt{STORE}. Usiamo anche un ulteriore nastro per contenere il valore di
+  $\mathtt{M}[0]$ in binario. Useremo anche un ultimo nastro come stoccaggio
+  temporaneo per quando serve salvare per la prima volta $\mathtt{M}[i_j]$ ma
+  $\mathtt{M}[i_k]$ e $\mathtt{M}[i_l]$ con $i_k < i_j < i_l$ sono già state
+  salvate. Con questa configurazione, studiamo l'emulazione delle varie
+  istruzioni della RAM (nel dettaglio vedremo solo \texttt{LOAD}, \texttt{STORE}
+  e \texttt{ADD}):
+
+  \begin{description}
+    \item[\texttt{LOAD x}] Devo effettuare una ricerca di \texttt{x} sul nastro
+      principale e poi copiare la porzione di nastro accanto nella zona dati di
+      $\mathtt{M}[0]$ usando il nastro di supporto.
+    \item[\texttt{STORE x}] Devo anche qui effettuare una ricerca di \texttt{x}
+      sul nastro principale, se lo trovo vi salvo nello spazio adiacente il
+      valore di $\mathtt{M}[0]$, altrimenti creo dello spazio usando il nastro
+      di servizio se necessario e lo salvo.
+    \item[\texttt{ADD x}] Effettuo ancora una ricerca di \texttt{x}, copio
+      $\mathtt{M}[x]$ sul nastro di supporto, ne calcolo la somma scrivendo il
+      risultato in $\mathtt{M}[0]$.
+  \end{description}
+
+  In generale possiamo dire grazie al lemma~\ref{thm:occupazione-nastro} che % chktex 44
+  simulare una mossa della RAM richiede alle TM un numero di mosse minore o
+  uguale ad una costante per la lunghezza del nastro principale. Quindi la TM
+  impiega al più $\Theta(T_{RAM}(n))$ per simulare una mossa della RAM\@. Poiché
+  ogni mossa della RAM ha costo unitario, possiamo dire che essa esegue
+  $T_{RAM}(n)$ mosse. Quindi la simulazione completa della RAM da parte della TM
+  costa al più
+
+  \[
+    \Theta(T_{RAM}(n) \cdot T_{RAM}(n)) = \Theta({(T_{RAM}(n))}^2)
+  \]
+
+  Quindi il legame tra $T_{RAM}(n)$ e $T_\mathcal{M}(n)$ è polinomiale.
+\end{proof}
+
+L'esistenza della correlazione polinomiale tra macchina RAM e macchina di Turing
+ci permette di \hl{definire una classe di problemi risolvibili in tempo
+polinomiale (classe P)}. Questo risultato ha portato ad una \hl{``testi di
+trattabilità''}: i \hl{problemi risolvibili in P sono quelli trattabili}. In
+questo caso per trattabili \hl{intendiamo risolvibili con complessità con
+esponente ragionevole}. Infatti la classe P comprende anche polinomi come
+$n^{30}$, ma \hl{empiricamente si è visto che la maggioranza dei problemi
+polinomiali di interesse pratico ha un grado polinomiale accettabile} di solito
+inferiore a $4$.
+
+\section{Studio della complessità di algoritmi}\label{sec:comp-alg}
+
+Dato un certo problema, un buon flusso di lavoro è il seguente:
+
+\begin{enumerate}
+  \item Concepire un algoritmo che lo risolve
+  \item Valutare la complessità dell'algoritmo trovato
+  \item Se la complessità calcolata è soddisfacente, implementare l'algoritmo
+    nel linguaggio scelto
+\end{enumerate}
+
+Per controllare la correttezza di un algoritmo, come abbiamo già visto, non
+esiste una procedura generale. Ciò però non nega il fatto che per alcuni
+particolari casi possiamo costruire degli algoritmi di controllo.
+
+Il \hl{modello che useremo} per valutare la complessità è, ovviamente, la
+\hl{macchina RAM}\@. Ci \hl{concentreremo}, inoltre, sulla \hl{complessità
+temporale calcolata con il criterio di costo costante} in quanto gli algoritmi
+trattati non hanno espansioni significative della dimensione dei singoli dati.
+Nei rari casi in cui ciò accade, possiamo rappresentare questi numeri molto
+grandi come vettori di numeri più piccoli. Il \hl{linguaggio} che useremo per
+definire gli algoritmi è lo \hl{``pseudocodice''}. Esso non è altro che
+\hl{un'astrazione delle caratteristiche dei linguaggi di programmazione più
+comuni} (C, Java, ecc\dots). Una assunzione fondamentale sullo pseudocodice sarà
+che \hl{ogni statement di esso può essere tradotto in un numero costante di
+istruzioni RAM}\@.
+
+\subsection{La sintassi dello pseudocodice}
+
+Innanzitutto ogni algoritmo sarà \hl{definito come una procedura, ossia una
+funzione che prende un input e non ritorna nulla}. Forniamo ora la sintassi base
+dello pseudocodice che useremo.
+
+\paragraph{Operatori} Sono definiti i \hl{soliti operatori matematici}. Useremo
+\hl{\peq{} come assegnamento e riserveremo \texttt{=} per uguaglianza}. Per i
+\hl{confronti useremo i soliti} \texttt{<}, $\leq$, \texttt{>} e $\geq$.
+
+\paragraph{Commenti} Sono legali solo \hl{commenti monoriga delimitati da
+\pcomment{}} oppure usando \texttt{//}.
+
+\paragraph{Costrutti di controllo del flusso} Sono presenti \hl{tutti} i
+costrutti di controllo del flusso che ci si aspetterebbe \hl{in un normale
+linguaggio C-like}: \texttt{if}, \texttt{else}, \texttt{else if} e i cicli
+\texttt{for}, \texttt{while} e \texttt{do\dots while}.
+
+\paragraph{Strutture dati e tipi aggregati} Sono definiti gli \hl{array} e sono
+accessibili con una notazione C-like:
+
+\begin{itemize}
+  \item \hl{\texttt{A[i]} per indirizzare} lo $i-1$-esimo elemento
+    (indicizzazione a partire da 0)
+  \item \hl{\texttt{A[i..j]}} per estrarre un \hl{sotto-array} (slice)
+\end{itemize}
+
+È anche possibile creare \hl{tipi aggregati, i vari campi di questi sono
+indirizzabili tramite `\texttt{.}'}. I tipi aggregati sono di default
+\hl{identificati da un puntatore alla struttura}, quindi la notazione
+`\texttt{.}' equivale al \texttt{->} del C/C++. Un \hl{puntatore indefinito ha
+valore \texttt{NIL}}.
+
+\paragraph{Chiamata di funzioni} Le chiamate a funzione seguono le consuete
+regole di chiamata e ritorno di un valore. I \hl{parametri di tipo base sono
+passati per valore, mentre i tipi aggregati per riferimento} (convenzione
+Java-like).
 
 \end{document}

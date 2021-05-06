@@ -1626,4 +1626,133 @@ reale contiene gli interi che maneggiano. Se questo non accade, dobbiamo tener
 conto del numero di cifre necessarie per rappresentare un intero, perdendo il
 costo costante del salvataggio di interi e delle operazioni elementari di essi.
 In questi casi eseguire operazioni su un intero $i$ costa tanto quanto il suo
-numero di cifre in base $b$: $\log_b(i) = \Theta(\log(i))$
+numero di cifre in base $b$: $\log_b(i) = \Theta(\log(i))$.
+
+Forniamo allora una criterio di costo più realistico: il costo logaritmico. Una
+operazione su interi costerà $\log_b(i) = \Theta(\log(i))$ ($b>2$). D'ora in poi
+consideriamo la base binaria. Il costo delle varie operazioni aritmetiche hanno
+complessità:
+
+- Addizioni/sottrazioni: $\Theta(d = \log_2(i))$
+- Moltiplicazioni (metodo scolastico): $\Theta(d^2)$. Possiamo migliorare la
+  complessità (a grande discapito della facilità):
+  - Primo miglioramento: $\Theta(d^{\log_2(3))) \approx \Theta(d^{1.58})$
+  - Secondo miglioramento: $\Theta(d\log(d)\log(\log(d)))$
+  - Terzo miglioramento: $\Theta(d\log(d))$
+- Divisioni (metodo scolastico): $\Theta(d^2)$
+  - Miglioramento: $\Theta(\log^2(d)) \cdot \mathit{costo_mul}$
+
+Le operazioni di `JUMP` e `HALT` hanno costo costante.
+
+Per scegliere tra i due criteri, usiamo queste due regoline:
+
+1. Se la dimensione di ogni singolo elemento in ingresso non varia in modo
+   significativo nell'esecuzione dell'algoritmo, usiamo il costo costante
+2. Nel caso il cui ci sia un significativo cambio nella dimensione dei singoli
+   elemento in ingresso usiamo il costo logaritmico.
+
+### Rapporti tra complessità con diversi modelli di calcolo
+
+Quanto effetto ha sulla complessità cambiare modelli di calcolo? Sotto
+ragionevoli ipotesi di criteri di costo, se un problema è risolvibile da una TM
+$M$ in $T_M(n)$, allora è risolvibile da un qualsiasi altro modello
+Turing-completo in $\pi(T_M)$ dove $\pi(\cdot)$ è un opportuno polinomio.
+Questa affermazione è detta "tesi di correlazione lineare"
+
+#### Lemma - Occupazione sul nastro principale
+
+Lo spazio occupato sul nastro principale è $\mathcal{O}(T_{RAM}(n))$.
+
+> Ogni cella della RAM occupa $\log(i_j) + \log(M[i_j])$. Ogni cella della RAM
+> viene materializzata solo se la ram effettua una `STORE`. La `STORE` costa
+> alla RAM $\log(i_j) + \log(M[i_j])$. Per riempire $r$ celle, la RAM ci mette
+> $\sum_{j=1}^r \log(i_j) + \log(M[i_j])$ in tempo: quantità identica allo
+> spazio che occupano sul nastro della MT.
+
+#### Teorema - Correlazione polinomiale tra TM e RAM
+
+Data una macchina RAM e una MT, allora $T_{RAM} = \pi(T_M)$, con $\pi(\cdot)$ un
+polinomio.
+
+> Usiamo la simulazione. Consideriamo una RAM che simula una MT a k nastri.
+> Mappiamo la MT sulla RAM:
+>
+> - Lo stato della MT corrisponderà alla prima cella di memoria della RAM
+> - Useremo una cella di RAM per ogni cella di nastro
+> - Suddividiamo la restante RAM in blocchi da k celle
+>
+> Riempiamo i blocchi con la seguente strategia: nel blocco 0 salviamo la
+> posizione delle K testine, mentre nei rimanenti l'n-esimo simbolo di ognuno
+> dei k nastri. La RAM ... . Eseguendo i calcoli, scopriamo che l'emulazione
+> avrà costo costante per il criterio costante mentre $\Theta(T_M(n)\log(n))$ in
+> costo logaritmico.
+>
+> Emuliamo ora con una TM la RAM (omettiamo le `MUL` e le `DIV` per semplicità.
+> Innanzitutto organizziamo così il nastro della MT: ... . Inizialmente il
+> nastro è vuoto, salviamo solo le celle in cui è avvenuta una `STORE`. Usiamo
+> un ulteriore nastro per contenere $M[0]$ in binario. Usiamo un ultimo nastro
+> come stoccaggio temporaneo per quando serve salvare per la prima volta
+> $M[i_j]$ ma $M[i_k]$ e $M[i_l]$ sono già state salvate ... . Possiamo ora
+> emulare le istruzioni:
+>
+> - `LOAD x`: cerco $x$ sul nastro principale, copio la porzione accanto nella
+>   zona dati di $M[0]$ usando il nastro di supporto
+> - `STORE x`: cerco $x$ sul nastro principale: se lo trovo, salvo il valore in
+>   $M[0]$, altrimenti creo dello spazio usando il nastro di servizio se
+>   necessario e salvo.
+> - `ADD x`: cerco $x$, copio $M[x]$ sul nastro di supporto, calcolo la somma
+>   scrivendo direttamente in $M[0]$
+>
+> In generale simulare una mossa della RAM richiede alla MT un numero di mosse
+> minore o uguale di $c \cdot(\mathit{lunghezza nastro principale)$. Per il
+> lemma di occupazione del nastro principale, la MT impiega al più
+> $\Theta(T_{RAM}(n)$ per simulare una mossa della RAM. Se la RAM ha
+> complessità $T_{RAM}(n)$, essa effettua al più $T_{RAM}(n)$ mosse. La
+> simulazione completa della RAM da parte della MT costa al più
+> $\Theta((T_{RAM}(n))^2)$, quindi il legame tra la macchina RAM e la MT è
+> polinomiale.
+
+La relazione polinomi tra il tempo di calcolo su $T_{RAM}(n)$ e $T_M(n)$ ci
+consente di definire la classe di problemi risolvibili in tempo/spazio
+polinomiale (classe $P$). Questo risultato ha portato alla formulazione di una
+"tesi di trattabilità": i problemi risolvibili in $P$ sono quelli trattabili. La
+classe $P$ comprende anche polinomi con esponenti molto grossi, empiricamente si
+è visto che la maggioranza dei problemi polinomiali di interesse ha un grado
+accettabile.
+
+## Complessità di algoritmi
+
+Dato un problema, un buon flusso di lavoro è:
+
+1. Concepiamo un algoritmo che lo risolve
+2. Ne valutiamo la complessità
+3. Se la complessità è soddisfacente, lo implementiamo
+
+Per la correttezza non c'è una soluzione in generale, ciò non nega che però lo
+potremo fare in alcuni casi particolari.
+
+Per codificare l'algoritmo abbiamo bisogno di un linguaggio. Noi useremo una
+astrazione di un linguaggio imperativo per evitare di concentrarci sui dettagli
+implementativi in un particolare linguaggio come il C, lo pseudocodice.
+
+### Sintassi dello pseudocodice
+
+Ogni algoritmo è rappresentato con una procedura (una funzione che modifica i
+dati in input, non ritorna nulla).
+
+- Operatori: funziona come in C, come notazione usiamo `<-` per l'assegnamento e
+  le solite per i confronti.
+- Commenti: solo mono riga, iniziano come in C con `//`
+- Controllo: useremo `if-else`
+- Strutture: ci sono gli array con la stessa notazione del C e i sotto array con
+  la notazione tipo Python: `A[i..j]`. Possiamo creare anche aggregati
+  eterogenei tipo `struct`, l'accesso avviene tramite `.`. Diversamente dal C,
+  una variabile aggregata è un puntatore alla struttura. Un puntatore non valido
+  ha valore `NIL`.
+- Passaggi di parametri: i tipi base vengono passati per copia, mentre i tipi
+  aggregati per riferimento
+
+Il modello di esecuzione che useremo è la macchina RAM. Una assunzione
+fondamentale: un singolo statement di pseudocodice è tradotto in un numero
+costante di assembly RAM.
+
