@@ -18,6 +18,19 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 
+\usepackage{listings}
+\lstdefinestyle{mystyle}{
+  basicstyle=\ttfamily,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2
+}
+\lstset{style=mystyle}
+
 \usepackage{tikz}
 \usetikzlibrary{arrows,arrows.meta,automata,positioning}
 
@@ -70,8 +83,8 @@ modelli che costruiremo.
 \end{defn}
 
 \begin{defn}[\hl{Modello descrittivo}]\label{def:modello-desc}
-  È un modello che \hl{formula le proprietà desiderate o no del sistema} piuttosto
-  che il suo funzionamento.
+  È un modello che \hl{formula le proprietà desiderate o no del sistema}
+  piuttosto che il suo funzionamento.
 \end{defn}
 
 \hl{Le differenze tra questi due tipi di modellizzazione non sono spesso molto
@@ -572,9 +585,9 @@ definito è $L(\langle A^1, A^2 \rangle) = L(A^1) \cap L(A^2)$.
 \end{figure}
 
 \paragraph{Unione} Per l'unione il tutto funziona in \hl{modo analogo}. L'automa
-risultante sarà un automa che \hl{accetterà stringhe accettate da almeno uno dei due
-automi di partenza}. Eseguendo un procedimento simile a quello effettuato per
-ottenere~\ref{eqn:automa-intersezione} abbiamo:
+risultante sarà un automa che \hl{accetterà stringhe accettate da almeno uno dei
+due automi di partenza}. Eseguendo un procedimento simile a quello effettuato
+per ottenere~\ref{eqn:automa-intersezione} abbiamo:
 
 \begin{equation}
   \langle A^1, A^2 \rangle = \langle Q^1 \times Q^2, I, \delta,
@@ -590,10 +603,11 @@ accetta, rendendo problematico il caso di un errore dovuto alla parzialità dell
 funzione di transizione. \hl{Bisogna, quindi, ricordarsi di completare gli
 automi aggiungendo eventuali stati di errore prima di eseguirne l'unione}.
 
-\paragraph{Complemento} Per il complemento la situazione è \hl{analoga all'unione}:
-anche qui dobbiamo stare attenti alla completezza dei due automi di partenza.
-L'automa complemento sarà praticamente uguale all'automa di partenza, solo che
-\hl{gli stati di accettazione ora saranno di non accettazione e viceversa}.
+\paragraph{Complemento} Per il complemento la situazione è \hl{analoga
+all'unione}: anche qui dobbiamo stare attenti alla completezza dei due automi di
+partenza.  L'automa complemento sarà praticamente uguale all'automa di partenza,
+solo che \hl{gli stati di accettazione ora saranno di non accettazione e
+viceversa}.
 
 \begin{equation}
   \neg A = \langle Q, I, \delta, q_0, Q \setminus F \rangle
@@ -755,10 +769,10 @@ come:
   }
 \end{equation}
 
-Indichiamo con \hl{$\vdash^\star$ la chiusura transitiva e riflessiva di $\vdash$}. Essa
-non è altro che l'insieme delle nostre \hl{vecchie sequenze di mosse}. Usando
-$\vdash^\star$ possiamo anche \hl{formalizzare l'accettazione di una stringa} (e la sua
-eventuale traduzione) come:
+Indichiamo con \hl{$\vdash^\star$ la chiusura transitiva e riflessiva di
+$\vdash$}. Essa non è altro che l'insieme delle nostre \hl{vecchie sequenze di
+mosse}. Usando $\vdash^\star$ possiamo anche \hl{formalizzare l'accettazione di
+una stringa} (e la sua eventuale traduzione) come:
 
 \begin{equation}
   c_0 = \langle q_0, x, Z_0, (\epsilon) \rangle \vdash^\star
@@ -928,18 +942,18 @@ può dimostrare, però, che esistono diverse formulazioni equivalenti della
 macchina di Turing. Queste diverse tipologie di macchina sono funzionalmente
 equivalenti, con unica differenza la complessità dell'organo di controllo.}
 
-\paragraph{MT a singolo nastro} Il primo modello, e anche il \hl{più
-vecchio}, che enunceremo è quello della MT a singolo nastro. Essa, come implica
+\paragraph{TM a singolo nastro} Il primo modello, e anche il \hl{più
+vecchio}, che enunceremo è quello della TM a singolo nastro. Essa, come implica
 il nome, \hl{possiede un singolo nastro di memoria infinito sul quale la testina
 si può muovere in entrambe le direzioni}. Questo unico nastro \hl{viene usato
 come memoria, input ed eventualmente output}. Attenzione a \hl{non confonderla
-con la MT con $k=1$ nastri} (chiamata ``ad un nastro di memoria'').
+con la TM con $k=1$ nastri} (chiamata ``ad un nastro di memoria'').
 
-\paragraph{MT con nastro di memoria bidimensionale} Un altro modello
+\paragraph{TM con nastro di memoria bidimensionale} Un altro modello
 interessante è quello in cui il \hl{nastro di memoria è organizzato come una
 tabella e la testina si può muovere in entrambe e 4 le direzioni cardinali
 sequenzialmente}. Si ricorda che l'accesso randomico alla memoria non è
-possibile con una semplice MT\@.
+possibile con una semplice TM\@.
 
 \paragraph{Macchine di von Neumann} La macchina di von Neumann è il
 \hl{modello astratto di un computer con processore, memoria ad accesso randomico
@@ -1186,7 +1200,7 @@ un albero chiamato appunto albero delle computazioni}.
   \label{fig:albero-computazioni}
 \end{figure}
 
-Per emulare una NTM con una MT ci \hl{basterà}, quindi, \hl{percorrere in
+Per emulare una NTM con una TM ci \hl{basterà}, quindi, \hl{percorrere in
 larghezza questo albero, scandendo le varie configurazioni finché non ne
 troveremo una di accettazione}. Per eseguire questa operazione in alberi
 tradizionali esistono degli algoritmi ben consolidati
@@ -1290,7 +1304,7 @@ elementi fondamentali dell'alfabeto considerato}.
 Nella \hl{sezione precedente} abbiamo mostrato con degli \hl{esempi} che è
 possibile \hl{generare linguaggi che sappiamo essere riconosciuti da degli
 automi} (usando la potenza minima): il primo da un FSA, il secondo da un PDA e
-il terzo da una MT\@. È possibile organizzare le \hl{grammatiche} in una
+il terzo da una TM\@. È possibile organizzare le \hl{grammatiche} in una
 \hl{gerarchia in base al loro potere generativo} e inoltre \hl{è possibile che
 ci sia una relazione tra le potenze riconoscitive dei vari autonomi e le
 grammatiche}?
@@ -1416,14 +1430,14 @@ della grammatica, la \hl{stringa} d'ingresso verrà \hl{accettata}. Il
 procedimento descritto \hl{non garantisce che la macchina di Turing generata
 riesca a concludere sempre la computazione}.
 
-\subparagraph{Grammatica equivalente a MT} Eseguire il processo inverso è più
+\subparagraph{Grammatica equivalente a TM} Eseguire il processo inverso è più
 complicato. Poiché una \hl{grammatica non può ricevere una stringa in input e
 può manipolare solo gli elementi non terminali di una stringa}, dobbiamo fare in
 modo che essa \hl{generi tutte le possibili stringhe del tipo $x \termsep X$}
 con $x \in V_t^\star$, $\termsep \in V_n$ un separatore  e \hl{$X$ una ``copia''
 di $x$ fatta solo di elementi non terminali}. Il nostro \hl{obiettivo} è
 ottenere una \hl{derivazione $x \termsep X \derivstar x$ se e solo se $x$ è
-accettata dalla MT}\@. Innanzitutto la grammatica deve possedere le
+accettata dalla TM}\@. Innanzitutto la grammatica deve possedere le
 \hl{produzioni che generano $x \termsep X$} (consideriamo $V_t = \{a,b\}$):
 
 \begin{align}
@@ -1447,7 +1461,7 @@ base ai valori assunti da $\delta$ \hl{possiamo agire in 3 diversi modi}:
   \item \hl{$\delta(q, A) = \langle q', A', S \rangle$} aggiungo \hl{$qA \to
     q'A'$} alle produzioni
   \item \hl{$\delta(q, A) = \langle q', A', L \rangle$} aggiungo \hl{per ogni
-    $B$} nell'alfabeto della MT la produzione \hl{$BqA \to q'B'A'$}
+    $B$} nell'alfabeto della TM la produzione \hl{$BqA \to q'B'A'$}
 \end{enumerate}
 
 \begin{figure}[htb]
@@ -1526,8 +1540,8 @@ così la macchina a minore potenza equivalente alle grammatiche monotone. Un
 
 \section{Altri modelli utili}\label{sec:altri-modelli}
 
-Degli \hl{altri modelli molto usati per descrivere i linguaggi sono i pattern e le
-espressioni regolari}. Non andremo per nulla del dettaglio e ci limiteremo a
+Degli \hl{altri modelli molto usati per descrivere i linguaggi sono i pattern e
+le espressioni regolari}. Non andremo per nulla del dettaglio e ci limiteremo a
 \hl{enunciare solo la definizione e al massimo qualche proprietà}.
 
 \subsection{I pattern}\label{sec:pattern}
@@ -1556,9 +1570,9 @@ altri corsi:
   regolari.
 \end{proof}
 
-Con un semplice \hl{esempio} si può anche vedere che \hl{la famiglia dei linguaggi
-descrivibili da una regex non coincide con quella dei linguaggi generati dai
-sistemi di pattern}:
+Con un semplice \hl{esempio} si può anche vedere che \hl{la famiglia dei
+linguaggi descrivibili da una regex non coincide con quella dei linguaggi
+generati dai sistemi di pattern}:
 
 \begin{itemize}
   \item $L = \{xx : x \in \{0,1\}\}$ non è un linguaggio regolare, ma può essere
@@ -1788,7 +1802,7 @@ $\phi$ come}:
 
 I \hl{linguaggi esprimibili tramite MFO} sono \hl{chiusi rispetto a unione,
 intersezione e complemento come potrebbe far intendere la buona definizione di
-$land$, $lor$ e $\neg$}. Essi però \hl{non sono chiusi rispetto alla star di
+$\land$, $\lor$ e $\neg$}. Essi però \hl{non sono chiusi rispetto alla star di
 Kleene}. I linguaggi esprimibili da MFO sono perciò detti \hl{``star-free''}.
 
 Un altra peculiarità delle formule MFO è il fatto che siano \hl{meno potenti
@@ -1853,7 +1867,7 @@ l'equivalenza tra FSA e MSO}\@.
 
 Automi, grammatiche e altri formalismi possono essere considerati modelli
 meccanici per risolvere problemi matematici. Alcuni di questi sono più potenti
-di altri, ad esempio le MT riconosco una famiglia di linguaggi che contiene
+di altri, ad esempio le TM riconosco una famiglia di linguaggi che contiene
 linguaggi non riconoscibili dai PDA\@. Abbiamo inoltre affermato che nessun
 formalismo sarà più potente di una macchina di Turing. \hl{Questi modelli
 possono, però, catturare l'essenza di un generico solutore meccanico?} Inoltre
@@ -1872,8 +1886,8 @@ calcolo di una funzione $f: \mathbb{N} \to \mathbb{N}$}. Si può inoltre
 dimostrare che riconoscimento e traduzione possono ridotte l'una all'altra:
 
 \begin{thm}[Equivalenza tra traduzione e riconoscimento]\label{thm:equiv-trad-ric}
-  Se una macchina può \hl{risolvere tutti i problemi del tipo $y = \tau(x)$} allora
-  può \hl{risolvere anche i problemi del tipo $x \in L$ e viceversa}.
+  Se una macchina può \hl{risolvere tutti i problemi del tipo $y = \tau(x)$}
+  allora può \hl{risolvere anche i problemi del tipo $x \in L$ e viceversa}.
 \end{thm}
 \begin{proof}[Dimostrazione teorema~\ref{thm:equiv-trad-ric}]
   Dimostriamo i due versi dell'implicazione separatamente:
@@ -1890,7 +1904,7 @@ dimostrare che riconoscimento e traduzione possono ridotte l'una all'altra:
   \end{description}
 \end{proof}
 
-La \hl{classe dei problemi che possono essere risolti da una MT è indipendente
+La \hl{classe dei problemi che possono essere risolti da una TM è indipendente
 dall'alfabeto scelto, sempre che ci siano almeno due simboli}. Prima abbiamo
 detto che le macchine di Turing sono il più potente formalismo di calcolo
 automatico. Questa è la cosiddetta tesi di Church. Esso non è un teorema poiché
@@ -1904,7 +1918,7 @@ teorema.
 \end{prop}
 
 Tutti i \hl{modelli che abbiamo esaminato sono discreti}, in accordo con la
-tecnologia digitale nel quale vengono impiegati. Inoltre \hl{data una MT, si può
+tecnologia digitale nel quale vengono impiegati. Inoltre \hl{data una TM, si può
 costruire un programma in Java, C o FORTRAN che la simula e viceversa}. Questi
 \hl{linguaggi di programmazione} hanno, quindi, la stessa espressività delle
 macchine di Turing e \hl{vengono detti ``Turing-completi''}. Esistono anche dei
@@ -1923,14 +1937,14 @@ Gli \hl{algoritmi} godono di alcune \hl{importanti proprietà}, anche queste
 enunciate in modo informale.
 
 \begin{prop}
-  Sia \hl{$A$ un algoritmo} in esecuzione su una \hl{macchina $M$ dotata di un
-  processore meccanico (digitale) e di una memoria utilizzabile dal processore
-  in modo arbitrario}. Si ha che:
+  Sia \hl{$A$ un algoritmo} in esecuzione su una \hl{macchina $\mathcal{M}$
+  dotata di un processore meccanico (digitale) e di una memoria utilizzabile dal
+  processore in modo arbitrario}. Si ha che:
 
   \begin{enumerate}
     \item La \hl{sequenza di istruzioni} di $A$ dev'essere \hl{finita}
     \item \hl{Qualunque istruzione} di $A$ dev'essere \hl{eseguibile dal
-      processore} meccanico di $M$
+      processore} meccanico di $\mathcal{M}$
     \item La \hl{computazione è discreta}, ossia l'informazione è codificata
       digitalmente e la computazione procede attraverso passi discreti
     \item $A$ è \hl{eseguito in modo deterministico}
@@ -1966,13 +1980,13 @@ risposta un po' banale è: quelli risolvibili dalle macchine di Turing.
 Dimostriamo che l'insieme delle macchine di Turing è un insieme enumerabile
 algoritmicamente:
 
-\begin{prop}[\hl{Enumerazione delle MT}]\label{thm:enum-alg-MT}
+\begin{prop}[\hl{Enumerazione delle TM}]\label{thm:enum-alg-TM}
   L'\hl{insieme} di \hl{tutte le macchine di Turing} a \hl{nastro singolo} con
   alfabeto \hl{$A = \{ 0,1,\not{b}\}$} è un \hl{insieme enumerabile
   algoritmicamente}.
 \end{prop}
 \begin{proof}
-  Consideriamo le MT con solo due stati. Iniziamo con il calcolare la
+  Consideriamo le TM con solo due stati. Iniziamo con il calcolare la
   cardinalità dell'insieme di tutte le possibili funzioni di transizione
   realizzabili. Sappiamo che $\delta$ ha forma:
 
@@ -1989,25 +2003,25 @@ algoritmicamente:
 
   Considerando che abbiamo 4 possibili scelte di stati finali, otteniamo un
   numero di $4*19^6$ macchine di Turing a 2 stati. Iterando il procedimento,
-  otterremo sempre un numero finito e al più numerabile di MT\@. Ora ci basta
+  otterremo sempre un numero finito e al più numerabile di TM\@. Ora ci basta
   ordinare secondo un ordine arbitrario e quindi scrivere un algoritmo che le
   enumeri.
 \end{proof}
 
-Il numero \hl{$E(M)$} è detto \hl{numero di Gödel} della MT $M$ ed indica il suo
-\hl{indice nella enumerazione algoritmica} di tutte le MT creabili. La \hl{$E$}
-è detta la \hl{gödelizzazione} dell'insieme delle MT\@.
+Il numero \hl{$E(M)$} è detto \hl{numero di Gödel} della TM $\mathcal{M}$ ed
+indica il suo \hl{indice nella enumerazione algoritmica} di tutte le TM
+creabili. La \hl{$E$} è detta la \hl{gödelizzazione} dell'insieme delle TM\@.
 
 \subsection{Macchina di Turing universale}\label{sec:utm}
 
 Chiediamoci ora se le \hl{macchine di Turing} riescano a \hl{modellare i
-calcolatori programmabili}. Una MT con queste caratteristiche è \hl{detta
+calcolatori programmabili}. Una TM con queste caratteristiche è \hl{detta
 macchina di Turing universale (UTM)}. La \hl{UTM computa} la funzione
-\hl{$g(y,x) = f_y(x)$} dove $f_y$ è la funzione calcolata dalla MT di indice
+\hl{$g(y,x) = f_y(x)$} dove $f_y$ è la funzione calcolata dalla TM di indice
 $y$.
 
 Per come è definita, sembrerebbe che la UTM sia un diverso tipo di automa
-rispetto alla MT\@: la prima lavora $\mathbb{N}^2$ mentre la seconda si
+rispetto alla TM\@: la prima lavora $\mathbb{N}^2$ mentre la seconda si
 $\mathbb{N}$. Sappiamo però che la \hl{cardinalità di $\mathbb{N}^2$ è uguale a
 quella di $\mathbb{N}$} in quanto esiste la biezione:
 
@@ -2037,12 +2051,12 @@ caso \hl{negativo}, per la tesi di Church, \hl{esisterebbero problemi non
 risolvibili tramite algoritmi}. Calcoliamo la cardinalità dell'insieme di
 funzioni naturali a variabile naturale. Consideriamo il sottoinsieme di $f:
 \mathbb{N} \to \{0,1\}$. È possibile calcolare la cardinalità di questo insieme
-ed essa è pari a quella di $\wp{\mathbb{N}}$ ossia $2^{\aleph_0}$ ossia la
+ed essa è pari a quella di $\wp(\mathbb{N})$ ossia $2^{\aleph_0}$ ossia la
 cardinalità del continuo. Visto che abbiamo considerato un sottoinsieme, la
 \hl{cardinalità che cerchiamo è sicuramente maggiore di quella del continuo}.
 Poiché l'\hl{insieme di funzioni calcolabili dalle macchine di Turing è per
 definizione numerabile} (di cardinalità $\aleph_0$) \hl{non abbiamo abbastanza
-MT} per risolvere tutti i problemi possibili.
+TM} per risolvere tutti i problemi possibili.
 
 Precedentemente abbiamo detto che i problemi di dominio naturale sono sempre
 traducibili come la computazioni di una funzione di dominio naturale. Abbiamo
@@ -2062,7 +2076,7 @@ risolvibile è il \hl{``Halting Problem''}.
   terminerà?}
 \end{prop}
 \begin{proof}
-  Formalmente ci stiamo cheidendo se esiste una MT tale che data $f_y$, calcola
+  Formalmente ci stiamo cheidendo se esiste una TM tale che data $f_y$, calcola
   $g(y,x)$ totale tale che:
 
   \[
@@ -2106,7 +2120,7 @@ risolvibile è il \hl{``Halting Problem''}.
   funzioni.
 
   Se $h$ è calcolabile, e lo è visto che per ipotesi anche $g$ è calcolabile,
-  esisterà una MT di indice $i$ tale che $h = f_i$. Provando a calcolare $h(i)$
+  esisterà una TM di indice $i$ tale che $h = f_i$. Provando a calcolare $h(i)$
   otteniamo:
 
   \begin{enumerate}
@@ -2169,7 +2183,7 @@ computabile}.
 \end{prop}
 \begin{proof}
   Ipotizziamo per assurdo che la funzione sia computabile. Definiamo $g(x) = w$
-  con $w$ pari al numero di Gödel della $x$-esima MT che calcola una funzione
+  con $w$ pari al numero di Gödel della $x$-esima TM che calcola una funzione
   totale. Se $k$ è computabile, allora lo sarà ang $g$. Infatti possiamo trovare
   una procedura algoritmica che calcola $g(x)$:
 
@@ -2226,7 +2240,7 @@ seconda.
 
 \paragraph{Semidecidibilità e testing} Un \hl{gran numero di problemi
 indecidibili} si può dimostrare che \hl{sono semidecidibili}. Uno di questi è il
-\hl{problema dell'arresto}: l'algoritmo basta che guardi se la MT si ferma su
+\hl{problema dell'arresto}: l'algoritmo basta che guardi se la TM si ferma su
 uno stato di accettazione. \hl{L'utilità della proprietà di semidecidibilità è
 che ci permette di rilevare se c'è un errore invece di garantirne la sua
 assenza}. Ciò ha importanti applicazioni pratiche nella verifica di programmi
@@ -2376,7 +2390,7 @@ sempre:
 
 \begin{itemize}
   \item Gli FSA e i PDA definiscono solo funzioni totali ma non tutte
-  \item Le MT definiscono tutte le funzioni calcolabili, ma anche quelle non
+  \item Le TM definiscono tutte le funzioni calcolabili, ma anche quelle non
     totali
   \item Il C mi permette di scrivere qualunque algoritmo, ma anche che non
     terminato
@@ -2399,8 +2413,8 @@ problemi, però si può dimostrare che per la funzione}:
 \end{equation}
 
 \hl{Non è possibile costruire una funzione computabile e totale che la estenda}.
-Inoltre possiamo dimostrare che \hl{esistono insiemi che sono semidecidibili senza
-essere decidibili}.
+Inoltre possiamo dimostrare che \hl{esistono insiemi che sono semidecidibili
+senza essere decidibili}.
 
 \begin{proof}[Dimostrazione. Esistenza di insiemi semidecidibili non decidibili]
   Consideriamo
@@ -2436,10 +2450,10 @@ possiamo stabilire la decidibilità (semidecidibilità)} di un problema.
   \hl{$f_p$ è detta punto fisso di $t(\cdot)$}.
 \end{thm}
 \begin{proof}
-  Dato $u \in \mathbb{N}$ definiamo una MT che effettua il seguente calcolo
+  Dato $u \in \mathbb{N}$ definiamo una TM che effettua il seguente calcolo
   sull'ingresso $x$: calcola $f_u(u) = z$ e quando il calcolo termina calcola
-  $f_z(x)$. Possiamo costruire questa MT e cercare il suo numero di Gödel $g(u)$
-  per una qualsiasi $u$. Otteniamo che la funzione della MT sarà esprimibile
+  $f_z(x)$. Possiamo costruire questa TM e cercare il suo numero di Gödel $g(u)$
+  per una qualsiasi $u$. Otteniamo che la funzione della TM sarà esprimibile
   come:
 
   \[
@@ -2478,7 +2492,7 @@ Possiamo ora enunciare una \hl{condizione per la decidibilità di un insieme}.
 
 \begin{thm}[\hl{Teorema di Rice}]\label{thm:rice}
   Siano \hl{$F$ un'insieme di funzioni computabili} e l'insieme \hl{$S$ degli
-  indici delle MT che calcolano le funzioni di $F$}. L'insieme \hl{$S = \{x:f_x
+  indici delle TM che calcolano le funzioni di $F$}. L'insieme \hl{$S = \{x:f_x
   \in F\}$} è \hl{decidibile se e solo se}:
 
   \begin{itemize}
@@ -2524,8 +2538,8 @@ Possiamo ora enunciare una \hl{condizione per la decidibilità di un insieme}.
   \end{itemize}
 \end{proof}
 
-Quindi \hl{in tutti i casi non banali l'insieme delle funzioni calcolabili con una
-data caratteristica desiderata non è decidibile!} Quindi non sarà possibile
+Quindi \hl{in tutti i casi non banali l'insieme delle funzioni calcolabili con
+una data caratteristica desiderata non è decidibile!} Quindi non sarà possibile
 rispondere a molti quesiti importanti:
 
 \begin{itemize}
@@ -2593,12 +2607,12 @@ Formalizziamo il tutto:
 \end{prop}
 
 \begin{esempio}
-  Dall'indecidibilità del problema dell'arresto della MT deduciamo
+  Dall'indecidibilità del problema dell'arresto della TM deduciamo
   l'indecidibilità del problema della terminazione del calcolo in generale. I
   passaggi operativi per dimostrare ciò che possiamo eseguire sono:
 
   \begin{enumerate}
-    \item Costruiamo un programma $P$ che simuli una MT $M_i$ e memorizziamo il
+    \item Costruiamo un programma $P$ che simuli una TM $M_i$ e memorizziamo il
       numero $x$ in un file $f$.
     \item Il programma $P$ termina la computazione su $f$ se e solo se $g(i,x)
       \neq \bot$.
@@ -2678,17 +2692,18 @@ Formalizziamo le nostre due metriche:
 
 \begin{defn}[\hl{Complessità temporale}]\label{def:comp-temporale}
   Data la \hl{computazione $c_1 \vdash^\star c_r$} di una \hl{macchina di Turing
-  $M$} (a $k$ nastri) \hl{deterministica} la \hl{complessità temporale è $T_M(x)
-  = r$ se} $M$ \hl{termina} in $c_r$, \hl{$\infty$ altrimenti}.
+  $\mathcal{M}$} (a $k$ nastri) \hl{deterministica} la \hl{complessità temporale
+  è $T_\mathcal{M}(x) = r$ se} $\mathcal{M}$ \hl{termina} in $c_r$, \hl{$\infty$
+  altrimenti}.
 \end{defn}
 
 \begin{defn}[Complessità spaziale]\label{def:comp-spaziale}
-  Data la \hl{computazione $c_1 \vdash^\star c_r$ di $M$} (a $k$ nastri)
+  Data la \hl{computazione $c_1 \vdash^\star c_r$ di $\mathcal{M}$} (a $k$ nastri)
   \hl{deterministica}, la \hl{complessità spaziale} è:
 
   \begin{equation}
     \mhl{
-      S_M(x) = \sum_{j=1}^{k} \max_{i \in \{0, \ldots, r\}}(|\alpha_{ij}|)
+      S_\mathcal{M}(x) = \sum_{j=1}^{k} \max_{i \in \{0, \ldots, r\}}(|\alpha_{ij}|)
     }
   \end{equation}
 
@@ -2701,12 +2716,12 @@ Formalizziamo le nostre due metriche:
 
   \begin{equation}
     \mhl{
-      \forall x \quad \frac{S_M(x)}{k} \leq T_M(x)
+      \forall x \quad \frac{S_\mathcal{M}(x)}{k} \leq T_\mathcal{M}(x)
     }
   \end{equation}
 \end{nota}
 
-Ad eseguire l'analisi su una MT, dobbiamo gestire \hl{un po' troppi dettagli}.
+Ad eseguire l'analisi su una TM, dobbiamo gestire \hl{un po' troppi dettagli}.
 Effettuiamo, allora, delle \hl{semplificazioni}: esprimeremo la \hl{complessità
 in base alla ``dimensione'' $n$ dei dati in ingresso}. A causa di questa
 semplificazione dobbiamo \hl{considerare 3 casi per gestire la variazione di
@@ -2716,21 +2731,21 @@ ingressi diversi ma di stessa lunghezza}:
   \item[\hl{Caso pessimo}]
     \begin{equation}
       \mhl{
-        T_M(n) = \max_{|x|=n} T_M(x)\label{def:caso-pessimo}
+        T_\mathcal{M}(n) = \max_{|x|=n} T_\mathcal{M}(x)\label{def:caso-pessimo}
       }
     \end{equation}
 
   \item[\hl{Caso ottimo}]
     \begin{equation}
       \mhl{
-        T_M(n) = \min_{|x|=n} T_M(x)\label{def:caso-ottimo}
+        T_\mathcal{M}(n) = \min_{|x|=n} T_\mathcal{M}(x)\label{def:caso-ottimo}
       }
     \end{equation}
 
   \item[\hl{Caso medio}]
     \begin{equation}
       \mhl{
-        T_M(n) = \frac{\sum_{|x|=n} T_M(x)}{|I|^n}\label{def:caso-medio}
+        T_\mathcal{M}(n) = \frac{\sum_{|x|=n} T_\mathcal{M}(x)}{|I|^n}\label{def:caso-medio}
       }
     \end{equation}
 \end{description}
@@ -2757,7 +2772,7 @@ complessità per $n$ piccolo non corrisponde alla nostra intuizione, ossia una
 algoritmo con complessità asintotica minore può essere più lento per valori
 piccoli di $n$ rispetto ad uno con complessità asintotica maggiore}.
 
-\begin{defn}[$\mathcal{O}$-grande]\label{def:o-grande}
+\begin{defn}[\hl{$\mathcal{O}$-grande}]\label{def:o-grande}
   Data una \hl{funzione $g(n)$, $\mathcal{O}(g(n))$ è l'insieme}:
 
   \begin{equation}
@@ -2767,5 +2782,252 @@ piccoli di $n$ rispetto ad uno con complessità asintotica maggiore}.
     }
   \end{equation}
 \end{defn}
+
+\begin{defn}[\hl{$\Omega$-grande}]\label{def:omega-grande}
+  Data una \hl{funzione $g(n)$, $\Omega(g(n))$ è l'insieme}:
+
+  \begin{equation}
+    \mhl{
+      \Omega(g(n)) = \{ f(n) : \exists c>0, n_0>0 \; (\forall n>n_0 \;
+        0 \leq cg(n) \leq f(n)) \}
+    }
+  \end{equation}
+\end{defn}
+
+\begin{defn}[\hl{$\Theta$-grande}]\label{def:theta-grande}
+  Data una \hl{funzione $g(n)$, $\Theta(g(n))$ è l'insieme}:
+
+  \begin{equation}
+    \mhl{
+      \Theta(g(n)) = \{ f(n) : \exists c_1>0, c_2>0 n_0>0 \; (\forall n>n_0 \;
+        0 \leq c_1 g(n) \leq f(n) \leq c_2 g(n)) \}
+    }
+  \end{equation}
+\end{defn}
+
+\begin{prop}[Proprietà delle notazioni asintotiche]
+  \begin{enumerate}
+    \item
+      \[
+        \mhl{
+          f(n) \in \Theta(g(n)) \iff f(n) \in \mathcal{O}(g(n)) \land
+          f(n) \in \Omega(g(n))
+        }
+      \]
+    \item Le tre notazioni godono della \hl{proprietà transitiva}
+    \item Le tre notazioni godono della \hl{proprietà riflessiva}
+    \item \hl{$f(n) \in \Theta(g(n)) \iff g(n) \in \Theta(f(n))$}
+    \item \hl{$f(n) \in \mathcal{O}(g(n)) \iff g(n) \in \Omega(f(n))$}
+  \end{enumerate}
+\end{prop}
+
+\begin{nota}
+  Per le proprietà enunciate sopra, la \hl{$\Theta$ è una relazione di
+  equivalenza}.
+\end{nota}
+
+Noi abbiamo definito le notazioni asintotiche in termini insiemistici, ma
+possiamo anche \hl{definirle come limiti}:
+
+\begin{defn}[\hl{$\Theta$-grande (come limite)}]\label{def:theta-grande-lim}
+  Diciamo che $f(n) \in \Theta(g(n))$ se e solo se:
+
+  \begin{equation}
+    \mhl{
+      \lim_{n \to \infty} \frac{f(n)}{g(n)} = c , c \neq 0, c \neq \infty
+    }
+  \end{equation}
+\end{defn}
+
+\begin{defn}[\hl{$\mathcal{O}$-grande (come limite)}]\label{def:o-grande-lim}
+  Diciamo che $f(n) \in \mathcal{O}(g(n))$ se e solo se:
+
+  \begin{equation}
+    \mhl{
+      \lim_{n \to \infty} \frac{f(n)}{g(n)} = 0
+    }
+  \end{equation}
+
+  Possiamo anche scrivere $\Theta(f(n)) < \Theta(g(n))$
+\end{defn}
+
+\subsection{Complessità degli altri modelli visti fino ad ora}\label{sec:comp-fsa-pda-tm}
+
+Analizziamo velocemente la complessità degli altri modelli di calcolo introdotti
+fino ad ora: gli FSA, i PDA e le TM a nastro singolo.
+
+\paragraph{FSA} Gli FSA avranno sempre complessità spaziale \hl{$S_{FSA}(n) \in
+\Theta(1)$ (complessità costante), in quanto privi di memoria}, e complessità
+temporale \hl{$T_{FSA}(n) \in \Theta(n)$ poiché leggono l'input in sequenza}, un
+carattere alla volta.
+
+\paragraph{PDA} A causa di come funziona la stack, la complessità spaziale sarà
+\hl{$S_{PDA}(n) \in \Theta(n)$}, mentre quella temporale sarà, come nel caso
+degli FSA, \hl{$T_{PDA}(n) \in \Theta(n)$}.
+
+\paragraph{TM a nastro singolo} La complessità spaziale \hl{non potrà mai
+scendere sotto la linearità ($S_\mathcal{M}(n) \in \Theta(n)$)} mentre quella
+temporale si dimostra essere \hl{al massimo $T_\mathcal{M}(n) \in \Theta(n^2)$}.
+Le TM a nastro singolo sono, quindi, più potenti dei PDA ma anche più lente.
+
+\subsection{Teoremi di accelerazione lineare}\label{sec:acc-lin}
+
+Enunciamo ora dei teoremi che ci permettono di \hl{migliorare con facilità,
+sebbene al massimo linearmente la complessità} dei nostri algoritmi.
+
+\begin{thm}[\hl{Primo teorema di accelerazione lineare}]\label{thm:acc-lin-1}
+  Se $L$ è il linguaggio accettato da una \hl{TM $\mathcal{M}$ a $k$ nastri in
+  $S_\mathcal{M}(n)$}, per ogni $c \in \mathbb{R}^+$ posso costruire una \hl{TM
+  $\mathcal{M}'$ a $k$ nastri che accetta $L$ con}:
+
+  \begin{equation}
+    \mhl{ S_{\mathcal{M}'}(n) < c \cdot S_\mathcal{M}(n) }
+  \end{equation}
+\end{thm}
+
+Il trucco usato da questo teorema, e anche degli altri teoremi a seguire, sta
+nel \hl{aumentare la dimensione dell'alfabeto in favore della complessità}. Scegliamo
+infatti un \hl{``fattore di compressione'' $r$ tale che $rc>2$}. \hl{Per ogni alfabeto
+$\Gamma_i$ dell'$i$-esimo nastro di $\mathcal{M}$ costruisco $\Gamma_i'$ di
+$\mathcal{M}'$ assegnando un elemento per ogni $s\in\Gamma_i^r$}. Ci basterà
+infine costruire l'\hl{organo di controllo di $\mathcal{M}'$} in modo tale per cui:
+
+\begin{enumerate}
+  \item Calcoli con i nuovi simboli sui nastri \hl{emulando le mosse di
+    $\mathcal{M}$ spostando le testine sui nastri ogni $r$ movimenti di
+    $\mathcal{M}$}
+  \item \hl{Memorizzi la posizione della testina arricchendo ulteriormente gli
+    alfabeti $\Gamma_i$}, oppure arricchendo l'insieme degli stati
+\end{enumerate}
+
+\begin{thm}[\hl{Secondo teorema di accelerazione lineare}]\label{thm:acc-lin-2}
+  Se $L$ è il linguaggio accettato da una \hl{TM $\mathcal{M}$ a $k$ nastri in
+  $S_\mathcal{M}(n)$}, posso costruire una \hl{TM $\mathcal{M}'$ a $1$ nastro}
+  che accetta $L$ con:
+
+  \begin{equation}
+    \mhl{ S_{\mathcal{M}'}(n) = c \cdot S_\mathcal{M}(n) }
+  \end{equation}
+\end{thm}
+
+\begin{thm}[\hl{Terzo teorema di accelerazione lineare}]\label{thm:acc-lin-3}
+  Se $L$ è il linguaggio accettato da una \hl{TM $\mathcal{M}$ a $k$ nastri in
+  $S_\mathcal{M}(n)$}, per ogni $c \in \mathbb{R}^+$ posso costruire una \hl{TM
+  $\mathcal{M}'$ a $1$ nastro} che accetta $L$ con:
+
+  \begin{equation}
+    \mhl{ S_{\mathcal{M}'}(n) < c \cdot S_\mathcal{M}(n) }
+  \end{equation}
+\end{thm}
+
+\begin{thm}[\hl{Quarto teorema di accelerazione lineare}]\label{thm:acc-lin-4}
+  Se $L$ è il linguaggio accettato da una \hl{TM $\mathcal{M}$ a $k$ nastri in
+  $T_\mathcal{M}(n)$}, per ogni $c \in \mathbb{R}^+$ posso costruire una \hl{TM
+  $\mathcal{M}'$ a $k+1$ nastri} che accetta $L$ con
+
+  \begin{equation}
+    \mhl{ T_{\mathcal{M}'} = \max(n+1, c\cdot T_\mathcal{M}) }
+  \end{equation}
+\end{thm}
+
+Come anche il primo teorema di accelerazione lineare, il \hl{trucco sta nel
+codificare in modo compresso i simboli dell'alfabeto} di $\mathcal{M}$. Dobbiamo
+considerare che la compressione avviene a runtime, quindi \hl{$T_{\mathcal{M}'}$
+sarà al massimo lineare}. Comprimendo $r$ simboli in uno, \hl{nel caso pessimo,
+possono servirmi 3 mosse di $\mathcal{M}'$ per emulare $r+1$ di $\mathcal{M}$}.
+
+I teoremi sopra sono \hl{validi} anche per le \hl{macchine di Von Neumann}.
+Infatti equivalgono ad \hl{aumentare la dimensione della parola di memoria della
+macchina} o, equivalentemente, ad usare operazioni vettoriali. Possiamo avere
+speedup lineari arbitrariamente grandi aumentando il parallelismo fisico (stando
+ai limiti della fisica ovviamente). \hl{Miglioramenti più che lineari sono
+possibili solo cambiando algoritmo}. Quindi concepire algoritmi più efficienti è
+di gran lunga più efficace della forza bruta.
+
+\subsection{Un nuovo modello di calcolo: la macchina RAM}\label{sec:ram}
+
+Le macchine di Turing e i calcolatori hanno solo \hl{differenze marginali}: un
+\hl{calcolatore} è capace di fare \hl{operazioni aritmetiche su tipi a
+dimensione finita in tempo costante}, la TM invece deve eseguire l'aritmetica
+bit per bit. Ciò può essere ``emulato'' considerando una TM con un alfabeto
+molto vasto: $|I| = 2^w$ se volgiamo operare in binario con una parola di $w$
+bit. Inoltre un \hl{calcolatore} può \hl{accedere direttamente ad una cella di
+memoria}, mentre la TM deve spendere $\Theta(n)$ ($n$ distanza tra la cella e la
+testina) tempo per scorrere il nastro. È giunta ora di aggiornare il nostro
+modello di calcolo per \hl{modellare un po' più da vicino i calcolatori reali: la
+macchina RAM\@}.
+
+La macchina RAM è dotata di un \hl{nastro di lettura $\mathtt{In}$ e uno di
+scrittura $\mathtt{Out}$} come anche una TM\@. Il \hl{programma che esegue lo
+assumiamo essere cablato} nell'organo di controllo e \hl{composto da diverse
+istruzioni} che essa esegue. Anche la logica per la gestione del program counter
+assumiamo essere già cablata. La \hl{RAM è dotata di una memoria ad
+indirizzamento diretto e randomico} (da cui prende il nome)
+\hl{$\mathtt{M}[n]$}, $n\in\mathbb{N}$. Tutte le \hl{istruzioni} del programma
+useranno \hl{la prima cella di memoria $\mathtt{M}[0]$, detta accumulatore. Ogni
+cella di memoria inoltre conterrà un intero}.
+
+Enunciamo l'instruction set e la corrispettiva semantica.
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    Istruzione & Semantica \\
+    \midrule
+    \texttt{LOAD X}   & $\mathtt{M}[0] \gets \mathtt{M}[X]$ \\
+    \texttt{LOAD= X}  & $\mathtt{M}[0] \gets X$ \\
+    \texttt{LOAD* X}  & $\mathtt{M}[0] \gets \mathtt{M}[\mathtt{M}[X]]$ \\
+    \texttt{STORE X}  & $\mathtt{M}[X] \gets \mathtt{M}[0]$ \\
+    \texttt{STORE* X} & $\mathtt{M}[\mathtt{M}[X]] \gets M[0]$ \\
+    \texttt{ADD X}    & $\mathtt{M}[0] \gets \mathtt{M}[0] + \mathtt{M}[X]$ \\
+    \texttt{SUB X}    & $\mathtt{M}[0] \gets \mathtt{M}[0] - \mathtt{M}[X]$ \\
+    \texttt{MUL X}    & $\mathtt{M}[0] \gets \mathtt{M}[0] * \mathtt{M}[X]$ \\
+    \texttt{DIV X}    & $\mathtt{M}[0] \gets \mathtt{M}[0] / \mathtt{M}[X]$ \\
+    \texttt{ADD= X}   & $\mathtt{M}[0] \gets \mathtt{M}[0] + X$ \\
+    \texttt{SUB= X}   & $\mathtt{M}[0] \gets \mathtt{M}[0] - X$ \\
+    \texttt{MUL= X}   & $\mathtt{M}[0] \gets \mathtt{M}[0] * X$ \\
+    \texttt{DIV= X}   & $\mathtt{M}[0] \gets \mathtt{M}[0] / X$ \\
+    \texttt{HALT}     & $-$ \\
+    \texttt{READ X}   & $\mathtt{M}[X] \gets In$ \\
+    \texttt{READ* X}  & $\mathtt{M}[\mathtt{M}[X]] \gets In$ \\
+    \texttt{WRITE X}  & $Out \gets \mathtt{M}[X]$ \\
+    \texttt{WRITE= X} & $Out \gets X$ \\
+    \texttt{WRITE* X} & $Out \gets \mathtt{M}[\mathtt{M}[X]]$ \\
+    \texttt{JUMP l}   & $PC \gets l$ \\
+    \texttt{JZ l}     & $PC \gets l$ se $\mathtt{M}[0] = 0$ \\
+    \texttt{JGZ l}    & $PC \gets l$ se $\mathtt{M}[0] > 0$ \\
+    \texttt{JLZ l}    & $PC \gets l$ se $\mathtt{M}[0] < 0$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{Instruction set (non completo) della macchina RAM}%
+  \label{tab:ram-isa}
+\end{table}
+
+Si può notare dalla tabella~\ref{tab:ram-isa} che sono ammesse 3 modalità di
+indirizzamento: diretto, immediato e indiretto. Le tre modalità funzionano come
+in un normale linguaggio assembly.
+
+\subsection{Limiti del criterio di costo}\label{sec:log-costo}
+
+Consideriamo il caso del calcolo di $2^{2^n}$ con una una macchina RAM\@. Uno
+schema di implementazione può essere:
+
+\begin{lstlisting}
+  read(n);
+  x = 2;
+  for (int i = 0; i < n; i++) x = x * x;
+  write(x);
+\end{lstlisting}
+
+La complessità temporale dell'implementazione sopra è $T_{RAM} = \Theta(n)$.
+Qualcosa non quadra: mi servono $2^n$ bit solo per scrivere il risultato! \hl{Il
+criterio di costo fino ad ora usato considera un intero arbitrario di dimensione
+costante. L'approssimazione regge fin quando una singola parola della macchina
+reale contiene gli interi che maneggiano}. Se questo \hl{non accade}, dobbiamo
+tener conto del \hl{numero di cifre necessarie per rappresentare un intero,
+perdendo il costo costante del salvataggio di interi e delle operazioni
+elementari su di essi}. In questi casi eseguire operazioni su un intero $i$
+costa tanto quanto il suo numero di cifre in base $b$.
 
 \end{document}

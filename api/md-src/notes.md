@@ -1474,3 +1474,156 @@ $$
     \leq cg(n)\}
 $$
 
+#### Definizione - $\Omega$-grande
+
+Data una funzione $g(n)$, $\Omega(g(n))$ è l'insieme:
+
+$$
+  \Omega(g(n)) = \{ f(n) : \exists c>0, n_0>0 \forall n>n_0 0 \leq cg(n)
+    \leq f(n)\}
+$$
+
+#### Definizione - $\Theta-grande
+
+Data una funzione $g(n)$, $\Theta(g(n))$ è l'insieme:
+
+$$
+  \Theta(g(n)) = \{ f(n) : \exists c_1>0, c_2>0, n_0>0 : \forall n>n_0, 0 \leq
+    c_1 g(n) \leq f(n) \leq c_2 g(n) \}
+$$
+
+#### Proposizione - Proprietà
+
+1. $ g = \mathcal{O}(f) \iff f = \Theta{g}$
+2. Le tre relazioni sono transitive e riflessive
+3. La $\Theta$ è anche simmetrica, perciò è una relazione di equivalenza
+
+I nostri 3 limiti possono essere definiti anche come limiti:
+
+1. $lim_{n \to \infty} \frac{f}{g} = c \implies f(n) = \Theta(g(n))$
+2. $lim_{n \to \infty} \frac{f}{g} = 0 \implies f(n) = \mathcal{O}(g(n))$
+
+### Teoremi di accelerazione lineare
+
+#### Teorema di accelerazione lineare 1
+
+Se $L$ è accettato da una MT $M$ a $k$ nastri in $S_m(n)$, per ogni $c \in
+\mathbb{R}^+$ posso costruire una MT $M'$ a $k$ nastri che accetta $L$ con
+$S_{M'} < cS_m(n)$.
+
+In pratica, ciò vuol dire comprimere l'alfabeto di $M$ usando un alfabeto più
+ricco per $M'$. Scelto un fattore $r$ di compressione tale che $rc > 2$, per
+ogni alfabeto $\Gamma_i$ dell'$i$-esimo nastro di $M$ costruisco $\Gamma_i'$ di
+$M'$ assegnando un elemento per ogni $s \in \Gamma_i^r$.
+
+#### Teorema di accelerazione lineare 2
+
+Se $L$ è accettato da una MT $M$ a $k$ nastri in $S_m(n)$, posso costruire una
+MT $M'$ a 1 nastro (non nastro singolo) che accetta $L$ con $S_{M'}(n) = S_M(n)$
+
+#### Teorema di accelerazione lineare 3
+
+Se $L$ è accettato da una MT $M$ a $k$ nastri in $S_m(n)$, per ogni $c \in
+\mathbb{R}^+$ posso costruire una TM $M'$ a 1 nastro che accetta $L$ con
+$S_{M'}(n) < cS_M(n)$.
+
+#### Teorema di accelerazione lineare 4
+
+Se $L$ è accettato da una MT $M$ a $k$ nastri in $T_m(n)$, per ogni $c \in
+\mathbb{R}^+$ posso costruire una MT $M'$ a $k+1$ nastri che accetta $L$ con
+$T_{M'}(n) = \max(n+1, cT_M(n))$.
+
+L'approccio simile alla complessità spaziale: codifichiamo in modo compresso i
+simboli dell'alfabeto di $M$. Dobbiamo considerare che la compressione è fatta a
+"runtime". Comprimendo $r$ simboli in uno, però, nel caso pessimo possono
+servire 3 mosse di $M'$ per emularne $r+1$ di $M$.
+
+Lo schema di dimostrazione usato per dimostrare questi teoremi per le MT vale
+anche per il modello di calcolatore di Von Neumann. Possiamo avere quindi avere
+speedup lineari arbitrariamente grandi aumentando il parallelismo fisico.
+Miglioramenti più che lineari, però, possono essere ottenuti solo cambiando
+algoritmo. Concepire algoritmi più efficienti è di gran lunga più efficace che
+usare la forza bruta.
+
+### Altri modelli di calcolo e macchina RAM
+
+Per altri tipi di automi abbiamo complessità diverse e alcune volte più facili
+da calcolare:
+
+1. FSA: hanno sempre $S_{FSA}(n) = \Theta(1)$ e $T_{FSA} = \Theta(n)$
+2. PDA: hanno sempre $S_{PDA}(n) = \mathcal{O}(n)$  e $T_{PDA}(n) = \Theta(n)$
+3. MT a nastro singolo: non esiste algoritmo più efficiente di $T_m(n) =
+   \Theta(N^2)$ e $S_m(n) = \Theta(n)$. Quindi le MT benché più potenti sono
+   molto più lente.
+
+Le macchine di Turing operano con differenze marginali rispetto ad un
+calcolatore: un calcolatore è in grado di fare operazioni aritmetiche su tipi a
+dimensione finita in tempo costante, mentre la MT richiede di propagare gli
+effetti al singolo bit uno per uno. Inoltre un calcolatore opera con un alfabeto
+molto vasto ($|I| = 2^w$ con $w$ la lunghezza in bit della parola). La
+differenza più importante è che il calcolatore può accedere direttamente ad una
+cella di memoria, una MT invece impiega $\Theta(n)$ con $n$ la distanza della
+cella dalla testina. Ci conviene, quindi, modificare il nostro modello di
+calcolo e avvicinarci ai calcolatori reali.
+
+Introduciamo allora un nuovo modello, ossia quello della macchina RAM, simile ad
+uno schema base di un computer:
+
+1. 2 nastri, uno di lettura e uno di scrittura
+2. Un program counter tiene traccia a che punto siamo in un programma cablato
+   nella macchina
+3. L'unità aritmetica esegue le varie operazioni avvedendo a programma e alla
+   memoria
+4. La memoria è dotata di indirizzamento diretto $N[n]$. La prima cella ($N[0]$)
+   è detta accumulatore
+5. Ogni cella di memoria contiene un intero arbitrariamente lungo
+
+La macchina RAM usa un set di istruzioni pseudo-assembly:
+
+| Istruzione | Semantica                  |
+|------------|----------------------------|
+| `LOAD X`   | $N[0] \gets N[X]$          |
+| `LOAD= X`  | $N[0] \gets X$             |
+| `LOAD* X`  | $N[0] \gets N[N[X]]$       |
+| `STORE X`  | $N[X] \gets N[0]$          |
+| `STORE* X` | $N[N[X]] \gets N[0]$       |
+| `ADD X`    | $N[0] \gets N[0] + N[X]$   |
+| `SUB X`    | $N[0] \gets N[0] - N[X]$   |
+| `MUL X`    | $N[0] \gets N[0] * N[X]$   |
+| `DIV X`    | $N[0] \gets N[0] / N[X]$   |
+| `ADD= X`   | $N[0] \gets N[0] + X$      |
+| `SUB= X`   | $N[0] \gets N[0] - X$      |
+| `MUL= X`   | $N[0] \gets N[0] * X$      |
+| `DIV= X`   | $N[0] \gets N[0] / X$      |
+| `HALT`     | $-$                        |
+| `READ X`   | $N[X] \gets In$            |
+| `READ* X`  | $N[N[X]] \gets In$         |
+| `WRITE X`  | $Out \gets N[X]$           |
+| `WRITE= X` | $Out \gets X$              |
+| `WRITE* X` | $Out \gets N[N[X]]$        |
+| `JUMP l`   | $PC \gets l$               |
+| `JZ l`     | $PC \gets l$ se $N[0] = 0$ |
+| `JGZ l`    | $PC \gets l$ se $N[0] > 0$ |
+| `JLZ l`    | $PC \gets l$ se $N[0] < 0$ |
+
+### Limiti del criterio di costo
+
+Consideriamo il caso del calcolo di $2^{2^n}$ con una RAM. Uno schema di
+implementazione è:
+
+```c
+read(n);
+x = 2;
+for (int i = 0; i < n; i++) x = x * x;
+write(x);
+```
+
+La complessità temporale dell'implementazione sopra è $T_{RAM} = \Theta(n)$.
+Qualcosa non quadra: mi servono $2^n$ bit solo per scrivere il risultato! Il
+criterio di costo precedente considera un intero arbitrario di dimensione
+costante. L'approssimazione regge fin quando una singola parola della macchina
+reale contiene gli interi che maneggiano. Se questo non accade, dobbiamo tener
+conto del numero di cifre necessarie per rappresentare un intero, perdendo il
+costo costante del salvataggio di interi e delle operazioni elementari di essi.
+In questi casi eseguire operazioni su un intero $i$ costa tanto quanto il suo
+numero di cifre in base $b$: $\log_b(i) = \Theta(\log(i))$
