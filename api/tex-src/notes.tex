@@ -19,22 +19,14 @@
 \usepackage{amsthm}
 
 \usepackage{listings}
-\lstdefinestyle{mystyle}{
-  basicstyle=\ttfamily,
-  keepspaces=true,
-  numbers=left,
-  numbersep=5pt,
-  showspaces=false,
-  showstringspaces=false,
-  showtabs=false,
-  tabsize=2,
-  mathescape=true,
-  escapechar=`
-}
-\lstset{style=mystyle}
 
 \usepackage{tikz}
-\usetikzlibrary{arrows,arrows.meta,automata,positioning}
+\usetikzlibrary{
+  arrows,
+  arrows.meta,
+  automata,
+  positioning
+}
 
 \definecolor{hlcolor}{RGB}{253,241,98}
 \sethlcolor{hlcolor}
@@ -57,10 +49,29 @@
 \newcommand*{\termsep}[0]{\blacklozenge}
 
 \newcommand{\peq}{$\gets$}
-\newcommand{\pcomment}{$\triangleright$}
+\newcommand{\pcom}{$\triangleright$}
 
 \DeclareMathOperator{\succc}{succ}
 \DeclareMathOperator{\last}{last}
+
+\lstdefinestyle{mystyle}{
+  basicstyle=\ttfamily,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2,
+  mathescape=true,
+  escapechar=`
+}
+\lstset{style=mystyle}
+\lstdefinelanguage{pseudocodice}{
+  morekeywords={if,else,for,to,while,do,return,NIL},
+  sensitive=true,
+  morestring=[b]" % chktex 18
+}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -257,12 +268,12 @@ altrimenti diremo che l'ha rifiutato}.
   Un automa a stati finiti $\mathcal{A}$ è una \hl{quintupla}
   $\langle Q, I, \delta, q_0, F \rangle$ dove:
   \begin{enumerate}
-    \item \hl{$Q$} è \hl{l'insieme finito non vuoto di tutti gli stati}
-    \item \hl{$I$} è \hl{l'alfabeto} di ingresso
+    \item \hl{$Q$} è \hl{l'insieme finito non vuoto di tutti gli stati};
+    \item \hl{$I$} è \hl{l'alfabeto} di ingresso;
     \item \hl{$\delta: Q \times I \to Q$} è la \hl{funzione (relazione) di
-      transizione}
-    \item \hl{$q_0 \in Q$} è lo \hl{stato iniziale}
-    \item \hl{$F \subseteq Q$} è l'insieme degli \hl{stati di accettazione}
+      transizione};
+    \item \hl{$q_0 \in Q$} è lo \hl{stato iniziale};
+    \item \hl{$F \subseteq Q$} è l'insieme degli \hl{stati di accettazione}.
   \end{enumerate}
 \end{defn}
 
@@ -276,7 +287,7 @@ altrimenti diremo che l'ha rifiutato}.
     (q0) edge                node {0,1}  (q1)
     (q1) edge  [loop above]  node {0,1}  ();
   \end{tikzpicture}
-  \caption{Esempio di diagramma di stato di FSA}\label{fig:fsa-diagramma-stato}
+  \caption{Esempio di diagramma di stato di FSA.}\label{fig:fsa-diagramma-stato}
 \end{figure}
 
 Se \hl{$\delta$ è una funzione l'automa si dice completo, altrimenti non
@@ -290,7 +301,7 @@ corrispondente a $\delta(q, i)$}. Definiamo formalmente la sequenza di mosse
 eseguita da un automa a stati finiti.
 
 \begin{defn}[\hl{Sequenza di mosse}]\label{def:fsa-seq-mosse}
-  Sia un FSA $\mathcal{A}$, la sequenza di mosse è una funzione
+  Sia un FSA $\mathcal{A}$, la sequenza di mosse è una funzione:
 
   \begin{equation}
     \mhl{ \delta^\star: Q \times I^\star \to Q }
@@ -337,10 +348,10 @@ notazione insiemistica oppure, visto che i linguaggi sono regolari, delle
   delle seguenti condizioni}:
 
   \begin{enumerate}
-    \item \hl{$R = \emptyset$}
-    \item \hl{$R \in A$}
+    \item \hl{$R = \emptyset$};
+    \item \hl{$R \in A$};
     \item \hl{$R = S + T$, $R = ST$, $R = S^\star$, $R = S^+$} con $S,T$
-      espressioni regolari su $A$
+      espressioni regolari su $A$.
   \end{enumerate}
 \end{defn}
 
@@ -367,7 +378,7 @@ output.
 \begin{defn}[\hl{Funzione di transizione con uscita}]\label{def:fsa-transizione-uscita}
   Chiamiamo \hl{$\delta(q, i/w)$} con \hl{$i \in I$ e $w \in O$, $I, O$
   alfabeti}, una \hl{funzione di transizione tra stati che restituisce il nuovo
-  stato del FSA e un simbolo complesso $w$}
+  stato del FSA e un simbolo complesso $w$}.
 \end{defn}
 
 Ora possiamo definire il traduttore.
@@ -379,8 +390,8 @@ Ora possiamo definire il traduttore.
   \mathcal{A}, O, \eta \rangle$} dove:
 
   \begin{itemize}
-    \item \hl{$O$} è \hl{l'alfabeto di uscita} di $\delta$
-    \item \hl{$\eta : Q \times I \to O^\star$} \hl{funzione di traduzione}
+    \item \hl{$O$} è \hl{l'alfabeto di uscita} di $\delta$;
+    \item \hl{$\eta : Q \times I \to O^\star$} \hl{funzione di traduzione}.
   \end{itemize}
 \end{defn}
 
@@ -445,7 +456,7 @@ di accettazione.
     (q4) edge                node {} (q5)
     (q5) edge  [bend left]   node {} (q0);
   \end{tikzpicture}
-  \caption{Peggior caso del teorema~\ref{thm:accettazione-ling-infinito}}\label{fig:fsa-accettazione-ling-infinito}
+  \caption{Peggior caso del teorema~\ref{thm:accettazione-ling-infinito}.}\label{fig:fsa-accettazione-ling-infinito}
 \end{figure}
 
 Possiamo quindi vedere \hl{una stringa di un linguaggio infinito come composta
@@ -471,7 +482,7 @@ infinito sia riconosciuta da un FSA} e rappresenta il \hl{contenuto del
   \end{itemize}
 
   Come \hl{conseguenza} si ha: \hl{$\forall n \in \mathbb{N} \geq 0, y w^n z \in
-  L$}
+  L$}.
 \end{lem}
 
 Il Pumping lemma, quindi, ci \hl{mette dei paletti sui tipi di linguaggi
@@ -585,7 +596,7 @@ definito è $L(\langle A^1, A^2 \rangle) = L(A^1) \cap L(A^2)$.
       (q2) edge node {$a$} (q3);
   \end{tikzpicture}
   \centering
-  \caption{Due automi e la loro intersezione}%
+  \caption{Due automi e la loro intersezione.}%
   \label{fig:esempio-automa-intersezione}
 \end{figure}
 
@@ -632,14 +643,14 @@ passi}:
 
 \begin{enumerate}
   \item \hl{Leggi un simbolo (o nulla) dall'input} (d'ora in poi lo chiameremo
-    nastro d'ingresso)
-  \item Esegui una \hl{pop di un elemento} dalla stack
-  \item \hl{Cambia stato}
+    nastro d'ingresso);
+  \item Esegui una \hl{pop di un elemento} dalla stack;
+  \item \hl{Cambia stato};
   \item Sposta di una posizione il puntatore del carattere corrente (la testina
-    del nastro d'ingresso)
-  \item Esegui una \hl{push di una serie di caratteri (anche nulla)}
+    del nastro d'ingresso);
+  \item Esegui una \hl{push di una serie di caratteri (anche nulla)};
   \item Se è un automa traduttore, \hl{scrivi una stringa (anche nulla)
-    sull'output} (nastro d'uscita)
+    sull'output} (nastro d'uscita).
 \end{enumerate}
 
 Come per gli FSA, \hl{la stringa in ingresso viene riconosciuta se l'automa la
@@ -658,10 +669,10 @@ adottare una \hl{notazione ben definita per indicare le varie azioni compiute}:
 \end{equation}
 
 \begin{itemize}
-  \item \hl{$a$} il carattere \hl{letto in input}
-  \item \hl{$A$} il carattere \hl{letto dalla pila tramite stack}
-  \item \hl{$B\ldots$} i caratteri \hl{reinseriti nella pila} tramite la push
-  \item \hl{$c$} il carattere \hl{scritto sull'output}
+  \item \hl{$a$} il carattere \hl{letto in input};
+  \item \hl{$A$} il carattere \hl{letto dalla pila tramite stack};
+  \item \hl{$B\ldots$} i caratteri \hl{reinseriti nella pila} tramite la push;
+  \item \hl{$c$} il carattere \hl{scritto sull'output}.
 \end{itemize}
 
 Nel caso in cui l'automa \hl{non leggesse nulla} dal nastro d'ingresso diciamo
@@ -689,7 +700,7 @@ che l'automa \hl{ha effettuato una $\epsilon$-mossa} e la indichiamo
     (q2) edge [loop above] node {$b, A/\epsilon$} ()
     (q2) edge              node {$\epsilon, Z_0/\epsilon$} (q3);
   \end{tikzpicture}
-  \caption{Esempio di un automa a pila}%
+  \caption{Esempio di un automa a pila.}%
   \label{fig:automa-pila}
 \end{figure}
 
@@ -701,11 +712,11 @@ Formalizziamo ora i concetti introdotti.
 
   \begin{itemize}
     \item \hl{$Q, I, q_0, F$} sono definiti alla \hl{stessa maniera} di un
-      \hl{FSA}
-    \item \hl{$\Gamma$} è l'\hl{alfabeto di pila}
-    \item \hl{$Z_0$} è il \hl{simbolo iniziale di pila}
+      \hl{FSA};
+    \item \hl{$\Gamma$} è l'\hl{alfabeto di pila};
+    \item \hl{$Z_0$} è il \hl{simbolo iniziale di pila};
     \item \hl{$\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times
-      \Gamma^\star$} è la \hl{funzione di transizione}
+      \Gamma^\star$} è la \hl{funzione di transizione}.
   \end{itemize}
 \end{defn}
 
@@ -714,14 +725,14 @@ Formalizziamo ora i concetti introdotti.
   $\langle I, \Gamma, \delta, q_0, Z_0, F, 0, \eta \rangle$ dove:
 
   \begin{itemize}
-    \item $Q, I, q_0, F, O$ sono definiti alla stessa maniera di un FSA
-    \item $\Gamma$ è l'alfabeto di pila
-    \item $Z_0$ è il simbolo iniziale di pila
+    \item $Q, I, q_0, F, O$ sono definiti alla stessa maniera di un FSA;
+    \item $\Gamma$ è l'alfabeto di pila;
+    \item $Z_0$ è il simbolo iniziale di pila;
     \item
       $\delta: Q \times (I \cup \epsilon) \times \Gamma \to Q \times \Gamma^\star$
-      è la funzione di transizione
+      è la funzione di transizione;
     \item $\eta: Q \times (I \cup \epsilon) \times \Gamma \to O^\star$ è la
-      funzione di traduzione
+      funzione di traduzione.
   \end{itemize}
 \end{defn}
 
@@ -756,11 +767,11 @@ stato: la configurazione}.
   ($\langle q, x \gamma, z \rangle$) dove:
 
   \begin{itemize}
-    \item \hl{$q \in Q$} è lo \hl{stato} dell'organo di controllo
-    \item \hl{$x$} è la \hl{stringa ancora da leggere} nel nastro d'ingresso
+    \item \hl{$q \in Q$} è lo \hl{stato} dell'organo di controllo;
+    \item \hl{$x$} è la \hl{stringa ancora da leggere} nel nastro d'ingresso;
     \item \hl{$\gamma$} è la \hl{stringa di caratteri nella pila} (rappresentati
-      usando la convenzione ``alto-destra basso-sinistra'')
-    \item \hl{$z$} la \hl{stringa già scritta sul nastro di uscita}
+      usando la convenzione ``alto-destra basso-sinistra'').
+    \item \hl{$z$} la \hl{stringa già scritta sul nastro di uscita}.
   \end{itemize}
 \end{defn}
 
@@ -817,9 +828,9 @@ problemi}:
 
 \begin{itemize}
   \item Si può creare un \hl{ciclo di $\epsilon$-mosse} che fa entrare l'automa
-    in blocco
+    in blocco;
   \item Può esserci una \hl{sequenza di $\epsilon$-mosse in cui si alternano
-    stati di accettazione e di non accettazione}
+    stati di accettazione e di non accettazione}.
 \end{itemize}
 
 In entrambi i casi \hl{si possono costruire automi equivalenti che eliminano
@@ -847,19 +858,19 @@ La mossa della macchina di Turing è simile a quella dell'automa a pila ma un po
 più articolata. Possiamo suddividerla in \hl{due ``fasi''}:
 
 \begin{enumerate}
-  \item \hl{Lettura}
+  \item \hl{Lettura}:
     \begin{itemize}
       \item \hl{Legge} il carattere in corrispondenza della testina del
-        \hl{nastro d'ingresso}
-      \item \hl{Legge} i $k$ caratteri dai \hl{nastri}
-      \item Valuta lo \hl{stato} dell'organo di controllo
+        \hl{nastro d'ingresso};
+      \item \hl{Legge} i $k$ caratteri dai \hl{nastri};
+      \item Valuta lo \hl{stato} dell'organo di controllo.
     \end{itemize}
-  \item \hl{Scrittura}
+  \item \hl{Scrittura}:
     \begin{itemize}
-      \item Cambia \hl{stato}
-      \item \hl{Scrittura} di un carattere sui \hl{nastri di memoria}
-      \item Eventuale \hl{scrittura} di un carattere sul \hl{nastro di uscita}
-      \item \hl{Spostamento delle testine} di una posizione
+      \item Cambia \hl{stato};
+      \item \hl{Scrittura} di un carattere sui \hl{nastri di memoria};
+      \item Eventuale \hl{scrittura} di un carattere sul \hl{nastro di uscita};
+      \item \hl{Spostamento delle testine} di una posizione.
     \end{itemize}
 \end{enumerate}
 
@@ -875,15 +886,15 @@ riportata la parte aggiuntiva nel caso di presenza di output):
 \end{equation}
 
 \begin{itemize}
-  \item $i$: carattere letto dal nastro di ingresso
-  \item $\langle A_1, \ldots, A_k \rangle$: le letture dai vari nastri
-  \item $o$: il carattere scritto sul nastro di uscita
-  \item $\langle A'_1, \ldots, A'_k \rangle$: le scritture sui vari nastri
+  \item $i$: carattere letto dal nastro di ingresso;
+  \item $\langle A_1, \ldots, A_k \rangle$: le letture dai vari nastri;
+  \item $o$: il carattere scritto sul nastro di uscita;
+  \item $\langle A'_1, \ldots, A'_k \rangle$: le scritture sui vari nastri;
   \item $\langle M_0, \ldots, M_k, (M_{k+1}) \rangle$: i movimenti effettuati
     dai vari nastri dove:
     \begin{itemize}
-      \item $M_0$ è il movimento della testina di ingresso
-      \item $M_{k+1}$ è il movimento della testina di output
+      \item $M_0$ è il movimento della testina di ingresso;
+      \item $M_{k+1}$ è il movimento della testina di output.
     \end{itemize}
 \end{itemize}
 
@@ -904,7 +915,7 @@ da blank. \hl{Le condizioni di terminazione, e quindi di accettazione, sono
 leggermente diverse da quelle viste fino ad ora}:
 
 \begin{itemize}
-  \item Gli \hl{stati di accettazione} sono sempre \hl{$F \subseteq Q$}
+  \item Gli \hl{stati di accettazione} sono sempre \hl{$F \subseteq Q$};
   \item Per convenzione la \hl{$\delta (\eta)$ non è definita a partire dagli
     stati finali}:
 
@@ -913,9 +924,9 @@ leggermente diverse da quelle viste fino ad ora}:
     \end{equation}
 
   \item La macchina si \hl{ferma in uno stato $q$ quando
-    $\delta(q, \ldots) = \bot$}
+    $\delta(q, \ldots) = \bot$};
   \item La stringa in ingresso è \hl{accettata se e solo se dopo un numero
-    finito di transizioni la macchina si ferma in uno stato di accettazione}
+    finito di transizioni la macchina si ferma in uno stato di accettazione}.
 \end{itemize}
 
 Ciò significa che una stringa in ingresso non è accettata se la macchina si
@@ -927,10 +938,10 @@ La famiglia dei linguaggi riconosciuti dalle macchine di Turing è \hl{chiusa}
 per:
 
 \begin{itemize}
-  \item \hl{$\cup$} simulazione di \hl{esecuzione ``in parallelo''}
-  \item \hl{$\cap$} simulazione di \hl{esecuzione ``in serie''}
-  \item \hl{$ . $} simile a $\cap$
-  \item \hl{$\star$} come concatenazione
+  \item \hl{$\cup$} simulazione di \hl{esecuzione ``in parallelo''};
+  \item \hl{$\cap$} simulazione di \hl{esecuzione ``in serie''};
+  \item \hl{$ . $} simile a $\cap$;
+  \item \hl{$\star$} come concatenazione.
 \end{itemize}
 
 Per quanto riguarda il \hl{complemento} la situazione è diversa. Il principale
@@ -1031,7 +1042,7 @@ transizioni}. Sarà quindi necessario \hl{ridefinire $\delta$ e $\delta^\star$}.
     (q2) edge node {$b$} (q21)
     (q2) edge node {$a$} (q22);
   \end{tikzpicture}
-  \caption{Un esempio di NFA}\label{fig:nfa}
+  \caption{Un esempio di NFA.}\label{fig:nfa}
 \end{figure}
 
 Una \hl{stringa $x \in L$ appartiene al linguaggio modellato} da un NFA se:
@@ -1119,7 +1130,7 @@ maggiore della controparte deterministica.
   \caption{NPDA unione di due PDA\@. Lo NPDA riconosce $L = \{a^n b^n\} \cup
   \{a^n b^{2n}\}$. Da notare \hl{la $\epsilon$-mossa non deterministica che
   parte da $q_0$ e lega i due automi}, ognuno corrispondente ad uno dei due
-  rami}%
+  rami.}%
   \label{fig:npda-unione}
 \end{figure}
 
@@ -1235,9 +1246,9 @@ elementi fondamentali dell'alfabeto considerato}.
   Si definisce \hl{grammatica $G$} la \hl{quadrupla $(V_n, V_t, P, S)$} dove:
 
   \begin{itemize}
-    \item \hl{$V_n$} è l'alfabeto o \hl{vocabolario non terminale}
-    \item \hl{$V_t$} è l'alfabeto o \hl{vocabolario terminale}
-    \item \hl{$S \in V_n$} è l'\hl{assioma} o simbolo iniziale
+    \item \hl{$V_n$} è l'alfabeto o \hl{vocabolario non terminale};
+    \item \hl{$V_t$} è l'alfabeto o \hl{vocabolario terminale};
+    \item \hl{$S \in V_n$} è l'\hl{assioma} o simbolo iniziale;
     \item L'insieme di riscrittura o delle \hl{produzioni}:
 
       \begin{equation}
@@ -1258,9 +1269,9 @@ elementi fondamentali dell'alfabeto considerato}.
   se} dati $\alpha \in V^+$, $\beta \in V^\star$:
 
   \begin{enumerate}
-    \item \hl{$\alpha = \alpha_1 \alpha_2 \alpha_3$}
-    \item \hl{$\beta = \alpha_1 \beta_2 \alpha_3$}
-    \item \hl{$\alpha_2 \to \beta_2 \in P$}
+    \item \hl{$\alpha = \alpha_1 \alpha_2 \alpha_3$};
+    \item \hl{$\beta = \alpha_1 \beta_2 \alpha_3$};
+    \item \hl{$\alpha_2 \to \beta_2 \in P$}.
   \end{enumerate}
 \end{defn}
 
@@ -1331,7 +1342,7 @@ delle grammatiche}. Essa è divisa in \hl{4 classi} a seconda delle
     3    & \hl{Regolari}        & \hl{$|\alpha| = 1 \vee \beta \in V_t . V$} \\
     \bottomrule
   \end{tabular}
-  \caption{La gerarchia delle grammatiche di Chomsky}%
+  \caption{La gerarchia delle grammatiche di Chomsky.}%
   \label{tab:gerarchia-grammatiche}
 \end{table}
 
@@ -1353,7 +1364,7 @@ grammatiche meno potenti in quella di grammatiche più potenti è però stretta}
     \node at (5, 4cm)    {Non contestuali};
     \node at (5, 4.5cm)  {Regolari};
   \end{tikzpicture}
-  \caption{Diagramma di Venn rappresentante la gerarchia delle grammatiche}%
+  \caption{Diagramma di Venn rappresentante la gerarchia delle grammatiche.}%
   \label{fig:gerarchia-grammatiche}
 \end{figure}
 
@@ -1372,7 +1383,7 @@ dimostrano con una semplice induzione):
   Per ottenere la grammatica equivalente ad un FSA\@:
 
   \begin{itemize}
-    \item Poniamo \hl{$V_n = Q, V_t = I, S = \langle q_0 \rangle$}
+    \item Poniamo \hl{$V_n = Q, V_t = I, S = \langle q_0 \rangle$};
     \item \hl{Per ogni $\delta(q, i) = q'$} diciamo che
       \hl{$\langle q \rangle \to i \langle q' \rangle \in P$}. Se
       \hl{$q' \in F$} aggiungiamo anche \hl{$\langle q \rangle \to i \in P$}.
@@ -1383,7 +1394,7 @@ dimostrano con una semplice induzione):
   Per ottenere lo NFA corrispondente alla grammatica:
 
   \begin{itemize}
-    \item Poniamo \hl{$Q = V_n \cup \{q_f\}, I = V_t, q_0 = S, F = \{q_f\}$}
+    \item Poniamo \hl{$Q = V_n \cup \{q_f\}, I = V_t, q_0 = S, F = \{q_f\}$};
     \item Se \hl{$A \to bC \in P$} allora \hl{$\delta(A,b) = C$}. Invece se
       \hl{$A \to b \in P$} allora \hl{$\delta(A, b) = q_f$}.
   \end{itemize}
@@ -1410,7 +1421,7 @@ banale}, perciò diamo \hl{solamente l'intuizione} con la
     (q1) edge [out=-105,in=-135,loop] node {$a,\underline{a}/\epsilon$} ()
     (q1) edge [out=-45,in=-75,loop]   node {$b,\underline{b}/\epsilon$} ();
   \end{tikzpicture}
-  \caption{NPDA corrispondente a $(\{S\}, \{a,b\} \{S \to aSb, S \to ab\}, S)$}%
+  \caption{NPDA corrispondente a $(\{S\}, \{a,b\} \{S \to aSb, S \to ab\}, S)$.}%
   \label{fig:esempio-grammatica-to-npda}
 \end{figure}
 
@@ -1424,7 +1435,7 @@ d'ingresso} eseguiamo un \hl{ciclo}:
   \item \hl{Scandiamo} il nastro \hl{finché non troviamo una parte destra}
     $\beta$ di una \hl{produzione} $\alpha \to \beta$ della grammatica;
   \item \hl{Quando se ne trova una}, scegliendola non deterministicamente, essa
-    \hl{viene sostituita} dalla corrispondente \hl{parte sinistra} $\alpha$
+    \hl{viene sostituita} dalla corrispondente \hl{parte sinistra} $\alpha$.
 \end{enumerate}
 
 Questo ciclo è chiamato \hl{``processo di riduzione''} della stringa. Per come
@@ -1462,11 +1473,11 @@ base ai valori assunti da $\delta$ \hl{possiamo agire in 3 diversi modi}:
 
 \begin{enumerate}
   \item \hl{$\delta(q, A) = \langle q', A', R \rangle$} aggiungo \hl{$qA \to
-    A'q'$} alle produzioni
+    A'q'$} alle produzioni;
   \item \hl{$\delta(q, A) = \langle q', A', S \rangle$} aggiungo \hl{$qA \to
-    q'A'$} alle produzioni
+    q'A'$} alle produzioni;
   \item \hl{$\delta(q, A) = \langle q', A', L \rangle$} aggiungo \hl{per ogni
-    $B$} nell'alfabeto della TM la produzione \hl{$BqA \to q'B'A'$}
+    $B$} nell'alfabeto della TM la produzione \hl{$BqA \to q'B'A'$}.
 \end{enumerate}
 
 \begin{figure}[htb]
@@ -1492,7 +1503,7 @@ base ai valori assunti da $\delta$ \hl{possiamo agire in 3 diversi modi}:
 
     \draw[-{Stealth[length=3mm,width=3mm]}] (q) -- (6.5,0);
   \end{tikzpicture}
-  \caption{Configurazione della macchina di Turing in esame}%
+  \caption{Configurazione della macchina di Turing in esame.}%
   \label{fig:grammatica-mt-stato}
 \end{figure}
 
@@ -1531,7 +1542,7 @@ $\termsep\alpha Bq_f AC\beta$.
     \draw[-{Stealth[length=3mm,width=3mm]}] (q') -- (9.5,0);
   \end{tikzpicture}
   \caption{Due configurazioni della macchina di Turing in esame che sono legate
-  dalla transizione}\label{fig:grammatica-mt-stati}
+  dalla transizione.}\label{fig:grammatica-mt-stati}
 \end{figure}
 
 \paragraph{Grammatiche monotone} Possiamo notare che le \hl{produzioni si
@@ -1581,9 +1592,9 @@ generati dai sistemi di pattern}:
 
 \begin{itemize}
   \item $L = \{xx : x \in \{0,1\}\}$ non è un linguaggio regolare, ma può essere
-    descritto con il pattern $\langle \{0,1\}, \{x\}, xx\rangle$
+    descritto con il pattern $\langle \{0,1\}, \{x\}, xx\rangle$;
   \item Il linguaggio generato da $0^* 1^*$ è, ovviamente, regolare ma non è
-    esprimibile con un pattern
+    esprimibile con un pattern.
 \end{itemize}
 
 \hl{Quindi non è contenimento tra le due famiglie. Diciamo che esse sono non
@@ -1640,7 +1651,7 @@ computazioni devono rispettare.
   \]
 
   Si può ridurre questa formula? Certo. Mantenendo la struttura come
-  concatenazione possiamo scrivere
+  concatenazione possiamo scrivere:
 
   \[
     \forall x (x \in L_2 \iff \exists z \exists y
@@ -1740,9 +1751,9 @@ seguente:
   Con:
   \begin{enumerate}
     \item \hl{$a \in I$ e $a(x)$} un predicato per ogni singolo simbolo
-      dell'alfabeto
-    \item $<$ la relazione di minore
-    \item $\mathbb{N}$ dominio delle variabili
+      dell'alfabeto;
+    \item $<$ la relazione di minore;
+    \item $\mathbb{N}$ dominio delle variabili.
   \end{enumerate}
 \end{defn}
 
@@ -1766,10 +1777,11 @@ I concetti possono, però, essere estesi anche a parole vuote.
 Possiamo anche definire \hl{altri predicati utili}:
 
 \begin{itemize}
-  \item La \hl{costante $0$} tale che \hl{$x = 0 \triangleq \forall y(\neg(y<x))$}
+  \item La \hl{costante $0$} tale che \hl{$x = 0 \triangleq \forall
+    y(\neg(y<x))$};
   \item Il predicato \hl{``$y$ successore di  $x$''}
-    \hl{$\succc(x,y) \triangleq x<y \land \neq\exists z(x<z \land z<y)$}
-  \item Le \hl{costanti $1,2,3,\ldots$ come i successori di $0,1,2,\ldots$}
+    \hl{$\succc(x,y) \triangleq x<y \land \neq\exists z(x<z \land z<y)$};
+  \item Le \hl{costanti $1,2,3,\ldots$ come i successori di $0,1,2,\ldots$}.
 \end{itemize}
 
 Per comodità possiamo \hl{definire} altre \hl{abbreviazioni} del tipo
@@ -1785,14 +1797,14 @@ Per definire la \hl{semantica} introduciamo la definizione di \hl{assegnamento}.
 
   \begin{itemize}
     \item \hl{$w,\nu_1 \models a(x)$} se e solo se \hl{$w = uav$} e
-      $|u| = \nu_1(x)$
-    \item \hl{$w,\nu_1 \models x < y$} se e solo se \hl{$\nu_1(x) < \nu_1(y)$}
+      $|u| = \nu_1(x)$;
+    \item \hl{$w,\nu_1 \models x < y$} se e solo se \hl{$\nu_1(x) < \nu_1(y)$};
     \item \hl{$w,\nu_1 \models \neg\phi$} se e solo se \hl{non
-      $w\nu_1 \models \phi$}
+      $w\nu_1 \models \phi$};
     \item \hl{$w,\nu_1 \models \phi_1 \land \phi_2$} se e solo se
-      \hl{$w,\nu_1 \models \phi_1$ e $w,\nu_1 \models \phi_2$}
+      \hl{$w,\nu_1 \models \phi_1$ e $w,\nu_1 \models \phi_2$};
     \item \hl{$w,\nu_1 \models a(x)$} se e solo se \hl{$w,\nu_1' \models \phi$
-      per ogni $v_1'$ con $\nu_1'(y) = \nu_1(y)$, $y \neq x$}
+      per ogni $v_1'$ con $\nu_1'(y) = \nu_1(y)$, $y \neq x$}.
   \end{itemize}
 \end{defn}
 
@@ -1830,10 +1842,10 @@ aggiuntive}:
 
 \begin{itemize}
   \item \hl{$w, \nu_1, \nu_2 \models X(x)$} se solo se
-    \hl{$\nu_2(x) \in \nu_2(X)$}
+    \hl{$\nu_2(x) \in \nu_2(X)$};
   \item \hl{$w, \nu_1, \nu_2 \models \exists X(\phi)$} se e solo se
     \hl{$w, \nu_1, \nu_2' \models \phi$ per qualche $\nu_2'$ con
-    $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$}
+    $\nu_2'(Y) = \nu_2(Y)$, $Y \neq X$}.
 \end{itemize}
 
 \begin{esempio}
@@ -1900,7 +1912,7 @@ dimostrare che riconoscimento e traduzione possono ridotte l'una all'altra:
   \begin{description}
     \item[$\implies$] Se ho una macchina che può risolvere tutti i problemi
       della forma $y = \tau (x)$ e voglio usarla per risolvere il problema $x
-      \in L$ è sufficiente definire $\tau(x) = 1$ se $x \in L$ e $0$ altrimenti
+      \in L$ è sufficiente definire $\tau(x) = 1$ se $x \in L$ e $0$ altrimenti.
     \item[$\impliedby$] Se ho una macchina che può risolvere tutti i problemi
       della forma $x \in L$, posso definire un linguaggio $L_{\tau} = \{
       x\termsep y : y = \tau(x) \}$. Per una $x$ fissata, posso enumerare
@@ -1935,7 +1947,7 @@ Introduciamo un altro concetto fondamentale per l'informatica: l'algoritmo.
 
 \begin{defn}[Algoritmo (intuitivo)]\label{def:alg-non-formale}
   Con algoritmo intendiamo una \hl{procedura per risolvere problemi} mediante un
-  dispositivo di \hl{calcolo automatico}
+  dispositivo di \hl{calcolo automatico}.
 \end{defn}
 
 Gli \hl{algoritmi} godono di alcune \hl{importanti proprietà}, anche queste
@@ -1947,18 +1959,18 @@ enunciate in modo informale.
   processore in modo arbitrario}. Si ha che:
 
   \begin{enumerate}
-    \item La \hl{sequenza di istruzioni} di $A$ dev'essere \hl{finita}
+    \item La \hl{sequenza di istruzioni} di $A$ dev'essere \hl{finita};
     \item \hl{Qualunque istruzione} di $A$ dev'essere \hl{eseguibile dal
-      processore} meccanico di $\mathcal{M}$
+      processore} meccanico di $\mathcal{M}$;
     \item La \hl{computazione è discreta}, ossia l'informazione è codificata
-      digitalmente e la computazione procede attraverso passi discreti
-    \item $A$ è \hl{eseguito in modo deterministico}
+      digitalmente e la computazione procede attraverso passi discreti;
+    \item $A$ è \hl{eseguito in modo deterministico};
     \item \hl{Non c'è limite} sulla quantità di \hl{dati in ingresso e in
-      uscita}
+      uscita};
     \item \hl{Non c'è limite} sulla quantità di \hl{memoria richiesta} per
-      effettuare una computazione
+      effettuare una computazione;
     \item \hl{Non c'è limite} sul \hl{numero di passi discreti richiesti} per
-      effettuare una computazione
+      effettuare una computazione.
   \end{enumerate}
 \end{prop}
 
@@ -2040,13 +2052,13 @@ d(y,x)$.
 Una \hl{UTM} che calcola $\hat{g}$ \hl{opererà in questo modo}:
 
 \begin{enumerate}
-  \item Dato $n$ calcola \hl{$\langle y,x \rangle = d^{-1}(n)$}
+  \item Dato $n$ calcola \hl{$\langle y,x \rangle = d^{-1}(n)$};
   \item Costruisce la \hl{funzione di transizione $M_y$} calcolando
-    \hl{$E^{-1}$} e la memorizza sul nastro
+    \hl{$E^{-1}$} e la memorizza sul nastro;
   \item In un'altra porzione di nastro \hl{memorizza una codifica della
-    configurazione di $M_y$}
+    configurazione di $M_y$};
   \item Lascia sul nastro \hl{$f_y(x)$ se e solo se $M_y(x)$ termina la
-    computazione}
+    computazione}.
 \end{enumerate}
 
 \subsection{Funzioni calcolabili e problemi definibili}\label{sec:func-calc}
@@ -2140,7 +2152,7 @@ risolvibile è il \hl{``Halting Problem''}.
 
 L'Halting Problem ci permette di affermare con fermezza che l'insieme dei
 \hl{problemi risolvibili è strettamente incluso in quello dei problemi
-descrivibili.}
+descrivibili}.
 
 \subsubsection{Specializzazioni e generalizzazioni}\label{sec:spec-gen}
 
@@ -2194,8 +2206,8 @@ computabile}.
 
   \begin{enumerate}
     \item Calcoliamo $k(x)$ al crescere di $x$. Trovato $x_0|_{k(x_0)=1}$
-      poniamo $g(0) = x_0$ e riprendiamo a calcolare $k$ da $x_0 + 1$ in avanti
-    \item Trovato $x_1|_{k(x_1)=1}$ poniamo $g(1) = x_1$ e iteriamo
+      poniamo $g(0) = x_0$ e riprendiamo a calcolare $k$ da $x_0 + 1$ in avanti;
+    \item Trovato $x_1|_{k(x_1)=1}$ poniamo $g(1) = x_1$ e iteriamo.
   \end{enumerate}
 
   È facile vedere che $g$ è strettamente monotona. Possiamo calcolare $g^{-1}$
@@ -2282,7 +2294,7 @@ numerabile (semidecidibile)}.
   se e solo se:
 
   \begin{itemize}
-    \item $S$ è l'insieme \hl{vuoto}
+    \item $S$ è l'insieme \hl{vuoto};
     \item $S$ è l'\hl{immagine di una funzione totale computabile}:
 
       \begin{equation}
@@ -2306,7 +2318,7 @@ Tra la decidibilità e la semidecidibilità ci sono diversi importanti legami:
   Studiamo i vari casi possibili nella definizione di semidecidibilità:
 
   \begin{itemize}
-    \item Se $S$ è vuoto, è RE per definizione
+    \item Se $S$ è vuoto, è RE per definizione;
     \item Se $S$ non è vuoto, costruiamo una funzione totale e computabile di
       cui $S$ è immagine. Poiché sappiamo che esisterà un $k \in S$ tale che
       $\mathbf{1}_S(k) = 1$, possiamo definire la funzione come
@@ -2365,8 +2377,9 @@ cercare di capire se possiamo enumerare tutte le funzioni calcolabili e totali.
   Dato un insieme \hl{$S$} per cui:
 
   \begin{enumerate}
-    \item \hl{Se $i \in S$ allora $f_i$ e calcolabile e totale}
-    \item \hl{Se $f$ e totale e computabile allora $\exists i \in S : f_i = f_i$}
+    \item \hl{Se $i \in S$ allora $f_i$ e calcolabile e totale};
+    \item \hl{Se $f$ e totale e computabile allora $\exists i \in S : f_i =
+      f_i$}.
   \end{enumerate}
 
   Esso \hl{non sarà ricorsivamente enumerabile}.
@@ -2501,8 +2514,8 @@ Possiamo ora enunciare una \hl{condizione per la decidibilità di un insieme}.
   \in F\}$} è \hl{decidibile se e solo se}:
 
   \begin{itemize}
-    \item \hl{$F = \emptyset$}
-    \item \hl{$F$ è l'insieme di tutte le funzioni computabili}
+    \item \hl{$F = \emptyset$};
+    \item \hl{$F$ è l'insieme di tutte le funzioni computabili}.
   \end{itemize}
 \end{thm}
 \begin{proof}
@@ -2535,11 +2548,11 @@ Possiamo ora enunciare una \hl{condizione per la decidibilità di un insieme}.
     \item Se $h_S(\bar{x}) = i$: per definizione di $h_S$ abbiamo che
       $f_{\bar{x}} \notin F$, ma da quanto detto per il teorema di Kleene
       $f_{\bar{x}} = f_{h_S(\bar{x})} = f_i$ da cui, per come definito $i$, $f_i
-      \in F$
+      \in F$.
     \item Se $h_S(\bar{x}) = j$: per definizione di $h_S$ abbiamo che
       $f_{\bar{x}} \in F$, ma da quanto detto per il teorema di Kleene
       $f_{\bar{x}} = f_{h_S(\bar{x})} = f_j$ da cui, per come definito $j$, $f_j
-      \notin F$
+      \notin F$.
   \end{itemize}
 \end{proof}
 
@@ -2560,10 +2573,10 @@ alternative} per \hl{stabilire la decidibilità di} un problema:
 
 \begin{enumerate}
   \item Se \hl{troviamo un algoritmo che termina sempre}, allora il problema è
-    \hl{decidibile}
+    \hl{decidibile};
   \item Se \hl{troviamo un algoritmo che termina sempre se la risposta è
     ``vero'' ma può non terminare se la risposta è ``falso''}, allora il
-    problema è \hl{semidecidibile}
+    problema è \hl{semidecidibile};
   \item Se riusciamo a \hl{trovare una dimostrazione diagonale della
     indecidibilità} del problema allora esso è \hl{indecidibile}.
 \end{enumerate}
@@ -2584,10 +2597,10 @@ che so risolvere, ho ridotto $P'$ a $P$. Ciò significa che affinché $P'$ sia
 riducibile a $P$, si dovrà avere che:
 
 \begin{enumerate}
-  \item $P$ risolvibile
+  \item $P$ risolvibile;
   \item C'è un algoritmo che per ogni istanza di $P'$ determina una
     corrispondente istanza di $P$ e costruisce algoritmicamente la soluzione
-    dell'istanza di $P'$ usando la soluzione dell'istanza di $P$
+    dell'istanza di $P'$ usando la soluzione dell'istanza di $P$.
 \end{enumerate}
 
 Formalizziamo il tutto:
@@ -2680,8 +2693,8 @@ Per \hl{quantificare l'efficienza} di un algoritmo, faremo \hl{analisi
 qualitative di due metriche}:
 
 \begin{itemize}
-  \item \hl{Tempo di calcolo impiegato}
-  \item \hl{Spazio occupato} (registri, cache, RAM, disco o nastro)
+  \item \hl{Tempo di calcolo impiegato};
+  \item \hl{Spazio occupato} (registri, cache, RAM, disco o nastro).
 \end{itemize}
 
 Si possono fare analisi anche su altri aspetti come i costi di sviluppo, ma noi
@@ -2765,9 +2778,10 @@ quella di \hl{considerare solo il comportamento asintotico, ossia $n \to
 \infty$}. Per esprimere il comportamento asintotico abbiamo \hl{3 notazioni}:
 
 \begin{itemize}
-  \item \hl{$\mathcal{O}$-grande}: limite asintotico \hl{superiore}
-  \item \hl{$\Omega$-grande}: limite asintotico \hl{inferiore}
-  \item \hl{$\Theta$-grande}: limite asintotico \hl{sia superiore che inferiore}
+  \item \hl{$\mathcal{O}$-grande}: limite asintotico \hl{superiore};
+  \item \hl{$\Omega$-grande}: limite asintotico \hl{inferiore};
+  \item \hl{$\Theta$-grande}: limite asintotico \hl{sia superiore che
+    inferiore}.
 \end{itemize}
 
 Eseguire una approssimazione di questo genere causa \hl{due problemi pratici}.
@@ -2819,10 +2833,10 @@ piccoli di $n$ rispetto ad uno con complessità asintotica maggiore}.
           f(n) \in \Omega(g(n))
         }
       \]
-    \item Le tre notazioni godono della \hl{proprietà transitiva}
-    \item Le tre notazioni godono della \hl{proprietà riflessiva}
-    \item \hl{$f(n) \in \Theta(g(n)) \iff g(n) \in \Theta(f(n))$}
-    \item \hl{$f(n) \in \mathcal{O}(g(n)) \iff g(n) \in \Omega(f(n))$}
+    \item Le tre notazioni godono della \hl{proprietà transitiva};
+    \item Le tre notazioni godono della \hl{proprietà riflessiva};
+    \item \hl{$f(n) \in \Theta(g(n)) \iff g(n) \in \Theta(f(n))$};
+    \item \hl{$f(n) \in \mathcal{O}(g(n)) \iff g(n) \in \Omega(f(n))$}.
   \end{enumerate}
 \end{prop}
 
@@ -2900,9 +2914,9 @@ infine costruire l'\hl{organo di controllo di $\mathcal{M}'$} in modo tale per c
 \begin{enumerate}
   \item Calcoli con i nuovi simboli sui nastri \hl{emulando le mosse di
     $\mathcal{M}$ spostando le testine sui nastri ogni $r$ movimenti di
-    $\mathcal{M}$}
+    $\mathcal{M}$};
   \item \hl{Memorizzi la posizione della testina arricchendo ulteriormente gli
-    alfabeti $\Gamma_i$}, oppure arricchendo l'insieme degli stati
+    alfabeti $\Gamma_i$}, oppure arricchendo l'insieme degli stati.
 \end{enumerate}
 
 \begin{thm}[\hl{Secondo teorema di accelerazione lineare}]\label{thm:acc-lin-2}
@@ -2959,8 +2973,8 @@ molto vasto: $|I| = 2^w$ se volgiamo operare in binario con una parola di $w$
 bit. Inoltre un \hl{calcolatore} può \hl{accedere direttamente ad una cella di
 memoria}, mentre la TM deve spendere $\Theta(n)$ ($n$ distanza tra la cella e la
 testina) tempo per scorrere il nastro. È giunta ora di aggiornare il nostro
-modello di calcolo per \hl{modellare un po' più da vicino i calcolatori reali: la
-macchina RAM\@}.
+modello di calcolo per \hl{modellare un po' più da vicino i calcolatori reali:
+la macchina RAM\@}.
 
 La macchina RAM è dotata di un \hl{nastro di lettura $\mathtt{In}$ e uno di
 scrittura $\mathtt{Out}$} come anche una TM\@. Il \hl{programma che esegue lo
@@ -3005,7 +3019,7 @@ Enunciamo l'instruction set e la corrispettiva semantica.
     \texttt{JLZ l}    & $PC \gets l$ se $\mathtt{M}[0] < 0$ \\
     \bottomrule
   \end{tabular}
-  \caption{Instruction set (non completo) della macchina RAM}%
+  \caption{Instruction set (non completo) della macchina RAM\@.}%
   \label{tab:ram-isa}
 \end{table}
 
@@ -3047,7 +3061,7 @@ Consideriamo $d = \log_2(i)$:
 
 \begin{itemize}
   \item Le \hl{addizioni} e sottrazioni sono operazioni effettuate bit per bit,
-    quindi avranno costo \hl{$\Theta(d)$}
+    quindi avranno costo \hl{$\Theta(d)$}.
   \item La \hl{moltiplicazione} eseguita con il \hl{metodo scolastico} richiede
     di iterare sulle cifre 2 volte, quindi avrà costo \hl{$\Theta(d^2)$}. Studi
     sull'aritmetica ci dicono che la complessità è migliorabile, sebbene con un
@@ -3064,7 +3078,7 @@ Consideriamo $d = \log_2(i)$:
     moltiplicazioni, hanno costo \hl{$\Theta(d^2)$}. Si è dimostrato che la
     complessità \hl{può essere migliorata} a \hl{$\Theta(\log^2(d)) \cdot
     \mathit{costo\_mul}$} dove $\mathit{costo\_mul}$ è il costo dell'algoritmo
-    di moltiplicazione scelto
+    di moltiplicazione scelto.
 \end{itemize}
 
 Le operazioni di \hl{\texttt{JUMP} e \texttt{HALT}} hanno \hl{costo costante},
@@ -3117,9 +3131,9 @@ intermedio} che useremo.
   polinomiale. Mappiamo innanzitutto le varie parti di una TM su una RAM\@:
 
   \begin{itemize}
-    \item Lo stato della TM corrisponderà all'accumulatore della RAM
-    \item Una cella della RAM corrisponderà ad una cella di nastro
-    \item La RAM è suddivisa in blocchi da $k$ celle
+    \item Lo stato della TM corrisponderà all'accumulatore della RAM;
+    \item Una cella della RAM corrisponderà ad una cella di nastro;
+    \item La RAM è suddivisa in blocchi da $k$ celle.
   \end{itemize}
 
   I blocchi saranno riempiti secondo questa strategia: nel blocco $0$ saranno
@@ -3150,7 +3164,7 @@ intermedio} che useremo.
   Studiamo ora l'emulazione da parte di una MT di una macchina RAM\@. Per
   semplicità ometteremo l'emulazione delle operazione di \texttt{MUL} e
   \texttt{DIV} in quanto non ledono alla generalità della dimostrazione.
-  Organizziamo il nastro della TM come in figura~\ref{fig:thm-corr-tm-ram}
+  Organizziamo il nastro della TM come in figura~\ref{fig:thm-corr-tm-ram}.
 
   \begin{figure}[htb]
     \centering
@@ -3171,7 +3185,7 @@ intermedio} che useremo.
       \node[] at (10.35, 0.45) [] () {\Large$\triangleright$};
       \node[] at (11.25, 0.45) [] () {$\ldots$};
     \end{tikzpicture}
-    \caption{Configurazione del nastro della TM}%
+    \caption{Configurazione del nastro della TM\@.}%
     \label{fig:thm-corr-tm-ram}
   \end{figure}
 
@@ -3227,10 +3241,10 @@ inferiore a $4$.
 Dato un certo problema, un buon flusso di lavoro è il seguente:
 
 \begin{enumerate}
-  \item Concepire un algoritmo che lo risolve
-  \item Valutare la complessità dell'algoritmo trovato
+  \item Concepire un algoritmo che lo risolve;
+  \item Valutare la complessità dell'algoritmo trovato;
   \item Se la complessità calcolata è soddisfacente, implementare l'algoritmo
-    nel linguaggio scelto
+    nel linguaggio scelto.
 \end{enumerate}
 
 Per controllare la correttezza di un algoritmo, come abbiamo già visto, non
@@ -3249,7 +3263,7 @@ comuni} (C, Java, ecc\dots). Una assunzione fondamentale sullo pseudocodice sar�
 che \hl{ogni statement di esso può essere tradotto in un numero costante di
 istruzioni RAM}\@.
 
-\subsection{La sintassi dello pseudocodice}
+\subsection{La sintassi dello pseudocodice}\label{sec:syntax-pseudocodice}
 
 Innanzitutto ogni algoritmo sarà \hl{definito come una procedura, ossia una
 funzione che prende un input e non ritorna nulla}. Forniamo ora la sintassi base
@@ -3260,20 +3274,20 @@ dello pseudocodice che useremo.
 \hl{confronti useremo i soliti} \texttt{<}, $\leq$, \texttt{>} e $\geq$.
 
 \paragraph{Commenti} Sono legali solo \hl{commenti monoriga delimitati da
-\pcomment{}} oppure usando \texttt{//}.
+\pcom{}} oppure usando \texttt{//}.
 
 \paragraph{Costrutti di controllo del flusso} Sono presenti \hl{tutti} i
 costrutti di controllo del flusso che ci si aspetterebbe \hl{in un normale
 linguaggio C-like}: \texttt{if}, \texttt{else}, \texttt{else if} e i cicli
-\texttt{for}, \texttt{while} e \texttt{do\dots while}.
+\texttt{for\dots}, \texttt{while} e \texttt{do\dots while}.
 
 \paragraph{Strutture dati e tipi aggregati} Sono definiti gli \hl{array} e sono
 accessibili con una notazione C-like:
 
 \begin{itemize}
   \item \hl{\texttt{A[i]} per indirizzare} lo $i-1$-esimo elemento
-    (indicizzazione a partire da 0)
-  \item \hl{\texttt{A[i..j]}} per estrarre un \hl{sotto-array} (slice)
+    (indicizzazione a partire da 0);
+  \item \hl{\texttt{A[i..j]}} per estrarre un \hl{sotto-array} (slice).
 \end{itemize}
 
 È anche possibile creare \hl{tipi aggregati, i vari campi di questi sono
@@ -3286,5 +3300,302 @@ valore \texttt{NIL}}.
 regole di chiamata e ritorno di un valore. I \hl{parametri di tipo base sono
 passati per valore, mentre i tipi aggregati per riferimento} (convenzione
 Java-like).
+
+\begin{esempio}
+  Consideriamo la rimozione di un elemento rispettivamente da un vettore e da
+  una lista.
+
+  \begin{lstlisting}[language=pseudocodice]
+    CancellaElV(v, len, e)
+      i `\peq{}` 0
+      while v[i] $\neq$ e
+        i `\peq{}` i + 1
+      while i < len -1
+        i `\peq{}` v[i + 1]
+        i `\peq{}` i + 1
+      v[len - 1] `\peq` $\bot$
+
+    CancellaElL(l, e)
+      p `\peq` l
+      while p.next $\neq$ NIL and p.next.value $\neq$ e
+        p `\peq` p.next
+      if p.next.value = e
+        p.next `\peq` p.next.next
+  \end{lstlisting}
+
+  Sono entrambi, nel caso pessimo, $\Theta(n)$ dove $n$ è il numero degli
+  elementi del vettore/lista.
+\end{esempio}
+\begin{esempio}
+  Consideriamo il seguente algoritmo di moltiplicazione di matrici:
+
+  \begin{lstlisting}[language=pseudocodice]
+    A `\peq` Matrix(n, m)
+    B `\peq` Matrix(m, o)
+
+    MatrixMultiply(A, B)
+      C `\peq` Matrix(n, o)
+      for i `\peq` 0 to A.n - 1
+        for j `\peq` 0 to B.o - 1
+          C[i][j] `\peq` 0
+          for k `\peq` 0 to A.m - 1
+            C[i][j] `\peq` C[i][j] + A[i][k] * B[k][j]
+      return C
+  \end{lstlisting}
+
+  La riga 5 viene eseguita $n*o$ volte, la 10 $n*m*o$ volte quindi l'algoritmo
+  avrà complessità $\Theta(n*m*o)$ sia in generale che nel caso pessimo. Se le
+  due matrici sono quadrate avremo $\Theta(n^3)$.
+\end{esempio}
+
+\subsection{Studio di algoritmi ricorsivi}\label{sec:alg-ricorsivi}
+
+È possibile incontrare algoritmi la cui complessità non è immediatamente
+esprimibile in forma chiusa. Il caso \hl{tipico} sono algoritmi che seguono la
+\hl{strategia ``divide et impera''}. Questa strategia consiste nel
+\hl{suddividere il problema in sottoproblemi con input $\frac{1}{b}$
+dell'originale}; quando il sottoproblema ha \hl{ingresso} di dimensioni $n$
+\hl{piccole a sufficienza può essere risolto a tempo costante}. Chiamiamo
+\hl{$D(n)$} il costo del \hl{suddividere il problema} e con \hl{$C(n)$} il
+\hl{costo di combinare le soluzioni}. Possiamo quindi esprimere il \hl{costo
+totale $T(n)$} con la seguente \hl{equazione di ricorrenza}:
+
+\begin{equation}
+  \mhl{
+    T(n) =
+    \begin{cases}
+      \Theta(1)                              & \quad \text{se } n < c \\
+      D(n) + aT\left(\frac{n}{b}\right)+C(n) & \quad \text{altrimenti}
+    \end{cases}
+  }
+\end{equation}
+
+Dove le costanti \hl{$a$, $b$ e $c$} indicano \hl{rispettivamente} il \hl{numero
+di chiamate ricorsive, il numero di suddivisioni dell'input e il numero sotto al
+quale il sottoproblema ha costo costante}.
+
+Per risolvere un problema in questa forma possiamo utilizzare \hl{3 tecniche:
+sostituzione, studio dell'albero di ricorsione e il teorema dell'esperto}
+(``master theorem'').
+
+\subsubsection{Metodo di sostituzione}\label{sec:alg-ricorsivi-sost}
+
+Il metodo di sostituzione è \hl{sostanzialmente una dimostrazione per induzione
+del fatto che una soluzione ``intuita'' è effettivamente una soluzione}. Esso si
+articola in 3 fasi:
+
+\begin{enumerate}
+  \item Intuire una soluzione (ovviamente);
+  \item Sostituire la presunta soluzione nella ricorrenza;
+  \item Dimostrare per induzione che la presunta soluzione è tale per
+    l'equazione/disequazione alle ricorrenze.
+\end{enumerate}
+
+Usiamo come caso di studio l'algoritmo di ricerca binaria in quanto semplice e
+dall'implementazione intuitiva. Possiamo esprimere la \hl{complessità della ricerca
+binaria} come:
+
+\begin{equation}
+  \mhl{
+    T(n) = \Theta(1) + T\left(\frac{n}{2}\right) + \Theta(1)
+  }
+\end{equation}
+
+\hl{``Intuiamo'' una soluzione $T(n) = \mathcal{O}(\log(n))$}, ossia $T(n) \leq
+c\log(n)$. Dobbiamo quindi dimostrare che
+
+\begin{equation}
+  T(n) = \Theta(1) + T\left(\frac{n}{2}\right) + \Theta(1) \leq c\log(n)
+\end{equation}
+
+Consideriamo \hl{vero per l'ipotesi di induzione $T(\frac{n}{2}) \leq
+c\log(\frac{n}{2})$} in quanto $\frac{n}{2} < n$ e sostituiamo ottenendo:
+
+\begin{equation}
+  \mhl{
+    T(n) \leq c\log\left(\frac{n}{2}\right) + \Theta(k) = c\log(n) - c\log(2) +
+      \Theta(k) \leq c\log(n)
+  }
+\end{equation}
+
+\begin{esempio}
+  Determiniamo un limite superiore per $T(n) = 2T(\frac{n}{2})+n$. Intuiamo
+  $\mathcal{O}(n\log(n))$, dimostriamo quindi che $T(n) \leq cn\log(n)$.
+  Supponiamo vero per induzione che $T(n/2) \leq c(n/2\log(n/2))$ e sostituiamo:
+
+  \begin{align*}
+    T(n) & \leq 2c(n/2\log(n/2)) + n \leq cnlog(n/2)+n = \\
+      & = cn\log(n) - cn\log(2) + n \leq \\
+      & \leq cn\log(n) + (1-c\log(2))n < \\
+      & < cn\log(n)
+  \end{align*}
+
+  Per dimostrare il caso base possiamo trovare un $n_0$ per il quale vale la
+  nostra ipotesi, in questo caso $n_0 = 3$.
+\end{esempio}
+\begin{esempio}
+  Troviamo un limite superiore per $T(n) = 2T(n/2) + 1$. Tentiamo di provare che
+  $\mathcal{O}(n)$, ossia $T(n) = cn$. Supponiamo vero, sempre per induzione,
+  $T(n/2) = cn/2$. Sostituiamo ottenendo che $T(n) \leq 2cn/2 + 1 = cn+1$. Non
+  possiamo trovare un valore che faccia rispettare l'ipotesi: $cn+1 \geq cn$
+  sempre. In questo caso non siamo riusciti a dimostrare il limite tramite
+  sostituzione. Attenzione: ciò non implica che $T(n) \neq \mathcal{O}(n)$!
+  Infatti se prendiamo come ipotesi $T(n) \leq cn-b$ con $b$ costante consente
+  di dimostrare che $T(n) = \mathcal{O}(n)$.
+\end{esempio}
+
+\subsubsection{Studio dell'albero di ricorsione}\label{sec:alg-ricorsivi-albero}
+
+Lo studio dell'albero di ricorsione ci \hl{fornisce un aiuto per trovare una
+congettura da verificare con il metodo di sostituzione}. L'albero di ricorsione è
+una \hl{rappresentazione delle chiamate ricorsive}, indicando per ognuna la
+complessità. Ogni chiamata costituisce un nodo dell'albero, i chiamati appaiono
+come figli del chiamante. Rappresentiamo \hl{l'albero di}:
+
+\begin{equation}
+  \mhl{
+    T(n) = T\left(\frac{n}{3}\right) + T\left(\frac{2n}{3}\right) + n\label{eqn:albero-ricorsione}
+  }
+\end{equation}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[
+    level 1/.style = {sibling distance=4cm},
+    level 2/.style = {sibling distance=2cm},
+    level 3/.style = {sibling distance=1cm},
+    level 4/.style = {sibling distance=1cm}
+  ]
+    \node{$n$}
+      child{
+        node{$\frac{n}{3}$}
+          child{
+            node{$\frac{n}{3^2}$}
+              child {
+                node{$\vdots$}
+                  child{
+                    node{$\frac{n}{3^k}$}
+                  }
+                  child{
+                    node{$\frac{2n}{3^k}$}
+                  }
+              }
+              child {
+                node{$\vdots$}
+              }
+          }
+          child{
+            node{$\frac{2n}{3^2}$}
+              child {
+                node{$\vdots$}
+              }
+              child {
+                node{$\vdots$}
+              }
+          }
+      }
+      child{
+        node{$\frac{2n}{3}$}
+          child{
+            node{$\frac{2n}{3^2}$}
+              child {
+                node{$\vdots$}
+              }
+              child {
+                node{$\vdots$}
+              }
+          }
+          child{
+            node{$\frac{2^2 n}{3^2}$}
+              child {
+                node{$\vdots$}
+              }
+              child {
+                node{$\vdots$}
+                  child{
+                    node{$\frac{2^{k-1}n}{3^k}$}
+                  }
+                  child{
+                    node{$\frac{2^k n}{3^k}$}
+                  }
+              }
+          }
+      };
+  \end{tikzpicture}
+  \caption{L'albero di ricorsione di~\ref{eqn:albero-ricorsione}.}%
+  \label{fig:albero-ricorsione}
+\end{figure}
+
+L'albero ha la \hl{ramificazione a profondità massima posta sull'estrema destra}
+della figura~\ref{fig:albero-ricorsione}. Sappiamo che essa ha \hl{profondità $k$
+pari a}:
+
+\begin{equation}
+  \mhl{
+    \frac{2^k}{3^k} n = 1 \implies{} k = \log_3(2^k n) = \cdots = c\log_3(n)
+  }
+\end{equation}
+
+Il \hl{costo pessimo per il contributo di un dato livello è la $n$} della radice
+dell'albero, \hl{congetturiamo allora che $T(n) = \Theta(n\log(n))$}. Possiamo
+quindi proseguire la dimostrazione con i metodi visti
+in~\ref{sec:alg-ricorsivi-sost}.
+
+\subsubsection{Teorema dell'esperto}\label{sec:alg-ricorsivi-esperto}
+
+Il teorema dell'esperto è uno \hl{strumento per risolvere buona parte delle
+equazioni alle ricorrenze}. Affinché sia applicabile, la \hl{ricorrenza deve
+avere la seguente forma}:
+
+\begin{equation}
+  \mhl{
+    T(n) = aT\left(\frac{n}{b}\right) + f(n)
+  }
+\end{equation}
+
+Con \hl{$a \geq 1$ e $b>1$}. L'idea di fondo è quella di \hl{confrontare
+$n^{\log_b(a)}$ (effetto delle chiamate ricorsive) con quello di $f(n)$ (costo
+di ogni singola chiamata)}. Le \hl{ipotesi} del teorema sono le seguenti:
+
+\begin{enumerate}
+  \item \hl{$a$ deve essere costante e maggiore di 1};
+  \item \hl{$f(n)$ deve essere sommata, non sottratta o altro a
+    $aT(\frac{n}{b})$};
+  \item \hl{Il legame tra $n^{\log_b(a)}$ e $f(n)$ deve essere polinomiale}.
+\end{enumerate}
+
+Se queste ipotesi sono valide, è possibile ricavare informazioni sulla
+complessità a seconda del caso in cui ci si trova:
+
+\paragraph{Caso 1} Nel primo caso abbiamo che \hl{$f(n) =
+\mathcal{O}(n^{\log_b(a) - \epsilon})$ per un $\epsilon>0$}. La \hl{complessità
+risultante sarà $T(n) = \Theta(n^{\log_b(a)})$}. Intuitivamente si può intendere
+questa situazione come il caso nel quale \hl{il costo della ricorsione domina
+quello della chiamata}.
+
+\paragraph{Caso 2} Nel secondo caso abbiamo che \hl{$f(n) =
+\mathcal{O}(n^{\log_b(a)}{(\log(n))}^k)$}. La \hl{complessità risultante sarà
+$T(n) = \Theta(n^{\log_b(a)}{(\log(n))}^{k+1})$}. In questo caso, invece,
+possiamo intuire che \hl{il contributo della ricorsione e quello della singola
+chiamata differiscono per meno di un termine polinomiale}.
+
+\paragraph{Caso 3} Nell'ultimo caso abbiamo che \hl{$f(n) = \Omega(n^{\log_b(a)
++ \epsilon})$ per un $\epsilon >0$}. Se questo è vero, \hl{deve anche valere
+$af(\frac{n}{b})<cf(n)$} per un qualche valore di \hl{$c<1$}. Se le ipotesi sono
+rispettate \hl{abbiamo che $T(n) = \Theta(f(n))$}. Qui, invece, \hl{domina il
+costo della singola chiamata}.
+
+\subsection{Algoritmi di ordinamento}\label{sec:alg-odinamento}
+
+Tra i problemi che capita più spesso di dover risolvere, l'ordinamento di una
+collezione di oggetti è un classico. \hl{Un punto chiave dell'utilità
+dell'ordinamento è consentire utilizzare una ricerca più efficiente, come ad
+esempio quella binaria, sulla nostra collezione}. Analizzeremo soluzioni diverse
+considerando la loro complessità temporale, spaziale e relative peculiarità.
+
+\begin{defn}[\hl{Proprietà di stabilità di un ordinamento}]\label{def:prop-stabilita}
+  Diciamo che un ordinamento gode della \hl{proprietà di stabilità se non modifica
+  l'ordine di elementi duplicati}.
+\end{defn}
 
 \end{document}

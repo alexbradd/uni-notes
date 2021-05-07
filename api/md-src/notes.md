@@ -1756,3 +1756,126 @@ Il modello di esecuzione che useremo è la macchina RAM. Una assunzione
 fondamentale: un singolo statement di pseudocodice è tradotto in un numero
 costante di assembly RAM.
 
+Adotteremo il criterio do costo costante per l'esecuzione dei nostri algoritmi.
+La maggioranza di essi che vedremo non ha espansioni significative della
+dimensione dei singoli dati. Possiamo in quei casi, considerare dati a
+precisione multipla come vettori di cifre. Focalizzeremo la nostra analisi
+principalmente sulla complessità temporale degli algoritmi.
+
+### Algoritmi ricorsivi
+
+È possibile incontrare algoritmi la cui complessità non è immediatamente
+esprimibile in forma chiusa. Il caso tipico sono algoritmi "divide et impera":
+Suddivido il problema in sottoproblemi con dimensione dell'input pari a una
+frazione dell'originale, quando il sotto problema ha ingresso sufficientemente
+piccolo possiamo risolverlo in tempo costante. Chiamiamo $D(n)$ il costo del
+suddividere il problema e con $C(n)$ il costo di computare le soluzioni.
+Possiamo quindi esprimere il costo totale $T(n)$ con la seguente equazione di
+ricorrenza:
+
+$$
+  T(n) =
+  \begin{cases}
+    \Theta(1) & \quad n < c \\
+    D(n) + aT(\frac{n}{b})+C(n) & \quad \text{altrimenti}
+  \end{cases}
+$$
+
+Con $a,b,c$ costanti:
+
+- $a$ numero di chiamate ricorsive
+- $b$ numero di suddivisioni dell'input
+- $c$ numero sotto al quale il sottoproblema risulta risolvibile in tempo
+  costante
+
+Per risolvere le ricorrenze possiamo adottare 3 tecniche: sostituzione, esame
+dell'albero di ricorsione e il teorema dell'esperto ("master theorem"). Usiamo
+come caso di studio la ricerca binaria. Analizzando l'algoritmo si può vedere
+che: $D(n) = \Theta(1)$, $C(n) = \Theta(1)$ e quindi $T(n) = 2\Theta(1) +
+T(n/2)$.
+
+#### Metodo di sostituzione
+
+Il metodo di sostituzione si articola in 3 fasi:
+
+1. Intuire una possibile soluzione
+2. Sostituire la presunta soluzione nella ricorrenza
+3. Dimostrare per induzione che la presunta soluzione è tale per
+   l'equazione/disequazione alle ricorrenze
+
+Nella ricerca binaria ipotizziamo $T(n) = \mathcal{O}(\log(n))$, ossia $T(n) \leq
+c\log(n)$. Dobbiamo quindi dimostrare che $T(n) = 2\Theta(1) + T(n/2) \leq
+c\log(n)$. Consideriamo vero per ipotesi di induzione $T(n/2) \leq c\log(n/2)$
+in quando $n/2 < n$ e sostituiamo:
+
+$$
+  T(n) \leq c\log(n) + \Theta(k) = c\log(n) - c\log(2) + \Theta(k) \leq c\log(n)
+$$
+
+Cerchiamo ora un limite superiore per $T(n) = 2T(n/2)+n$. Intuiamo
+$\mathcal{O}(n\log(n))$, dobbiamo quindi dimostrare che $T(n) \leq c(n\log(n))$.
+Supponiamo vero per induzione che $T(n/2) \leq c(n/2\log(n/2))$ e sostituiamo:
+
+$$
+  T(n) \leq 2c(n/2\log(n/2)) + n \leq cnlog(n/2)+n =
+    cn\log(n) - cn\log(2) + n \leq cn\log(n) + (1-c\log(2))n < cn\log(n)
+$$
+
+Per dimostrare il caso base possiamo trovare un $n_0$ per il quale vale la
+nostra ipotesi: $n_0 = 3$
+
+Troviamo un limite superiore per $T(n) = 2T(n/2) + 1$. Tentiamo di provare che
+$\mathcal{O}(n)$, ossia $T(n) = cn$. Supponiamo vero, sempre per induzione,
+$T(n/2) = cn/2$. Sostituiamo ottenendo che $T(n) \leq 2cn/2 + 1 = cn+1$. Non
+possiamo trovare un valore che faccia rispettare l'ipotesi: $cn+1 \geq cn$
+sempre. In questo caso non siamo riusciti a dimostrare il limite tramite
+sostituzione. Attenzione: ciò non implica che $T(n) \neq \mathcal{O}(n)$!
+Infatti se prendiamo come ipotesi $T(n) \leq cn-b$ con $b$ costante consente di
+dimostrare che $T(n) = \mathcal{O}(n)$.
+
+#### Metodo dell'albero di ricorsione
+
+L'albero di ricorsione fornisce un aiuto per avere una congettura da verificare
+con il metodo di sostituzione. È una rappresentazione delle chiamate ricorsive,
+indicando per ognuna la complessità. Ogni chiamata costituisce un nodo in un
+albero, i chiamati appaiono come figli del chiamante.
+
+#### Teorema dell'esperto
+
+Il teorema dell'esperto è uno strumento per risolvere buona parte delle
+equazioni alle ricorrenze. Affinché sia applicabile, la ricorrenza deve avere la
+seguente forma:
+
+$$
+  T(n) = aT(n/b) + f(n)
+$$
+
+Con $a \geq 1$, $b>1$. L'idea di fondo è quella di confrontare $n^{\log_b(a)}$
+(effetto delle chiamate ricorsive) con quello di $f(n)$ (costo di ogni singola
+chiamata). Le ipotesi sono le seguenti:
+
+1. $a$ deve essere costante e maggiore di 1
+2. $f(n)$ deve essere sommata, non sottratta o altro a $at(n/b)$
+3. Il legame tra $n^{\log_b(a)}$ e $f(n)$ deve essere polinomiale
+
+Se queste ipotesi sono valide, è possibile ricavare informazioni sulla
+complessità a seconda del caso in cui ci si trova:
+
+1. $f(n) = \mathcal{O}(n^{\log_b(a) - \epsilon})$ per un $\epsilon>0$. La
+   complessità risultante sarà $T(n) = \Theta(n^{\log_b(a)})$.
+2. $f(n) = \mathcal{O}(n^{\log_b(a)}(\log(n))^k)$. La
+   complessità risultante sarà $T(n) = \Theta(n^{\log_b(a)}(\log(n))^{k+1})$.
+3. $f(n) = \Omega(n^{\log_b(a) + \epsilon})$ per un $\epsilon >0$. Se questo è
+   vero, deve anche valere $af(n/b) <cf(n)$ per un  qualche valore di $c<1$. Se
+   le ipotesi sono rispettate abbiamo che $T(n) = \Theta(f(n))$.
+
+### Problemi di ordinamento
+
+Tra i problemi che capita più spesso di dover risolvere, l'ordinamento di una
+collezione di oggetti è un classico. UN punto chiave dell'utilità
+dell'ordinamento è consentire utilizzare una ricerca binaria sulla collezione
+ordinata. Analizziamo soluzioni diverse considerando la loro complessità
+temporale, spaziale e relative peculiarità.
+
+Diciamo che un ordinamento gode della proprietà di stabilità se non modifica
+l'ordine di elementi duplicati.
