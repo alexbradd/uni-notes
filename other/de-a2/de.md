@@ -746,3 +746,27 @@ Computers arbeitet gern, obwohl es manchmal langweilig ist.
 2. Musst du eine Fremdsprache sprachen oder lernen?
 3. Hast du viel Kontakt mit Menschen?
 4. Wie viel musst du reisen?
+
+## AB, Übung 7, Seite 111
+
+1. Sie sollte zum Zahnarzt gehen.
+2. Er sollte weniger Geld ausgeben.
+3. Er sollte früher im Bett gehen.
+4. Sie sollten Freunde einladen.
+5. Sie sollte den Chef fragen.
+6. Er sollte die Werkzeuge kaufen
+
+## KB, Übung b, Seite 114
+
+1. Welche Schule besucht man vor Hauptschule?
+2. Von wann bis wann besucht man Gymnasium?
+3. Was kann man nach der Gesamtschule machen?
+
+## KB, Übung d, Seite 115
+
+Bei uns gibt es auch den Kindergarten und den Grundschule, aber dauert
+Grundschule 5 Jahre und besuchen die Kinder den ab 7 Jahren alt. Es gibt keinen
+Gymnasium, Gesamtschule, Realschule und Hauptschule. Nach dem Grundschule
+besuchen die Schüler die "scuola media" für 4 Jahre. Nach der "scuola media"
+muss sie unter der "liceo", der "istituto tecnico" oder der "scuola
+professionale" auswählen.
