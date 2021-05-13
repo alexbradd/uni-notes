@@ -1879,3 +1879,153 @@ temporale, spaziale e relative peculiarità.
 
 Diciamo che un ordinamento gode della proprietà di stabilità se non modifica
 l'ordine di elementi duplicati.
+
+#### Insertion sort
+
+Il raziocinio dietro all'insertion sort è quella di selezionare un elemento e
+reinserirlo nella porzione di vettore già ordinata a giusto posto.
+
+```txt
+IntertionSort(A)
+  for i <- 1 to A.length - 1
+    tmp <- A[i]
+    j <- i - 1 // Libero lo slot in j + 1
+    while J >= 0 and A[j] > tmp
+      A[j + 1] <- A[j]
+      j <- j - 1
+    A[j + 1] <- tmp
+```
+
+Nel caso ottimo abbiamo complessità $\Theta(n)$, in quello pessimo $\Theta(n^2)$
+e in generale $O(n^2)$. La complessità spaziale è $\Theta(1)$. È un algoritmo
+stabile se usiamo `A[j] > tmp`, non stabile se usiamo `A[j] >= tmp`.
+
+Possiamo stabilire un algoritmo più veloce? Sì. Il limite per qualunque
+ordinamento sarà sicuramente $\Omega(n)$, visto che dobbiamo almeno leggere una
+volta tutti gli elementi, e $O(n^2)$, poiché abbiamo già visto l'insertion sort.
+Astraiamo dalla specifica strategia di ordinamento e contiamo le azioni di
+confronto e scambio. Poiché si ottiene un albero binario, avremo tante foglie
+quante $n!$ dove $n$ è il numero di elementi. Assumiamo che la struttura sia la
+più compatta possibile, ossia che non ci siano confronti ridondanti. Le
+lunghezza del più lungo dei percorsi radice-foglia è il numero massimo di
+confronti che devo fare per ordinare un vettore. L'altezza dell'albero è
+$\log_2(n!) \approx n\log_2(n) - n\log_2(e) + O(\log_2(n))$ (approssimazione di
+Sterling). Le complessità migliore ottenibile sarà $O(n\log(n))$
+
+#### Merge sort
+
+Il primo algoritmo con complessità $\Theta(n\log(n))$ è il merge sort. Esso è un
+algoritmo di ordinamento con strategia divide et impera con complessità
+$\Theta(n\log(n))$ in tutti i casi. Nonostante abbia complessità eccezionale, il
+merge sort non è l'ordinamento perfetto perché è un algoritmo che richiede molte
+operazioni di memoria e quindi non adatto a tutti i casi.
+
+Suddividiamo il vettore di elementi da ordinare in porzioni più piccole, fin
+quando le partizioni non sono ordinabili in $\Theta(1)$, dopodiché riassembliamo
+i risultati ottenuti. È importante che riassemblare i risultati non abbia
+complessità eccessiva. Analizziamo quindi la complessità di fondere due array
+ordinati in un unico array. Consideriamo due slices di un unico array A:
+`A[p..q], A[q+1..r]`, è facile dimostrare che sia la complessità temporale che
+spaziale sono lineari:
+
+```txt
+Merge(a, p, q, r)
+  len1 <- q - p +1
+  len2 <- r-q
+  Alloca(L[1..len1 + 1])
+  Alloca(R[1..len2 + 1])
+  for i <- 1 to len1 // copia della prima metà
+    L[i] <- A[p + i - 1]
+  for i <- 1 to len2 // copia della prima metà
+    R[i] <- A[q + i]
+  L[len1 + 1] <- INFITY // sentinella
+  R[len2 + 1] <- INFITY // sentinella
+  i <- 1
+  j <- 1
+  for k <- p to r
+    if L[i] <= R[j]
+      A[k] <- L[i]
+      i <- i + 1
+    else
+      A[k] <- R[j]
+      j <- j + 1 
+```
+
+Vediamo allora il merge sort:
+
+```txt
+MergeSort(A, p, r)
+  if p < r -1
+    q <- floor((p+r)/2)
+    MergeSort(A, p, q)
+    MergeSort(A, q + 1, r)
+    Merge(A, p, q, r)
+  else // Caso base della ricorsione: ho solo 2 elementi
+    if A[p] < A[r]
+      tmp <- A[r]
+      A[r] <- A[p]
+      A[p] <- tmp
+```
+
+Il costo sarà $T(n) = 2T(n/2) + \Theta(n)$. Applicando il secondo caso del
+master theorem otteniamo $\Theta(n\log(n))$. La stabilità del merge sort dipende
+dall'algoritmo di unione: se consideriamo $<=$ allora stabile, instabile se
+invece consideriamo $<$.
+
+#### Quicksort
+
+Quicksort è un altro algoritmo divide et impera con ottima complessità. La sua
+peculiarità è che l'ordinamento avviene senza uso di spazio ausiliario (in
+place). Il quicksort applica il divide et impera ad una slice `A[lo..hi]`:
+
+- Dividi: Scelgo un elemento `A[p]` (pivot) come punto di suddivisione di
+  `A[lo..hi]` e sposta gli elementi di `A[lo..hi]` in modo che tutti quelli di
+  `A[lo..p-1]` siano minori del pivot
+- Impera: Aordina `A[lo..p-1]`, `A[p+1..hi]` con quicksort
+- Combina: Nulla in quanto l'algoritmo è eseguito in place
+
+```txt
+Quicksort(A, lo, hi)
+  if lo < hi
+    p <- Partition(A, lo, hi)
+    Quicksort(A[lo], A[p-1])
+    Quicksort(A[p+1], A[hi])
+```
+
+Studiamo ora due metodi di partizione:
+
+```txt
+PartionLomuto(A, lo, hi)
+  pivot <- A[hi]
+  i <- lo - 1
+  for j <- lo to hi
+    if A[j] <= pivot
+      i <- i+1
+      Scambia(A[i], A[j])
+  Scambia(A[i+1], A[hi])
+  return i + 1
+  
+PartitionHoare(A, lo, hi)
+  pivot <- A[lo]
+  i <- lo -1
+  j <- hi +1
+  while true
+    i <- i + 1
+    while A[i] <= pivot
+      i <- i + 1
+    j <- j - 1
+    while A[j] >= pivot
+      j <- j - 1
+    if i < j
+      Scambia(A[i], A[j])
+    else
+      return j
+```
+
+La complessità della partizione secondo Lomuto è $\Theta(n)$, come anche quella
+di Hoare ma la seconda effettua (in media) $1/3$ degli scambi rispetto alla
+prima. La partizione di Hoare ha anche un altro vantaggio: se il vettore è
+composto da solo elementi uguali non eseguiamo nessuno scambio.
+
+La complessità del quicksort sarà: $T(n) = T(n/a) + T(n - n/a) + \Theta(n)$ dove
+$a$ dipende da quanto bene `Partition()` ha suddiviso il vettore.

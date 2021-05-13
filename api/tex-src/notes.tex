@@ -64,13 +64,17 @@
   showtabs=false,
   tabsize=2,
   mathescape=true,
-  escapechar=`
+  escapechar=`,
+  xleftmargin=1cm
 }
-\lstset{style=mystyle}
+\lstset{
+  style=mystyle,
+}
 \lstdefinelanguage{pseudocodice}{
   morekeywords={if,else,for,to,while,do,return,NIL},
   sensitive=true,
-  morestring=[b]" % chktex 18
+  morestring=[b]", % chktex 18
+  morecomment=[l]{//}
 }
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
@@ -725,7 +729,7 @@ Formalizziamo ora i concetti introdotti.
   $\langle I, \Gamma, \delta, q_0, Z_0, F, 0, \eta \rangle$ dove:
 
   \begin{itemize}
-    \item $Q, I, q_0, F, O$ sono definiti alla stessa maniera di un FSA;
+    \item $Q, I, q_0, F, O$ sono definiti alla stessa maniera di un FSA\@;
     \item $\Gamma$ è l'alfabeto di pila;
     \item $Z_0$ è il simbolo iniziale di pila;
     \item
@@ -3131,7 +3135,7 @@ intermedio} che useremo.
   polinomiale. Mappiamo innanzitutto le varie parti di una TM su una RAM\@:
 
   \begin{itemize}
-    \item Lo stato della TM corrisponderà all'accumulatore della RAM;
+    \item Lo stato della TM corrisponderà all'accumulatore della RAM\@;
     \item Una cella della RAM corrisponderà ad una cella di nastro;
     \item La RAM è suddivisa in blocchi da $k$ celle.
   \end{itemize}
@@ -3305,7 +3309,7 @@ Java-like).
   Consideriamo la rimozione di un elemento rispettivamente da un vettore e da
   una lista.
 
-  \begin{lstlisting}[language=pseudocodice]
+  \begin{lstlisting}[language=pseudocodice,gobble=4]
     CancellaElV(v, len, e)
       i `\peq{}` 0
       while v[i] $\neq$ e
@@ -3329,7 +3333,7 @@ Java-like).
 \begin{esempio}
   Consideriamo il seguente algoritmo di moltiplicazione di matrici:
 
-  \begin{lstlisting}[language=pseudocodice]
+  \begin{lstlisting}[language=pseudocodice,gobble=4]
     A `\peq` Matrix(n, m)
     B `\peq` Matrix(m, o)
 
@@ -3594,8 +3598,248 @@ esempio quella binaria, sulla nostra collezione}. Analizzeremo soluzioni diverse
 considerando la loro complessità temporale, spaziale e relative peculiarità.
 
 \begin{defn}[\hl{Proprietà di stabilità di un ordinamento}]\label{def:prop-stabilita}
-  Diciamo che un ordinamento gode della \hl{proprietà di stabilità se non modifica
-  l'ordine di elementi duplicati}.
+  Diciamo che un ordinamento gode della \hl{proprietà di stabilità se non
+  modifica l'ordine di elementi duplicati}.
 \end{defn}
+
+\subsubsection{Insertion sort}\label{sec:insertion-sort}
+
+L'insertion sort è il primo e il tra i più naturali algoritmi di ordinamento che
+vedremo. L'algoritmo \hl{modella come un uomo ordinerebbe, ad esempio, un mazzo
+di carte: selezioniamo un elemento della slice non ordinata e reinseriamolo al
+giusto posto della slice ordinata}.
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  InsertionSort(A)
+    for i `\peq` 1 to A.length - 1
+      tmp `\peq` A[i]
+      j `\peq` i - 1
+      while j $\geq$ 0 and A[j] $>$ tmp
+        A[j + 1] `\peq` A[j]
+        j `\peq` j - 1
+      A[j + 1] `\peq` tmp
+\end{lstlisting}
+
+Nel \hl{caso ottimo} abbiamo una complessità di \hl{$\Theta(n)$}, in quello
+\hl{pessimo} invece \hl{$\Theta(n^2)$}, in \hl{generale} invece
+\hl{$\mathcal{O}(n^2)$}. La \hl{complessità spaziale} è invece \hl{costante} in
+quanto \hl{tutte le operazioni avvengono in-place}. Inoltre otterremo un
+\hl{algoritmo stabile usando \texttt{A[j] > tmp}}, mentre uno \hl{instabile
+usando $\mathtt{A[j]} \geq \mathtt{tmp}$}.
+
+\subsubsection{Merge sort}\label{sec:merge-sort}
+
+Possiamo sicuramente trovare algoritmi più efficienti. Intuitivamente si può
+vedere che \hl{ogni algoritmo di ordinamento sarà $\Omega(n)$ e
+$\mathcal{O}(n^2)$} (si possono trovare anche limiti superiori maggiori, ma noi
+consideriamo solo ordinamenti ``intelligenti''). Proviamo ad avvicinarci al
+limite inferiore teoretico. \hl{Astraiamo dalla specifica strategia di
+ordinamento e studiamo il numero di confronti e scambi}. Consideriamo per
+semplicità un \hl{array di $3$ elementi $v$}. Come si può vedere dalla
+\hl{figura}~\ref{fig:albero-confronti}, otteniamo un \hl{albero quasi binario
+con $n!$ foglie, dove $n$ è il numero di elementi}. Assumiamo che \hl{non ci % chktex 40
+siano confronti ridondanti}. La \hl{lunghezza del più lungo percorso
+radice-foglia è il numero massimo di confronti che devo fare per ordinare un
+vettore. L'altezza dell'albero sarà}:
+
+\begin{equation}
+  \mhl{
+    \log_2(n!) \approx n\log_2(n) - n\log_2(e) + \mathcal{O}(\log(n))
+  }
+\end{equation}
+
+Dove abbiamo usato l'\hl{approssimazione di Sterling del fattoriale} per
+ottenere che la \hl{migliore complessità ottenibile con questo metodo sarà
+$\mathcal{O}(n\log(n))$}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[
+    level 1/.style={sibling distance=7cm},
+    level 2/.style={sibling distance=4cm},
+    level 3/.style={sibling distance=4cm}
+  ]
+    \node {$v[1] \leq v[2]$}
+      child {
+        node {$v[2] \leq v[3]$}
+          child {
+            node {\color{ForestGreen}$\langle v[2],v[2],v[3] \rangle$}
+            edge from parent node [left] {v}
+          }
+          child {
+            node {$v[1] \leq v[3]$}
+              child {
+                node {\color{ForestGreen}$\langle v[1],v[3],v[2] \rangle$}
+                edge from parent node [left] {v}
+              }
+              child {
+                node {\color{ForestGreen}$\langle v[3],v[1],v[2] \rangle$}
+                edge from parent node [right] {f}
+              }
+            edge from parent node [right] {f}
+          }
+        edge from parent node [left] {v}
+      }
+      child {
+        node {$v[1] \leq v[3]$}
+          child {
+            node {\color{ForestGreen}$\langle v[2],v[1],v[3] \rangle$}
+            edge from parent node [left] {v}
+          }
+          child {
+            node {$v[2] \leq v[3]$}
+              child {
+                node {\color{ForestGreen}$\langle v[2],v[3],v[1] \rangle$}
+                edge from parent node [left] {v}
+              }
+              child {
+                node {\color{ForestGreen}$\langle v[3],v[2],v[1] \rangle$}
+                edge from parent node [right] {f}
+              }
+            edge from parent node [right] {f}
+          }
+        edge from parent node [right] {f}
+      };
+  \end{tikzpicture}
+  \caption{Albero dei confronti per l'ordinamento di $v$}%
+  \label{fig:albero-confronti}
+\end{figure}
+
+Il primo algoritmo che vediamo che raggiunge questa complessità sarà il merge
+sort. \hl{Il merge sort è un ordinamento ``divide et impera'' con complessità
+$\Theta(n\log(n))$ in tutti i casi}. Nonostante l'eccezionale complessità in
+caso pessimo, non è l'ordinamento perfetto perché è \hl{caratterizzato da molte
+operazioni di memoria e una non trascurabile complessità spaziale}.
+
+Il merge sort \hl{prima suddivide il vettore di elementi da ordinare in porzioni più
+piccole, fin quando le partizioni non sono ordinabili in $\Theta(1)$, dopodiché
+riassembla le varie slice}. È \hl{importante} che il \hl{riassemblamento dei risultati non
+abbia complessità eccessiva}. Poiché la procedura di unione delle varie slice
+è la parte principale della complessità, studiamo prima quella.
+
+Consideriamo \hl{due slice \texttt{A[p..q]} e \texttt{A[q + 1..r]}, è facile}
+dimostrare che la complessità della \hl{ricombinazione di questi sia lineare}:
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  MergeSort(A, p, q, r)
+    len1 `\peq` q - p + 1
+    len2 `\peq` r - q
+    Alloc(L[1..len1 + 1])
+    Alloc(R[1..len2 + 1])
+    for i `\peq` 1 to len1 // copia della prima meta'
+      L[i] `\peq` A[p + i - 1]
+    for i `\peq` 1 to len2 // copia della seconda meta'
+      R[i] `\peq` A[q + i]
+    L[len1 + 1] `\peq` $\infty$ // sentinella
+    R[len2 + 1] `\peq` $\infty$ // sentinella
+    i `\peq` 1
+    j `\peq` 1
+    for k `\peq` p to r
+      if L[i] $\leq$ R[j]
+        A[k] `\peq` L[i]
+        i `\peq` i + 1
+      else
+        A[k] `\peq` R[j]
+        j `\peq` j + 1
+\end{lstlisting}
+
+Vediamo ora il \hl{merge sort}:
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  MergeSort(A, p, r)
+    if p $<$ r - 1
+      q `\peq` $\lfloor \frac{\mathtt{p + r}}{2} \rfloor$
+      MergeSort(A, p, q)
+      MergeSort(A, q + 1, r)
+    else // caso base della ricorsione: solo 2 elementi
+      if A[p] $<$ A[r]
+        tmp `\peq` A[r]
+        A[r] `\peq` A[p]
+        A[p] `\peq` tmp
+\end{lstlisting}
+
+Il \hl{costo del merge sort} sarà dato dalla \hl{ricorrenza $T(n) =
+2T(\frac{n}{2}) + \Theta(n)$}. Usando il \hl{secondo caso del master theorem
+otteniamo $T(n) = \Theta(n\log(n))$}.
+
+\hl{La stabilità del merge sort dipende dall'algoritmo d'unione: se consideriamo
+$\leq$ allora sarà stabile, instabile con $<$}.
+
+\subsubsection{Quicksort}\label{sec:quicksort}
+
+Quicksort sarà il secondo algoritmo che vedremo che ha complessità vicina al
+minimo teoretico. Anche esso è, come merge sort, un\hl{ algoritmo di tipo
+``divide et impera''. La sua peculiarità è che l'ordinamento avviene senza uso
+di spazio ausiliario}.
+
+Il quicksort applica la \hl{strategia ``divide et impera'' ad una slice
+\texttt{A[lo..hi]}}:
+
+\begin{description}
+  \item[Dividi] Scelgo un elemento \hl{\texttt{A[p]}, detto pivot, come punto di
+    suddivisione della slice} di partenza e \hl{sposta tutti gli elementi di
+    essa in modo che tutti quelli di \texttt{A[lo..p - 1]} siano minori del % chktex 8
+    pivot}.
+  \item[Impera] \hl{Ordina ricorsivamente \texttt{A[lo..p - 1]} e % chktex 8
+    \texttt{A[p + 1..hi]} con quicksort}
+  \item[Combina] Non c'è \hl{nulla} da ricombinare in quanto tutto è eseguito in
+    place
+\end{description}
+
+L'algoritmo di \hl{quicksort} è \hl{molto semplice}:
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  Quicksort(A, lo, hi)
+    if lo $<$ hi
+      p `\peq` Partition(A, lo, hi)
+      Quicksort(A, lo, p - 1)
+      Quicksort(A, p + 1, hi)
+\end{lstlisting}
+
+La \hl{parte più importante} dell'algoritmo è \hl{\texttt{Partition()}}. % chktex 36
+Studiamo \hl{due implementazioni di questa funzione}: una è attribuita a Lomuto
+(\hl{\texttt{PartitionLomuto()}}) mentre l'altra è attribuita al creatore del % chktex 36
+quicksort, Hoare (\hl{\texttt{PartitionHoare()}}). % chktex 36
+
+\noindent\begin{minipage}{\textwidth}
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \begin{lstlisting}[language=pseudocodice,gobble=6,xleftmargin=0pt]
+      PartionLomuto(A, lo, hi)
+        pivot `\peq` A[hi]
+        i `\peq` lo - 1
+        for j `\peq` lo to hi
+          if A[j] $\leq$ pivot
+            i `\peq` i + 1
+            Scambia(A, i, j)
+        Scambia(A, i + 1, hi)
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \begin{lstlisting}[language=pseudocodice,gobble=6,xleftmargin=0pt]
+      PartitionHoare(A, lo, hi)
+        pivot `\peq` A[lo]
+        i `\peq` lo - 1
+        g `\peq` hi + 1
+        while true
+          do
+            i `\peq` i + 1
+          while A[i] $<$ pivot
+          do
+            j `\peq` j - 1
+          while A[1] $>$ pivot
+          if i $<$ j
+            Scambia(A, i, j)
+          else
+            return j
+    \end{lstlisting}
+  \end{minipage}
+\end{minipage}
+
+La \hl{complessità della partizione secondo Lomuto è $\Theta(n)$}, come
+\hl{anche quella di Hoare} ma la \hl{seconda effettua (in media) $1/3$ degli
+scambi rispetto alla prima}. La partizione di \hl{Hoare} ha anche \hl{un altro
+vantaggio}: \hl{se il vettore è composto da solo elementi uguali non eseguiamo
+nessuno scambio}.
 
 \end{document}
