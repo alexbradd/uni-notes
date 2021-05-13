@@ -764,9 +764,41 @@ Computers arbeitet gern, obwohl es manchmal langweilig ist.
 
 ## KB, Übung d, Seite 115
 
-Bei uns gibt es auch den Kindergarten und den Grundschule, aber dauert
+Bei uns gibt es auch den Kindergarten und die Grundschule, aber dauert
 Grundschule 5 Jahre und besuchen die Kinder den ab 7 Jahren alt. Es gibt keinen
-Gymnasium, Gesamtschule, Realschule und Hauptschule. Nach dem Grundschule
+Gymnasium, Gesamtschule, Realschule und Hauptschule. Nach der Grundschule
 besuchen die Schüler die "scuola media" für 4 Jahre. Nach der "scuola media"
 muss sie unter der "liceo", der "istituto tecnico" oder der "scuola
 professionale" auswählen.
+
+## AB, Übung 4, Seite 113
+
+1. Nach dem Kindergarten bin ich in die Grundschule gegangen.
+2. Zuerst habe ich die Realschule besuchen, dann habe ich einen Beruf gelernt.
+3. Vor dem Abitur habe ich das Gymnasium besucht.
+4. Ich habe als Kellnerin arbeitet, zur gleichen Zeit habe ich die Abendschule
+   besucht.
+5. Ich habe an der Universität später als das Gymnasium studiert.
+6. Danach die Grundschule habe ich die Gesamtschule besucht.
+
+## AB, Übung 7, Seite 113
+
+Ich bin nicht in der Kindergarten gegangen. Ich habe die Grundschule für fünf
+Jahren besucht. Danach habe ich in die Mittelschule von 2011 bin 2014 gegangen.
+Nach der Mittelschule habe ich das Gymnasium besucht und in 2019 habe ich das
+Abitur gemacht. Jetzt studiere ich Ingenieurwissen an der Universität.
+
+## KB, Übung c, Seite 117
+
+Francesca ist sehr wichtig für mich. Sie ist meine Freundin. Obwohl sie sehr
+verpfändet ist, bleiben wir jeden Tag in Kontakt. Wir simsen jeden Tag und wir
+treffen uns manchmal am Wochenende. Leonardo ist ein Universitätskollege und
+ein Freund. Wir skypen manchmal am Abend und wir studieren gemeinsam.
+
+## KB, Übung a, Seite 119
+
+1. Am Abend fühle ich mich müde.
+2. Um 13 Uhr streitet Claudio sich mit seine Mutter.
+3. Am Nachmittag treffe ich mich mit meiner Freundin.
+4. Am Abend dusche ich mich.
+5. Vor der Unterricht am Morgen, muss ich mich konzentrieren.
