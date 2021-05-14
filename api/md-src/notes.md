@@ -2010,12 +2010,12 @@ PartitionHoare(A, lo, hi)
   i <- lo -1
   j <- hi +1
   while true
-    i <- i + 1
-    while A[i] <= pivot
+    do
       i <- i + 1
-    j <- j - 1
-    while A[j] >= pivot
+    while A[i] < pivot
+    do
       j <- j - 1
+    while A[i] > pivot
     if i < j
       Scambia(A[i], A[j])
     else
@@ -2028,4 +2028,155 @@ prima. La partizione di Hoare ha anche un altro vantaggio: se il vettore è
 composto da solo elementi uguali non eseguiamo nessuno scambio.
 
 La complessità del quicksort sarà: $T(n) = T(n/a) + T(n - n/a) + \Theta(n)$ dove
-$a$ dipende da quanto bene `Partition()` ha suddiviso il vettore.
+$a$ dipende da quanto bene `Partition()` ha suddiviso il vettore. Il caso
+pessimo del quicksort è un vettore diviso in porzioni lunghe $n-1$ e 1. La
+ricorrenza diventerebbe $T(n) = T(n-1) + T(1) + \Theta(n)$, che si dimostra
+facilmente essere $\Theta(n^2)$. È un caso molto specifico e molto poco
+probabile nella vita reale in quanto i vettori sono solitamente ordinati in modo
+casuale. Il caso ottimo è un vettore diviso in due porzioni lunghe $n/2$. La
+ricorrenza diventa così $T(n) = 2T(n/2) + \Theta(n)$, la stessa del mergesort,
+che è $\Omega(n)$. La costante nascosta dal $\Theta$ è $1.39$, più bassa di
+quella del mergesort. Nel caso ottimo, quindi, il quicksort è leggermente più
+veloce del mergesort.
+
+### Counting sort
+
+Sappiamo che non essere più veloci usando algoritmi di ordinamento per
+confronto. C'è un modo di fare meglio ordinando senza confrontare tra elementi?
+Sfruttiamo il fatto che se conosciamo il dominio ed è di dimensioni
+"ragionevoli": calcolo l'istogramma delle frequenze e ne stampo gli elementi in
+ordine. Questa è l'idea del counting sort.
+
+```txt
+Counting Sort(A)
+  Is[0..k] <- 0
+  for i<- 0 to A.length
+    Is[A[i]] <- Is[A[i]] + 1
+  idxA <- 0
+  for i <- 0 to k
+    while Is[i] > 0
+      A[idxA] <- i
+      idxA <- idxA + 1
+      Is[i] <- Is[i] - 1
+```
+
+La complessità temporale è dominata dal ciclo alle righe 5-8: $O(n+k)$. Se
+$k \gg n$ si può vedere che la complessità può essere molto alta.
+
+La versione sopra è instabile. Per renderlo stabile dobbiamo trasformare
+l'istogramma in un vettore contenente il conteggio degli elementi con valori
+minori o uguali di quello dell'indice del vettore. Calcolato ciò, piazziamo un
+elemento calcolando la sua posizione come il valore corrente dell'informazione
+cumulativa contenuta nell'istogramma. L'informazione cumulativa è quindi
+decrementata.
+
+```txt
+CountingSort(A) // versione stabile, out-of-place
+  B[0..A.length -1] <- 0
+  Is[0..k] <- 0
+  for i <- 0 to A.length
+    Is[A[i]] <- Is[A[i]] + 1
+  sum <- 0
+  for i<- 0 to k
+    sum <- sum + Is[i]
+    Is[i] <- sum
+  for i <- A.length - 1 to 0
+    idx <- Is[A[i]]
+    B[idx - 1] <- A[i]
+    Is[A[i]] <- Is[A[i]] - 1
+  return B
+```
+
+## Strutture dati
+
+Fino ad ora non ci siamo mai preoccupati del modo in cui abbiamo salvato i
+nostri dati in memoria. L'unico modo che abbiamo usato sono stati i vettori.
+Analizziamo quindi come è possibile rappresentare collezioni di elementi in modo
+più organizzato. Queste strutture possono usare etichette opache, chiavi, per
+identificare un oggetto. Una struttura supporta diverse operazioni:
+
+- `Search(S, k)`: ...
+- `Minimum(S)`: ...
+- `Maximum(S)`: ...
+- `Successor(S, x.k)`: ...
+- `Predecessor(S, x.k)`: ...
+- `Insert(S, x)`: ...
+- `Delete(S, x)`: ...
+
+### Vettori
+
+Analizziamo ora la complessità dei vettori. Essi sono una struttura compatta in
+memoria in cui si accede direttamente ad ogni elemento, data la sua posizione.
+L'indice del vettore agisce come chiave a tutti gli effetti.
+
+Se il vettore di lunghezza `n` non è ordinato:
+
+- Ricerca, minimo, massimo e successore sono $O(n)$
+- Inserimento e cancellazione costano $O(n)$
+
+Se il vettore è, invece, ordinato:
+
+- Minimo e massimo sono costanti, mentre ricerca e successore $\Theta(\log(n))$
+- Inserimento e cancellazione rimangono $O(n)$
+
+Inoltre gli inserimenti in un vettore pieno possono o essere rifiutati, quindi
+$O(n)$, oppure causare una riallocazione, quindi $O(N)$.
+
+### Liste
+
+Una lista semplice stocca gli elementi sparsi in memoria: ogni elemento ha un
+riferimento al successivo (puntatore). Se la lista di lunghezza `n` non è
+ordinata abbiamo:
+
+- Ricerca, minimo, massimo e successore sono $O(n)$
+- Inserimento è costante, la cancellazione è $O(n)$ se bisogna cercarlo,
+  costante se è fornito un riferimento
+
+Se la lista è, invece, ordinata:
+
+- Uno dei due tra minimo e massimo è $\Theta(1)$, l'altro $\Theta(n)$. Se
+  aggiungiamo un puntatore accessorio diventano entrambi costanti
+- Ricerca e successore sono $O(n)$
+- Inserimento e cancellazione diventano entrambi $O(n)$
+
+### Pile (Stack)
+
+Una pila è una struttura dati LIFO con le seguenti operazioni: `Push(s, e)`,
+`Pop(S, e)` e `Empty(S)`. Questa struttura dati può essere usata sia utilizzando
+un lista semplice sia un vettore.
+
+Se lo stoccaggio dati è nella lista, le operazioni diventano:
+
+- `Push(S, e)`: costante
+- `Pop(S, e)`: costante
+- `Empty(S)`: costante (controlla se il successore della testa è `NIL`)
+
+Se utilizziamo un vettore, invece, dobbiamo utilizzare una variabile ausiliaria
+(`ToS`, Top Of Stack) per mantenere la complessità costante. Inoltre la push può
+avere costo lineare in caso di riallocazione.
+
+Nella pratica, avere dati sparsi in memoria può penalizzare la  performance a
+causa delle cache-misses. Può, quindi, valere la pena di usare una stack basata
+su un vettore preallocando in modo intelligente.
+
+### Code (Queues)
+
+Una coda è una struttura dati FIFO con le seguenti operazioni: `Enqueue(Q, e)`,
+`Dequeue(Q)`, `Empty(Q)`. Come nel caso della pila, è possibile realizzare una
+coda sia con una lista che con un vettore.
+
+Se realizziamo una coda con vettore, lo stoccaggio dei dati è effettuato in un
+vettore `A`, lungo `l` con indeice del primo elemento `0`. Teniamo traccia della
+posizione dove va inserito un nuovo elemento e di quella dell'elemento più
+vecchio con due indici `tail` e `head` e del numero di elementi contenuti `n`.
+Gli indici verranno incrementati $\mod l$. Le operazioni saranno implementate
+così:
+
+- `Enqueue(Q, e)`: se $n < l$, inserisci l'elemento in `A[tail]` e incrementa
+  `n` e `tail`, altrimenti segnala l'errore. Abbiamo una complessità costante.
+- `Dequeue(Q, e)`: se $n > 0$, restituisci `A[head]` corrente, decrementa `n` e
+  incrementa `head`. Abbiamo ancora complessità costante.
+- `Empty(Q)`: restituisci `n == 0`. Ovviamente costante.
+
+Per ampliare lo stoccaggio, possiamo creare una nuova coda di dimensione
+maggiori e spostare gli elementi uno a uno usando `Enqueue()` e `Dequeue()`.

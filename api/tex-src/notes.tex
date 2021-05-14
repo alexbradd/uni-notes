@@ -1,5 +1,11 @@
 \documentclass[a4paper,11pt,oneside]{article}
 
+% chktex-file 8
+% chktex-file 18
+% chktex-file 36
+% chktex-file 40
+% chktex-file 44
+
 \usepackage[a4paper,margin=2cm]{geometry}
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
@@ -73,7 +79,7 @@
 \lstdefinelanguage{pseudocodice}{
   morekeywords={if,else,for,to,while,do,return,NIL},
   sensitive=true,
-  morestring=[b]", % chktex 18
+  morestring=[b]",
   morecomment=[l]{//}
 }
 
@@ -2116,7 +2122,7 @@ risolvibile è il \hl{``Halting Problem''}.
   valori:
 
   \[
-    \begin{array}{c|ccc} % chktex 44
+    \begin{array}{c|ccc}
           & 1      & 2      & \ldots \\
       f_1 & f_1(1) & f_1(1) & \ldots \\
       f_2 & f_2(1) & f_2(1) & \ldots \\
@@ -3215,7 +3221,7 @@ intermedio} che useremo.
       risultato in $\mathtt{M}[0]$.
   \end{description}
 
-  In generale possiamo dire grazie al lemma~\ref{thm:occupazione-nastro} che % chktex 44
+  In generale possiamo dire grazie al lemma~\ref{thm:occupazione-nastro} che
   simulare una mossa della RAM richiede alle TM un numero di mosse minore o
   uguale ad una costante per la lunghezza del nastro principale. Quindi la TM
   impiega al più $\Theta(T_{RAM}(n))$ per simulare una mossa della RAM\@. Poiché
@@ -3637,7 +3643,7 @@ limite inferiore teoretico. \hl{Astraiamo dalla specifica strategia di
 ordinamento e studiamo il numero di confronti e scambi}. Consideriamo per
 semplicità un \hl{array di $3$ elementi $v$}. Come si può vedere dalla
 \hl{figura}~\ref{fig:albero-confronti}, otteniamo un \hl{albero quasi binario
-con $n!$ foglie, dove $n$ è il numero di elementi}. Assumiamo che \hl{non ci % chktex 40
+con $n!$ foglie, dove $n$ è il numero di elementi}. Assumiamo che \hl{non ci
 siano confronti ridondanti}. La \hl{lunghezza del più lungo percorso
 radice-foglia è il numero massimo di confronti che devo fare per ordinare un
 vettore. L'altezza dell'albero sarà}:
@@ -3778,12 +3784,12 @@ Il quicksort applica la \hl{strategia ``divide et impera'' ad una slice
 \begin{description}
   \item[Dividi] Scelgo un elemento \hl{\texttt{A[p]}, detto pivot, come punto di
     suddivisione della slice} di partenza e \hl{sposta tutti gli elementi di
-    essa in modo che tutti quelli di \texttt{A[lo..p - 1]} siano minori del % chktex 8
+    essa in modo che tutti quelli di \texttt{A[lo..p - 1]} siano minori del
     pivot}.
-  \item[Impera] \hl{Ordina ricorsivamente \texttt{A[lo..p - 1]} e % chktex 8
-    \texttt{A[p + 1..hi]} con quicksort}
+  \item[Impera] \hl{Ordina ricorsivamente \texttt{A[lo..p - 1]} e
+    \texttt{A[p + 1..hi]} con quicksort}.
   \item[Combina] Non c'è \hl{nulla} da ricombinare in quanto tutto è eseguito in
-    place
+    place.
 \end{description}
 
 L'algoritmo di \hl{quicksort} è \hl{molto semplice}:
@@ -3796,10 +3802,10 @@ L'algoritmo di \hl{quicksort} è \hl{molto semplice}:
       Quicksort(A, p + 1, hi)
 \end{lstlisting}
 
-La \hl{parte più importante} dell'algoritmo è \hl{\texttt{Partition()}}. % chktex 36
+La \hl{parte più importante} dell'algoritmo è \hl{\texttt{Partition()}}.
 Studiamo \hl{due implementazioni di questa funzione}: una è attribuita a Lomuto
-(\hl{\texttt{PartitionLomuto()}}) mentre l'altra è attribuita al creatore del % chktex 36
-quicksort, Hoare (\hl{\texttt{PartitionHoare()}}). % chktex 36
+(\hl{\texttt{PartitionLomuto()}}) mentre l'altra è attribuita al creatore del
+quicksort, Hoare (\hl{\texttt{PartitionHoare()}}).
 
 \noindent\begin{minipage}{\textwidth}
   \centering
@@ -3841,5 +3847,199 @@ La \hl{complessità della partizione secondo Lomuto è $\Theta(n)$}, come
 scambi rispetto alla prima}. La partizione di \hl{Hoare} ha anche \hl{un altro
 vantaggio}: \hl{se il vettore è composto da solo elementi uguali non eseguiamo
 nessuno scambio}.
+
+La \hl{complessità del quicksort} sarà:
+
+\begin{equation}
+  \mhl{
+    T(n) = T(n/a) + T(n - n/a) + \Theta(n)
+  }
+\end{equation}
+
+Dove \hl{$a$ dipende da quanto bene \texttt{Partition()} ha suddiviso il
+vettore}. Il \hl{caso pessimo} del quicksort è un \hl{vettore diviso in porzioni
+lunghe $n-1$ e $1$}. La ricorrenza diventerebbe:
+
+\begin{equation}
+  \mhl{
+    T(n) = T(n-1) + T(1) + \Theta(n)
+  }
+\end{equation}
+
+Che si dimostra facilmente essere \hl{$\Theta(n^2)$}. È un \hl{caso molto
+specifico e molto poco probabile} nella vita reale in quanto i vettori sono
+solitamente ordinati in modo casuale. Il \hl{caso ottimo} è un \hl{vettore
+diviso in due porzioni lunghe $n/2$}. La ricorrenza diventa:
+
+\begin{equation}
+  \mhl{
+    T(n) = 2T(n/2) + \Theta(n)
+  }
+\end{equation}
+
+La \mhl{stessa del merge sort}, che è \hl{$\Theta(n\log(n))$}. La \hl{costante
+nascosta} dalla notazione asintotica si può calcolare ed \hl{è pari a $1.39$
+rendendo il quicksort solo $39\%$ più lento del minimo teorico}.
+
+\subsubsection{Counting sort}\label{sec:counting-sort}
+
+Sappiamo che \hl{non è possibile essere più veloci di $\Theta(n\log(n))$ usando
+algoritmi di ordinamento per confronto}. Le cose cambiano se però \hl{eliminiamo
+la necessità di effettuare confronti}. Consideriamo un \hl{set di dati di cui
+sappiamo che il dominio ha dimensioni contenute}. Un metodo per per ordinare gli
+elementi senza confrontarli è \hl{calcolare prima l'istogramma delle frequenze}
+e poi \hl{restituirne gli elementi in ordine}. Questa è l'idea dietro al
+\hl{counting sort}.
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  CountingSort(A)
+    Is[0..k] `\peq` 0 // operazione dal costo $\Theta(k)$
+    for i `\peq` 0 to A.length
+      Is[A[i]] `\peq` Is[A[i]] + 1
+    idxA `\peq` 0
+    for i `\peq` 0 to k
+      while Is[i] $>$ 0
+        A[idxA] `\peq` i
+        idxA `\peq` idxA + 1
+        Is[i] `\peq` Is[i] - 1
+\end{lstlisting}
+
+La complessità temporale è \hl{dominata dalle righe 6--10: $\Theta(n + k)$},
+dove $k$ è la dimensione del nostro dominio. \hl{Se $k \gg n$ la complessità
+sfugge dal controllo}.
+
+Nella \hl{versione sopra}, il counting sort \hl{non è stabile}. È possibile,
+però, escogitare una strategia per renderlo stabile. Il \hl{counting sort
+stabile} parte come la variante instabile con il \hl{calcolare il numero delle
+occorrenze di ogni elemento}. L'\hl{istogramma} costruito, però, viene
+\hl{trasformato nel vettore contenente il conteggio degli elementi con valori
+maggiori o uguali dell'indice del vettore}. Calcolato ciò, \hl{piazza un
+elemento calcolando la sua posizione come il valore corrente dell'informazione
+nel vettore, decrementandola}.
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  CountingSort(A) // variante out-of-place
+    B[0..A.length - 1] `\peq` 0
+    Is[0..k] `\peq` 0
+    for i `\peq` 0 to A.length
+      Is[A[i]] `\peq` Is[A[i]] + 1
+    sum `\peq` 0
+    for i `\peq` 0 to k // calcola il numero di elementi $\leq$ i
+      sum `\peq` sum + Is[i]
+    for i `\peq` A.length - 1 to 0
+      idx `\peq` Is[A[i]]
+      B[idx - 1] `\peq` A[i]
+      Is[A[i]] `\peq` Is[A[i]] - 1
+    return B
+\end{lstlisting}
+
+\section{Strutture dati}\label{sec:strutture-dati}
+
+Fino ad ora non ci siamo mai preoccupati del \hl{modo in cui abbiamo salvato i
+nostri dati in memoria}. L'\hl{unico modo}, e il più semplice, che abbiamo usato
+è stato quello di \hl{salvare tutti gli elementi in sequenza}. Questa modalità
+di salvataggio, o \hl{struttura dati}, viene detta \hl{vettore}. Analizziamo
+quindi come è possibile distribuire in memoria collezioni di elementi in modo
+ottimizzato e intelligente.
+
+Una \hl{struttura dati usa delle etichette opache (chiavi) per identificare gli
+oggetti al suo interno. Esse, inoltre, supportano diverse operazioni sui loro
+contenuti}:
+
+\begin{itemize}
+  \item \hl{\texttt{Search(S, k)}}: ricerca in \texttt{S} dell'elemento con chiave
+    \texttt{k};
+  \item \hl{\texttt{Minimum(S)}}: ricerca dell'elemento più piccolo in \texttt{S};
+  \item \hl{\texttt{Maximum(S)}}: ricerca dell'elemento più grande in \texttt{S};
+  \item \hl{\texttt{Successor(S, x.k)}}: restituisce il successore di \texttt{x} (se
+    ordinati) o della sua chiave \texttt{k} in \texttt{S};
+  \item \hl{\texttt{Predecessor(S, x.k)}}: restituisce il predecessore di \texttt{x}
+    (se ordinati) o della sua chiave \texttt{k} in \texttt{S};
+  \item \hl{\texttt{Insert(S, x)}}: inserisce \texttt{x} in \texttt{S};
+  \item \hl{\texttt{Delete(S, x)}}: rimuove \texttt{x} da \texttt{S}.
+\end{itemize}
+
+\subsection{Vettori}\label{sec:vettori}
+
+Analizziamo ora la complessità dei vettori. Essi sono una struttura compatta in
+memoria in cui si accede direttamente ad ogni elemento data la sua posizione.
+L'\hl{indice del vettore} agisce come \hl{chiave} a tutti gli effetti.
+
+Se il \hl{vettore di lunghezza \texttt{n} non è ordinato le operazioni sopra
+sono tutte lineari. Se il vettore è, invece, ordinato}:
+
+\begin{itemize}
+  \item \hl{Minimo e massimo sono costanti}, mentre \hl{ricerca e successore
+    $\Theta(\log(n))$}.
+  \item \hl{Inserimento e cancellazione} rimangono \hl{$\mathcal{O}(n)$}.
+\end{itemize}
+
+Inoltre gli \hl{inserimenti in un vettore pieno} possono o essere
+\hl{rifiutati}, quindi \hl{$\Theta(1)$}, oppure \hl{causare una riallocazione},
+quindi \hl{$\mathcal{O}(n)$}.
+
+\subsection{Liste semplicemente connesse}
+
+Una lista semplice stocca gli \hl{elementi in modo sparso}: ogni elemento ha un
+\hl{riferimento al successivo (puntatore)}. Se la \hl{lista di lunghezza
+\texttt{n} non è ordinata} abbiamo che, come il vettore, \hl{tutte le operazioni
+sono lineari tranne l'inserimento che è costante} (sempre in testa) e \hl{la
+cancellazione se viene fornito un riferimento all'elemento}. Se la \hl{lista è,
+invece, ordinata}:
+
+\begin{itemize}
+  \item \hl{Uno dei due tra minimo e massimo è $\Theta(1)$, l'altro
+    $\Theta(n)$}. Se aggiungiamo un \hl{puntatore accessorio} diventano
+    \hl{entrambi costanti}.
+  \item \hl{Ricerca e successore sono $O(n)$}.
+  \item \hl{Inserimento e cancellazione} diventano entrambi \hl{$O(n)$}.
+\end{itemize}
+
+\subsection{Pile o stack}
+
+Una pila è una \hl{struttura dati LIFO} che \hl{supporta} solo le seguenti
+operazioni: \hl{\texttt{Push(S, e)}, \texttt{Pop(S, e)} e \texttt{Empty(S)}}.
+Una stack può essere \hl{implementata} sia usando una \hl{lista} che un
+\hl{vettore}.
+
+Se usiamo l'\hl{implementazione basata sulla lista, le 3 operazioni sono tutte
+costanti}. Se utilizziamo quella \hl{basata sul vettore}, invece, dobbiamo
+utilizzare \hl{una variabile ausiliaria} (\texttt{ToS}, \texttt{Top Of Stack})
+\hl{per mantenere la complessità costante}. Inoltre \hl{\texttt{Push()}} può
+avere \hl{costo lineare in caso di riallocazione}.
+
+Nella pratica, avere dati sparsi in memoria può penalizzare la performance a
+causa delle cache-misses. Può, quindi, valere la pena di usare una stack basata
+su un vettore usando uno schema di riallocazione intelligente.
+
+\subsection{Code o queues}
+
+Una coda è una \hl{struttura dati FIFO} che \hl{supporta} solo le seguenti
+operazioni: \hl{\texttt{Enqueue(Q, e)}, \texttt{Dequeue(Q)} e
+\texttt{Empty(Q)}}. Come nel caso delle pile, è \hl{possibile realizzare} una
+coda sia con una \hl{lista} che con un \hl{vettore}.
+
+Se realizziamo una coda \hl{con vettore}, lo \hl{stoccaggio} dei dati sarà
+effettuato in un \hl{vettore \texttt{A} lungo \texttt{l} con indice del primo
+elemento \texttt{0}}.  Teniamo traccia della \hl{posizione dove va inserito un
+nuovo elemento e di quella dell'elemento più vecchio con due indici
+\texttt{tail} e \texttt{head} e del numero di elementi contenuti \texttt{n}}.
+Gli \hl{indici} verranno \hl{incrementati $\mod \mathtt{l}$} (vettore
+circolare). Le \hl{operazioni} saranno \hl{implementate} così:
+
+\begin{itemize}
+  \item \hl{\texttt{Enqueue(Q, e)}:} se \texttt{n < l}, \hl{inserisci l'elemento
+    in \texttt{A[tail]} e incrementa \texttt{n} e \texttt{tail}}, altrimenti
+    segnala l'errore. Abbiamo una complessità \hl{costante}.
+  \item \hl{\texttt{Dequeue(Q, e)}:} se \texttt{n > 0}, \hl{restituisci
+    \texttt{A[head]} corrente, decrementa \texttt{n} e incrementa
+    \texttt{head}}. Abbiamo ancora complessità \hl{costante}.
+  \item \hl{\texttt{Empty(Q)}:} restituisci \hl{\texttt{n == 0}}. Ovviamente
+    \hl{costante}.
+\end{itemize}
+
+Per \hl{ampliare lo stoccaggio}, possiamo \hl{creare una nuova coda di
+dimensione maggiori e spostare gli elementi uno a uno usando \texttt{Enqueue()}
+e \texttt{Dequeue()}}.
 
 \end{document}
