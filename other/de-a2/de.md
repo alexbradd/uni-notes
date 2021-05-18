@@ -802,3 +802,13 @@ ein Freund. Wir skypen manchmal am Abend und wir studieren gemeinsam.
 3. Am Nachmittag treffe ich mich mit meiner Freundin.
 4. Am Abend dusche ich mich.
 5. Vor der Unterricht am Morgen, muss ich mich konzentrieren.
+
+## KB, Übung b, Seite 121
+
+Im Urlaub braucht man:
+
+1. den neuen Reisepass
+2. ein interessantes Buch
+3. einen bunten Sonnenschirm
+4. einen grossen Koffer
+5. ein leeren Schrank (falsch)
