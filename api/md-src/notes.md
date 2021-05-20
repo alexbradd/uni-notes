@@ -2180,3 +2180,146 @@ così:
 
 Per ampliare lo stoccaggio, possiamo creare una nuova coda di dimensione
 maggiori e spostare gli elementi uno a uno usando `Enqueue()` e `Dequeue()`.
+
+Se usiamo una lista, lo stoccaggio dei dati è effettuato negli elementi della
+lista. Teniamo traccia dell'ultimo elemento della lista (oltre al primo) con un
+puntatore `tail`. Possiamo, quindi, mantenere la complessità costante.
+
+#### Mazzo (Deque)
+
+Si comporta come un mazzo di carte, di cui ognuna contiene un elemento. È
+praticamente una pila in cui è possibile aggiungere sia in testa che in coda:
+`PushFront(Q,e)`, `PushBack(Q,e)`, `PopFront(Q)`, `PopBack(Q)` e `Empty(Q)`.
+Come pile e code, il mazzo può essere implementato sia con un vettore, sia con
+una lista.
+
+Se usiamo un vettore, useremo una strategia analoga a quella usata per le code
+implementate con vettore:
+
+- `PushBack()` e `PopFront()` si comportano rispettivamente come `Enqueue()` e
+  `Dequeue()`
+- `PopBack()`: se `n > 0`, restituisci `A[tail]` corrente, decrementa `n`,
+  decrementa `tail`. Complessità costante.
+- `PushFront()`: se `n < l`, decrementa `head`, inserisci l'elemento in
+  `A[head]`, incrementa `n`. Complessità costante.
+- `Empty()`: restituisci `n == 0`. Complessità costante.
+
+Per ampliare lo stoccaggio faremo come per la coda.
+
+Per creare un mazzo con una lista non basta più un lista semplice, singolarmente
+concatenata, ma ci serve una doppiamente concatenata. Questo ci permette di
+aggiungere e rimuovere in testa e in coda in tempo costante.
+
+- `PushBack()` e `PopFront()` si comportano come `Enqueue()` e `Dequeue()` di
+  una coda realizzata con una lista
+- `PopBack()`: ...
+
+### Dizionari
+
+I dizionari è una struttura dati astratta che contiene elementi accessibili
+direttamente, data la loro chiave. Assumiamo che le chiavi siano numeri
+naturali, nel caso che non lo siano è sufficiente considerare la loro
+rappresentazione binaria e il corrispondente numero. Le operazioni supportate
+sono `Insert()`, `Delete()` e `Search()`. È possibile implementare un dizionario
+con diverse strutture dati concrete.
+
+#### Un primo approccio ingenuo
+
+Il primo approccio ingenuo è considerare un insieme di chiavi limitate e
+implementare un dizionario come un vettore di puntatori. Le chiavi verranno
+usate come indice del vettore. Le operazioni saranno implementate come:
+
+- `Insert()`: `D[e.key] <- e`
+- `Delete()`: `D[e.key] <- NIL`
+- `Search()`: `return D[e.key]`
+
+La complessità computazionale è costante per tutte le operazioni. La
+complessità spaziale, invece, sarà $O(D)$ dove $D$ è il numero di chiavi
+possibili. Quindi questa implementazione è molto onerosa per un dominio ampio.
+
+#### Tabelle Hash
+
+Una tabella hash implementa un dizionario con una complessità di memoria pari al
+numero di chiavi per cui è effettivamente presente un valore. Quindi il numero
+di chiavi può essere arbitrariamente grande. Il tipico approccio è preallocare
+spazio per `m` chiavi e riallocare solo quando ci saranno `n > m` chiavi. L'idea
+principale è usare come indice della tabella il risultato del calcolo di una
+funzione della chiave $h(k): D \to \{0, \ldots, m-1\}$ detta funzione di hash.
+
+Se il calcolo di $h$ è $\Theta(k)$, la tabella di hash ideale ha la stessa
+efficienza temporale del dizionario fatto con un vettore di $D$ puntatori.
+
+Idealmente, $h$ dovrebbe mappare ogni chiave su di un distinto elemento del suo
+codominio. Ma ciò è impossibile poiché per come li abbiamo definiti $S \gg m$.
+Chiamiamo collisione ogniqualvolta dati $k_1$, $k_2$ tali che $k_1 \neq k_2$ ma
+$h(k_1) = h(k_2)$. Ci sono due tipologie per la gestione delle collisioni:
+
+- Indirizzamento chiuso (open hashing): Ogni riga della tabella (bucket)
+  contiene la testa di una lista al posto del puntatore ad un singolo elemento.
+  Nel caso di collisione, l'elemento nuovo viene aggiunto in testa alla lista.
+  Per cercare o cancellare un elemento di chiave $k$, è necessario cercare
+  nell'intera lista del bucket $h(k)$
+- Indirizzamento aperto (closed hashing): In caso di collisione si seleziona
+  secondo una regola deterministica un altro bucket (ispezione). Nel caso non si
+  trovino bucket vuoti si o può fallire ($\Theta(m)$) oppure riallocare una
+  tabella più grande e reinserire tutti gli elementi della vecchia nella nuova
+  (re-hashing) ($\Theta(n)$). La procedura di ricerca viene modificata affinché,
+  se l'elemento non viene trovato nel suo bucket, essa effettui la stessa
+  ispezione. La cancellazione è effettuata inserendo un opportuno valore
+  (tombstone) che non corrisponde ad alcuna chiave.
+
+Analizziamo le possibili procedure di ispezione (probing):
+
+- Ispezione lineare: È il metodo più semplice. Dato $h(k, 0) = a$ il bucket dove
+  avviene la collisione al primo tentativo, si sceglie $h(k,i) = a + ci$ come
+  bucket candidato per l'$i$-esimo inserimento.
+
+  Il problema è che se ci sono molte collisioni su un dato bucket, perggiorerà
+  la probabilità di collisione nelle vicinanze. Il fenomeno è detto clustering
+  delle collisioni: si formano dei grumi di celle contigue. È possibile avere
+  clustering di dimensione logaritmica nella dimensione della tabella
+  effettuando il rehashing molto prima che sia piena (circa metà).
+- Ispezione quadratica: Usiamo una funzione quadratica $h(k,i) = a + c_1 i + c_2
+  i^2 \mod n$. Viene così evitato il clustering intorno ad alcuni elementi, ma
+  non è più garantito a priori che la sequenza di ispezioni tocchi tutte le
+  celle, rendendo anche qui la necessità di fare rehashing a tabella non piena.
+- Doppio hashing: Definiamo $h(k,i) = h_1 + h_2(k)i \mod n$: il passo di
+  ispezione dipende dalla chiave. Per essere sicuro di eispzionare tutti i
+  bucket, $h_2(k)$ deve essere coprimo con $n$. Quindi se $n = 2^m$ basta fare
+  sì che $h_2$ generi solo numeri dispari. Se $m$ è primo, basta fare sì che
+  $h_2$ generi un numero minore di $m$.
+
+#### Lemma - tabelle di dimensione a potenza di 2
+
+Se la tabella di hash ha dimensione $2^m$, la funzione $h(k,i) = a + 1/2 i + 1/2
+i^2$ genera tutti i valori in $[0; n-1]$.
+
+> Dimostrazione per assurdo. Esistono $ 0<p<q<n-1$ tali che
+> $1/2 p + 1/2 p^2 = 1/2 q + 1/2 q^2 \mod n$ quindi $p + p^2 = q + q^2 \mod 2n$.
+> Fattorizzando abbiamo $(q-p)(p+q+1) = 0 \mod 2n$. Analizziamo i casi
+> possibili:
+>
+> 1. Se $(q-p) = 0 \mod 2n$ allora $q = p$. Assurdo.
+> 2. Se $(p+q+1) = 0 \mod 2n$ allora dati i range possibili $0<p<q<n-1$ la somma
+>    è in $[1, 2n-2]$. Assurdo.
+> 3. Se $(q-p)(p+q+1) = 0 \mod 2n$, ma entrambi i fattori non sono nulli. Dato
+>    che il prodotto è dispari, almeno uno tra i due fattori è dispari. Essendo
+>    $n = 2^m$, solo il fattore pari può essere multiplo di $2n$, ma
+>    $(q-p) \leq n-1$ e $(p+q+1) \leq 2n-2$. Assurdo.
+
+Per calcolare l'efficienza computazionale, mettiamoci in ipotesi di Hashing
+uniforme Semplice (IHUS). Una opportuna scelta di $h$ fa sì che ogni chiave
+abbia la stessa probabilità $1/n$ di finire in una qualsiasi delle $n$ celle.
+Come possiamo scegliere una opportuna funzione di hash? Dipende dalla
+distribuzione delle chiavi da inserire.
+
+Una prima e semplice funzione di hash è $h(k) k \mod n$. Distribuzione di $h(k)$
+non è uniforme in $[0;n-1]$. Va evitato se $m = 2^i$ poiché $h(k)$ dipenderà
+solo dai bit meno significativi. Non funziona malissimo se $n$ vicino ad una
+potenza di 2.
+
+Un altro metodo semplice è considerare $h(k) = \lfloor n(\alpha k -
+\lfloor\alpha k\rfloor)\rfloor$ con $\alpha \in \mathbb{R}$ costante. In questo
+caso la dimensione della tabella $n$ non è critica, spesso però si prende $2^m$
+per effettuare le moltiplicazioni con un semplice shift. Una scelta possibile è
+$\alpha$ è $\frac{\sqrt{5}-1}{2}$.

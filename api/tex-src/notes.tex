@@ -631,7 +631,7 @@ automi aggiungendo eventuali stati di errore prima di eseguirne l'unione}.
 
 \paragraph{Complemento} Per il complemento la situazione è \hl{analoga
 all'unione}: anche qui dobbiamo stare attenti alla completezza dei due automi di
-partenza.  L'automa complemento sarà praticamente uguale all'automa di partenza,
+partenza. L'automa complemento sarà praticamente uguale all'automa di partenza,
 solo che \hl{gli stati di accettazione ora saranno di non accettazione e
 viceversa}.
 
@@ -3959,7 +3959,7 @@ contenuti}:
   \item \hl{\texttt{Delete(S, x)}}: rimuove \texttt{x} da \texttt{S}.
 \end{itemize}
 
-\subsection{Vettori}\label{sec:vettori}
+\subsection{Vettori}\label{sec:array}
 
 Analizziamo ora la complessità dei vettori. Essi sono una struttura compatta in
 memoria in cui si accede direttamente ad ogni elemento data la sua posizione.
@@ -3978,7 +3978,7 @@ Inoltre gli \hl{inserimenti in un vettore pieno} possono o essere
 \hl{rifiutati}, quindi \hl{$\Theta(1)$}, oppure \hl{causare una riallocazione},
 quindi \hl{$\mathcal{O}(n)$}.
 
-\subsection{Liste semplicemente connesse}
+\subsection{Liste semplicemente connesse}\label{sec:linked-list}
 
 Una lista semplice stocca gli \hl{elementi in modo sparso}: ogni elemento ha un
 \hl{riferimento al successivo (puntatore)}. Se la \hl{lista di lunghezza
@@ -3995,7 +3995,7 @@ invece, ordinata}:
   \item \hl{Inserimento e cancellazione} diventano entrambi \hl{$O(n)$}.
 \end{itemize}
 
-\subsection{Pile o stack}
+\subsection{Pile o stack}\label{sec:stack}
 
 Una pila è una \hl{struttura dati LIFO} che \hl{supporta} solo le seguenti
 operazioni: \hl{\texttt{Push(S, e)}, \texttt{Pop(S, e)} e \texttt{Empty(S)}}.
@@ -4012,20 +4012,20 @@ Nella pratica, avere dati sparsi in memoria può penalizzare la performance a
 causa delle cache-misses. Può, quindi, valere la pena di usare una stack basata
 su un vettore usando uno schema di riallocazione intelligente.
 
-\subsection{Code o queues}
+\subsection{Code o queues}\label{sec:queue}
 
 Una coda è una \hl{struttura dati FIFO} che \hl{supporta} solo le seguenti
 operazioni: \hl{\texttt{Enqueue(Q, e)}, \texttt{Dequeue(Q)} e
 \texttt{Empty(Q)}}. Come nel caso delle pile, è \hl{possibile realizzare} una
 coda sia con una \hl{lista} che con un \hl{vettore}.
 
-Se realizziamo una coda \hl{con vettore}, lo \hl{stoccaggio} dei dati sarà
-effettuato in un \hl{vettore \texttt{A} lungo \texttt{l} con indice del primo
-elemento \texttt{0}}.  Teniamo traccia della \hl{posizione dove va inserito un
-nuovo elemento e di quella dell'elemento più vecchio con due indici
-\texttt{tail} e \texttt{head} e del numero di elementi contenuti \texttt{n}}.
-Gli \hl{indici} verranno \hl{incrementati $\mod \mathtt{l}$} (vettore
-circolare). Le \hl{operazioni} saranno \hl{implementate} così:
+\paragraph{Vettore} Se realizziamo una coda \hl{con vettore}, lo \hl{stoccaggio}
+dei dati sarà effettuato in un \hl{vettore \texttt{A} lungo \texttt{l} con
+indice del primo elemento \texttt{0}}. Teniamo traccia della \hl{posizione dove
+va inserito un nuovo elemento e di quella dell'elemento più vecchio con due
+indici \texttt{tail} e \texttt{head} e del numero di elementi contenuti
+\texttt{n}}. Gli \hl{indici} verranno \hl{incrementati modulo \texttt{l}}
+(vettore circolare). Le \hl{operazioni} saranno \hl{implementate} così:
 
 \begin{itemize}
   \item \hl{\texttt{Enqueue(Q, e)}:} se \texttt{n < l}, \hl{inserisci l'elemento
@@ -4041,5 +4041,215 @@ circolare). Le \hl{operazioni} saranno \hl{implementate} così:
 Per \hl{ampliare lo stoccaggio}, possiamo \hl{creare una nuova coda di
 dimensione maggiori e spostare gli elementi uno a uno usando \texttt{Enqueue()}
 e \texttt{Dequeue()}}.
+
+\paragraph{Lista} Se usiamo una \hl{lista teniamo traccia dell'ultimo elemento
+della lista (oltre al primo) con un puntatore} \texttt{tail}, mantenendo
+\hl{invariati} gli \hl{algoritmi} delle varie operazioni. Possiamo, quindi,
+\hl{mantenere la complessità costante}.
+
+\subsection{Mazzo (deque)}\label{sec:deque}
+
+È una struttura dati che si comporta \hl{come un mazzo di carte}. Possiamo
+vederla anche come una \hl{pila in cui è possibile aggiungere sia in testa che
+in coda}. Le \hl{operazioni} supportate sono: \hl{\texttt{PushFront(Q,e)},
+\texttt{PushBack(Q,e)}, \texttt{PopFront(Q)}, \texttt{PopBack(Q)} e
+\texttt{Empty(Q)}}. Come le pile e le code, il mazzo \hl{può essere implementato
+sia con un vettore, sia con una lista}.
+
+\paragraph{Vettore} Se usiamo un vettore, adottiamo una \hl{strategia analoga a
+quella usata per le code implementate con vettore}:
+
+\begin{itemize}
+  \item \hl{\texttt{PushBack()} e \texttt{PopFront()}} si comportano
+    rispettivamente \hl{come \texttt{Enqueue()} e \texttt{Dequeue()}}.
+  \item La \hl{\texttt{PopBack()}} \hl{restituisce \texttt{A[tail]}, decrementa
+    \texttt{n} e \texttt{tail} se \texttt{n > 0}}. Complessità \hl{costante}.
+  \item La \hl{\texttt{PushFront()} decrementa \texttt{head}, inserisce
+    l'elemento in \texttt{A[head]} e incrementa \texttt{n} se \texttt{n < l}}.
+    Complessità \hl{costante}.
+  \item La \hl{\texttt{Empty()}} restituisce \hl{\texttt{n = 0}}. Complessità
+    \hl{costante}.
+\end{itemize}
+
+Anche per \hl{ampliare lo stoccaggio} useremo la \hl{stessa strategia} che
+abbiamo usato per le \hl{code}.
+
+\paragraph{Lista} Per \hl{implementare} un mazzo con una \hl{lista non basta più
+una lista semplice}, singolarmente concatenata, ma \hl{serve una doppiamente
+concatenata}. Questo ci permette di aggiungere e rimuovere in testa e in coda in
+tempo costante.
+
+\begin{itemize}
+  \item \hl{\texttt{PushBack()} e \texttt{PopFront()}} si comportano come
+    \hl{\texttt{Enqueue()} e \texttt{Dequeue()}} di una coda realizzata con una
+    lista.
+  \item La \hl{\texttt{PopBack()} restituisce \texttt{tail.prev} corrente se
+    diverso da \texttt{head}, rimuovendolo dalla lista}. Costo \hl{costante}.
+  \item La \hl{\texttt{PushFront()} aggiunge un elemento in testa, aggiornando
+    \texttt{head} e il suo successore}. Costo \hl{costante}.
+  \item la \hl{\texttt{Empty()}} restituisce \hl{\texttt{head.next =
+    tail.prev}}. Costo \hl{costante}.
+\end{itemize}
+
+\subsection{Dizionari}\label{sec:dictionary}
+
+Il dizionario è una \hl{struttura dati astratta} che contiene \hl{elementi
+accessibili direttamente data la loro chiave}. Assumiamo che le \hl{chiavi}
+siano \hl{numeri naturali}, nel caso che non lo siano è sufficiente considerare
+la loro rappresentazione binaria e il corrispondente numero. Le \hl{operazioni}
+supportate sono \hl{\texttt{Insert()}, \texttt{Delete()} e \texttt{Search()}}.
+Un dizionario può essere implementato con diverse strutture dati concrete.
+
+\subsubsection{L'approccio ingenuo}\label{sec:dictionary-key-array}
+
+Un primo \hl{approccio ingenuo} è quello di considerare un \hl{insieme di chiavi limitato}
+e \hl{implementare un dizionario come un semplice array di puntatori indicizzato
+dalle chiavi stesse}. Le operazioni sarebbero:
+
+\begin{itemize}
+  \item \texttt{Insert()}: \texttt{D[e.key] \peq{} e}
+  \item \texttt{Delete()}: \texttt{D[e.key] \peq{} NIL}
+  \item \texttt{Search()}: \texttt{return D[e.key]}
+\end{itemize}
+
+La \hl{complessità computazionale} è \hl{costante} per tutte le operazioni. La
+\hl{complessità spaziale}, invece, sarà \hl{$\mathcal{O}(|D|)$}, con \hl{$D$ il
+dominio delle chiavi}. Quindi anche per chiavi abbastanza semplici, questa
+implementazioni sarebbe assai onerosa in termini di spazio.
+
+\subsubsection{Tabelle Hash}\label{sec:hash-tables}
+
+Una \hl{tabella hash implementa un dizionario con una complessità di memoria
+pari al numero di chiavi per cui è effettivamente presente un valore}. Quindi il
+\hl{domino delle chiavi può essere arbitrariamente grande}, persino infinito.
+
+Il \hl{tipico approccio} per una implementazione è \hl{preallocare spazio per
+\texttt{m} chiavi e riallocare solo quando ci saranno \texttt{n > m} chiavi}.
+Come \hl{indice} di questo vettore useremo il \hl{risultato di una speciale
+funzione $h(k): D \to \{0, \ldots, m-1\}$ detta funzione di hash}. Se il calcolo
+di \hl{$h(k)$ è $\mathcal{O}(k)$}, la tabella di hash ha la \hl{stessa
+efficienza temporale} del \hl{dizionario} implementato nel \hl{precedente} modo
+naif.
+
+\paragraph{Gestione delle collisioni} \hl{Idealmente}, la \hl{funzione di hash
+dovrebbe mappare ogni chiave su di un distinto elemento del suo codominio}. Ma
+ciò è \hl{impossibile} poiché, per come li abbiamo definiti, \hl{$|D| \gg m$}.
+Diremo che è avvenuta una \hl{collisione} ogniqualvolta \hl{dati $k_1$, $k_2$
+tali che $k_1 \neq k_2$ si ha che $h(k_1) = h(k_2)$}. Vedremo 2 strategie per la
+gestione efficiente dei conflitti: l'indirizzamento chiuso, o open hashing, e
+l'indirizzamento aperto, o closed hashing.
+
+\paragraph{Indirizzamento chiuso} \hl{Ogni riga}, detta \hl{bucket}, della
+tabella \hl{contiene la testa di una lista} al posto del puntatore ad un singolo
+elemento.  Nel caso di \hl{collisione, l'elemento nuovo viene aggiunto in testa
+alla lista}. Per \hl{cercare o cancellare un elemento di chiave $k$}, è
+necessario \hl{cercare nell'intera lista del bucket} $h(k)$.
+
+\paragraph{Indirizzamento aperto} In caso di collisione \hl{si seleziona secondo
+una regola deterministica un altro bucket} in una procedura detta di
+\hl{ispezione (probing)}. Nel caso \hl{non si trovino bucket vuoti si può
+fallire}, con costo \hl{$\Theta(m)$}, \hl{oppure riallocare una tabella più
+grande e reinserire} tutti gli elementi della vecchia nella nuova
+\hl{(re-hashing)} con costo \hl{$\Theta(n)$}. La funzione
+\hl{\texttt{Search()}}, se l'\hl{elemento non viene trovato nel suo bucket,
+effettua la stessa ispezione svolta durante l'inserimento}. La
+\hl{cancellazione} è effettuata \hl{inserendo} un opportuno valore, detto
+\hl{tombstone} che non corrisponde ad alcuna chiave. Analizziamo diverse
+possibili procedure di probing e i rispettivi vantaggi e svantaggi.
+
+\subparagraph{Ispezione lineare} È il metodo \hl{più semplice}. Dato \hl{$h(k,
+0) = a$} il \hl{bucket dove avviene la collisione} al primo tentativo \hl{($i =
+0$)}, si sceglie \hl{$h(k,i) = a + ci \bmod n$} come \hl{bucket} candidato per
+\hl{l'$i$-esimo tentativo}. Il \hl{problema principale} di questo metodo è il
+caso in cui \hl{avvengono molte collisioni su un dato bucket}. In questo caso,
+detto di \hl{clustering} delle collisioni, \hl{peggiorerà con ogni nuova
+ispezione la probabilità di collisione nei bucket adiacenti}. Per \hl{alcune
+scelte di $h(k)$}, è possibile avere un \hl{forte peggioramento delle
+prestazioni dovuto al clustering}. È possibile avere un \hl{clustering di
+dimensione logaritmica nella dimensione della tabella} a costo di effettuare il
+\hl{re-hashing molto prima} che la tabella sia piena \hl{(circa a metà)}.
+
+\subparagraph{Ispezione quadratica} Per mitigare il fenomeno del clustering,
+usiamo una \hl{funzione di probing quadratica: $h(k,i) = a + c_1 i + c_2 i^2
+\mod{n}$}. Insorge, però, un altro problema: \hl{la funzione di probing non
+garantisce a priori la visita di tutte le celle}. \hl{Esiste} una sequenza
+particolare, però, che \hl{visita tutte le celle nel caso di tabelle di
+dimensione $2^m$}, come dimostrato dal \hl{lemma}~\ref{thm:tabelle-2-m}, Il
+problema del \hl{clustering però non è ancora del tutto risolto in quanto chiavi
+con la stessa posizione iniziale generano ancora clustering poiché hanno la
+stessa sequenza di ispezione}. Sarà, anche in questo caso, necessario fare
+\hl{re-hashing a tabella non piena}.
+
+\begin{lem}[Sequenza di \hl{probing ideale} per tabelle di \hl{dimensione $2^m$}]\label{thm:tabelle-2-m}
+  \hl{La sequenza}:
+
+  \begin{equation}
+    \mhl{
+      h(k,i) = a + \frac{1}{2} i + \frac{1}{2} i^2
+    }
+  \end{equation}
+
+  \hl{genera tutti i valori in $[0; n-1]$}.
+\end{lem}
+\begin{proof}
+  Effettuiamo una dimostrazione per assurdo. Supponiamo che esistano $0 < p < q
+  < n-1$ tali che $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{n}$. Ciò
+  implica che $p + p^2 = q + q^2 \mod{2n}$. Fattorizzando l'eguaglianza
+  otteniamo che $(q-p)(p+q+1) = 0 \mod{2n}$. Analizziamo i 3 casi in cui si
+  avvererebbe questa disuguaglianza:
+
+  \begin{enumerate}
+    \item Se $q - p = 0 \mod{2n}$ significa che $q = p$; contro ipotesi e quindi
+      impossibile.
+    \item $(p + q + 1) \neq 0 \mod{2n}$ perché per la scelta di $p$ e $q$ la
+      somma rientra nel range $[1; 2n - 2]$.
+    \item Poiché stiamo lavorando in modulo $2n$ e il modulo introduce divisori
+      dello $0$, è possibile che $(q-p)(p+q+1) = 0 \mod{2n}$ anche con le
+      considerazioni dei precedenti punti. Poiché $(q-p) - (p+q+1) = 2p + 1$,
+      significa che almeno uno dei due addendi è dispari. Essendo $n = 2^m$, il
+      fattore pari è per forza multiplo di $2n = 2^{m+1}$ ma abbiamo che $(q-p)
+      \leq n-1$ e $(p+q+1) \leq 2n-2$ per come abbiamo scelto $p$ e $q$.
+      Assurdo!
+  \end{enumerate}
+
+  È quindi impossibile che $(q-p)(p+q+1) = 0 \mod{2n}$, quindi l'ipotesi
+  iniziale $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{n}$ è falsa.
+\end{proof}
+
+\subparagraph{Doppio hashing} Definiamo \hl{$h(k,i) = h_1(k) + h_2 (k)i
+\mod{n}$} facendo sì che \hl{l'ispezione dipenda dalla chiave}. Per
+\hl{garantire che la sequenza di probing sia in grado di visitare tutte le
+caselle dobbiamo fare sì che $h_2(k)$ sia coprimo con $n$}. Un modo semplice per
+garantire ciò è:
+
+\begin{itemize}
+  \item \hl{Per $n = 2^m$ fare sì che $h_2$ generi solo numeri dispari}.
+  \item \hl{Se $m$ è primo, fare sì che $h_2$ generi numeri minori di $m$}.
+\end{itemize}
+
+È importante che \hl{$h_2$ non restituisca mai zero}, sennò la sequenza di
+probing degenererebbe.
+
+\paragraph{Ipotesi di hashing uniforme semplice} Una \hl{opportuna scelta di
+$h(k)$ fa sì che ogni chiave abbia la stessa probabilità $\frac{1}{n}$ di finire
+in una qualsiasi delle $n$ celle}. Si dice che siamo in ipotesi di hashing
+uniforme semplice \hl{(IHUS)}. Come possiamo \hl{determinare una ``scelta
+opportuna''}? Dipende, ovviamente, dalla \hl{distribuzione delle chiavi} da
+inserire. Consideriamo 2 metodi abbastanza semplici per ricavare una $h(k)$ che
+soddisfa la IHUS.
+
+\subparagraph{Metodo della divisione} Il metodo più semplice è porre \hl{$h(k) =
+k \bmod n$}. La \hl{distribuzione} dei risultati \hl{non è uniforme in $\{0,
+\ldots, n-1\}$ e va evitato se $m = 2^i$} in quanto $h(k)$ dipenderebbe solo dai
+bit meno significativi. \hl{Non funziona però malissimo se $n$ è vicino ad una
+potenza di 2}.
+
+\subparagraph{Metodo della moltiplicazione} Un altro metodo semplice è porre
+\hl{$h(k) = \lfloor n(\alpha k - \lfloor \alpha k \rfloor) \rfloor$}, con
+\hl{$\alpha \in \mathbb{R}$} costante. In questo caso, la \hl{dimensione} della
+tabella $n$ \hl{non è critica}. Perciò spesso \hl{si prende $n = 2^m$} in modo
+da effettuare le moltiplicazioni con semplici shift. Una \hl{scelta} possibile
+\hl{per $\alpha$ è la costante aurea $\frac{\sqrt{5} - 1}{2}$}: si è visto
+empiricamente che fornisce una buona distribuzione.
 
 \end{document}
