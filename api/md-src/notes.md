@@ -2185,7 +2185,7 @@ Se usiamo una lista, lo stoccaggio dei dati è effettuato negli elementi della
 lista. Teniamo traccia dell'ultimo elemento della lista (oltre al primo) con un
 puntatore `tail`. Possiamo, quindi, mantenere la complessità costante.
 
-#### Mazzo (Deque)
+### Mazzo (Deque)
 
 Si comporta come un mazzo di carte, di cui ognuna contiene un elemento. È
 praticamente una pila in cui è possibile aggiungere sia in testa che in coda:
@@ -2322,4 +2322,325 @@ Un altro metodo semplice è considerare $h(k) = \lfloor n(\alpha k -
 \lfloor\alpha k\rfloor)\rfloor$ con $\alpha \in \mathbb{R}$ costante. In questo
 caso la dimensione della tabella $n$ non è critica, spesso però si prende $2^m$
 per effettuare le moltiplicazioni con un semplice shift. Una scelta possibile è
-$\alpha$ è $\frac{\sqrt{5}-1}{2}$.
+$\alpha$ è $\frac{\sqrt{5}+1}{2}$.
+
+Analizziamo il costo della struttura. Nel caso pessimo tutti gli elementi
+collidono dando origine ad una lista (open hashing) o una sequenza di ispezione
+(closed hashing) lunga `m` elementi, rendendo le operazioni $O(m)$. Il caso più
+importante sarà, però, il caso medio. Chiamiamo $\alpha = n/m$. Sotto l'ipotesi
+di IHUS, per l'open hashing abbiamo che:
+
+- La lunghezza media di una lista è il fattore di carico.
+- Il tempo medio per cerare una chiave non presente è $\Theta(1 + \alpha)$
+- Il tempo medio per cercare una chiave presente è sempre $\Theta(1+\alpha)$
+  (risultato del calcolo del valor medio del numero di oggetti aggiunti al
+  bucket di $x$ dopo che $x$ è stato inserito)
+
+In pratica, se il fattore di carico non è eccessivo tutte le operazioni sono
+$O(1)$. In closed hashing, invece, il tempo per trovare un elemento dipende
+anche dalla sequenza di ispezione. Generalizziamo l'ipotesi IHUS dicendo che
+tutte le sequenze di ispezione sono equiprobabili. Se consideriamo la variabile
+aleatoria $X$ che modella il numero di passi di ispezione fatti senza trovare il
+valore desiderato, abbiamo $P(X \geq i) = \alpha^{i-1}$ il cui valor medio su
+$i$ è $\frac{1}{1-\alpha}$. Quindi il numero medio di tentativi prima di trovare
+un elemento desiderato è ricavato assumendo di trovarlo al $j$-esimo tentativo e
+mediando il numero di insuccessi su tutte le $n$ chiavi presenti in tabella,
+ottenendo $\frac{1}{\alpha}\log(\frac{1}{1-\alpha}$.
+
+Fino ad ora abbiamo presunto che le collisioni fossero accidentali. Ciò non
+toglie che è possibile che un utente conosca la funzione di hash ed inserisce
+degli elementi che causano deliberatamente collisioni. Ciò causerebbe accessi
+certi in $O(n)$. Per evitare questo problema dobbiamo poter scegliere una
+funzione di hash casualmente all'interno di una famiglia di buone funzioni. Si
+può dimostrare che $h_{a,b}(k) = ((ak+b)\log p)\mod m$ con $p > m$ primo
+distribuisce uniformemente le chiavi nella tabella. È sufficiente scegliere
+casualmente i due valori $a,b$.
+
+### Alberi
+
+Una struttura dati versatile è il cosiddetto albero. Ne abbiamo già fatto uso
+informalmente. In estrema sintesi, un albero è costituito da un insieme di nodi
+e uno di archi che li collegano. Ogni nodo può avere al più un arco entrante, ma
+un numero arbitrario di archi uscenti. Vedremo che gli alberi sono una
+rappresentazione efficiente per insiemi di dati ordinati.
+
+#### Definizione - Albero
+
+Un albero $A$ è una coppia $(V, E)$ dove $V$ è un insieme di nodi e $E$ un
+insieme di archi, ossia coppie ordinate di nodi. Ogni nodo può apparire un'unica
+volta come destinazione di un arco, ossia il secondo elemento della coppia. Non
+sono possibili cicli.
+
+Chiameremo:
+
+- Radice: L'unico nodo dell'albero privo di un arco entrante.
+- Foglia: Un nodo senza archi uscenti
+- Padre di un nodo $n$: il nodo da cui l'arco entrante in $n$ ha origine
+- Figlio di un nodo $n$: il nodo in cui uno degli archi uscenti da $n$ termina\
+- Albero $n$-ario: È un albero nel quale ogni nodo ha al più $n$ figli
+- Livello: distanza, in numero di archi, di un nodo dalla radice
+- Albero completo: un albero a cui non è possibile aggiungere un nodo con
+  livello minore o uguale a quello dei presenti
+
+Ci occuperemo di alberi binari. È utile dare una definizione ricorsiva di
+albero:
+
+> Un albero è formato da un nodo radice a cui sono collegati due alberi, il
+> sotto-albero e il sotto-albero sinistro. Un albero può essere vuoto.
+
+Le azioni sugli alberi indicizzeranno i nodi con una chiave, un intero
+solitamente. Dato un nodo `N`, `N.left` è il riferimento al figlio sinistro
+mentre `N.right` il destro, `N.p` è il riferimento al padre e `N.key` la chiave.
+Ogni albero `A` avrà un riferimento `A.root` alla radice (`A.p == NIL`).
+
+Un albero può essere materializzato in memoria naturalemnte con una struttura
+basata su puntatori. Alternativamente è possibile utilizzare un vettore per
+contenere le chiavi. Il secondo metodo è più efficiente se l'albero è completo.
+L'array sarà così strutturato:
+
+- La radice dell'albero è stoccata in posizione $0$ del vettore
+- Dato un nodo contenuto in posizione $i$ il suo figlio sinistro è in posizione
+  $2i+1$, il destro in $2i+2$
+- Il padre del nodo stoccato in posizione i si trova in posizione
+  $floor(\frac{i-1}{2})$
+
+#### Visita di un albero
+
+Su di un albero è possibile effettuare operazioni di inserimento, ricerca e
+cancellazione di nodi come sulle altre struttura dati. L'operazione
+caratteristica degli alberi è, però, il cosiddetto attraversamento o visita per
+enumerare le chiavi contenute. La definizione naturale degli algoritmi di visita
+è ricorsiva. Il fattore discriminante tra le diverse strategie è l'ordine in cui
+i nodi vengono visitati.
+
+##### Visita in ordine
+
+Nella visita in ordine si visita prima il sotto-albero sx, quindi la radice e
+infine l sotto-albero dx.
+
+```txt
+InOrder(T)
+  InOrder(T.left)
+  Print(T.key)
+  InOrder(T.right)
+  return
+```
+
+La complessità di questa visita è ovviamente $\Theta(n)$.
+
+##### Visita anticipata
+
+Nella visita anticipata si visita prima la radice, quindi il sotto-albero sx e
+poi quello dx.
+
+```txt
+PreOrder(T)
+  Print(T.key)
+  InOrder(T.left)
+  InOrder(T.right)
+  return
+```
+
+Come nella visita in ordine, abbiamo $\Theta(n)$.
+
+##### Visita posticipata
+
+Nella visita posticipata si visita il sotto-albero sx, quello dx e infine la
+radice
+
+```txt
+PostOrder(T)
+  InOrder(T.left)
+  InOrder(T.right)
+  Print(T.key)
+  return
+```
+
+Come nella visita anticipata abbiamo $\Theta(n)$.
+
+#### Albero binario di ricerca
+
+Uno degli usi più comuni degli alberi binari è utilizzare quelli per cui è
+valida una data relazione tra le chiavi. Un albero binario è detto albero
+binario di ricerca se per un qualunque suo nodo $x$ valgono:
+
+- Se $y$ è contenuto nel sotto-albero sinistro di $x$, $y.key \leq x.key$
+- Se $y$ contenuto nel sotto-albero destro di $x$, $y.key \geq x.key$
+
+Inserimenti e cancellazione devono preservare la proprietà sopra, o invariante.
+Cambiare l'invariante del BST rendendo le disuguaglianze strette rende gli
+elementi del BST unici. Un a visita in ordine di un BST stampa le chiavi in
+ordine.
+
+#### Ricerca
+
+La struttura dei BST li rende naturali candidati per una ricerca efficace degli
+elementi per chiave.
+
+```txt
+Ricerca(T, x)
+  if T = NIL or T.key = x.key
+    return T
+  if T.key < x.key
+    return Ricerca(T.right, x)
+  else
+    return Ricerca(T.left, x)
+```
+
+La complessità è $O(h)$, dove $h$ è l'altezza dell'albero. Nel caso ottimo
+(ossia di albero ben bilanciato) la complessità diventa $O\log(n)$. Nel caso
+peggiore, la complessità degenera in $O(n)$.
+
+#### Minimo e massimo
+
+```txt
+Min(T)
+  cur <- T
+  while cur.left != NIL
+    cur <- cur.left
+  return cur
+```
+
+```txt
+Max(T)
+  cur <- T
+  while cur.right != NIL
+    cur <- cur.left
+  return cur
+```
+
+Entrambe le funzioni hanno costo $\Theta(h)$.
+
+#### Successore
+
+Il successore di un elemento `x` è l'elemento `y` con la più piccola chiave
+`y.key > x.key` presente nel BST. Nel cercarlo sono possibili due casi:
+
+1. Il sotto-albero dx di `x` non è vuoto: il successore è il minimo di quel
+   sotto-albero
+2. Il sotto-albero dx di `x` è vuoto: il successore è il progenitore più
+   prossimo a `x` per cui `x` appare nel suo sotto-albero.
+
+```txt
+Successore(x)
+  If x.right !+ NIL
+    return Min(x.right)
+  y <- x.p
+  while y !+ IL and y.right = x
+    x <- y
+    y <- y.p
+  return y
+```
+
+La complessità sarà $\Theta(h)$
+
+#### Inserimento
+
+L'inserimento di un nuovo elemento deve rispettare la proprietà fondamentale del
+BST. Assumiamo che il BST non debba contenere duplicati. L'idea è di cercare
+l'elemento che voglio inserire nel BST e inserirlo nel posto dove ho ottenuto
+`NIL`.
+
+```txt
+Inserisci(T,x)
+  pre <- NIL
+  cur <- T.root
+  while cur != NIL
+    pre <- cur
+    if x.key < cur.key
+      cur <- cur.left
+    else
+      cur <- cur.right
+  x.p <- pre
+  if pre = NIL
+    T.root <- x
+  else if x.key < pre.key
+    pre.left <- x
+  else
+    pre.right <- x
+```
+
+La complessità sarà $O(h)$.
+
+#### Cancellazione
+
+La strategia di cancellazione di un elemento da un BST dipende dal numero di
+figli dell'elemento in questione:
+
+1. L'elemento non ha figli: è sufficiente eliminarlo dall'albero deallocandolo
+   e impostando il puntatore del padre a `NIL`.
+2. L'elemento ha un figlio: l'elemento viene sostituito dal figlio nel suo ruolo
+   nell'albero.
+3. L'elemento ha due figli: copio il valore del suo successore su di esso ed
+   elimino il successore. Il successore `s` di un elemento con due figli `x` non
+   ha mai il figlio sx `f`: si avrebbe `s.key < f.key < x.key`, ma questo è
+   impossibile per definizione di successore.
+
+```txt
+...
+```
+
+#### Alberi bilanciati
+
+...
+
+Intuitivamente vogliamo che la distanza delle foglie dalla radice sia limitata
+superiormente, per tutte le foglie. Una definizione operativa fu data da
+Adelson-Velskii e Landis: "un albero è bilanciato se, per ogni nodo, le altezze
+dei due sotto-alberi differiscono al più di 1". I due autori proposero, insieme
+alla definizione, una modifica ai BST ed ai metodi per accedervi in grado di
+tenerli bilanciati (alberi AVL). Vediamo un'ottimizzazione degli alberi AVL che
+sacrifica parte del bilanciamento per ottenere modifiche più efficienti: gli
+alberi RB.
+
+Un albero RB è un BST i cui nodi sono dotati di un attributo aggiuntivo detto
+`red`, e soddisfacente 5 proprietà:
+
+1. Ogni nodo o è `red` o no lo è (`black`)
+2. La radice è `black`
+3. Le foglie sono `black`
+4. I figli di un nodo `red` sono entrambi `black`
+5. Per ogni nodo dell'albero, tutti i cammini dai suoi discendenti alle foglie
+   contenute nei suoi sotto-alberi hanno lo stesso numero di nodi `black`
+
+Chiamiamo, per comodità, l'altezza dell'albero che conta solo i nodi `black`
+(escluso il nodo `x` se è il caso) `black height` ($bh(x)$).
+
+I dati sono mantenuti unicamente nei nodi interni, l;e foglie sono tutte `NIL`.
+Per semplicità, tutte le foglie sono fisicamente rappresentate da un singolo
+nodo il cui unico riferimento è `T.nil` ...
+
+Le operazioni che non vanno a modificare la struttura dell'albero sono identiche
+ai BST. Le operazioni di inserimento e cancellazione hanno necessità di
+mantenere le proprietà degli alberi RB. È necessario essere in grado di
+ribilanciare l'albero usando solo modifiche locali
+
+##### Teorema - Proprietà di buon bilanciamento
+
+Un albero RB con $n$ nodi interni ha altezza massima $2\log(n+1)$
+
+> ...
+
+##### Rotazione
+
+Per riparare gli sbilanciamenti usiamo l'operazione di rotazione. La rotazione è
+una operazione locale a due nodi di un BST che cambia il livello a cui sono
+situati due nodi senza violare la proprietà BST.
+
+...
+
+##### Inserimento (RBT)
+
+L'inserimento procede ad inserir il nuovo elemento come se l'albero fosse un
+semplice BST salvo:
+
+1. Assegnare il valore dei sottoalberi del nodo a `T.nil` al posto di `NIL` se
+   viene inserito come una foglia
+2. Assegnare il valore del genitore del nodo a `T.nil` al posto di `NIL` se il
+   nodo è inserito come radice
+3. Colorare il nodo appena inserito di rosso.
+
+POssono essere violate la proprietà 4 e la 2. Dobbiamo quindi creare una
+procedura di riparazione.
+
+...

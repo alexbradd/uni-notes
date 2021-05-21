@@ -25,6 +25,7 @@
 \usepackage{amsthm}
 
 \usepackage{listings}
+\usepackage{caption}
 
 \usepackage{tikz}
 \usetikzlibrary{
@@ -62,6 +63,7 @@
 
 \lstdefinestyle{mystyle}{
   basicstyle=\ttfamily,
+  columns=fixed,
   keepspaces=true,
   numbers=left,
   numbersep=5pt,
@@ -71,7 +73,8 @@
   tabsize=2,
   mathescape=true,
   escapechar=`,
-  xleftmargin=1cm
+  xleftmargin=1cm,
+  captionpos=b
 }
 \lstset{
   style=mystyle,
@@ -82,6 +85,7 @@
   morestring=[b]",
   morecomment=[l]{//}
 }
+\renewcommand\lstlistingname{Snippet}
 
 \title{Appunti di ``Algoritmi e Principi dell'informatica''}
 \author{Alexandru Gabriel Bradatan}
@@ -3615,7 +3619,11 @@ vedremo. L'algoritmo \hl{modella come un uomo ordinerebbe, ad esempio, un mazzo
 di carte: selezioniamo un elemento della slice non ordinata e reinseriamolo al
 giusto posto della slice ordinata}.
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Insertion Sort
+]
   InsertionSort(A)
     for i `\peq` 1 to A.length - 1
       tmp `\peq` A[i]
@@ -3726,8 +3734,12 @@ abbia complessità eccessiva}. Poiché la procedura di unione delle varie slice
 Consideriamo \hl{due slice \texttt{A[p..q]} e \texttt{A[q + 1..r]}, è facile}
 dimostrare che la complessità della \hl{ricombinazione di questi sia lineare}:
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
-  MergeSort(A, p, q, r)
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Funzione di merge dei vettori
+]
+  Merge(A, p, q, r)
     len1 `\peq` q - p + 1
     len2 `\peq` r - q
     Alloc(L[1..len1 + 1])
@@ -3751,7 +3763,11 @@ dimostrare che la complessità della \hl{ricombinazione di questi sia lineare}:
 
 Vediamo ora il \hl{merge sort}:
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Merge Sort
+]
   MergeSort(A, p, r)
     if p $<$ r - 1
       q `\peq` $\lfloor \frac{\mathtt{p + r}}{2} \rfloor$
@@ -3794,7 +3810,11 @@ Il quicksort applica la \hl{strategia ``divide et impera'' ad una slice
 
 L'algoritmo di \hl{quicksort} è \hl{molto semplice}:
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Quicksort
+]
   Quicksort(A, lo, hi)
     if lo $<$ hi
       p `\peq` Partition(A, lo, hi)
@@ -3810,7 +3830,12 @@ quicksort, Hoare (\hl{\texttt{PartitionHoare()}}).
 \noindent\begin{minipage}{\textwidth}
   \centering
   \begin{minipage}{0.45\textwidth}
-    \begin{lstlisting}[language=pseudocodice,gobble=6,xleftmargin=0pt]
+    \centering
+    \begin{lstlisting}[
+        language=pseudocodice,
+        gobble=6,
+        caption=Partizione secondo Lomuto
+      ]
       PartionLomuto(A, lo, hi)
         pivot `\peq` A[hi]
         i `\peq` lo - 1
@@ -3822,7 +3847,12 @@ quicksort, Hoare (\hl{\texttt{PartitionHoare()}}).
     \end{lstlisting}
   \end{minipage}
   \begin{minipage}{0.45\textwidth}
-    \begin{lstlisting}[language=pseudocodice,gobble=6,xleftmargin=0pt]
+    \centering
+    \begin{lstlisting}[
+        language=pseudocodice,
+        gobble=6,
+        caption=Partizione secondo Hoare
+      ]
       PartitionHoare(A, lo, hi)
         pivot `\peq` A[lo]
         i `\peq` lo - 1
@@ -3877,7 +3907,7 @@ diviso in due porzioni lunghe $n/2$}. La ricorrenza diventa:
   }
 \end{equation}
 
-La \mhl{stessa del merge sort}, che è \hl{$\Theta(n\log(n))$}. La \hl{costante
+La \hl{stessa del merge sort}, che è \hl{$\Theta(n\log(n))$}. La \hl{costante
 nascosta} dalla notazione asintotica si può calcolare ed \hl{è pari a $1.39$
 rendendo il quicksort solo $39\%$ più lento del minimo teorico}.
 
@@ -3891,7 +3921,11 @@ elementi senza confrontarli è \hl{calcolare prima l'istogramma delle frequenze}
 e poi \hl{restituirne gli elementi in ordine}. Questa è l'idea dietro al
 \hl{counting sort}.
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Counting sort
+]
   CountingSort(A)
     Is[0..k] `\peq` 0 // operazione dal costo $\Theta(k)$
     for i `\peq` 0 to A.length
@@ -3917,7 +3951,11 @@ maggiori o uguali dell'indice del vettore}. Calcolato ciò, \hl{piazza un
 elemento calcolando la sua posizione come il valore corrente dell'informazione
 nel vettore, decrementandola}.
 
-\begin{lstlisting}[language=pseudocodice,gobble=2]
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Counting sort (versione stabile)
+]
   CountingSort(A) // variante out-of-place
     B[0..A.length - 1] `\peq` 0
     Is[0..k] `\peq` 0
@@ -4249,7 +4287,569 @@ potenza di 2}.
 \hl{$\alpha \in \mathbb{R}$} costante. In questo caso, la \hl{dimensione} della
 tabella $n$ \hl{non è critica}. Perciò spesso \hl{si prende $n = 2^m$} in modo
 da effettuare le moltiplicazioni con semplici shift. Una \hl{scelta} possibile
-\hl{per $\alpha$ è la costante aurea $\frac{\sqrt{5} - 1}{2}$}: si è visto
+\hl{per $\alpha$ è la sezione aurea $\frac{\sqrt{5} + 1}{2}$}: si è visto
 empiricamente che fornisce una buona distribuzione.
+
+\paragraph{Costo delle operazioni} Nel \hl{caso pessimo}, ossia quello in cui
+\hl{tutti gli elementi collidono}, la struttura degenera in un array/lista di
+lunghezza \texttt{n}: \hl{$\mathcal{O}(n)$}. Studiamo separatamente le due
+modalità di indirizzamento.
+
+\subparagraph{Indirizzamento chiuso} Definiamo \hl{fattore di carico $\alpha =
+\frac{n}{m}$}. Sotto \hl{IHUS}, abbiamo che la \hl{lunghezza media della lista
+sarà il fattore di carico}. Quindi il \hl{tempo medio per cercare una chiave non
+presente sarà $\Theta(\alpha + 1)$}, come \hl{anche} quello per la \hl{ricerca
+di una chiave presente} nella tabella. Quindi \hl{se $\alpha$ non è eccessivo},
+\hl{in media} tutte le operazioni avranno complessità \hl{$\Theta(1)$}.
+
+\subparagraph{Indirizzamento aperto} Il tempo impiegato per trovare un elemento
+\hl{dipenderà dalla sequenza di ispezione}. \hl{Generalizziamo la IHUS} dicendo
+che anche \hl{tutte le sequenze di ispezione siano equiprobabili}. Il
+\hl{fattore di carico} è sempre definito alla \hl{stessa maniera}. Se
+consideriamo \hl{$X$ la v.a. che modella il numero di passi di ispezione fatti
+senza trovare il valore desiderato}, abbiamo che \hl{$P(X > i) = \alpha^{i+1}$}.
+Il valore medio sarà \hl{$E(X) = \frac{1}{1-\alpha}$}. Il \hl{numero medio di
+tentativi} è ricavato assumendo di trovarlo insieme al $j$-esimo tentativo e
+mediando il numero di insuccessi su tutte le $n$ chiavi presenti nella tabella:
+\hl{si ottiene $\frac{1}{\alpha}\log(\frac{1}{1-\alpha}$}.
+
+\paragraph{Hashing universale} Finora abbiamo \hl{ipotizzato} che le
+\hl{collisioni fossero accidentali}. Esse però possono essere \hl{indotte
+sfruttando debolezze della funzione di hashing}. Un modo per evitare questo
+problema è \hl{non scegliere una sola funzione di hashing, ma una intera
+famiglia di buone funzioni}. Si può dimostrare che \hl{$h_{a,b}(k) = ((ak + b)
+\bmod p) \bmod n$ con $p > n$ primo distribuisce uniformemente le chiavi della
+tabella per ogni $a,b \in \mathbb{Z}_0$}. Sarà quindi sufficiente \hl{scegliere
+casualmente $a$ e $b$ per ogni istanza della tabella}.
+
+\subsection{Alberi binari}\label{sec:tree}
+
+Vediamo ora una importante struttura dati: l'albero. Abbiamo già fatto uso degli
+alberi in maniera informale. Gli alberi con adeguate proprietà sono una
+\hl{rappresentazione efficiente per insiemi di dati ordinati}.
+
+\begin{defn}[Albero]\label{def:tree}
+  Un albero è una \hl{coppia $(V, E)$} dove \hl{$V$} è un insieme di \hl{nodi} e
+  \hl{$E$} un insieme di \hl{archi}, ossia di \hl{coppie di nodi ordinate}.
+  \hl{Ogni nodo può apparire un'unica volta come destinazione di un arco}
+  (secondo elemento della coppia). \hl{Non sono possibili cicli}.
+\end{defn}
+
+Chiameremo \hl{radice l'unico nodo dell'albero privo di un arco entrante},
+mentre \hl{foglia quelli senza archi uscenti}. Il \hl{padre} di un nodo sarà il
+\hl{nodo da cui l'arco entrante in esso ha origine}; \hl{viceversa il figlio} di
+un nodo è il nodo in cui degli archi uscenti da esso termina. Chiameremo
+\hl{livello} la \hl{distanza in numero di archi tra la radice ed un nodo} e,
+infine, diremo che un \hl{albero è completo se non è possibile aggiungere un
+nodo con livello minore o uguale a quello dei nodi già presenti}.
+
+Noi studieremo gli \hl{alberi binari}, ossia alberi in cui un nodo ha \hl{al massimo 2
+figli}. È utile dare una definizione ricorsiva di albero binario:
+
+\begin{defn}[Albero binario]\label{def:binary-tree}
+  Un albero è formato da un nodo radice a cui sono collegati due alberi,
+  quello destro e quello sinistro. Un albero può essere vuoto.
+\end{defn}
+
+Le azioni sull'albero \hl{indicizzeranno i nodi con una chiave intera}, in modo
+simile a come facevamo per le tabelle di hash. Definiamo un nodo \texttt{N} la
+struttura:
+
+\begin{lstlisting}[language=pseudocodice,gobble=2]
+  struct Node:
+    Node left;   // figlio sinistro
+    Node right;  // figlio destro
+    Node parent; // padre (NIL per la radice)
+    int   key;   // chiave
+    Data  data;
+\end{lstlisting}
+
+\hl{Ogni albero \texttt{A} è un riferimento alla radice}.
+
+Un albero può essere \hl{materializzato in memoria con una struttura basata su
+puntatori} oppure tramite un \hl{array: la radice sarà l'elemento con indice 0;
+dato un nodo contenuto in posizione $i$ il suo figlio sinistro sarà in posizione
+$2i+1$ e quello destro in $2i + 2$; dato un nodo in posizione $i$ il padre sarà
+salvato in posizione $\lfloor \frac{i-1}{2} \rfloor$}.
+
+\paragraph{Visita di un albero} L'operazione naturale di un albero, oltre ai
+consueti inserimento, ricerca e cancellazione, è l'attraversamento (o visita).
+La visita di un albero \hl{consiste nell'enumerare le chiavi contenute secondo
+un particolare ordine}. Ovviamente le visite avranno tutte complessità
+\hl{$\Theta(n)$} con \hl{$n$ il numero di nodi dell'albero}. Vediamo alcune
+delle strategie più usate.
+
+\noindent\begin{minipage}{\textwidth}
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{lstlisting}[
+      language=pseudocodice,
+      gobble=6,
+      caption=Visita in ordine
+    ]
+      InOrder(T)
+        if T = NIL
+          return
+        InOrder(T.left)
+        Print(T.key)
+        InOrder(T.right)
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{lstlisting}[
+      language=pseudocodice,
+      gobble=6,
+      caption=Visita anticipata
+    ]
+      PreOrder(T)
+        if T = NIL
+          return
+        Print(T.key)
+        PreOrder(T.left)
+        PreOrder(T.right)
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{lstlisting}[
+      language=pseudocodice,
+      gobble=6,
+      caption=Visita posticipata
+    ]
+      PostOrder(T)
+        if T = NIL
+          return
+        PostOrder(T.left)
+        PostOrder(T.right)
+        Print(T.key)
+    \end{lstlisting}
+  \end{minipage}
+\end{minipage}
+
+\subsubsection{Alberi binari di ricerca}\label{sec:bst}
+
+Uno degli usi più comuni degli alberi binari è utilizzare quelli per cui è
+\hl{valida una data relazione tra le chiavi}. Vediamo uno particolare di questi:
+\hl{l'albero di ricerca binario o BST}.
+
+\begin{defn}[Albero di ricerca binario]\label{def:bst}
+  Un albero binario è detto albero di ricerca binario (BST) se \hl{per un
+  qualunque suo nodo valgono}:
+
+  \begin{enumerate}
+    \item \hl{Se $y$ è contenuto nel sotto-albero sinistro di $x$ vale
+      $y.key \leq x.key$}
+    \item \hl{Se $y$ è contenuto nel sotto-albero destro di $x$ vale
+      $y.key \geq x.key$}
+  \end{enumerate}
+\end{defn}
+
+È ovvio che \hl{inserimenti e cancellazioni devono conservare questo invariante}.
+Una \hl{visita in ordine} (\texttt{InOrder()}) del BST \hl{stampa le chiavi in ordine}.
+Se nella definizione~\ref{def:bst} rendiamo le \hl{disuguaglianze strette} otteniamo
+un BST che \hl{non accetta elementi duplicati}. Vediamo ora le principali operazioni
+eseguibili su un BST.
+
+\paragraph{Ricerca} La struttura dei BST li rende candidati naturali per una
+ricerca efficiente. L'\hl{algoritmo}~\ref{lst:bst-search} ha \hl{complessità
+$\mathcal{O}(h)$} dove \hl{$h$ è l'altezza dell'albero}. Nel \hl{caso ottimo},
+ossia di \hl{albero ben bilanciato}, la complessità migliora a
+\hl{$\mathcal{O}(\log(n))$}, mentre nel \hl{caso} pessimo, ossia di albero
+\hl{degenerato a lista}, peggiora a \hl{$\mathcal{O}(n)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Ricerca in un BST,
+  label=lst:bst-search
+]
+  Ricerca(T,x)
+    if T = NIL or T.key = x.key
+      return T
+    if T.key < x.key
+      return Ricerca(T.right, x)
+    else
+      return Ricerca(T.left, x)
+\end{lstlisting}
+
+\paragraph{Minimo e massimo} Cerchiamo l'elemento con chiave minima (massima),
+ossia quello più a sinistra (destra) del BST. Come prima, la complessità è
+$\mathcal{O}(h)$.
+
+\noindent\begin{minipage}{\linewidth}
+  \centering
+  \begin{minipage}{0.45\linewidth}
+    \centering
+    \begin{lstlisting}[
+        language=pseudocodice,
+        gobble=6
+      ]
+        Min(T)
+          cur `\peq` T
+          while cur.left $\neq$ NIL
+            cur `\peq` cur.left
+          return cur
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.45\linewidth}
+    \centering
+    \begin{lstlisting}[
+        language=pseudocodice,
+        gobble=6
+      ]
+        Min(T)
+          cur `\peq` T
+          while cur.right $\neq$ NIL
+            cur `\peq` cur.right
+          return cur
+    \end{lstlisting}
+  \end{minipage}
+\end{minipage}
+
+\paragraph{Successore} Il \hl{successore di un elemento $x$ di un elemento è
+l'elemento $y$ con la più piccola chiave maggiore di di quella di $x$} nel BST.
+Abbiamo due casi possibili di ricerca:
+
+\begin{itemize}
+  \item Il \hl{sotto-albero destro di $x$ non è vuoto}, significando che il
+    \hl{successore} di $x$ sarà il \hl{minimo di quel sotto-albero}.
+  \item Il sotto-albero destro di $x$ è vuoto, significando che il
+    \hl{successore di $x$ sarà il progenitore più prossimo a $x$ per cui $x$
+    appare nel suo sotto-albero sinistro}.
+\end{itemize}
+
+Lo pseudocodice della ricerca del successore è l'algoritmo~\ref{lst:bst-next}.
+Anche in questo caso la complessità è \hl{$\mathcal{O}(h)$}, sia nel caso ottimo
+che nel pessimo.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Ricerca del successore in un BST,
+  label=lst:bst-next
+]
+  Successore(x)
+    if x.right $\neq$ NIL
+      return Min(x.right)
+    y `\peq` x.p
+    while y $\neq$ NIL and t.right = x
+      x `\peq` y
+      y `\peq` y.p
+    return y
+\end{lstlisting}
+
+\paragraph{Inserimento} L'inserimento di un nuovo elemento deve per forza
+\hl{rispettare la proprietà fondamentale del BST}. Considereremo il caso di
+\hl{BST che non ammette duplicati}. L'\hl{idea} di fondo è \hl{eseguire una
+ricerca} (che ovviamente fallirà) e \hl{inserire il nuovo nodo nel posto
+\texttt{NIL} trovato}. La complessità sarà ancora \hl{$\mathcal{O}(h)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Inserimento di un elemento in un BST,
+]
+  Inserisci(T, x)
+    pre `\peq` NIL
+    cur `\peq` T.root
+    while cur $\neq$ NIL     // ciclo di ricerca
+      pre `\peq` cur
+      if x.key < cur.key
+        cur `\peq` cur.key
+      else
+        cur `\peq` cur.right
+    x.p `\peq` pre           // inserimento
+    if pre = NIL
+      T.root `\peq` x
+    else if x.key < pre.key
+      pre.left `\peq` x
+    else
+      pre.right `\peq` x
+\end{lstlisting}
+
+\paragraph{Cancellazione} La \hl{strategia} di cancellazione \hl{dipende dal
+numero di figli dell'elemento da rimuovere}:
+
+\begin{enumerate}
+  \setcounter{enumi}{0}
+  \item L'elemento non ha figli quindi è \hl{sufficiente eliminarlo} ripulendo la
+    memoria e i puntatori del padre.
+  \item L'elemento può essere \hl{sostituito dal suo unico figlio} nel suo
+    ruolo.
+  \item \hl{Sovrascriviamo il valore dell'elemento da rimuovere con quello del
+    suo successore, eliminandolo}. Il successore $s$ di un elemento con due
+    figli $x$ infatti non ha mai figlio sinistro $f$: se ciò fosse vero si
+    avrebbe \texttt{s.key < f.key < x.key}, ma ciò è impossibile per la
+    definizione stessa di successore.
+\end{enumerate}
+
+Anche in questo caso otteniamo \hl{complessità $\mathcal{O}(h)$}. Un algoritmo
+che implementa il ragionamento sopra è il seguente.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Rimozione di un elemento in un BST,
+]
+  Cancella(T, x)
+    // Individuiamo il nodo da cancellare
+    if x.left = NIL or x.right = NIL
+      da_canc `\peq` = x
+    else
+      da_canc `\peq` Successore(x)
+
+    // Individuiamo il sotto-albero da spostare
+    if da_canc.left $\neq$ NIL
+      sottoa `\peq` da_canc.left
+    else
+      sottoa `\peq` da_canc.right
+    if sottoa $\neq$ NIL
+      sottoa.p `\peq` da_canc.p
+
+    // Correggiamo il valore del padre
+    if da_canc.p = NIL
+      T.root `\peq` sottoa
+    else if da_canc = da_canc.p.left
+      da_canc.p.left `\peq` sottoa
+    else
+      da_canc.p.right `\peq` sottoa
+
+    // Copiamo il valore della chiave
+    if da_canc $\neq$ x
+      x.key `\peq` da_canc.key
+    Free(da_canc)
+\end{lstlisting}
+
+\subsubsection{Alberi RB}\label{sec:rbt}
+
+Abbiamo visto nella sezione~\ref{sec:bst} che tutte la complessità di tutte le
+operazioni dipende dall'altezza $h$ dell'albero. Nel migliore dei casi $h =
+\log(n)$, nel peggiore $h = n$. \hl{È critico quindi riuscire a garantire che un
+BST non degeneri a seguito di inserimenti e cancellazioni}. Si può dimostrare
+che \hl{l'altezza attesa di un BST è $\mathcal{O}(\log(n))$ se le chiavi hanno
+una distribuzione uniforme. A noi ci serve, però, un approccio deterministico e
+necessitiamo del concetto di albero bilanciato}.
+
+\hl{Intuitivamente}, diciamo che un \hl{albero è bilanciato quando la distanza
+delle foglie dalla radice è limitata superiormente per tutte le foglie}. Una
+definizione operativa analoga è stata data da Adelson-Velskii e Landis nel 1962:
+
+\begin{defn}[Albero bilanciato]\label{def:balanced-tree}
+  Un albero si dice bilanciato se \hl{per ogni nodo le altezze dei due
+  sotto-alberi differiscono al più di 1}.
+\end{defn}
+
+Adelson-Velskii e Landis proposero, insieme alla definizione, anche una
+\hl{modifica ai BST e ai metodi di accesso che garantisse il bilanciamento
+(alberi AVL)}. Gli \hl{alberi RB} (RBT o alberi rosso-neri) sono una
+\hl{ottimizzazione della versione proposta} da Adelson-Velskii e Landis che
+\hl{sacrifica parte del bilanciamento} a favore di migliori prestazioni di
+inserimento e rimozione.
+
+\begin{defn}[Albero RB]\label{def:rbt}
+  Definiamo \hl{albero RB} un \hl{BST i cui nodi sono dotati di un attributo aggiuntivo
+  (colore)} che può assumere \hl{due valori: rosso e nero}. I \hl{nodi} dello RBT
+  soddisfano le seguenti \hl{proprietà}:
+
+  \begin{enumerate}
+    \item Ogni \hl{nodo è o rosso o nero};
+    \item La \hl{radice} è \hl{nera};
+    \item Le \hl{foglie} sono \hl{nere};
+    \item I \hl{figli di un nodo rosso sono entrambi neri};
+    \item \hl{Per ogni nodo dell'albero, tutti i cammini dai suoi discendenti
+      alle foglie contenute nei suoi sotto-alberi hanno lo stesso numero di nodi
+      neri}.
+  \end{enumerate}
+\end{defn}
+
+Chiamiamo, per comodità, \hl{altezza nera (black height) di un nodo $x$ il
+valore $bh(x)$ pari al numero di nodi neri, escluso $x$ se è il caso, nel
+percorso che ca da $x$ alle foglie}.
+
+Per convenzione, consideriamo che \hl{i dati sono mantenuti unicamente nei nodi
+interni e le foglie sono tutte nulle rappresentate da \texttt{T.nil}, per
+definizione nero}. Anche il \hl{padre della radice punta a \texttt{T.nil}}.
+
+Tutte le \hl{operazioni che non vanno a modificare la struttura dell'albero}
+(ricerca, minimo, massimo ecc\ldots) \hl{operano come se l'albero RB fosse un
+BST}.  Le \hl{operazioni di inserimento e cancellazione}, invece,
+\hl{necessitano di ``riparare''} l'albero, ossia ridistribuire gli elementi in
+modo da non violare gli invarianti RB. \hl{Per avere una complessità
+accettabile} è necessario che l'operazione di \hl{riparazione}, o
+ribilanciamento, possa \hl{avvenire con modifiche solamente locali}.
+
+\begin{thm}[Buon bilanciamento]\label{thm:rb-bilanciamento}
+  Un \hl{albero RB} con \hl{$n$ nodi interni ha altezza massima}:
+
+  \begin{equation}
+    \mhl{
+      h_{\mathit{max}} = 2\log(n+1)
+    }
+  \end{equation}
+\end{thm}
+\begin{proof}
+  Dimostriamo che un sotto-albero con radice $x$ ha almeno $2^{bh(x)} - 1$ nodi
+  per induzione sull'altezza del sotto-albero.
+
+  \begin{description}
+    \item[Caso base] $x$ è un foglia, il sotto-albero contiene almeno
+      $2^{bh(x)} - 1 = 2^0 - 1 = 0$ nodi.
+    \item[Passo] Dato $x$, entrambi i suoi figli hanno altezza nera $bh(x)$ o
+      $bh(x) - 1$. Dato che l'altezza dei figli è minore di quella di $x$ per
+      ipotesi induttiva i loro sotto-alberi hanno almeno $2^{bh(x)-1} - 1$ nodi
+      interni. L'albero radicato in $x$ contiene quindi almeno
+      $2^{bh(x)-1} - 1 + 2^{bh(x)-1} - 1 + 2 = 2^{bh(x)}$ nodi. Per la proprietà
+      4, almeno metà dei nodi su un qualunque percorso radice-foglia sono neri.
+      L'altezza nera della radice è almeno $\frac{h}{2}$, per quanto detto prima
+      il sotto-albero radicato in essa contiene almeno $2^\frac{h}{2} - 1$ nodi.
+      Otteniamo quindi $n \geq 2^\frac{h}{2} - 1 \to h \leq 2\log(n + 1)$.
+  \end{description}
+\end{proof}
+
+Conseguenza del teorema sopra è che \hl{le operazioni di ``query'' saranno
+$\mathcal{O}(2\log(n+1))$}. \hl{Se riesco a riparare} le violazioni degli
+invarianti \hl{in maniera efficiente} avrò anche che \hl{le modifiche}
+all'albero \hl{saranno $\mathcal{O}(2\log(n+1))$}.
+
+\paragraph{Rotazione} Definiamo prima un'operazione di vitale importanza per il
+ribilanciamento: la rotazione. Essa è \hl{un'operazione locale a due nodi di un BST
+che cambia il livello a cui sono situati due nodi senza violare le proprietà del
+BST}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Algoritmo della rotazione verso destra
+]
+  LeftRotate(T, x)
+    y `\peq` x.right
+    x.right `\peq` y.left
+    if y.left $\neq$ T.nil
+      y.left.p `\peq` x
+    y.p `\peq` x.p
+    if x.p = T.nil
+      T.root `\peq` y
+    else if x = x.p.left
+      x.p.left `\peq` y
+    else
+      x.p.right `\peq` y
+    y.left `\peq` x
+    x.p `\peq` y
+\end{lstlisting}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[level distance=1.25cm]
+    \node at (2.5, 0.4) {\texttt{LeftRotate(T, x)} $\to$};
+    \node at (2.5, -4.25) {$\gets$ \texttt{RightRotate(T, x)}};
+
+    \node at (0,0) {$\rho$}
+      child {
+        node[circle,draw] {$x$} edge from parent[->]
+          child {
+            node {$\alpha$} edge from parent[->]
+          }
+          child {
+            node[circle,draw] {$y$} edge from parent[->]
+              child { node {$\beta$} edge from parent [->] }
+              child { node {$\gamma$} edge from parent[->] }
+          }
+      };
+
+    \node at (5,0) {$\rho$}
+      child {
+        node[circle,draw] {$y$} edge from parent[->]
+          child {
+            node[circle,draw] {$x$} edge from parent[->]
+              child { node {$\alpha$} edge from parent [->] }
+              child { node {$\beta$} edge from parent [->] }
+          }
+          child {
+            node {$\gamma$} edge from parent[->]
+          }
+      };
+  \end{tikzpicture}
+  \caption{Schema di funzionamento delle rotazioni di un albero}%
+  \label{fig:bst-rotate}
+\end{figure}
+
+\paragraph{Inserimento} L'inserimento procede ad \hl{inserire il nuovo elemento
+come se l'albero fosse un semplice BST salvo assegnare \texttt{T.nil} al posto
+di \texttt{NIL} e colorare il nodo appena inserito di rosso}. L'inserimento di
+un nuovo nodo rosso \hl{può causare la violazione delle proprietà 2 e 4} degli
+alberi RB. È compito di \texttt{RiparaRBInserisci(z)}, dato il nodo \texttt{z}
+inserito, riparare l'albero. Possono esserci diversi \hl{casi}:
+
+\begin{itemize}
+  \item \hl{Con \texttt{z.p} figlio sinistro del ``nonno'' di \texttt{z} possono
+    esserci 3 casi a seconda del colore del ``zio'' e della posizione di
+    \texttt{z} e del suo padre}.
+  \item \hl{Simmetricamente} ci saranno 3 casi per quando il padre di \texttt{z}
+    è figlio destro del ``nonno''.
+\end{itemize}
+
+Consideriamo solo i \hl{3 casi del lato sinistro}.
+
+\begin{enumerate}
+  \item \hl{Lo zio \texttt{y} è rosso}. Innanzitutto \hl{ricoloriamo
+    \texttt{z.p.p}, \texttt{z.p} e \texttt{y}}. Successivamente invoco \\
+    \hl{\texttt{RiparaRBInserisci(z.p.p)}} poiché \texttt{z.p.p} potrebbe avere
+    un padre rosso. Se invece \hl{\texttt{z.p.p} è la radice allora posso
+    ricolorarla di nero senza problemi}.
+  \item \hl{Lo zio \texttt{y} è nero e \texttt{z} è figlio destro del padre
+    \texttt{x}}. In questo caso eseguiamo una \hl{\texttt{LeftRotate(T, x)}
+    spostando la riparazione su \texttt{z} con \texttt{z.left = x}} (caso 3).
+  \item \hl{Lo zio \texttt{y} è nero e \texttt{z} è figlio sinistro del padre
+    \texttt{x}}. Ci basterà \hl{scambiare i colori di \texttt{z.p.p = x.p} e
+    \texttt{x}} ed eseguire una \hl{\texttt{RightRotate(T, x}.p)}.
+\end{enumerate}
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Algoritmo di riparazione a seguito di un inserimento,
+  label=lst:rb-riapara-inserisci,
+]
+  RiparaRBInserisci(T, z)
+    while z.p.color = red
+      if z.p `\peq` z.p.p.left
+        y `\peq` z.p.p.right
+        if y.color = red          // caso 1
+          z.p.color `\peq` black
+          y.color `\peq` black
+          z.p.p.color `\peq` red
+          z `\peq` z.p.p
+        else
+          if z = z.p.right        // caso 2
+            z `\peq` z.p
+            LeftRotate(z)
+          z.p.color `\peq` black      // caso 3
+          z.p.p.color `\peq` red
+          RightRotate(z.p.p)
+      else
+        y `\peq` z.p.p.left
+        if y.color = red          // caso 1
+          z.p.color `\peq` black
+          y.color `\peq` black
+          z.p.p.color `\peq` red
+          z `\peq` z.p.p
+        else
+          if z = z.p.left         // caso 2
+            z `\peq` z.p
+            RightRotate(z)
+          z.p.color `\peq` black      // caso 3
+          z.p.p.color `\peq` red
+          LeftRotate(z.p.p)
+    T.root.color `\peq` black
+\end{lstlisting}
+
+Nei \hl{casi 2 e 3} la procedura \hl{\texttt{RiparaRBInserisci()} deve solo
+effettuare un cambio di colori locale e 2 o 1 rotazioni/e}. Tutte queste
+operazioni sono \hl{$\mathcal{O}(k)$}. Nel \hl{primo caso} la routine
+\hl{continua analizzando il nodo padre del nodo corrente}. Nel \hl{caso pessimo}
+il ciclo itera un \hl{numero di volte pari a meta dell'altezza dell'albero}. Ciò
+significa che l'intero inserimento prenderà al più \hl{$\mathcal{O}(\log(n))$}.
 
 \end{document}
