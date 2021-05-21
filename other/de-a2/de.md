@@ -812,3 +812,16 @@ Im Urlaub braucht man:
 3. einen bunten Sonnenschirm
 4. einen grossen Koffer
 5. ein leeren Schrank (falsch)
+
+## KB, Übung a, Seite 127
+
+1. Ein Reiseführer, der sehr viel redet.
+2. Zwei Koffer, die noch in Keller stehen.
+3. Flugtickets, die noch nicht bezahlt sind.
+4. Eine Zahnbürste, die zu Hause liegen.
+5. Ansichtskarten, die nicht angekommen sind.
+6. Blumen, die kein Wasser haben.
+7. Ein Hotel, das noch nicht fertig gebaut ist.
+8. Kinder, die im Pool laut spielen.
+9. Ein Reisepass, der nicht mehr gültig ist.
+10. Hemden, die bei der Reinigung sind.
