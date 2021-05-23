@@ -825,3 +825,25 @@ Im Urlaub braucht man:
 8. Kinder, die im Pool laut spielen.
 9. Ein Reisepass, der nicht mehr gültig ist.
 10. Hemden, die bei der Reinigung sind.
+
+## AB, Übung 10, Seite 129
+
+1. Die Lage des Hotels - Wo liegt das Hotel?  
+   Die Zufriedenheit der anderen Gäste - Waren die anderen Gäste zufrieden?  
+   Der Preis der Zimmer - Wie viel kostet die Zimmer?  
+   Die Grösse der Zimmer - Wie gross ist die Zimmer?
+2. Die Farbe des Autos - Welche Farbe hat das Auto?  
+   Die Höhe der Wagenmiete - Wie hoch ist die Wagenmiete?  
+   Die Grösse des Autos - Wie gross ist das Auto?  
+   Die Höchstgeschwindigkeit - Wie schnell fährt das Auto?
+3. Die Abfahrt des Zuges - Wann fährt die Zug ab?  
+   Der Preis der Fahrkarte - Wie viel kostet die Fahrkarte?  
+   Die Dauer der Reise - Wie lange dauert die Reise?  
+   Die Ankunft des Zuges - Wann kommt die Zug an?
+
+## KB, Übung c, Seite 135
+
+1. ich interessiere mich für Ausstellungen.
+2. Ich ärgere mich über den Müll auf der Strasse.
+3. Ich freue mich über Rockkonzerte.
+4. Ich kümmere mich gern um die Katze der Nachbarin.
