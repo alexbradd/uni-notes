@@ -80,7 +80,7 @@
   style=mystyle,
 }
 \lstdefinelanguage{pseudocodice}{
-  morekeywords={if,else,for,to,while,do,return,NIL},
+  morekeywords={if,else,for,to,downto,while,do,return,NIL},
   sensitive=true,
   morestring=[b]",
   morecomment=[l]{//}
@@ -560,7 +560,7 @@ entrambi gli automi di partenza}. Dati i due automi di partenza:
   A^2 &= \langle Q^2, I, \delta^2, q_0^2, F^2 \rangle
 \end{align}
 
-Possiamo scrivere l'automa intersezione come:
+\noindent Possiamo scrivere l'automa intersezione come:
 
 \begin{gather}
   \langle A^1, A^2 \rangle = \langle Q^1 \times Q^2, I, \delta,
@@ -569,8 +569,8 @@ Possiamo scrivere l'automa intersezione come:
     \delta(q^2, i) \rangle
 \end{gather}
 
-Con una semplice induzione si può dimostrare che il linguaggio di un automa così
-definito è $L(\langle A^1, A^2 \rangle) = L(A^1) \cap L(A^2)$.
+\noindent Con una semplice induzione si può dimostrare che il linguaggio di un
+automa così definito è \\ $L(\langle A^1, A^2 \rangle) = L(A^1) \cap L(A^2)$.
 
 \begin{figure}[htb]
   \begin{tikzpicture}[node distance=2cm,auto]
@@ -624,13 +624,13 @@ per ottenere~\ref{eqn:automa-intersezione} abbiamo:
     \langle q_0^1, q_0^2 \rangle, F^1 \times Q^2 \cup Q^1 \times F^2 \rangle
 \end{equation}
 
-Questo approccio presenta, però, un \hl{problema}: \hl{non funziona se l'automa
-di partenza non è completo}. Con l'intersezione non avevamo problemi perché
-l'automa intersezione accettava solo stringhe accettate da entrambi gli automi
-iniziali, rimuovendo il problema della non completezza. Con l'unione invece
-otterremo un automa che accetta anche quando uno degli automi iniziali non
-accetta, rendendo problematico il caso di un errore dovuto alla parzialità della
-funzione di transizione. \hl{Bisogna, quindi, ricordarsi di completare gli
+\noindent Questo approccio presenta, però, un \hl{problema}: \hl{non funziona se
+l'automa di partenza non è completo}. Con l'intersezione non avevamo problemi
+perché l'automa intersezione accettava solo stringhe accettate da entrambi gli
+automi iniziali, rimuovendo il problema della non completezza. Con l'unione
+invece otterremo un automa che accetta anche quando uno degli automi iniziali
+non accetta, rendendo problematico il caso di un errore dovuto alla parzialità
+della funzione di transizione. \hl{Bisogna, quindi, ricordarsi di completare gli
 automi aggiungendo eventuali stati di errore prima di eseguirne l'unione}.
 
 \paragraph{Complemento} Per il complemento la situazione è \hl{analoga
@@ -1452,13 +1452,13 @@ d'ingresso} eseguiamo un \hl{ciclo}:
     \hl{viene sostituita} dalla corrispondente \hl{parte sinistra} $\alpha$.
 \end{enumerate}
 
-Questo ciclo è chiamato \hl{``processo di riduzione''} della stringa. Per come
-abbiamo strutturato il ciclo abbiamo che \hl{$\alpha \deriv \beta$ se e solo se
-$\langle q, Z_0, \alpha \rangle \vdash^\star \langle q, Z_0, \beta \rangle$}. Se
-e quando il \hl{contenuto del nastro d'ingresso} diviene \hl{l'assioma $S$}
-della grammatica, la \hl{stringa} d'ingresso verrà \hl{accettata}. Il
-procedimento descritto \hl{non garantisce che la macchina di Turing generata
-riesca a concludere sempre la computazione}.
+\noindent Questo ciclo è chiamato \hl{``processo di riduzione''} della stringa.
+Per come abbiamo strutturato il ciclo abbiamo che \hl{$\alpha \deriv \beta$ se e
+solo se $\langle q, Z_0, \alpha \rangle \vdash^\star \langle q, Z_0, \beta
+\rangle$}. Se e quando il \hl{contenuto del nastro d'ingresso} diviene
+\hl{l'assioma $S$} della grammatica, la \hl{stringa} d'ingresso verrà
+\hl{accettata}. Il procedimento descritto \hl{non garantisce che la macchina di
+Turing generata riesca a concludere sempre la computazione}.
 
 \subparagraph{Grammatica equivalente a TM} Eseguire il processo inverso è più
 complicato. Poiché una \hl{grammatica non può ricevere una stringa in input e
@@ -1479,11 +1479,12 @@ accettata dalla TM}\@. Innanzitutto la grammatica deve possedere le
     \text{(quando scorro attraverso $\termsep$ trasformo)}
 \end{align}
 
-Dobbiamo ora \hl{simulare ogni possibile mossa della macchina di Turing con una
-derivazione}. Consideriamo una \hl{macchina di Turing con configurazione pari a
-quella rappresentata in figura}~\ref{fig:grammatica-mt-stato}. Tale
-configurazione è \hl{rappresentata dalla stringa $\termsep\alpha BqAC\beta$}. In
-base ai valori assunti da $\delta$ \hl{possiamo agire in 3 diversi modi}:
+\noindent Dobbiamo ora \hl{simulare ogni possibile mossa della macchina di
+Turing con una derivazione}. Consideriamo una \hl{macchina di Turing con
+configurazione pari a quella rappresentata in
+figura}~\ref{fig:grammatica-mt-stato}. Tale configurazione è \hl{rappresentata
+dalla stringa $\termsep\alpha BqAC\beta$}. In base ai valori assunti da $\delta$
+\hl{possiamo agire in 3 diversi modi}:
 
 \begin{enumerate}
   \item \hl{$\delta(q, A) = \langle q', A', R \rangle$} aggiungo \hl{$qA \to
@@ -3304,8 +3305,8 @@ accessibili con una notazione C-like:
   \item \hl{\texttt{A[i..j]}} per estrarre un \hl{sotto-array} (slice).
 \end{itemize}
 
-È anche possibile creare \hl{tipi aggregati, i vari campi di questi sono
-indirizzabili tramite `\texttt{.}'}. I tipi aggregati sono di default
+\noindent È anche possibile creare \hl{tipi aggregati, i vari campi di questi
+sono indirizzabili tramite `\texttt{.}'}. I tipi aggregati sono di default
 \hl{identificati da un puntatore alla struttura}, quindi la notazione
 `\texttt{.}' equivale al \texttt{->} del C/C++. Un \hl{puntatore indefinito ha
 valore \texttt{NIL}}.
@@ -4076,7 +4077,7 @@ indici \texttt{tail} e \texttt{head} e del numero di elementi contenuti
     \hl{costante}.
 \end{itemize}
 
-Per \hl{ampliare lo stoccaggio}, possiamo \hl{creare una nuova coda di
+\noindent Per \hl{ampliare lo stoccaggio}, possiamo \hl{creare una nuova coda di
 dimensione maggiori e spostare gli elementi uno a uno usando \texttt{Enqueue()}
 e \texttt{Dequeue()}}.
 
@@ -4109,8 +4110,8 @@ quella usata per le code implementate con vettore}:
     \hl{costante}.
 \end{itemize}
 
-Anche per \hl{ampliare lo stoccaggio} useremo la \hl{stessa strategia} che
-abbiamo usato per le \hl{code}.
+\noindent Anche per \hl{ampliare lo stoccaggio} useremo la \hl{stessa strategia}
+che abbiamo usato per le \hl{code}.
 
 \paragraph{Lista} Per \hl{implementare} un mazzo con una \hl{lista non basta più
 una lista semplice}, singolarmente concatenata, ma \hl{serve una doppiamente
@@ -4179,7 +4180,7 @@ l'indirizzamento aperto, o closed hashing.
 
 \paragraph{Indirizzamento chiuso} \hl{Ogni riga}, detta \hl{bucket}, della
 tabella \hl{contiene la testa di una lista} al posto del puntatore ad un singolo
-elemento.  Nel caso di \hl{collisione, l'elemento nuovo viene aggiunto in testa
+elemento. Nel caso di \hl{collisione, l'elemento nuovo viene aggiunto in testa
 alla lista}. Per \hl{cercare o cancellare un elemento di chiave $k$}, è
 necessario \hl{cercare nell'intera lista del bucket} $h(k)$.
 
@@ -4265,8 +4266,8 @@ garantire ciò è:
   \item \hl{Se $m$ è primo, fare sì che $h_2$ generi numeri minori di $m$}.
 \end{itemize}
 
-È importante che \hl{$h_2$ non restituisca mai zero}, sennò la sequenza di
-probing degenererebbe.
+\noindent È importante che \hl{$h_2$ non restituisca mai zero}, sennò la
+sequenza di probing degenererebbe.
 
 \paragraph{Ipotesi di hashing uniforme semplice} Una \hl{opportuna scelta di
 $h(k)$ fa sì che ogni chiave abbia la stessa probabilità $\frac{1}{n}$ di finire
@@ -4520,9 +4521,9 @@ Abbiamo due casi possibili di ricerca:
     appare nel suo sotto-albero sinistro}.
 \end{itemize}
 
-Lo pseudocodice della ricerca del successore è l'algoritmo~\ref{lst:bst-next}.
-Anche in questo caso la complessità è \hl{$\mathcal{O}(h)$}, sia nel caso ottimo
-che nel pessimo.
+\noindent Lo pseudocodice della ricerca del successore è
+l'algoritmo~\ref{lst:bst-next}. Anche in questo caso la complessità è
+\hl{$\mathcal{O}(h)$}, sia nel caso ottimo che nel pessimo.
 
 \begin{lstlisting}[
   language=pseudocodice,
@@ -4573,7 +4574,7 @@ ricerca} (che ovviamente fallirà) e \hl{inserire il nuovo nodo nel posto
 numero di figli dell'elemento da rimuovere}:
 
 \begin{enumerate}
-  \setcounter{enumi}{0}
+  \setcounter{enumi}{-1}
   \item L'elemento non ha figli quindi è \hl{sufficiente eliminarlo} ripulendo la
     memoria e i puntatori del padre.
   \item L'elemento può essere \hl{sostituito dal suo unico figlio} nel suo
@@ -4585,8 +4586,8 @@ numero di figli dell'elemento da rimuovere}:
     definizione stessa di successore.
 \end{enumerate}
 
-Anche in questo caso otteniamo \hl{complessità $\mathcal{O}(h)$}. Un algoritmo
-che implementa il ragionamento sopra è il seguente.
+\noindent Anche in questo caso otteniamo \hl{complessità $\mathcal{O}(h)$}. Un
+algoritmo che implementa il ragionamento sopra è il seguente.
 
 \begin{lstlisting}[
   language=pseudocodice,
@@ -4674,7 +4675,7 @@ definizione nero}. Anche il \hl{padre della radice punta a \texttt{T.nil}}.
 
 Tutte le \hl{operazioni che non vanno a modificare la struttura dell'albero}
 (ricerca, minimo, massimo ecc\ldots) \hl{operano come se l'albero RB fosse un
-BST}.  Le \hl{operazioni di inserimento e cancellazione}, invece,
+BST}. Le \hl{operazioni di inserimento e cancellazione}, invece,
 \hl{necessitano di ``riparare''} l'albero, ossia ridistribuire gli elementi in
 modo da non violare gli invarianti RB. \hl{Per avere una complessità
 accettabile} è necessario che l'operazione di \hl{riparazione}, o
@@ -4790,7 +4791,7 @@ inserito, riparare l'albero. Possono esserci diversi \hl{casi}:
     è figlio destro del ``nonno''.
 \end{itemize}
 
-Consideriamo solo i \hl{3 casi del lato sinistro}.
+\noindent Consideriamo solo i \hl{3 casi del lato sinistro}.
 
 \begin{enumerate}
   \item \hl{Lo zio \texttt{y} è rosso}. Innanzitutto \hl{ricoloriamo
@@ -4851,5 +4852,209 @@ operazioni sono \hl{$\mathcal{O}(k)$}. Nel \hl{primo caso} la routine
 \hl{continua analizzando il nodo padre del nodo corrente}. Nel \hl{caso pessimo}
 il ciclo itera un \hl{numero di volte pari a meta dell'altezza dell'albero}. Ciò
 significa che l'intero inserimento prenderà al più \hl{$\mathcal{O}(\log(n))$}.
+
+\paragraph{Cancellazione} La cancellazione procede a cancellare il nuovo
+elemento \hl{come se l'albero fosse un semplice BST salvo l'uso di
+\texttt{T.nil} al posto di \texttt{NIL} e invocare la procedura di
+ribilanciamento}. Nel caso sia \hl{eliminato un nodo rosso è impossibile violare
+le proprietà} e quindi non sarà necessario nessun cambiamento. Se il \hl{nodo
+eliminato invece è nero}, la funzione \hl{\texttt{RiparaRBCancella(x)}, dato il
+nodo \texttt{x} presente al posto di quello cancellato \texttt{z} ribilancia
+l'albero}. La funzione di riparazione gestisce \hl{5 casi} (come
+nell'inserimento, \hl{omettiamo i simmetrici} 5 casi per quando \texttt{x} è
+figlio destro):
+
+\begin{enumerate}
+  \setcounter{enumi}{-1}
+  \item \hl{Caso banale: \texttt{x} è rosso}. Semplicemente \hl{ricoloriamo}
+    \texttt{x} di nero.
+  \item \hl{\texttt{x} è nero con fratello \texttt{w} rosso}. \hl{Scambiamo i
+    colori di \texttt{w} e \texttt{w.p}} e invochiamo una
+    \hl{\texttt{LeftRotate(x.p)}}. Ci riconduciamo ai \hl{casi 2,3 o 4}.
+  \item \hl{texttt{x} è nero con fratello \texttt{w} nero e nipoti entrambi
+    neri}. Coloriamo \hl{\texttt{w} di rosso} e invochiamo \\
+    \hl{\texttt{RiparaRBCancella(x.p)}}.
+  \item \hl{\texttt{x} è nero con fratello \texttt{w} nero e nipote destro
+    nero}. \hl{Scambiamo di colore \texttt{w} e \texttt{w.left}} ed invochiamo
+    \hl{\texttt{RightRotate(w)}} riconducendoci al \hl{caso 4}.
+  \item \hl{\texttt{x} è nero con fratello \texttt{w} nero e nipote destro
+    rosso}. Assegnamo a \hl{\texttt{w} il colore di \texttt{w.p}} e rendiamo
+    \hl{\texttt{w.right} nero}. Invochiamo quindi \hl{\texttt{LeftRotate(w.p)}}.
+\end{enumerate}
+
+\noindent Nei \hl{casi 0,1,3 e 4} della funzione \texttt{RiparaRBCancella()}
+vengono effettuati un \hl{numero costante di rotazioni e scambi di colore},
+rendendo il tutto \hl{$\mathcal{O}(k)$}. L'unica \hl{chiamata ricorsiva} avviene
+nel \hl{caso 2}. Poiché ad ogni chiamata, nel caso pessimo, si risale di un
+livello verso la radice, verranno effettuate \hl{al massimo
+$\mathcal{O}(\log(n))$ chiamate}. Detto ciò, possiamo affermare che la procedura
+di \hl{cancellazione sarà $\mathcal{O}(\log(n))$} come le altre operazioni di
+modifica su alberi RB.
+
+\subsubsection{Mucchi (heap)}\label{sec:heap}
+
+Il mucchio, o heap, è una struttura dati ad albero nella quale \hl{la chiave del
+nodo padre è sempre maggiore (max-heap) di quella dei figli}. \hl{Nessuna relazione
+sussiste tra le chiavi di due fratelli}. È possibile definire anche la variante
+dove il nodo padre è minore rispetto ai figli, creando una min-heap. Poiché
+parliamo lavoriamo con alberi binari, anche la nostra heap sarà detta binaria.
+
+\hl{Manteniamo le heaps come alberi binari quasi completi}. In memoria li
+vedremo come \hl{array di elementi ordinati per livello}. Terremo anche \hl{due
+attributi ausiliari: \texttt{heapsize}, il numero di elementi nello heap, e
+\texttt{length} che indica la lunghezza dell'array di supporto}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[
+    level distance=1cm,
+    level 1/.style={sibling distance=2.75cm},
+    level 2/.style={sibling distance=2cm}
+  ]
+    \node[circle,draw] {30}
+      child {
+        node[circle,draw] {19}
+          child { node[circle,draw] {7} }
+          child { node[circle,draw] {11} }
+      }
+      child {
+        node[circle,draw] {20}
+            child { node[circle,draw] {3} }
+      };
+  \end{tikzpicture}
+  \caption{Esempio di heap salvata nel vettore $H = [ 30, 19, 20, 7, 11, 3 ]$}%
+  \label{fig:es-heap}
+\end{figure}
+
+Quindi il primo elemento sarà la radice, i 2 elementi successivi saranno il
+primo livello, i 4 elementi il secondo e così via. Le foglie mancanti saranno,
+quindi, sempre quelle a occupare gli ultimi posti dell'array.
+
+Gli heap, in particolare gli heap binary che affronteremo, trovano impiego per
+l'\hl{implementazione di code con priorità e l'ordinamento di vettori}. Le
+\hl{operazioni} su un max-heap che vedremo sono: \hl{texttt{Max()},
+\texttt{Inserisci()}, \texttt{Cancella\_Max()}, \texttt{Costruisci\_Max\_Heap()}
+e \texttt{Max\_Heapify()}}.
+
+\paragraph{Operazioni} Per implementare le primitive necessarie necessitiamo di
+una \hl{procedura di supporto: \texttt{Max\_Heapify()}}. Per semplicità, nel trattare
+queste operazioni considereremo gli \hl{indici come 1-based}.
+
+\subparagraph{\texttt{Max\_Heapify()}} La funzione \texttt{Max\_Heapify(A, n)}
+riceve come \hl{input un array è una posizione in esso}. \hl{Si assume che i due
+sotto-alberi con radice in \texttt{Left(n) = 2n} e \texttt{Right(n) = 2n + 1}
+siano dei max-heap}. La \hl{routine modificherà}, quindi, \hl{\texttt{A}
+affinché l'albero radicato in \texttt{n} sia un max-heap}. La procedura causerà
+la discesa del nuovo valore verso le foglie finché sarà maggiore dei figli. Nel
+caso pessimo la \hl{complessità sarà $\mathcal{O}(\log(n))$} in un heap con $n$
+elementi.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Psudocodice di \texttt{Max\_Heapify()}
+]
+  Max_Heapify(A, n)
+    l `\peq` Left(n)
+    r `\peq` Right(n)
+    if l $\leq$ A.heapsize and A[l] > A[n]
+      posmax `\peq` l
+    else
+      posmax `\peq` n
+    if r $\leq$ A.heapsize and A[r] > A[posmax]
+      posmax `\peq` r
+    if posmax $\neq$ n
+      Swap(A[n], A[posmax])
+      Max_Heapify(A, posmax)
+\end{lstlisting}
+
+\subparagraph{\texttt{Costruisci\_Max\_Heap()}} La routine \hl{trasforma un
+array in una heap chiamando iterativamente \texttt{Max\_Heapify()}}. Poiché uno
+\hl{heap binario è sempre alto $\lfloor \log(n) \rfloor$} per come l'abbiamo
+definito, il \hl{numero di nodi con altezza $h$} sarà:
+
+\begin{equation}
+  \mhl{
+    h \leq \frac{2^{\lfloor \log(n) \rfloor}}{2^h} \leq \frac{n}{2^h}
+  }
+\end{equation}
+
+\noindent Calcolare \hl{\texttt{Max\_Heapify()}} per un nodo richiede \hl{al più
+$\mathcal{O}(h)$ spostamenti verso il basso}. Possiamo quindi calcolare il
+\hl{costo complessivo sommando, per ogni livello, il costo di ``mucchificare''
+ogni elemento di esso ottenendo}:
+
+\begin{equation}
+  \mhl{ \sum_{h = 0}^{\lfloor \log(n) \rfloor} \frac{n}{2^h}\mathcal{O}(h) } =
+    n\mathcal{O}(\sum_{h = 0}^{\lfloor \log(n) \rfloor} \frac{h}{2^h}) =
+    \mhl{ n * k }
+\end{equation}
+
+\noindent Poiché $\sum_{h = 0}^{\lfloor \log(n) \rfloor} \frac{h}{2^h}$
+converge. Avremo quindi che \hl{\texttt{Costruisci\_Max\_Heap()} avrà costo
+$\mathcal{O}(n)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice di \texttt{Max\_Heapify()}
+]
+  Costruisci_Max_Heap(A)
+    A.heapsize `\peq` A.legnth
+    for i `\peq` $\lfloor \mathtt{A.length/2} \rfloor$ downto 1
+      Max_Heapify(A, i)
+\end{lstlisting}
+
+\subparagraph{\texttt{Max()}} Operazione banale eseguita in tempo costante:
+\texttt{return A[1]}.
+
+\subparagraph{\texttt{Cancella\_Max()}} Estrarre l'elemento con la massima
+chiave \hl{costa $\mathcal{O}(\log(n))$}. \hl{In media, però, il costo è
+inferiore}. Si nota come la rimozione sia più efficiente rispetto a quella in un
+vettore ordinato, dove è $\mathcal{O}(n)$.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice di \texttt{Cancella\_Max()}
+]
+  Cancella_Max(A)
+    if A.heapsize < 1
+      return $\bot$
+    max `\peq` A[1]
+    A[1] `\peq` A[A.heapsize]
+    Max_Heapify(A, 1)
+    return max
+\end{lstlisting}
+
+\subparagraph{\texttt{Inserisci()}} Inserisce un elemento con una data chiave
+\texttt{key}. La \hl{complessità sarà $\mathcal{O}(\log(n))$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice di \texttt{Inserisci()}
+]
+  Inserisci(A, key)
+    A.heapsize `\peq` A.heapsize + 1
+    A[A.heapsize] `\peq` key
+    i `\peq` A.heapsize
+    while i > 1 and A[Parent(i)] < A[i]
+      Swap(A[Parent(i)], A[i])
+      i `\peq` Parent(i)
+\end{lstlisting}
+
+\paragraph{Code con priorità} Una \hl{coda con priorità} è una struttura dati a
+\hl{coda} in cui \hl{è possibile dare una priorità numerica agli elementi
+all'interno}. Gli \hl{elementi con priorità maggiore verranno estratti sempre
+prima di elementi con priorità minore} indipendentemente dall'ordine di
+inserimento. L'implementazione più comune di una coda con priorità è, come già
+detto prima, un max-heap nel quale la priorità di un elemento sarà la sua
+chiave. L'\hl{accodamento} di nuovi elementi verrà effettuato tramite
+\hl{\texttt{Inserisci()}} e la \hl{rimozione} dell'elemento con massima priorità
+tramite \hl{\texttt{Cancella\_Max()}}. Quindi una coda con priorità così
+implementata ha \hl{costo $\mathcal{O}(\log(n))$ sia per enqueue che per
+dequeue}. La \hl{costruzione di una coda} a partire da un array tramite
+\texttt{Costruisci\_Max\_Heap()}, invece, ha \hl{costo lineare}.
 
 \end{document}

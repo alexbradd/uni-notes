@@ -2472,7 +2472,7 @@ Cambiare l'invariante del BST rendendo le disuguaglianze strette rende gli
 elementi del BST unici. Un a visita in ordine di un BST stampa le chiavi in
 ordine.
 
-#### Ricerca
+##### Ricerca
 
 La struttura dei BST li rende naturali candidati per una ricerca efficace degli
 elementi per chiave.
@@ -2491,7 +2491,7 @@ La complessità è $O(h)$, dove $h$ è l'altezza dell'albero. Nel caso ottimo
 (ossia di albero ben bilanciato) la complessità diventa $O\log(n)$. Nel caso
 peggiore, la complessità degenera in $O(n)$.
 
-#### Minimo e massimo
+##### Minimo e massimo
 
 ```txt
 Min(T)
@@ -2511,7 +2511,7 @@ Max(T)
 
 Entrambe le funzioni hanno costo $\Theta(h)$.
 
-#### Successore
+##### Successore
 
 Il successore di un elemento `x` è l'elemento `y` con la più piccola chiave
 `y.key > x.key` presente nel BST. Nel cercarlo sono possibili due casi:
@@ -2534,7 +2534,7 @@ Successore(x)
 
 La complessità sarà $\Theta(h)$
 
-#### Inserimento
+##### Inserimento
 
 L'inserimento di un nuovo elemento deve rispettare la proprietà fondamentale del
 BST. Assumiamo che il BST non debba contenere duplicati. L'idea è di cercare
@@ -2562,7 +2562,7 @@ Inserisci(T,x)
 
 La complessità sarà $O(h)$.
 
-#### Cancellazione
+##### Cancellazione
 
 La strategia di cancellazione di un elemento da un BST dipende dal numero di
 figli dell'elemento in questione:
@@ -2644,3 +2644,110 @@ POssono essere violate la proprietà 4 e la 2. Dobbiamo quindi creare una
 procedura di riparazione.
 
 ...
+
+##### Cancellazione (RBT)
+
+Nel caso di eliminazione di un nodo rosso, si opera come nel caso dei BST salvo
+alcune modifiche. Se il nodo eliminato $x$ è nero, dobbiamo riparare l'albero.
+
+1. Il fratello `w` del nodo è rosso
+
+   > Scambio i colori di `w` e `w.p`, LeftRotate(x.p). Ora `x` ha un fratello
+   > `w` nero, cadendo nei casi 2, 3, e 4.
+
+2. Il fratello `w` del nodo è nero e $x$ ha entrambi i nipoti neri
+
+   > Coloro `w` di rosso e richiamo `RiparaRBCancella(x.p)`
+
+3. Il fratello del nodo è nero e $x$ ha il nipote sinistro rosso
+
+   > `w` prende il colore del padre, mentre `w.right` diventa nero. Invoco
+   > `LeftRotate(w.p)`. Scambio di colore `w` w `w.left`, `RightRotate(w)`.
+
+4. Il fratello del nodo è nero e $x$ ha il nipote destro rosso
+
+  > ...
+
+...(complessità)
+
+#### Mucchi (Heap)
+
+UN mucchio è uno struttura dati ad albero in cui la chiave del nodo padre è
+sempre maggiore di quella dei figli (max-heap). Nessuna relazione sussiste tra
+le chiavi di due fratelli. Se l'albero è binario, parliamo di heap binarie. Gli
+heap trovano usano nell'implementazione di code con priorità o nell'ordinamento
+di vettori.
+
+Per tutti gli usi più comuni, è conveniente materializzare lo heap sempre come
+struttura dati implicita salvata su array:
+
+- È un albero binario quasi completo, ossia le foglie mancanti sono quelle che
+  occupano la parte finale dell'array in cui è stoccato
+- Avremo un attributo `A.heapsize` che indica il numero di elementi dello heap e
+  `A.length` che contiene la lunghezza dell'array di supporto.
+
+Le operazioni su un max-heap sono: `Max`, `Inserisci`, `Cancella_Max`,
+`Costruisci_Max_Heap`, `Max_Heapify`.
+
+##### Code con priorità
+
+Una coda con priorità è un astruttura dati a coda in cui è possibile dare una
+priorità numerica agli elementi all'interno. Elementi con priorità maggiore
+verranno...
+
+La `Max-heapify(A, n)` riceve un array e una posizione in esso: assume che i due
+sottoalberi con radice stoccata in $2n$ e $2n+1$ siamo dei max-heap. La routine
+modifica `A` in modo che l'albero radicato in `n` sia un max-heap. `Max-Heapify`
+Ci consente di creare un max-heap con il seguente algoritmo:
+
+```txt
+Costruisci-Max-Heap(A)
+  A.heapsize <- A.length
+  for i <- floor(a.length / 2) downto 1
+    Max-Heapify(A, i)
+
+Max-Heapify(A,n)
+  l <- LEFT(n)
+  r <- RIGHT(n)
+  if l <= A.heapsize and A[l] > A[n]
+    posmax <- l
+  else
+    posmax <- n
+  if r <= A.heapsize and A[r] > A[posmax]
+    posmax <- r
+  if posmax != n
+    Swap(A[n], A[posmax])
+    Max-Heapify(A, posmax)
+```
+
+Nel caso pessimo `Max-Heapify` ha complessità $\Theta(\log(n))$. La costruzione
+di una heap sarà $O(n\log(n))$. È possibile dimostrare che la costruzione può
+essere eseguita in tempo lineare.
+
+La cancellazione del massimo (elemento con priorità massima) ha costo
+logaritmico ed è fatta così:
+
+```txt
+Cancella-Max(A)
+  if A.heapsize <l
+    return NIL
+  max <- A[1]
+  A[1] <- A[A.heapsize]
+  A.heapsize <- A.heapsize - 1
+  Max-Heapify(A, 1)
+  return max
+```
+
+L'inserimento è l'opposto della cancellazione: aggiunge l'elemento come ultima
+foglia e fa scalare l'elemento fino a quando non è minore del padre. Complessità
+logaritmica anche in questo caso.
+
+```txt
+Inserisci(A, key)
+  A.heapsize <- A.heapsize + 1
+  A[A.heapsize] <- key
+  i <- A.heapsize
+  while I > 1 and A[Parent(i)] < A[i]
+    Swap(A[Parent(i)], A[i])
+    i <- Parent(i)
+```
