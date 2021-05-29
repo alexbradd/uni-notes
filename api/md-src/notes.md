@@ -2751,3 +2751,168 @@ Inserisci(A, key)
     Swap(A[Parent(i)], A[i])
     i <- Parent(i)
 ```
+
+...(limite più preciso)
+
+##### Ordinamento
+
+Ordinare un array in ordine crescente può essere fattto trovando il masimo tra i
+suoi elementi e posizionandolo alla fine, quindi riperendo il procedimento sulla
+parte disordinata: questo è il `SelectionSort()`. Questo ordinamento è $O(n^2)$.
+Cosa cambia se rendiamo l'array un max-heap? Questo approccio si chiama Heapsort.
+
+```txt
+HeapSort(A)
+  Costruisci_Max_Heap(A)
+  for i <- A.length downto 2
+    Swap(A[i], A[i])
+    A.heapsize <- A.heapsize -1
+    Max-Heapify(A,1)
+```
+
+Il costo dello heapsort sarà $O(n\log(n))$ nel caso peggiore. Inoltre necessità
+solo di $O(1)$, a differenza di mergesort. Nelle implementazioni pratiche, nel
+caso medio è sempre più lento di Quicksort: heapsort ha un costo lineare sommato
+a $O(n\log(n))$ che viene sempre pagato. Heapsort non è un ordinamento stabile.
+
+### Grafi
+
+Il grafo è la struttura dati più naturale per rappresentare un insieme di
+oggetti legati da una generica relazione. La relazione tra oggetti è
+rappresentata da un insieme di coppie di oggetti (ordinate o meno).
+
+#### Definizione - Grafo
+
+Il grafo è una coppia $G = (V,E)$ con $V$ un insieme di nodi ed $E$ un insieme
+di archi
+
+Un albero è, quindi, un particolare tipo di grafo orientato. Se un grafo ha
+$|V|$ nodi, esso ha la più $|V|^2$ archi. Due nodi collegati da un arco si
+dicono adiacenti.  Un cammino tra due nodi $v_1, v_2$ è un insieme di archi di
+cui il primo ha origine in $v_1$, l'ultimo termina in $v_2$ e ogni nodo compare
+almeno una volta come destinazione di un arco che come sorgente. Un grafo è
+detto orientato se la coppia di nodi che costituisce un arco è ordinata. Un
+grafo orientato viene rappresentato indicando gli archi come frecce che puntano
+al secondo nodo della coppia. Un grafo è connesso se esiste un percorso per
+coppia di nodi e completo (completamente connesso) se esiste un arco tra ogni
+coppia di nodi. Un percorso è un ciclo se il nodo di inizio e fine coincidono e
+un grafo privo di cicli è detto aciclico. È facile notare che se un grafo è
+completo è anche ciclico.
+
+#### Rappresentazione in memoria
+
+Sono possibili due strategie per rappresentare un grafo: le liste di adiacenza e
+la matrice di adiacenza.
+
+La lista di adiacenza è un vettore di liste lungo $|V|$, indicizzato dai nomi
+dei nodi. Ogni lista contiene i nodi adiacenti all'indice della sua testa. La
+matrice di adiacenza è invece una matrice di valori booleani $|V| \times |V|$,
+con righe e colonne indicizzate dai nomi dei nodi. La cella alla riga $i$,
+colonna $j$ contiene 1 se l'arco $(v_i, v_j)$ è presente nel gravo e 0
+altrimenti.
+
+Le liste di adiacenza consumeranno, in termini di spazio, $\Theta(|V| + |E|)$
+mentre la matrice avrà $\Theta(|V|^2)$. Perciò la rappresentazione a liste è più
+compatta se il grafo è sparso ovvero se $|E| \ll |V|^2$. La complessità
+temporale per:
+
+- determinare se $(v_1, v_2)$ appartiene al grafo: liste $(O|V|)$, matrici
+  $O(1)$
+- Il numero di archi $o_e$ uscenti da un nodo: liste $\Theta(o_e)$, matrici
+  $O(|V|)$
+
+La matrice di adiacenza di un grafo non orientato è simmetrica rispetto alla
+diagonale principale, quindi posso stoccare solo metà. Analogamente, per le
+liste di adiacenza posso stoccare solo uno dei due archi e raddoppiare il tempo
+di ricerca per un nodo adiacente.
+
+#### Operazioni su grafi
+
+Le operazioni sui grafi sono tipicamente di ispezione: visita in ampiezza e il
+profondità. Vedremo anche operazioni che vanno a determina le proprietà di un
+grafo: trovare le componenti connesse, ordinamento topologico, percorso più
+breve tra due nodi e individuare cicli.
+
+##### Visita in ampiezza
+
+La strategia di visita in ampiezza visita tutti i nodi di un grafo a partire da
+un nodo sorgente $s$. Vengono visitati tutti i nodi con un cammino tra loro e
+$s$ lungo $n$ passi, prima di visita re quelli con un cammino più lungo $n+1$
+
+La visita di un grafo è più problematica ...
+
+Innanzitutto memorizziamo in una coda i nodi ancora da visitare. La coda è
+inizializzata con la sola sorgente. Estraiamo un nodo dalla coda e visitiamo i
+vicini bianchi, li coloriamo di gridio e calcoliamo la loro distanza e infine li
+accodiamo affinché siano visitati a loro volta. Manchiamo quindi il nodo estratto
+come nero e riprendiamo estraendo il successivo. La complessità totale sarà
+$O(|V| + |E|)$.
+
+Similmente alle visite degli alberi è possibile stampare i nodi in una visita di
+un grafo. La visita di in ampiezza di trasforma in un algoritmo di ricerca.
+Basta inserire un controllo appena si sta per accodare un nuovo elemento: se è
+quello corretto lo si ritorna.
+
+##### Visita in profondità
+
+Diversamente dalla visita in ampiezza, visitiamo prima i nodi adiacenti a quello
+dato, poi il nodo stesso. Segue i cammini...
+
+##### Componenti connesse
+
+È detta componente connessa di un grafo $G$ un insieme $S$ di nodi tali per cui
+esiste un cammino tra ogni coppia di essi, ma nessuno di essi è connesso a nodi
+diversi da $S$. Individuare le componenti connesse in un grafo equivale ad
+etichettare i nodi con lo steso valore se appartengono alla stessa componente.
+
+L'idea è sempre quella di usare i colori. Eseguiamo una visita e assegnamo una
+etichetta al nodo visitato. La complessità è $O(|V|)$.
+
+##### Ordinamento topologico
+
+Dato un grafo orientato, il predecessore di un nodo $v$ è un nodo $u$ tale per
+cui esiste un cammino da $u$ a $v$. Un valore utile da calcolare per un grafo è
+il cosiddetto ordinamento topologico. L'ordinamento topologico è una sequenza di
+nodi del grafo tale per cui nessun nodo compare prima di un suo predecessore.
+L'ordinamento topologico non è unico!
+
+Se un grafo non è connesso, le componenti connesse possono essere ordinate in
+qualunque modo l'una rispetto all'altra.
+
+Per calcolare l'ordinamento topologico è possibile riusare la procedura di
+visita in profondità. Quando però coloriamo un nodo di nero, lo inseriamo in
+testa ad una lista.
+
+##### Percorso più breve
+
+L'algoritmo di Dijkstra trova, dato un grafo orientato e un suo nodo $s$, i
+percorsi più brevi da un nodo a qualunque altro. Funziona sia si di un grafo
+classico che su di un grafo pesato.
+
+Il principio di funzionamento è il seguente:
+
+1. Inserisco ogni $v \in V / \{s\}$ in un insieme $Q$ dopo aver impostato il suo
+   attributo distanza a $\infty$ e il `v.pred` a `NIL`.
+2. Inserisco $s$ il $Q$ dopo aver impostato `s.dist <- 0`.
+3. Fin quando $Q$ non è vuoto, estratto il nodo $c$ con $dist$ minima e
+   controllo per ogni adiacente $a$ se hanno distanza minore di
+   `c.dist + peso(c,a)`. Se questo accade imposto `a.pred <- c`,
+   `a.dist <- c.dist + peso(c,a)`.
+
+Implementiamo l'algoritmo con l'uso di una coda basata su min-heap dove la
+priorità è la distanza. Abbassiamo così la complessità a $O((|E| +
+|V|)\log(|V|))$.
+
+##### Individuazione di cicli
+
+Dato un grafo per cui ogni nodo ha un solo successore, determiniamo, dato un
+nodo di partenza, se il cammino che parte da ha cicli.
+
+Usiamo due riferimenti `t` ed `l` che spostiamo a ogni passo nel caso di `t`
+dal nodo a cui punta al successore (1 passo) mentre nel caso di `l` dal nodo a
+cui punta al successore del successore (2 passi). Se esiste un ciclo, essi sono
+destinati ad "incontrarsi".
+
+Chiamiamo $C$ la lunghezza del ciclo e $T$ quella della coda (parte prima
+del ciclo). Quado `t` ha fettuato $T$ passi, `l` si trova sicuramente nelal
+porzione ciclica del grafo...

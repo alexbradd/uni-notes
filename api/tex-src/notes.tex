@@ -80,7 +80,7 @@
   style=mystyle,
 }
 \lstdefinelanguage{pseudocodice}{
-  morekeywords={if,else,for,to,downto,while,do,return,NIL},
+  morekeywords={if,else,for,each,to,downto,while,do,return,NIL},
   sensitive=true,
   morestring=[b]",
   morecomment=[l]{//}
@@ -470,7 +470,8 @@ di accettazione.
     (q4) edge                node {} (q5)
     (q5) edge  [bend left]   node {} (q0);
   \end{tikzpicture}
-  \caption{Peggior caso del teorema~\ref{thm:accettazione-ling-infinito}.}\label{fig:fsa-accettazione-ling-infinito}
+  \caption{Peggior caso del teorema~\ref{thm:accettazione-ling-infinito}.}%
+  \label{fig:fsa-accettazione-ling-infinito}
 \end{figure}
 
 Possiamo quindi vedere \hl{una stringa di un linguaggio infinito come composta
@@ -5056,5 +5057,307 @@ tramite \hl{\texttt{Cancella\_Max()}}. Quindi una coda con priorità così
 implementata ha \hl{costo $\mathcal{O}(\log(n))$ sia per enqueue che per
 dequeue}. La \hl{costruzione di una coda} a partire da un array tramite
 \texttt{Costruisci\_Max\_Heap()}, invece, ha \hl{costo lineare}.
+
+\paragraph{Ordinamento} Ordinare un array in ordine crescente può essere fatto
+trovando il massimo tra i suoi elementi e posizionandolo sempre alla fine della
+slice già ordinata. Questo è il procedimento del \hl{\texttt{SelectionSort()}}.
+Un ordinamento così strutturato ha complessità $\mathcal{O}(n^2)$. \hl{Se però
+prima di applicare rendiamo l'array un max-heap, riusciamo a rendere la
+complessità $\mathcal{O}(n\log(n))$ nel caso pessimo. Questo è il cosiddetto
+heapsort}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice di che implementa lo heapsort
+]
+  HeapSort(A)
+    Costruisci_Max_Heap(A)
+    for i `\peq` A.length downto 2
+      Swap(A[1], A[i])
+      A.heapsize `\peq` A.heapsize -1
+      Max_Heapify(A, 1)
+\end{lstlisting}
+
+\noindent Come detto prima, lo \hl{heapsort ha complessità
+$\mathcal{O}(n\log(n))$ in caso pessimo}, il minimo teorico. Inoltre ha
+\hl{complessità spaziale costante}, rendendolo più vantaggioso rispetto al
+mergesort. Nonostante ciò \hl{nel caso medio rimane più lento del quicksort}.
+Come mergesort (la versione in-place) e quicksort, anche \hl{heapsort non è
+stabile}.
+
+\subsection{Grafi}\label{sec:graphs}
+
+Il grafo è la struttura dati più naturale per rappresentare un insieme di
+oggetti legati da una generica relazione. Questa relazione è rappresentata da un
+insieme di coppie di oggetti, ordinate o meno.
+
+\begin{defn}[\hl{Grafo}]\label{def:graph}
+  Un \hl{grafo} è una \hl{coppia $\mathcal{G} = (\mathbf{V}, \mathbf{E})$} con
+  \hl{$\mathbf{V}$ un insieme di nodi} (o vertici) e \hl{$\mathbf{E}$ un insieme
+  di archi} (detti anche lati).
+\end{defn}
+
+Se un grafo ha \hl{$|\mathbf{V}|$ nodi}, esso avrà \hl{al più
+${|\mathbf{V}|}^2$} archi. Forniamo della nomenclatura utile che useremo:
+
+\begin{itemize}
+  \item Due \hl{nodi collegati} da un arco si dicono \hl{adiacenti}.
+  \item Un \hl{cammino tra due nodi $v_1$ e $v_2$ è un insieme di archi di cui
+    il primo ha origine in $v_1$, l'ultimo termina in $v_2$ e ogni nodo compare
+    almeno una volta sia come destinazione di un arco che come sorgente}.
+  \item Un grafo è detto \hl{orientato} se la \hl{coppia di nodi} che
+    costituisce un arco è \hl{ordinata}.
+  \item Un grafo è \hl{connesso} se \hl{esiste un percorso per coppia di nodi}.
+  \item Un grafo è \hl{completo} (completamente connesso) se \hl{esiste un arco
+    tra ogni coppia di nodi}.
+  \item Un percorso è un \hl{ciclo} se il \hl{nodo di inizio e di fine
+    coincidono}. Il ciclo si dice \hl{orientato se segue la direzione degli
+    archi}.
+  \item Un \hl{grafo privo di cicli} è detto \hl{aciclico}.
+\end{itemize}
+
+Sono possibili due strategie per \hl{rappresentare un grafo in memoria}:
+\hl{liste o matrici di adiacenza}. Le \hl{liste di adiacenza} sono un
+\hl{vettore di liste lungo $|\mathbf{V}|$, indicizzato dai nomi dei nodi. Ogni
+lista contiene i nodi adiacenti all'indice della sua testa}. La \hl{matrice di
+adiacenza} è invece una \hl{matrice $|\mathbf{V}| \times |\mathbf{V}|$ di valori
+booleani con righe e colonne indicizzate dai nomi dei nodi}. La \hl{cella alla
+riga $i$, colonna $j$} contiene \hl{$1$ se l'arco $(v_i, v_j)$ è presente nel
+grafo e $0$ altrimenti}. Le \hl{liste} sono una \hl{rappresentazione più
+compatta se il grafo è sparso} ($|\mathbf{E}| \leq {|\mathbf{V}|}^2$) in quanto
+sono \hl{$\Theta(|\mathbf{V}| + |\mathbf{E}|)$} \hl{contro} i
+\hl{$\Theta({|\mathbf{V}|}^2)$} di una \hl{matrice di adiacenza}. Le \hl{matrici
+di adiacenza} possono eseguire il \hl{test di appartenenza in tempo costante}.
+Le \hl{liste}, invece, possono \hl{contare il numero di archi uscenti da un nodo
+linearmente rispetto al numero di questi}, invece delle \hl{matrici} che sono
+\hl{lineari rispetto al numero totale di nodi}.
+
+Per rappresentare \hl{grafi non orientati} posso \hl{ottimizzare lo spazio}
+sfruttandone le proprietà:
+
+\begin{itemize}
+  \item La \hl{matrice di adiacenza di un grafo non orientato è simmetrica}
+    rispetto alla diagonale principale: posso \hl{stoccarne solo metà}.
+  \item Nelle \hl{liste di adiacenza possono stoccare solo uno dei due archi},
+    \hl{raddoppiando però il tempo di ricerca per un nodo adiacente}.
+\end{itemize}
+
+\paragraph{Operazioni sui grafi} Le operazioni sui grafi sono tipicamente di
+ispezione, ossia visita in ampiezza o in profondità, oppure vanno a determinare
+determinate proprietà del grafo, come ad esempio trovare le componenti connesse,
+stabilire l'ordinamento topologico, trovare il percorso più breve tra due nodi e
+individuare cicli. Vediamone un po'.
+
+\subparagraph{Visita in ampiezza} Chiamata anche \hl{Breadth First Search (BFS)} è
+una strategia di visita che \hl{visita tutti i nodi di un grafo $\mathcal{G}$ a
+partire da una sorgente $s$ visitando prima tutti i nodi con un cammino tra loro
+ed $s$ lungo $n$ prima di visitare quelli con un cammino lungo $n+1$}. Per
+evitare di iterare all'infinito nel caso di cicli, \hl{useremo dei ``colori'' per
+segnare i nodi}:
+
+\begin{itemize}
+  \item I nodi \hl{bianchi} devono essere \hl{ancora visitati}.
+  \item I nodi \hl{grigi} sono stati \hl{visitati ma devono essere visitati
+    quelli adiacenti}.
+  \item I nodi \hl{neri} sono stati \hl{visitati e sono stati anche visitati gli
+    adiacenti}.
+\end{itemize}
+
+\noindent Memorizzeremo \hl{in una coda, inizializzata con la sola sorgente}, i
+nodi ancora \hl{da visitare}. \hl{Estrarremo un nodo dalla coda e ne visiteremo
+i vicini bianchi, colorandoli di grigio calcolandone la distanza e accodandoli
+affinché siano a loro volta visitati}. Marchiamo quindi il \hl{nodo estratto di
+nero} e \hl{iteriamo} estraendo il successivo \hl{finché la coda non è vuota}.
+La complessità totale di questo algoritmo sarà \hl{$\mathcal{O}(|\mathbf{V}| +
+|\mathbf{E}|)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice che implementa un BFS
+]
+  VisitaAmpiezza(G, s)
+    for each n $\in \mathbf{V} \setminus \{s\}$
+      n.color `\peq` white
+      n.dist `\peq` $\infty$
+    s.color `\peq` grey
+    s.dist `\peq` 0
+    Q `\peq` $\emptyset$
+    Enqueue(Q, s)
+    while $\lnot$IsEmpty(Q)
+      curr `\peq` Dequeue(Q)
+      for each v $\in \mathtt{curr.adiacenti}$
+        if v.color = white
+          v.color `\peq` gray
+          v.dist `\peq` curr.dist + 1
+          Enqueue(Q, v)
+        curr.color `\peq` black
+\end{lstlisting}
+
+\noindent La visita in ampiezza \hl{si può trasformare in un algoritmo di
+ricerca: basta inserire un controllo appena si sta per accodare un nuovo
+elemento}.
+
+\subparagraph{Visita in profondità} A differenza della visita in ampiezza, nella
+visita in profondità (\hl{Depth First Search o DFS}) \hl{visitiamo prima i nodi
+adiacenti a quello dato, poi il nodo stesso seguendo i cammini fino in fondo}.
+Lo pseudocodice di una DFS è \hl{uguale a quello di una BFS in qui però si
+sostituisce una la coda con una pila. La complessità è la stessa}.
+
+\subparagraph{Componenti connesse} È detta \hl{componente connessa di un grafo
+$\mathcal{G}$ un insieme $\mathbf{S}$ di nodi tali per cui esiste un cammino
+tra ogni coppia di essi, ma nessuno di essi è connesso a nodi non appartenenti a
+$\mathbf{S}$}. Individuare le componenti connesse in un grafo \hl{equivale ad
+etichettare i nodi con lo stesso valore se appartengono alla stessa componente}.
+La complessità sarà \hl{$\mathcal{O}(|\mathbf{V}|)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Psudocodice per l'etichettatura delle componenti connesse,
+  label=lst:componenti-connesse
+]
+  for each v $\in \mathbf{V}$
+    v.etichetta `\peq` -1
+  eti `\peq` 1
+  for each v $\in \mathbf{V}$
+    if v.etichetta = -1
+      VisitaEdEtichetta(G, v, eti)
+      eti `\peq` eti + 1
+\end{lstlisting}
+
+\noindent La \hl{funzione ausiliaria \texttt{VisitaEdEtichetta()}} usata
+in~\ref{lst:componenti-connesse} si comporta come una \hl{BFS/DFS} che
+\hl{imposta a \texttt{eti} il campo \texttt{etichetta} del nodo visitato}.
+
+\subparagraph{Ordinamento topologico} L'\hl{ordinamento topologico} è un valore
+utile da calcolare per un grafo orientato aciclico. Esso è \hl{una sequenza di
+nodi tale per cui nessun nodo compare prima di un suo predecessore}. Il
+predecessore di un nodo è così definito:
+
+\begin{defn}[\hl{Predecessore}]\label{def:graph-predecessor}
+  Dato un \hl{grafo orientato}, il \hl{predecessore di un nodo $v$} è un nodo
+  \hl{$u$ tale per cui esiste un cammino da $u$ a $v$}.
+\end{defn}
+
+\noindent L'ordinamento topologico \hl{non è unico}! Inoltre se un \hl{grafo non
+è connesso}, le \hl{componenti non connesse possono essere ordinate in qualunque
+modo l'una rispetto all'altra}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice per calcolare l'ordinamento topologico
+]
+  // Come una DFS ma dopo aver colorato di nero un nodo lo
+  // inseriamo in testa alla lista L
+  VisitaProfOT(G, s, L)
+    s.color `\peq` gray
+    for each v $\in$ curr.adiacenti
+      if v.color = white
+        VisitaProfOT(G, v, L)
+    s.color `\peq` black
+    PushFront(L, s)
+
+  OrdinamentoTopologico(G)
+    for each v $\in \mathbf{V}$
+      v.color `\peq` white
+    for each v $\in \mathbf{V}$
+      if v.color = white
+        VisitaProfOT(G, s, L)
+    return L
+\end{lstlisting}
+
+\subparagraph{Percorso più breve} Per l'individuazione del percorso più breve
+vedremo l'\hl{algoritmo di Dijkstra}. Esso trova, dato \hl{un grafo orientato e
+un suo nodo $s$}, i \hl{percorsi più brevi da un nodo a qualunque altro}.
+L'algoritmo funziona \hl{sia su di un grafo classico che su un grafo pesato}. Il
+principio di funzionamento è il seguente:
+
+\begin{enumerate}
+  \item \hl{Inserisco} ogni \hl{$v \in \mathbf{V} \setminus \{s\}$ in un insieme
+    $\mathbf{Q}$} dopo aver impostato l'attributo \hl{distanza a $\infty$ e il
+    precedente a \texttt{NIL}};
+  \item \hl{Inserisco $s$ in $\mathbf{Q}$} dopo aver impostato la \hl{distanza
+    di $s$ a 0 e il predecessore a \texttt{NIL}};
+  \item \hl{Fin quando $\mathbf{Q}$ non è vuoto, estraggo il nodo $c$ con
+    distanza minima e controllo per ogni adiacente $a$ se hanno distanza
+    maggiore di \texttt{c.dist + Peso(c, a)}. Se ciò accade, impostiamo
+    \texttt{a.pred \peq{} c} e \texttt{a.dist \peq{} c.dist + Peso(c, a)}}.
+\end{enumerate}
+
+\noindent Rappresenteremo l'insieme \hl{$\mathbf{Q}$ come una coda con priorità}
+basata su una \hl{min-heap} dove la \hl{priorità è la distanza} in modo da
+ottenere estrazione del minore in tempo costante e un cambio di priorità in
+$\mathcal{O}(\log(|\mathbf{V}))$. La \hl{complessità totale risulterà
+$\mathcal{O}((|\mathbf{E}| + |\mathbf{V}|)\log(|\mathbf{V}|)$}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Pseudocodice dell'algoritmo di Dijkstra
+]
+  DijkstraQueue(G, s)
+  Q `\peq` $\emptyset$
+  s.dist `\peq` 0
+  for each v $\in \mathbf{V}$
+    if v $\neq$ s
+      v.dist `\peq` $\infty$
+      v.pred `\peq` NIL
+      AccodaPriorita(Q, v, v.dist)
+  while Q $\neq \emptyset$
+    u `\peq` CancellaMin(Q)
+    for each v $\in$ u.succ
+      ndis `\peq` u.dist + Peso(u, v)
+      if v.dist > ndis
+        v.dist `\peq` ndis
+        v.prev `\peq` u
+        DecrementaPriorita(Q, v, ndis)
+\end{lstlisting}
+
+\subparagraph{Individuazione di cicli} Il nostro problema è il seguente:
+\hl{``Dato un grafo orientato per cui ogni nodo ha un solo successore,
+determinare, dato un nodo di partenza, se il cammino che parte da esso ha
+cicli''}. L'algoritmo migliore per risolvere questo problema è l'\hl{algoritmo
+di Floyd}, o della lepre e della tartaruga. Illustriamo il funzionamento. Usiamo
+\hl{due riferimenti $t$ ed $l$ che spostiamo per ogni iterazione: nel caso di
+$t$ lo spostiamo al successore mentre nel caso di $l$ lo spostiamo al successore
+del successore}. Entrambi partiranno dal nodo iniziale. Chiamiamo \hl{$C$ la
+lunghezza del ciclo e $T$ quella della coda}. Quando \hl{$t$ ha effettuato $T =
+qC + r$} passi, \hl{$l$} sarà sicuramente \hl{all'interno del ciclo in posizione
+$qC + r \equiv_C r$ all'interno del ciclo}. \hl{Dopo altre $C-r$ mosse, $t$ si
+si troverà $C-r$ posizioni nel ciclo mentre $l$ si troverà $r + 2(C-r) \equiv_C
+C-r$ posizioni nel ciclo}. I due puntatori \hl{si sono incontrati!} Il
+\hl{numero di mosse totale prima dell'incontro è $T+C-r=(q+1)C$}, un multiplo
+della lunghezza del ciclo. Facendo \hl{ripartire da capo $t$ e muovendo $l$ a
+partire dall'incontro un passo alla volta i due puntatori si rincontreranno
+all'inizio del ciclo} (facilmente dimostrabile). La \hl{complessità temporale di
+questo algoritmo è $\Theta(2(T+C)-r)$, mentre quella spaziale è costante}.
+
+\begin{lstlisting}[
+  language=pseudocodice,
+  gobble=2,
+  caption=Paseudocodice dell'algoritmo di Floyd
+]
+  FloydLT(G, x)
+  t `\peq` x.succ
+  l `\peq` x.succ.succ
+  while l $\neq$ t
+    t `\peq` t.succ
+    l `\peq` l.succ.succ
+  T `\peq` 0
+  t `\peq` x
+  while l $\neq$ t
+    t `\peq` t.succ
+    l `\peq` l.succ
+    T `\peq` T + 1
+  l `\peq` t.succ
+  C `\peq` 0
+  while l $\neq$ t
+    l `\peq` l.succ
+    C `\peq` C + 1
+  return T, C
+\end{lstlisting}
 
 \end{document}
