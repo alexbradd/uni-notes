@@ -5360,4 +5360,36 @@ questo algoritmo è $\Theta(2(T+C)-r)$, mentre quella spaziale è costante}.
   return T, C
 \end{lstlisting}
 
+\appendix
+\clearpage
+\section{Costo delle istruzioni RAM in criterio di costo logaritmico}
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    Istruzione & Costo \\
+    \midrule
+    \texttt{LOAD= x}  & $l(x)$ \\
+    \texttt{LOAD x}   & $l(x) + l(M[x])$ \\
+    \texttt{LOAD* x}  & $l(x) + l(M[x]) + l(M[M[x]])$ \\
+    \texttt{STORE x}  & $l(M[0]) + l(x)$ \\
+    \texttt{STORE* x} & $l(M[0]) + l(x) + l(M[x])$ \\
+    \texttt{ADD= x}   & $l(M[0]) + l(x)$ \\
+    \texttt{ADD x}    & $l(M[0]) + l(x) + l(M[x])$ \\
+    \texttt{ADD* x}   & $l(M[0]) + l(x) + l(M[x]) + l(M[M[x]])$ \\
+    \texttt{SUB, MULT, DIV} & vedi \texttt{ADD} \\
+    \texttt{READ x}   & $l(In) + l(x)$ \\
+    \texttt{READ* x}  & $l(In) + l(x) + l(M[x])$ \\
+    \texttt{WRITE= x} & $l(x)$ \\
+    \texttt{WRITE x}  & $l(x) + l(M[x])$ \\
+    \texttt{WRITE* x} & $l(x) + l(M[x]) + l(M[M[x]])$ \\
+    \texttt{JUMP l}   & $1$ \\
+    \texttt{JGZ l}    & $l(M[0])$ \\
+    \texttt{JLZ l}    & $l(M[0])$ \\
+    \texttt{HALT}     & $1$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \end{document}
