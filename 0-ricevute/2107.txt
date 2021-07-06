@@ -1,1 +1,3 @@
-Probabilità e Statistica per l'informatica	05/07/2021	944302
+Probabilità e Statistica per l'informatica  05/07/2021  944302
+Fondamenti di Automatica                    10/07/2021  612258
+Onde Elettromagnetiche e Mezzi Trasmissivi  20/07/2021  198888
