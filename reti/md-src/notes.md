@@ -128,3 +128,148 @@ $$
 Non è possibile, però, identificare un algoritmo che trasforma espressioni
 algebriche in modo da minimizzare i criteri di costo. Quindi non si saprà mai se
 si è raggiunta la forma minima!
+
+## Sintesi di reti combinatorie a due livelli
+
+Il nostro obiettivo sarà quello di ridurre la complessità di funzioni booleane
+espresse in forma PoS o SoP. Noi ci riferiremo solo alla SoP.
+
+Le nostre ottimizzazioni punteranno a ridurre principalmente il numero di
+termini prodotto. In seconda istanza, ridurremo anche il numero di letterali.
+
+Le metodologie di sintesi ottima sono tre:
+
+1. Il metodo delle mappe di Karnaugh
+2. Il metodo di Quine-McCluskey
+3. Le euristiche per sintesi a due livelli
+
+### Metodo delle mappe di Karnaugh
+
+Un primo metodo per l'identificazione di forme minime a due livelli è applicare
+la seguente regola di riduzione:
+
+$$
+aZ + \neg aZ = Z
+$$
+
+In cui $Z$ è un termine prodotto di $n-1$ variabili. Questo metodo può essere
+applicato ad un numero di termini pari a $2^n$ e mantiene inalterato il numero
+di livelli. In più le somme di prodotti rimangono tali, al più tali espressioni
+possono anche banalizzarsi diventando o semplici prodotti o costanti. Il
+problema consiste nell'identificare tutti i termini su cui applicare la
+riduzione e tutti i termini che partecipano a più riduzioni contemporaneamente e
+replicarli.
+
+Il metodo delle mappe di Karnaugh consente di risolvere direttamente i problemi
+del metodo precedente. Esso è un metodo grafico la cui applicazione è semplice
+per funzioni con massimo fino a 4 variabili e diventa complesso per 5 o 6
+variabili e addirittura inattuabile per più di 6. Una mappa di Karnaugh è uno
+schema deducibile dalla rappresentazione geometrica delle configurazioni
+binarie. Introduciamo la distanza di Hamming, necessaria all'applicazione del
+metodo:
+
+**Distanza di Hamming:** In una rappresentazione binaria, la distanza di Hamming
+tra due stati è il numero di bit che variano tra i due stati.
+
+Possiamo vedere la regola di riduzione come l'identificazione di configurazioni
+binarie associate ai termini prodotto che sono distanti 1 secondo Hamming. A
+tali configurazioni corrispondono coppie di mintermini in cui una sola variabile
+è naturale in un mintermine e complementata nell'altro:
+
+> $abc\neg d + a\neg b c\neg d$ può essere vista come due configurazioni:
+>
+> - $abc\neg d \equiv 1110$
+> - $a\neg b c\neg d \equiv 1010$
+>
+> I mintermini 1110 e 1010 sono ad una distanza di Hamming pari ad 1.
+
+Utilizzando questa impostazione, una funzione binaria a $n$ variabili può essere
+rappresentata mediante una rappresentazione geometrica cartesiana in uno spazio
+a $n$ dimensioni in cui gli assi sono le variabili della funzione. In questa
+rappresentazione possiamo definire gli n-cubi:
+
+**N-Cubi:** data la rappresentazione cartesiana di una funzione binaria a $n$
+variabili, si dice n-cubo la figura ottenuta collegando i vertici le cui
+configurazioni sono a distanza di Hamming unitaria.
+
+Si può facilmente trasformare una tabella di verità e $n$ variabili in un
+n-cubo: basta segnare opportunamente le configurazioni per cui la funzione
+assume valore 1 o 0.
+
+La rappresentazione in uno spazio $n$-dimensionale non è maneggevole. Conviene
+perciò passare allo sviluppo nel piano degli n-cubi. Al cubo sviluppato nel
+piano con $2^n$ vertici si sovrappone una mappa con $2^n$ caselle organizzate
+secondo righe e colonne.
+
+> Esempio per un n-cubo bidimensionale:
+>
+> | b \ a |  0  |  1  |
+> | :---: | :-: | :-: |
+> | **0** |  0  |  1  |
+> | **1** |  1  |  0  |
+>
+> Esempio per un n-cubo tridimensionale
+>
+> | c \ ab | 00  | 01  | 11  | 10  |
+> | :----: | :-: | :-: | :-: | :-: |
+> | **0**  |  1  |  0  |  1  |  0  |
+> | **1**  |  0  |  1  |  0  |  1  |
+>
+> Si noti l< disposizione delle variabili: si deve mantenere la distanza di
+> Hamming pari a 1 tra colonne adiacenti.
+
+La mappa così realizzata è detta mappa di Karnaugh. Le configurazioni assunte
+dalle variabili di ingresso danno origine agli indici di riga e colonna della
+mappa. In ogni casella di trascrive il valore assunto dalla funzione quando la
+configurazione delle variabili corrisponde a quella della coordinate che
+contrassegnano le caselle. Due caselle che condividono un lato di un n-cubo
+corrispondo a due configurazioni di variabili adiacenti.
+
+**Implicante:** un implicante è una funzione $p$ associata ad un termine
+prodotto di $m$ letterali con $1 \leq m \leq n$ tale per cui $f \geq p$. Ciò
+significa che per ogni 1 in $p$ ne corrisponde uno in $f$. Un mintermine è un
+implicante per cui $m=n$.
+
+Sostanzialmente gli implicanti sono dei raggruppamenti di 1 di variabili
+adiacenti. Affinché esso sia una riduzione, esso deve avere dimensione pari (2,
+4 o 8). Esistono 2 tipi di implicanti:
+
+1. **Implicanti primi:** è un implicante associato ad un termine prodotto a cui
+   corrisponde un raggruppamento di dimensione massima.
+2. **Implicanti primi essenziali:** un implicante primo che copre uno o più 1
+   non coperti da nessun altro implicante.
+
+**Copertura:** viene detta copertura la scelta del minor numero di implicanti
+primi ed essenziali.
+
+Il metodo consiste nel trovare una copertura con il minor numero di implicati
+primi. Per fare ciò, partiamo dall'individuare tutti gli implicanti primi
+essenziali. Il seguente teorema ci può aiutare:
+
+**Teorema:** Se una forma minima è composta da solo implicanti primi essenziali
+essa è unica.
+
+In seguito eliminiamo tutti gli implicanti primi coperti da quelli essenziali e
+selezioniamo il numero minore di implicanti primi tra gli uni rimasti.
+
+Ad ogni implicante selezionato è associato un termine prodotto. Esso è ottenuto
+identificando le variabili che non cambiano mai di valore e riportando ogni
+variabile in modo normale se il valore che essa assume è 1 e complementata se
+è 0. La riduzione sarà la somma dei termini prodotto associati ai vari
+implicanti.
+
+#### Condizioni di indifferenza
+
+La specifica di un progetto spesso contiene delle condizioni di indifferenza
+(_don't care_). Le condizioni di indifferenza corrispondono a configurazioni di
+ingresso per le quali il valore dell'uscita non è noto e non è neppure di
+interesse sapere quanto può valere. Sulla tabella delle verità, o su una mappa
+di Karnaugh, il valore specificato della funzione si indica coi simboli `-` o
+`x`.
+
+Le condizioni di indifferenza sono dei gradi di libertà nel processo di sintesi.
+A esse si può assegnare un valore a seconda di quanto conviene per minimizzare
+la funzione. Inoltre essa non deve essere per forza coperta da un implicante. È
+importante sottolineare che gli implicanti primi realizzati con sole condizioni
+di indifferenza non hanno nessuno scopo. Inoltre un implicante primo non diventa
+essenziale quando è l'unico a coprire una data condizione di indifferenza.
