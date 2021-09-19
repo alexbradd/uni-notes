@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,oneside]{article}
+\documentclass[a4paper,11pt,twoside]{article}
 
 % chktex-file 8
 % chktex-file 18
@@ -6,7 +6,14 @@
 % chktex-file 40
 % chktex-file 44
 
-\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[
+  a4paper,
+  inner=2.5cm,
+  outer=1.5cm,
+  top=2cm,
+  bottom=2cm,
+  twoside
+]{geometry}
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -1844,6 +1851,18 @@ linguaggio regolare $L_p$ fatto di tutte e sole le parole di lunghezza pari su
 un alfabeto di una singola lettera}. Quindi possiamo dire che i \hl{linguaggi
 ``star-free'' sono un sottoinsieme dei linguaggi regolari}.
 
+Enunciamo il seguente teorema che caratterizza i linguaggi star-free su alfabeto
+di una lettera.
+
+\begin{thm}[Espressività della MFO]
+  Ogni linguaggio $\mathcal{L}$ con alfabeto di una lettera è esprimibile
+  tramite MFO (è star-free) se e solo se è finito o cofinito.
+\end{thm}
+
+\begin{nota}
+  Un linguaggio si dice cofinito se il suo complementare è finito.
+\end{nota}
+
 \subsection{Logica monadica del secondo ordine}\label{sec:mso}
 
 Per permettere alla logica \hl{MFO} di avere lo stesso potere espressivo degli
@@ -2695,6 +2714,63 @@ diagonale''} eseguendo \hl{una sola mossa alla volta per ogni input} finché non
 troviamo l'input per la quale la computazione non si arresta. \hl{Simulando
 abbastanza passi di $f_x$, eventualmente lo troverò}.
 
+\subsection{Problemi notoriamente decidibili o indecidibili}\label{sec:dec-indec-noti}
+
+Forniamo ora una lista di problemi notoriamente indecidibili o decidibili.
+
+\paragraph{Problemi notoriamente indecidibili} Sono notoriamente indecidibili i
+seguenti problemi relativi alle grammatiche/linguaggi liberi dal contesto:
+
+\begin{enumerate}
+  \item ``Emptyness of intersection'', ossia stabilire se l'intersezione tra due
+    linguaggi sia vuota;
+  \item ``Grammar class membership'', ossia determinare se una data grammatica
+    $\mathcal{G}$ appartenga ad un insieme di grammatiche $\Gamma$;
+  \item ``Language class membership``, ossia determinare se il linguaggio di
+    una data grammatica $\mathcal{G}$ appartenga ad un insieme di linguaggi
+    $\mathcal{L}$.
+\end{enumerate}
+
+\noindent Per le macchine di Turing abbiamo invece che i seguenti due problemi
+sono notoriamente indecidibili, oltre i vari problemi discussi in precedenza:
+
+\begin{enumerate}
+  \item ``L'alacre castoro'', ossia determinare la TM in un insieme di TM con lo
+    stesso numero di stati che effettua il maggior numero di transizioni
+    terminando;
+  \item Verificare se una TM accetti una stringa vuota.
+\end{enumerate}
+
+\paragraph{Problemi notoriamente decidibili} I seguenti problemi sono
+notoriamente decidibili:
+
+\begin{enumerate}
+  \item Stabilire se un linguaggio regolare è vuoto;
+  \item Stabilire l'uguaglianza tra due linguaggi data la chiusura rispetto a
+    complemento e intersezione e la decidibilità dello stabilire se un
+    linguaggio è vuoto;
+  \item Equivalenza di polinomi.
+\end{enumerate}
+
+Riassumiamo infine la decidibilità dei problemi legati ai vari tipi di
+linguaggi nella seguente tabella,
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{l|cccc}
+    \toprule
+    & $x \in \mathcal{L}$ & $\mathcal{L} = \emptyset$ & $\mathcal{L}_1 = \mathcal{L}_2$ & $\mathcal{L}_1 \cap \mathcal{L}_2 = \emptyset$ \\
+    \midrule
+    Non ristretti & I & I & I & I \\
+    Liberi dal contesto & D & D & I & I \\
+    Liberi dal contesto deterministici & D & D & D & I \\
+    Regolari & D & D & D & D \\
+    \bottomrule
+  \end{tabular}
+  \caption{Problemi relativi ai linguaggi e la loro decidibilità}%
+  \label{tab:prob-lang}
+\end{table}
+
 \section{Complessità del calcolo}\label{sec:complessita}
 
 Calcolare la \hl{complessità} di una computazione significa \hl{calcolare
@@ -2901,8 +2977,9 @@ carattere alla volta.
 degli FSA, \hl{$T_{PDA}(n) \in \Theta(n)$}.
 
 \paragraph{TM a nastro singolo} La complessità spaziale \hl{non potrà mai
-scendere sotto la linearità} ($S_\mathcal{M}(n) \in \Theta(n)$) mentre quella
-temporale si dimostra essere \hl{al massimo $T_\mathcal{M}(n) \in \Theta(n^2)$}.
+scendere sotto la linearità} ($S_\mathcal{M}(n) \in \Theta(n)$) mentre si
+dimostra che \hl{le TM a nastro singolo non possono accettare $\mathcal{L} = \{
+wcw^R | w \in \{a,b\}^\star \}$ con $\Theta(T_\mathcal{M}(n)) < \Theta(n^2)$}.
 Le TM a nastro singolo sono, quindi, più potenti dei PDA ma anche più lente.
 
 \subsection{Teoremi di accelerazione lineare}\label{sec:acc-lin}
@@ -2957,8 +3034,8 @@ infine costruire l'\hl{organo di controllo di $\mathcal{M}'$} in modo tale per c
 
 \begin{thm}[\hl{Quarto teorema di accelerazione lineare}]\label{thm:acc-lin-4}
   Se $L$ è il linguaggio accettato da una \hl{TM $\mathcal{M}$ a $k$ nastri in
-  $T_\mathcal{M}(n)$}, per ogni $c \in \mathbb{R}^+$ posso costruire una \hl{TM
-  $\mathcal{M}'$ a $k+1$ nastri} che accetta $L$ con
+  $T_\mathcal{M}(n)$ sovralineare}, per ogni $c \in \mathbb{R}^+$ posso
+  costruire una \hl{TM $\mathcal{M}'$ a $k+1$ nastri} che accetta $L$ con:
 
   \begin{equation}
     \mhl{ T_{\mathcal{M}'} = \max(n+1, c\cdot T_\mathcal{M}) }
@@ -3134,7 +3211,8 @@ intermedio} che useremo.
 
 \begin{thm}[\hl{Correlazione temporale tra TM a $k$ nastri e RAM}]\label{thm:corr-tm-ram}
   Se un \hl{problema è risolvibile da una TM a $k$ nastri $\mathcal{M}$ in
-  $T_\mathcal{M}(n)$ e da una macchina RAM in $T_{RAM}(n)$}, allora si avrà:
+  $T_\mathcal{M}(n)$ e da una macchina RAM in $T_{RAM}(n)$} secondo costo
+  logaritmico, allora si avrà:
 
   \begin{equation}
     \mhl{ T_\mathcal{M}(n) = \pi(T_{RAM}(n)) }
@@ -3241,6 +3319,28 @@ intermedio} che useremo.
 
   Quindi il legame tra $T_{RAM}(n)$ e $T_\mathcal{M}(n)$ è polinomiale.
 \end{proof}
+
+Il teorema sopra può essere esteso ad ogni modello computazionale affermando che
+con opportune ipotesi, complessità di diversi modelli computazionali sono
+correlate polinomialmente. Per quanto riguarda la relazione tra RAM e TM,
+possiamo raffinare il precedente teorema e ottenere i seguenti teoremi.
+
+\begin{thm}[Simulazione di TM da parte di una RAM]\label{thm:sim-tm-ram}
+  Una \hl{TM multinastro con complessità temporale $T_\mathcal{M}$} può essere
+  \hl{simulata} da una macchina RAM con complessità temporale \hl{$T_{RAM} =
+  \Theta(T_\mathcal{M})$, secondo il criterio di costo uniforme}, o \hl{$T_{RAM}
+  = \Theta(T_\mathcal{M} \cdot \log(T_\mathcal{M}))$, secondo quello
+  logaritmico}.
+\end{thm}
+
+\begin{thm}[Correlazione tra RAM e TM]\label{thm:corr-ram-tm}
+  Sia \hl{$\mathcal{L}$ un linguaggio accettato da una RAM} con complessità
+  temporale \hl{$T_{RAM}$ secondo il criterio di costo logaritmico}. Se il
+  programma RAM \hl{non usa le istruzioni \texttt{MULT} e \texttt{DIV}}, allora
+  $\mathcal{L}$ può essere \hl{riconosciuto} da una \hl{opportuna TM multinastro
+  $\mathcal{M}$ in un tempo limitato da una funzione $T_\mathcal{M} =
+  \Theta(T_{RAM}^2)$}.
+\end{thm}
 
 L'esistenza della correlazione polinomiale tra macchina RAM e macchina di Turing
 ci permette di \hl{definire una classe di problemi risolvibili in tempo
@@ -3577,7 +3677,7 @@ di ogni singola chiamata)}. Le \hl{ipotesi} del teorema sono le seguenti:
   \item \hl{$a$ deve essere costante e maggiore di 1};
   \item \hl{$f(n)$ deve essere sommata, non sottratta o altro a
     $aT(\frac{n}{b})$};
-  \item \hl{Il legame tra $n^{\log_b(a)}$ e $f(n)$ deve essere polinomiale}.
+  \item \st{Il legame tra $n^{\log_b(a)}$ e $f(n)$ deve essere polinomiale}.
 \end{enumerate}
 
 Se queste ipotesi sono valide, è possibile ricavare informazioni sulla
@@ -3600,6 +3700,16 @@ chiamata differiscono per meno di un termine polinomiale}.
 $af(\frac{n}{b})<cf(n)$} per un qualche valore di \hl{$c<1$}. Se le ipotesi sono
 rispettate \hl{abbiamo che $T(n) = \Theta(f(n))$}. Qui, invece, \hl{domina il
 costo della singola chiamata}.
+
+\paragraph{Variante per funzioni decrescenti} Si può enunciare anche un'altra
+variante del teorema dell'esperto, valido per ricorrenze del tipo $T(n) = aT(n -
+b) + f(n)$ con $a > 0, b > 0, f(n) = O(n^k)$:
+
+\begin{enumerate}
+  \item Se $a = 1$ si ha che la ricorrenza sarà $T(n) = O(nf(n))$;
+  \item Se $a > 1$ si ha che la ricorrenza sarà $T(n) = O(f(n) \cdot a^{\frac{n}{b}})$;
+  \item Se $a < 1$ si ha che la ricorrenza sarà $T(n) = O(f(n))$;
+\end{enumerate}
 
 \subsection{Algoritmi di ordinamento}\label{sec:alg-odinamento}
 
@@ -4144,7 +4254,7 @@ Un dizionario può essere implementato con diverse strutture dati concrete.
 
 Un primo \hl{approccio ingenuo} è quello di considerare un \hl{insieme di chiavi limitato}
 e \hl{implementare un dizionario come un semplice array di puntatori indicizzato
-dalle chiavi stesse}. Le operazioni sarebbero:
+dalle chiavi stesse} (direct-addressing). Le operazioni sarebbero:
 
 \begin{itemize}
   \item \texttt{Insert()}: \texttt{D[e.key] \peq{} e}
@@ -4199,11 +4309,11 @@ possibili procedure di probing e i rispettivi vantaggi e svantaggi.
 
 \subparagraph{Ispezione lineare} È il metodo \hl{più semplice}. Dato \hl{$h(k,
 0) = a$} il \hl{bucket dove avviene la collisione} al primo tentativo \hl{($i =
-0$)}, si sceglie \hl{$h(k,i) = a + ci \bmod n$} come \hl{bucket} candidato per
+0$)}, si sceglie \hl{$h(k,i) = a + ci \bmod m$} come \hl{bucket} candidato per
 \hl{l'$i$-esimo tentativo}. Il \hl{problema principale} di questo metodo è il
 caso in cui \hl{avvengono molte collisioni su un dato bucket}. In questo caso,
-detto di \hl{clustering} delle collisioni, \hl{peggiorerà con ogni nuova
-ispezione la probabilità di collisione nei bucket adiacenti}. Per \hl{alcune
+detto di \hl{clustering} primario delle collisioni, \hl{la probabilità di collisione nei
+bucket adiacenti peggiorerà con ogni nuova ispezione}. Per \hl{alcune
 scelte di $h(k)$}, è possibile avere un \hl{forte peggioramento delle
 prestazioni dovuto al clustering}. È possibile avere un \hl{clustering di
 dimensione logaritmica nella dimensione della tabella} a costo di effettuare il
@@ -4211,16 +4321,16 @@ dimensione logaritmica nella dimensione della tabella} a costo di effettuare il
 
 \subparagraph{Ispezione quadratica} Per mitigare il fenomeno del clustering,
 usiamo una \hl{funzione di probing quadratica: $h(k,i) = a + c_1 i + c_2 i^2
-\mod{n}$}. Insorge, però, un altro problema: \hl{la funzione di probing non
+\mod{m}$}. Insorge, però, un altro problema: \hl{la funzione di probing non
 garantisce a priori la visita di tutte le celle}. \hl{Esiste} una sequenza
 particolare, però, che \hl{visita tutte le celle nel caso di tabelle di
 dimensione $2^m$}, come dimostrato dal \hl{lemma}~\ref{thm:tabelle-2-m}, Il
 problema del \hl{clustering però non è ancora del tutto risolto in quanto chiavi
-con la stessa posizione iniziale generano ancora clustering poiché hanno la
-stessa sequenza di ispezione}. Sarà, anche in questo caso, necessario fare
+con la stessa posizione iniziale hanno la stessa sequenza di ispezione}
+(clustering secondario). Sarà, anche in questo caso, necessario fare
 \hl{re-hashing a tabella non piena}.
 
-\begin{lem}[Sequenza di \hl{probing ideale} per tabelle di \hl{dimensione $2^m$}]\label{thm:tabelle-2-m}
+\begin{lem}[Sequenza di \hl{probing ideale} per tabelle di \hl{dimensione $2^w$}]\label{thm:tabelle-2-m}
   \hl{La sequenza}:
 
   \begin{equation}
@@ -4229,100 +4339,114 @@ stessa sequenza di ispezione}. Sarà, anche in questo caso, necessario fare
     }
   \end{equation}
 
-  \hl{genera tutti i valori in $[0; n-1]$}.
+  \hl{genera tutti i valori in $[0; m-1]$} con $m = 2^w$.
 \end{lem}
 \begin{proof}
   Effettuiamo una dimostrazione per assurdo. Supponiamo che esistano $0 < p < q
-  < n-1$ tali che $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{n}$. Ciò
-  implica che $p + p^2 = q + q^2 \mod{2n}$. Fattorizzando l'eguaglianza
-  otteniamo che $(q-p)(p+q+1) = 0 \mod{2n}$. Analizziamo i 3 casi in cui si
+  < m-1$ tali che $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{m}$. Ciò
+  implica che $p + p^2 = q + q^2 \mod{2m}$. Fattorizzando l'eguaglianza
+  otteniamo che $(q-p)(p+q+1) = 0 \mod{2m}$. Analizziamo i 3 casi in cui si
   avvererebbe questa disuguaglianza:
 
   \begin{enumerate}
-    \item Se $q - p = 0 \mod{2n}$ significa che $q = p$; contro ipotesi e quindi
+    \item Se $q - p = 0 \mod{2m}$ significa che $q = p$; contro ipotesi e quindi
       impossibile.
-    \item $(p + q + 1) \neq 0 \mod{2n}$ perché per la scelta di $p$ e $q$ la
-      somma rientra nel range $[1; 2n - 2]$.
-    \item Poiché stiamo lavorando in modulo $2n$ e il modulo introduce divisori
-      dello $0$, è possibile che $(q-p)(p+q+1) = 0 \mod{2n}$ anche con le
+    \item $(p + q + 1) \neq 0 \mod{2m}$ perché per la scelta di $p$ e $q$ la
+      somma rientra nel range $[1; 2m - 2]$.
+    \item Poiché stiamo lavorando in modulo $2m$ e il modulo introduce divisori
+      dello $0$, è possibile che $(q-p)(p+q+1) = 0 \mod{2m}$ anche con le
       considerazioni dei precedenti punti. Poiché $(q-p) - (p+q+1) = 2p + 1$,
-      significa che almeno uno dei due addendi è dispari. Essendo $n = 2^m$, il
-      fattore pari è per forza multiplo di $2n = 2^{m+1}$ ma abbiamo che $(q-p)
-      \leq n-1$ e $(p+q+1) \leq 2n-2$ per come abbiamo scelto $p$ e $q$.
+      significa che almeno uno dei due addendi è dispari. Essendo $m = 2^w$, il
+      fattore pari è per forza multiplo di $2m = 2^{w+1}$ ma abbiamo che $(q-p)
+      \leq m-1$ e $(p+q+1) \leq 2m-2$ per come abbiamo scelto $p$ e $q$.
       Assurdo!
   \end{enumerate}
 
-  È quindi impossibile che $(q-p)(p+q+1) = 0 \mod{2n}$, quindi l'ipotesi
-  iniziale $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{n}$ è falsa.
+  È quindi impossibile che $(q-p)(p+q+1) = 0 \mod{2m}$, quindi l'ipotesi
+  iniziale $\frac{1}{2}(p + p^2) = \frac{1}{2}(q + q^2) \mod{m}$ è falsa.
 \end{proof}
 
-\subparagraph{Doppio hashing} Definiamo \hl{$h(k,i) = h_1(k) + h_2 (k)i
-\mod{n}$} facendo sì che \hl{l'ispezione dipenda dalla chiave}. Per
+\subparagraph{Doppio hashing} Definiamo \hl{$h(k,i) = h_1(k) + h_2(k)i \mod{m}$}
+facendo sì che \hl{l'ispezione dipenda dalla chiave}. Per
 \hl{garantire che la sequenza di probing sia in grado di visitare tutte le
-caselle dobbiamo fare sì che $h_2(k)$ sia coprimo con $n$}. Un modo semplice per
+caselle dobbiamo fare sì che $h_2(k)$ sia coprimo con $m$}. Un modo semplice per
 garantire ciò è:
 
 \begin{itemize}
-  \item \hl{Per $n = 2^m$ fare sì che $h_2$ generi solo numeri dispari}.
+  \item \hl{Per $m = 2^w$ fare sì che $h_2$ generi solo numeri dispari}.
   \item \hl{Se $m$ è primo, fare sì che $h_2$ generi numeri minori di $m$}.
 \end{itemize}
 
 \noindent È importante che \hl{$h_2$ non restituisca mai zero}, sennò la
 sequenza di probing degenererebbe.
 
-\paragraph{Ipotesi di hashing uniforme semplice} Una \hl{opportuna scelta di
-$h(k)$ fa sì che ogni chiave abbia la stessa probabilità $\frac{1}{n}$ di finire
-in una qualsiasi delle $n$ celle}. Si dice che siamo in ipotesi di hashing
-uniforme semplice \hl{(IHUS)}. Come possiamo \hl{determinare una ``scelta
-opportuna''}? Dipende, ovviamente, dalla \hl{distribuzione delle chiavi} da
-inserire. Consideriamo 2 metodi abbastanza semplici per ricavare una $h(k)$ che
-soddisfa la IHUS.
+\paragraph{Generazione di una funzione di hash} Vediamo ora dei metodi per
+produrre delle funzioni di hash efficaci.
 
 \subparagraph{Metodo della divisione} Il metodo più semplice è porre \hl{$h(k) =
-k \bmod n$}. La \hl{distribuzione} dei risultati \hl{non è uniforme in $\{0,
-\ldots, n-1\}$ e va evitato se $m = 2^i$} in quanto $h(k)$ dipenderebbe solo dai
-bit meno significativi. \hl{Non funziona però malissimo se $n$ è vicino ad una
-potenza di 2}.
+k \bmod m$}. La \hl{distribuzione} dei risultati \hl{non è uniforme in $\{0,
+\ldots, m-1\}$ e va evitato se $m = 2^i$} in quanto $h(k)$ dipenderebbe solo dai
+bit meno significativi. \hl{Non funziona però malissimo se $m$ è un primo vicino
+ad una potenza di 2}.
 
 \subparagraph{Metodo della moltiplicazione} Un altro metodo semplice è porre
 \hl{$h(k) = \lfloor n(\alpha k - \lfloor \alpha k \rfloor) \rfloor$}, con
 \hl{$\alpha \in \mathbb{R}$} costante. In questo caso, la \hl{dimensione} della
-tabella $n$ \hl{non è critica}. Perciò spesso \hl{si prende $n = 2^m$} in modo
+tabella $m$ \hl{non è critica}. Perciò spesso \hl{si prende $m = 2^w$} in modo
 da effettuare le moltiplicazioni con semplici shift. Una \hl{scelta} possibile
 \hl{per $\alpha$ è la sezione aurea $\frac{\sqrt{5} + 1}{2}$}: si è visto
 empiricamente che fornisce una buona distribuzione.
 
+\subparagraph{Hashing universale} Finora abbiamo \hl{ipotizzato} che le
+\hl{collisioni fossero accidentali}. Esse però possono essere anche \hl{indotte
+sfruttando le debolezze della funzione di hashing}. Un modo per evitare questo
+problema è \hl{non scegliere una sola funzione di hashing, ma una intera
+famiglia di buone funzioni}. Si può dimostrare che \hl{$h_{a,b}(k) = ((ak + b)
+\bmod p) \bmod m$ con $p > m$ primo distribuisce uniformemente le chiavi della
+tabella per ogni $a,b \in \mathbb{Z}_0$}. Sarà quindi sufficiente \hl{scegliere
+casualmente $a$ e $b$ per ogni istanza della tabella}.
+
 \paragraph{Costo delle operazioni} Nel \hl{caso pessimo}, ossia quello in cui
 \hl{tutti gli elementi collidono}, la struttura degenera in un array/lista di
 lunghezza \texttt{n}: \hl{$\mathcal{O}(n)$}. Studiamo separatamente le due
-modalità di indirizzamento.
+modalità di indirizzamento nel caso medio.
+
+\paragraph{Ipotesi di hashing uniforme semplice} Aggiungiamo prima una ipotesi
+semplificatoria che empiricamente possiamo ritenere soddisfatta per una buona
+funzione di hash: \hl{ogni chiave ha la stessa probabilità $\frac{1}{m}$ di
+finire in una qualsiasi delle $m$ celle della tabella}. Chiamiamo questa ipotesi
+di hashing uniforme semplice.
 
 \subparagraph{Indirizzamento chiuso} Definiamo \hl{fattore di carico $\alpha =
-\frac{n}{m}$}. Sotto \hl{IHUS}, abbiamo che la \hl{lunghezza media della lista
-sarà il fattore di carico}. Quindi il \hl{tempo medio per cercare una chiave non
-presente sarà $\Theta(\alpha + 1)$}, come \hl{anche} quello per la \hl{ricerca
-di una chiave presente} nella tabella. Quindi \hl{se $\alpha$ non è eccessivo},
-\hl{in media} tutte le operazioni avranno complessità \hl{$\Theta(1)$}.
+\frac{n}{m}$} con $n$ il numero di chiavi inserite e $m$ la lunghezza della
+tabella. Sotto \hl{hashing uniforme semplice}, abbiamo che la \hl{lunghezza
+media delle liste sarà il fattore di carico}. Quindi il \hl{tempo medio per
+cercare una chiave non presente sarà $\Theta(\alpha + 1)$}, come \hl{anche}
+quello per la \hl{ricerca di una chiave presente} nella tabella. Quindi \hl{se
+$\alpha$ non è eccessivo}, \hl{in media} tutte le operazioni avranno complessità
+\hl{$\Theta(1)$}.
 
 \subparagraph{Indirizzamento aperto} Il tempo impiegato per trovare un elemento
-\hl{dipenderà dalla sequenza di ispezione}. \hl{Generalizziamo la IHUS} dicendo
-che anche \hl{tutte le sequenze di ispezione siano equiprobabili}. Il
-\hl{fattore di carico} è sempre definito alla \hl{stessa maniera}. Se
-consideriamo \hl{$X$ la v.a. che modella il numero di passi di ispezione fatti
-senza trovare il valore desiderato}, abbiamo che \hl{$P(X > i) = \alpha^{i+1}$}.
-Il valore medio sarà \hl{$E(X) = \frac{1}{1-\alpha}$}. Il \hl{numero medio di
-tentativi} è ricavato assumendo di trovarlo insieme al $j$-esimo tentativo e
-mediando il numero di insuccessi su tutte le $n$ chiavi presenti nella tabella:
-\hl{si ottiene $\frac{1}{\alpha}\log(\frac{1}{1-\alpha}$}.
+\hl{dipenderà dalla sequenza di ispezione}. \hl{Generalizziamo l'ipotesi di
+hashing uniforme semplice} dicendo che \hl{tutte le sequenze di ispezione sono
+equiprobabili (hashing uniforme)}. Considerando il fattore di carico definito
+precedentemente, \hl{sia $X$ la variabile aleatoria che modella il numero di passi
+di ispezione fatti senza trovare il valore desiderato}, abbiamo che \hl{$P(X > i) = \alpha^{i+1}$}.
+Il \hl{numero medio di passi di ispezione sarà}:
 
-\paragraph{Hashing universale} Finora abbiamo \hl{ipotizzato} che le
-\hl{collisioni fossero accidentali}. Esse però possono essere \hl{indotte
-sfruttando debolezze della funzione di hashing}. Un modo per evitare questo
-problema è \hl{non scegliere una sola funzione di hashing, ma una intera
-famiglia di buone funzioni}. Si può dimostrare che \hl{$h_{a,b}(k) = ((ak + b)
-\bmod p) \bmod n$ con $p > n$ primo distribuisce uniformemente le chiavi della
-tabella per ogni $a,b \in \mathbb{Z}_0$}. Sarà quindi sufficiente \hl{scegliere
-casualmente $a$ e $b$ per ogni istanza della tabella}.
+\begin{equation}
+  \mhl{
+    E(X) = \frac{1}{1-\alpha}
+  }
+\end{equation}
+
+\noindent Il \hl{numero medio di tentativi si ricava essere}:
+
+\begin{equation}
+  \mhl{
+    \frac{1}{\alpha}\ln\left(\frac{1}{1-\alpha}\right)
+  }
+\end{equation}
 
 \subsection{Alberi binari}\label{sec:tree}
 
@@ -4536,7 +4660,7 @@ l'algoritmo~\ref{lst:bst-next}. Anche in questo caso la complessità è
     if x.right $\neq$ NIL
       return Min(x.right)
     y `\peq` x.p
-    while y $\neq$ NIL and t.right = x
+    while y $\neq$ NIL and y.right = x
       x `\peq` y
       y `\peq` y.p
     return y
@@ -4723,7 +4847,7 @@ BST}.
 \begin{lstlisting}[
   language=pseudocodice,
   gobble=2,
-  caption=Algoritmo della rotazione verso destra
+  caption=Algoritmo della rotazione verso sinistra
 ]
   LeftRotate(T, x)
     y `\peq` x.right
@@ -4744,8 +4868,8 @@ BST}.
 \begin{figure}[htb]
   \centering
   \begin{tikzpicture}[level distance=1.25cm]
-    \node at (2.5, 0.4) {\texttt{LeftRotate(T, x)} $\to$};
-    \node at (2.5, -4.25) {$\gets$ \texttt{RightRotate(T, x)}};
+    \node at (2.5, 0.4) {\texttt{RightRotate(T, x)} $\to$};
+    \node at (2.5, -4.25) {$\gets$ \texttt{LeftRotate(T, x)}};
 
     \node at (0,0) {$\rho$}
       child {
@@ -4795,11 +4919,10 @@ inserito, riparare l'albero. Possono esserci diversi \hl{casi}:
 \noindent Consideriamo solo i \hl{3 casi del lato sinistro}.
 
 \begin{enumerate}
-  \item \hl{Lo zio \texttt{y} è rosso}. Innanzitutto \hl{ricoloriamo
-    \texttt{z.p.p}, \texttt{z.p} e \texttt{y}}. Successivamente invoco \\
-    \hl{\texttt{RiparaRBInserisci(z.p.p)}} poiché \texttt{z.p.p} potrebbe avere
-    un padre rosso. Se invece \hl{\texttt{z.p.p} è la radice allora posso
-    ricolorarla di nero senza problemi}.
+  \item Lo zio \texttt{y} è rosso. Poiché \texttt{z.p.p} è nero, possiamo
+    colorare di nero sia \texttt{z.p} sia \texttt{z} e \texttt{z.p.p} di rosso
+    senza rompere altre proprietà. Ripetiamo il ciclo facendo sì che \texttt{z
+    \peq{} z.p.p}, risalendo due livelli.
   \item \hl{Lo zio \texttt{y} è nero e \texttt{z} è figlio destro del padre
     \texttt{x}}. In questo caso eseguiamo una \hl{\texttt{LeftRotate(T, x)}
     spostando la riparazione su \texttt{z} con \texttt{z.left = x}} (caso 3).
@@ -4816,7 +4939,7 @@ inserito, riparare l'albero. Possono esserci diversi \hl{casi}:
 ]
   RiparaRBInserisci(T, z)
     while z.p.color = red
-      if z.p `\peq` z.p.p.left
+      if z.p = z.p.p.left
         y `\peq` z.p.p.right
         if y.color = red          // caso 1
           z.p.color `\peq` black
@@ -4872,7 +4995,7 @@ figlio destro):
   \item \hl{\texttt{x} è nero con fratello \texttt{w} rosso}. \hl{Scambiamo i
     colori di \texttt{w} e \texttt{w.p}} e invochiamo una
     \hl{\texttt{LeftRotate(x.p)}}. Ci riconduciamo ai \hl{casi 2,3 o 4}.
-  \item \hl{texttt{x} è nero con fratello \texttt{w} nero e nipoti entrambi
+  \item \hl{\texttt{x} è nero con fratello \texttt{w} nero e nipoti entrambi
     neri}. Coloriamo \hl{\texttt{w} di rosso} e invochiamo \\
     \hl{\texttt{RiparaRBCancella(x.p)}}.
   \item \hl{\texttt{x} è nero con fratello \texttt{w} nero e nipote destro
@@ -5363,7 +5486,6 @@ questo algoritmo è $\Theta(2(T+C)-r)$, mentre quella spaziale è costante}.
 \appendix
 \clearpage
 \section{Costo delle istruzioni RAM in criterio di costo logaritmico}
-
 \begin{table}[htb]
   \centering
   \begin{tabular}{ll}
@@ -5391,5 +5513,42 @@ questo algoritmo è $\Theta(2(T+C)-r)$, mentre quella spaziale è costante}.
     \bottomrule
   \end{tabular}
 \end{table}
+
+\section{Riassunto sulle proprietà di chiusura dei linguaggi}
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{lcccccc}
+    \toprule
+    & $\cup$ & $\cap$ & $\neg$ & $\setminus$ & $\star$ & $.$ \\
+    \midrule
+    Star-Free & \checkmark & \checkmark & \checkmark & \checkmark & $\times$ & \checkmark \\
+    Regolari & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Non contestuali deterministici & $\times$ & $\times$ & \checkmark & $\times$ & $\times$ & $\times$ \\
+    Non contestuali & \checkmark & $\times$ & $\times$ & $\times$ & \checkmark & \checkmark \\
+    Dipendenti dal contesto & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Ricorsivi & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Ricorsivamente enumerabili & \checkmark & \checkmark & $\times$ & $\times$ & \checkmark & \checkmark \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Somme e approssimazioni notevoli}
+
+\begin{itemize}
+  \item Somme/serie notevoli:
+    \begin{align*}
+      \sum_{i = 0}^n i &= \frac{n(n + 1)}{2} \\
+      \sum_{i = 0}^n i^2 &= \frac{n(n + 1)(2n + 1)}{6} \\
+      \sum_{i = 0}^n z^i &= \frac{1 - z^{n+1}}{1-z} \\
+      \sum_{i = 0}^\infty \frac{z^i}{i!} &= e^z \\
+      \sum_{i = 0}^\infty i \frac{z^i}{i!} &= z e^z
+    \end{align*}
+
+  \item Approssimazioni di Stirling:
+    \begin{align*}
+      \ln(n!) &\approx n\ln(n) - n \text{ per } n \to \infty \\
+      n! &\approx \sqrt{2\pi n}\left(\frac{n}{e}\right)^n \text{ per } n \to \infty
+    \end{align*}
+\end{itemize}
 
 \end{document}
