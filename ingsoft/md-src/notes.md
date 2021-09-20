@@ -4,8 +4,8 @@
 
 ### Cos'è l'ingegneria del software
 
-Possiamo definire ingegneria del software un approccio sistematico allo sviluppo,
-alla mesa in opera e alla manutenzione del software, secondo criteri
+Possiamo definire ingegneria del software un approccio sistematico allo
+sviluppo, alla mesa in opera e alla manutenzione del software, secondo criteri
 ingegneristici. Sono dei metodi tecnici e manageriali per prevedere e tenere
 sotto controllo i costi per tutto il _lifecycle_ dei prodotti software. Come
 tutte le ingegnerie, fornisce metodi una guida per applicare la conoscenza
@@ -32,9 +32,9 @@ software:
   requisiti, sviluppa specifiche progetta componenti _riutilizzabili_ e lavora
   in (e talvolta coordina) un gruppo.
 
-Per progettazione intendiamo la scomposizione di un problema in
-sotto-problemi che possono essere risolti indipendentemente con l'obiettivo di
-governare la complessità e rendere efficiente il processo.
+Per progettazione intendiamo la scomposizione di un problema in sotto-problemi
+che possono essere risolti indipendentemente con l'obiettivo di governare la
+complessità e rendere efficiente il processo.
 
 ### Il processo di sviluppo del software
 
@@ -88,7 +88,7 @@ sprint è decisa sulla base di quanto a lungo si vuole evitare cambiamenti.
 
 All'interno di ogni team vi sono diversi ruoli:
 
-- **SCRUM Master:** Il responsabile del processo;
+- **SCRUM Master:** il responsabile del processo;
 - **Product Owner:** dialoga con l'esterno (utenti/contrattuario);
 - **Team:** il gruppo di circa 7 persone responsabili delle varie fasi di
   sviluppo.
@@ -116,8 +116,123 @@ il team si divide in:
 
 Per rendere più efficiente la correzione di errori, la cultura DevOps unisce le
 due figure in un'unica figura dove i devs devono indossare i panni degli ops e
-viceversa. Ciò significa una integrazione di continuous testing e monitoring con
-il processo di sviluppo che diventa collaborativo. Ciò permette la creazione di
-cicli di sviluppo sempre più corti con cambiamenti piccoli che viene
+viceversa. Ciò significa una integrazione di _continuous testing and monitoring_
+con il processo di sviluppo che diventa collaborativo. Ciò permette la creazione
+di cicli di sviluppo sempre più corti con cambiamenti piccoli che viene
 automaticamente messo in produzione e monitorato, creando un ciclo continuo che
 unisce lo sviluppo del software con la monitoraggio del funzionamento.
+
+## Programmazione a oggetti (OOP)
+
+L'idea che ha portato allo sviluppo del paradigma a oggetti è stato il riuso.
+Creare piccoli componenti riutilizzabili permette la riduzione dei tempi di
+sviluppo, minore manutenzione, maggiore robustezza, affidabilità ed efficienza.
+Il riuso, però può causare anche dei problemi:
+
+- Motivi tecnici: i moduli per essere riutilizzabili devono essere adattabili,
+  andando a creare un compromesso con il grado di ottimizzazione di ogni
+  componente (si ottimizza per il particolare, non per il generale)
+- Motivi non tecnici:
+  - Paura ad affidarsi al codice scritto da altri
+  - Paura di perdere efficienza (compromesso con l'adattabilità)
+  - Tendenza a focalizzarsi su progetti di breve durata non ben finanziati
+  - Timore di non riuscire a gestire una miriade di componenti diversi
+
+Un sistema, per essere riutilizzabile, deve essere modulare. Un sistema è
+modulare se è diviso in parti che hanno una sostanziale autonomia individuale ed
+una ridotta interazione con le altre parti. In generale, con il termine "modulo"
+intenderemo un fornitore di risorse computazionali: procedure, strutture dati,
+tipi ecc. Per un modulo è importante distinguere cosa fa, ossia l'insieme dei
+servizi esportati, e come è fatto, ossia le peculiarità interne al modulo.
+L'interfaccia di un modulo costituisce il _contratto_ tra il modulo e i suoi
+utilizzatori.
+
+### L'incapsulamento e ADT
+
+L'approccio alla modularità tradizionale è quello di scomposizione funzionale
+_top-down_: si scompone ricorsivamente la funzionalità principale del sistema da
+sviluppare in funzionalità più semplici e si termina quando le funzionalità
+individuate sono così semplici da permettere una diretta implementazione. Un
+modulo secondo questo è approccio è definito come una procedura/libreria. È un
+modo di procedere molto ordinato e logico che però è adatto a progettare
+algoritmi ma non sistemi di grosse dimensioni:
+
+1. Spesso un sistema non possiede una singola funzionalità principale
+2. Le funzionalità di un programma sono soggette a frequenti cambiamenti
+3. Con l'approccio _top-down_ si decidono prematuramente i vincoli tra i diversi
+   moduli.
+
+Dove l'approccio tradizionale usava delle procedure che accedevano ad un pool di
+dati comune, la scomposizione in oggetti usa due astrazioni: l'incapsulamento e
+il tipo di dato astratto (ADT).
+
+Per incapsulamento intendiamo la capacità di ogni dato di esporre un insieme di
+operazioni valide, un'interfaccia pubblica immutabile, e mantenere privata la
+mutevole implementazione di queste. Definiamo, allora, tipo di dato astratto
+(ADT) l'astrazione che classifica i dati in base al loro comportamento e non in
+base alla loro rappresentazione fisica. L'interfaccia pubblica sarà l'unico modo
+per gli utilizzatori del dato per modificarlo (_information hiding_).
+
+### Concetti di base
+
+#### Oggetto
+
+La OOP si basa, come lascia intendere il nome, sul concetto di oggetto. Per
+oggetto intendiamo un'astrazione o, in generale, un'entità con un significato
+ben preciso nel dominio applicativo. Nel nostro contesto, un oggetto è
+un'istanza di un ADT. Gli oggetti avranno 3 componenti:
+
+1. L'identità: discrimina le diverse istanze dello stesso concetto: due istanze
+   possono essere uguali (stessi dati) ma non identici (stesso oggetto);
+2. Lo stato: definito da un insieme di attributi mutabili o immutabili;
+3. Il comportamento: definito dall'insieme di operazioni o comandi impartibili
+   ad un oggetto, chiamati metodi o messaggi.
+
+Un oggetto può essere composto a sua volta da altri oggetti.
+
+#### Incapsulamento
+
+Come visto precedentemente, intendiamo la capacità di definire proprietà
+pubbliche (metodi) e private (attributi). Le proprietà private sono visibili e
+modificabili solamente attraverso apposite proprietà pubbliche. Dal punto di
+vista dell'utilizzatore l'oggetto deve essere una scatola nera utilizzabile solo
+attraverso le apposite interfacce.
+
+#### Classe
+
+Una classe è un gruppo di entità identificato da un insieme di caratteristiche
+comuni. Una classe è il modello per creare oggetti con stesso comportamento:
+ogni oggetto è infatti una istanza di una classe. Ogni classe deve catturare una
+e una sola astrazione. Esse consentono la definizione di tipi di dato astratto.
+
+#### Ereditarietà e polimorfismo
+
+Le classi possono essere legate tra di loro da diversi tipi di relazioni:
+
+1. **Ereditarietà**
+2. **Aggregazione:** una classe contiene un'altra classe (il volante fa parte
+   dell'automobile);
+3. **Uso:** una classe chiama metodi di un altro classe (una persona usa una
+   macchina).
+
+Tra questi l'ereditarietà è il più importante e caratterizza il paradigma OOP.
+
+Diciamo che una sottoclasse è figlia di una o più superclassi "padre" se è una
+specializzazione dell'ultima. Le sottoclassi ereditano tutte le proprietà delle
+superclassi e possono modificarle o aggiungerne altre. Il motivo dell'importanza
+dell'ereditarietà è la possibilità degli oggetti di compiere polimorfismo, ossia
+mutare il proprio tipo. Infatti una variabile ha un tipo statico noto a _compile
+time_ che definisce le caratteristiche generali e un tipo dinamico noto solo a
+runtime che definisce il tipo specifico dell'oggetto a cui la variabile si
+riferisce in un certo istante. Attenzione però: tipo statico e dinamico non sono
+slegati! Infatti il tipo dinamico deve essere sempre una specializzazione di
+quello statico: una variabile polimorfica può solo specializzarsi, non
+generalizzarsi. Ad esempio a priori sapremo che una variabile è di tipo
+`Macchina` e ne avrà gli attributi, ma a runtime una variabile di tipo
+`Macchina` può contenere sia `MacchinaElettrica` che `MacchinaBenzina` ma non
+`Aereo`. Il vero tipo della variabile verrà finalizzato solo all'accesso di una
+delle sue proprietà, ad esempio quando viene mandato il messaggio `parti`. Solo
+allora si potrà decidere se usare l'implementazione fornita da `Macchina`,
+`MacchinaElettrica` o `MacchinaBenzina`. Il polimorfismo implica la necessità di
+un lookup dinamico dei metodi e degli attributi da parte del compilatore,
+compito che nel paradigma procedurale era delegato al programmatore.
