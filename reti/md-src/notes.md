@@ -10,18 +10,20 @@ la realizzazione di strumenti per l'analisi automatica.
 Iniziamo a dare le definizioni principali che utilizzeremo per costruire
 l'algebra booleana.
 
-**Operazione:** Una operazione $\alpha$ sull'insieme $s = \{ s_1, s_2, \dots\}$
-è una funzione $S: S \times S \to S$.
+Definizione. _Operazione_
+: Una operazione $\alpha$ sull'insieme $s = \{ s_1, s_2, \dots\}$ è una funzione
+  $S: S \times S \to S$.
 
-**Sistema algebrico:** Combinazione di una o più operazioni.
+Definizione. _Sistema algebrico_
+: Combinazione di una o più operazioni.
 
-**Algebra Booleana:** È un sistema algebrico identificato dalla quintupla
-$(B, +, *, O, I)$ dove:
+Definizione. _Algebra Booleana_
+: È un sistema algebrico identificato dalla quintupla $(B, +, *, O, I)$ dove:
 
-- $B$ è l'insieme di specificazione (carrier)
-- $+, *$ sono operatori binari che corrispondo rispettivamente a somma e
-  prodotto
-- $O, I$ sono elementi speciali di $B$
+  1. $B$ è l'insieme di specificazione (carrier)
+  2. $+, *$ sono operatori binari che corrispondo rispettivamente a somma e
+    prodotto
+  3. $O, I$ sono elementi speciali di $B$
 
 Le proprietà delle due operazioni sono dedotte da assiomi:
 
@@ -37,51 +39,45 @@ L'ordine delle operazioni viste è il consueto. Inoltre godono delle già viste
 proprietà (vedasi ACSO e LEA):
 
 1. Associativa
-
 2. Distributiva
-
 3. Idempotenza
-
 4. Elemento neutro
-
 5. Assorbimento
-
 6. Involuzione
-
 7. De Morgan
-
 8. Consenso
 
    $$
-   \begin{aligned}
-   \text{Somma: } & a*b + \neg a*c + b*c = a*b + \neg a*c \\
-   \text{Prodotto: } & (a+b)*(\neg a+c)*(b+c) = (a+b)*(\neg a+c)
-   \end{aligned}
+   \begin{align}
+     \text{Somma: } & a*b + \neg a*c + b*c = a*b + \neg a*c \\
+     \text{Prodotto: } & (a+b)*(\neg a+c)*(b+c) = (a+b)*(\neg a+c)
+   \end{align}
    $$
 
-**Principio di dualità:** ogni identità deducibile dai postulati dell'algebra di
-Boole è trasformata in un'altra identità se ogni somma è sostituita da un
-prodotto (e viceversa) e ogni elemento identità $O$ è sostituito da un elemento
-identità $I$.
+Definizione. _Principio di dualità_
+: Ogni identità deducibile dai postulati dell'algebra di Boole è trasformata in
+  un'altra identità se ogni somma è sostituita da un prodotto (e viceversa) e
+  ogni elemento identità $O$ è sostituito da un elemento identità $I$.
 
-**Espressione Booleana:** Una espressione booleana $E$ è definita in modo
-induttivo come parola composta da operatori booleani, parentesi costanti e
-letterali nel modo seguente:
+Definizione. _Espressione Booleana_
+: Una espressione booleana $E$ è definita in modo induttivo come parola composta
+  da operatori booleani, parentesi costanti e letterali nel modo seguente:
 
-- Sia gli elementi di $B$, chiamati costanti, che i letterali $x, y, z$ sono
-  espressioni;
-- Se $E_1$ e $E_2$ sono espressioni booleane anche $(E_1 + E_2)$, $(E_1 * E_2)$,
-  $(\neg E_1)$ lo sono;
-- Non esistono altre espressioni booleane oltre a quelle che possono essere
-  generate da un numero finito di applicazione delle due regole precedenti.
+  1. Sia gli elementi di $B$, chiamati costanti, che i letterali $x, y, z$ sono
+     espressioni;
+  2. Se $E_1$ e $E_2$ sono espressioni booleane anche $(E_1 + E_2)$, $(E_1 * E_2)$,
+     $(\neg E_1)$ lo sono;
+  3. Non esistono altre espressioni booleane oltre a quelle che possono essere
+     generate da un numero finito di applicazione delle due regole precedenti.
 
 Possiamo definire algebra di commutazione una particolare algebra booleana della
 seguente forma: $(\{ 0,1\}, +, *, 0, 1)$.
 
 ### Funzioni booleane ed espressioni booleane
 
-**Funzione di commutazione:** Una funzione di commutazione a $n$ variabili è una
-funzione: $f: \{0,1\}^n \to \{0,1\}$
+Definizione _Funzione di commutazione_
+: Una funzione di commutazione a $n$ variabili è una funzione: $f: \{0,1\}^n \to
+  \{0,1\}$
 
 Le funzioni di commutazioni hanno una comoda rappresentazioni in forma tabellare
 (tabella di verità). Una funzione booleana di $n$ variabili può essere espressa
@@ -104,26 +100,27 @@ canoniche sono `sum of products` e `products of sum` (vedasi ACSO e LEA).
 Entrambe le forme canoniche sono un'applicazione del teorema di espansione di
 Shannon:
 
-**Teorema di espansione di Shannon:** Sia $f$ una funzione booleana. Per ogni
-$(x_1, x_2, \dots, x_n) \in B^n$ si ha:
+Teorema. _Teorema di espansione di Shannon_
+: Sia $f$ una funzione booleana. Per ogni $(x_1, x_2, \dots, x_n) \in B^n$ si
+  ha:
 
-$$
-\begin{aligned}
-  f(x_1, x_2, \dots, x_n) & = \neg x_1 *f(0, x_2, \dots) +
-    x_1* f(1, x_2, \dots) = \\
-    & = \neg x_2 *f(x_1, 0, \dots) + x_2* f(x_1, 1, \dots) = \dots
-\end{aligned}
-$$
+  $$
+  \begin{align}
+    f(x_1, x_2, \dots, x_n) & = \neg x_1 *f(0, x_2, \dots) +
+      x_1* f(1, x_2, \dots) = \\
+      & = \neg x_2 *f(x_1, 0, \dots) + x_2* f(x_1, 1, \dots) = \dots
+  \end{align}
+  $$
 
-Dualmente si ha:
+  Dualmente si ha:
 
-$$
-\begin{aligned}
-  f(x_1, x_2, \dots, x_n) & = (\neg x_1 + f(1, x_2, \dots)) *
-    (x_1 + f(0, x_2, \dots)) = \\
-    & = (\neg x_2 + f(x_1, 1, \dots)) * (x_2 + f(x_1, 0, \dots)) = \dots
-\end{aligned}
-$$
+  $$
+  \begin{align}
+    f(x_1, x_2, \dots, x_n) & = (\neg x_1 + f(1, x_2, \dots)) *
+      (x_1 + f(0, x_2, \dots)) = \\
+      & = (\neg x_2 + f(x_1, 1, \dots)) * (x_2 + f(x_1, 0, \dots)) = \dots
+  \end{align}
+  $$
 
 Non è possibile, però, identificare un algoritmo che trasforma espressioni
 algebriche in modo da minimizzare i criteri di costo. Quindi non si saprà mai se
@@ -188,9 +185,10 @@ rappresentata mediante una rappresentazione geometrica cartesiana in uno spazio
 a $n$ dimensioni in cui gli assi sono le variabili della funzione. In questa
 rappresentazione possiamo definire gli n-cubi:
 
-**N-Cubi:** data la rappresentazione cartesiana di una funzione binaria a $n$
-variabili, si dice n-cubo la figura ottenuta collegando i vertici le cui
-configurazioni sono a distanza di Hamming unitaria.
+Definizione. _N-Cubi_
+: Data la rappresentazione cartesiana di una funzione binaria a $n$
+  variabili, si dice n-cubo la figura ottenuta collegando i vertici le cui
+  configurazioni sono a distanza di Hamming unitaria.
 
 Si può facilmente trasformare una tabella di verità e $n$ variabili in un
 n-cubo: basta segnare opportunamente le configurazioni per cui la funzione
@@ -215,7 +213,7 @@ secondo righe e colonne.
 > | **0**  |  1  |  0  |  1  |  0  |
 > | **1**  |  0  |  1  |  0  |  1  |
 >
-> Si noti l< disposizione delle variabili: si deve mantenere la distanza di
+> Si noti la disposizione delle variabili: si deve mantenere la distanza di
 > Hamming pari a 1 tra colonne adiacenti.
 
 La mappa così realizzata è detta mappa di Karnaugh. Le configurazioni assunte
@@ -225,29 +223,35 @@ configurazione delle variabili corrisponde a quella della coordinate che
 contrassegnano le caselle. Due caselle che condividono un lato di un n-cubo
 corrispondo a due configurazioni di variabili adiacenti.
 
-**Implicante:** un implicante è una funzione $p$ associata ad un termine
-prodotto di $m$ letterali con $1 \leq m \leq n$ tale per cui $f \geq p$. Ciò
-significa che per ogni 1 in $p$ ne corrisponde uno in $f$. Un mintermine è un
-implicante per cui $m=n$.
+Definizione. *Implicante*
+: Un implicante è una funzione $p$ associata ad un termine prodotto di $m$
+  letterali con $1 \leq m \leq n$ tale per cui $f \geq p$. Ciò significa che per
+  ogni 1 in $p$ ne corrisponde uno in $f$. Un mintermine è un implicante per cui
+  $m=n$.
 
 Sostanzialmente gli implicanti sono dei raggruppamenti di 1 di variabili
 adiacenti. Affinché esso sia una riduzione, esso deve avere dimensione pari (2,
 4 o 8). Esistono 2 tipi di implicanti:
 
-1. **Implicanti primi:** è un implicante associato ad un termine prodotto a cui
-   corrisponde un raggruppamento di dimensione massima.
-2. **Implicanti primi essenziali:** un implicante primo che copre uno o più 1
-   non coperti da nessun altro implicante.
+Definizione. _Implicanti primi_
+: È un implicante associato ad un termine prodotto a cui corrisponde un
+  raggruppamento di dimensione massima.
 
-**Copertura:** viene detta copertura la scelta del minor numero di implicanti
-primi ed essenziali.
+Definizione. _Implicanti primi essenziali_
+: Un implicante primo che copre uno o più 1 non coperti da nessun altro
+  implicante.
+
+Definizione. _Copertura_
+: Viene detta copertura la scelta del minor numero di implicanti primi ed
+  essenziali.
 
 Il metodo consiste nel trovare una copertura con il minor numero di implicati
 primi. Per fare ciò, partiamo dall'individuare tutti gli implicanti primi
 essenziali. Il seguente teorema ci può aiutare:
 
-**Teorema:** Se una forma minima è composta da solo implicanti primi essenziali
-essa è unica.
+Teorema.
+: Se una forma minima è composta da solo implicanti primi essenziali essa è
+  unica.
 
 In seguito eliminiamo tutti gli implicanti primi coperti da quelli essenziali e
 selezioniamo il numero minore di implicanti primi tra gli uni rimasti.
@@ -273,3 +277,50 @@ la funzione. Inoltre essa non deve essere per forza coperta da un implicante. È
 importante sottolineare che gli implicanti primi realizzati con sole condizioni
 di indifferenza non hanno nessuno scopo. Inoltre un implicante primo non diventa
 essenziale quando è l'unico a coprire una data condizione di indifferenza.
+
+### Metodo di Quine-McCluskey
+
+I nostri obiettivi sono analoghi a quelli della sintesi tramite mappe di
+Karnaugh. Il metodo di Quine-McCluskey è un metodo di minimizzazione tabellare
+facile da tradurre in un algoritmo. Il numero di variabili per cui è applicabile
+è teoreticamente illimitato. Il procedimento è simile a quello delle mappe di
+Karnaugh: prima si cercano gli implicanti primi e dopo si cerca la copertura
+ottima.
+
+Partiamo dai mintermini di funzione. Confrontiamo tutti i termini e
+semplifichiamo con la regola di riduzione tutte le coppie che hanno una parte
+comune ed una sola variabile differente. I termini semplificati sono marcati e
+non sono primi poiché hanno partecipato alla creazione di un implicante con meno
+letterali. Successivamente si crea con le riduzioni un nuovo insieme di termini
+prodotto da confrontare e si riparte dal confronto. Il processo termina se non
+ci sono più possibili riduzioni. I termini prodotto non marcati sono implicanti
+primi.
+
+Il numero di confronti può essere ottimizzato: non vale la pena confrontare i
+termini che hanno sicuramente diversi per più di un letterale. Costruiamo allora
+dei gruppi di mintermini/implicanti contenenti lo stesso numero di 1. Si
+comparano tra loro le configurazioni che appartengono a gruppi che differiscono
+per un solo 1.
+
+Per cercare la copertura si usa la cosiddetta tabella degli implicanti o tabella
+di copertura. Essa è una matrice binaria in cui le righe sono gli implicanti
+primi identificati e gli indici colonna sono i mintermini della funzione. Gli
+elementi della matrice sono pari a 1 quando l'implicante i-esimo copre il
+mintermine j-esimo, altrimenti 0. Si hanno vari criteri di scelta:
+
+1. **Criterio di essenzialità:** se una colonna contiene un solo 1 la riga che
+   gli corrisponde è relativa ad un implicante primo essenziale (riga
+   essenziale). La riga essenziale e le colonne da essa coperte vengono
+   eliminate.
+2. **Criterio di dominanza di riga:** quando un certo implicante copre tutti i
+   mintermini coperti da un altro implicante esso lo domina. In questo caso la
+   riga dell'implicante dominato viene eliminato.
+3. **Criterio di dominanza di colonna:** Un mintermine $i$-esimo domina un
+   mintermine $j$-esimo quando ogni implicante che copre $j$ copre anche $i$. In
+   questo caso il mintermine $i$ è eliminato dalla tabella.
+
+Gli implicanti corrispondenti alle righe eliminate vengono aggiunti all'insieme
+di copertura corrispondente alla copertura ottimale. Dopo aver eliminato tutte
+le righe eliminabili, la tabella ottenuta è ciclica. La scelta degli ultimi
+implicanti da questa richiede l'uso di altri criteri: _Branch and Bound_ o il
+metodo di Petrik.
