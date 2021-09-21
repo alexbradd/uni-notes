@@ -26,8 +26,13 @@ OUTPUT="$(realpath "$2")"
 
 pandoc "$INPUT" \
 	-o "$OUTPUT" \
-	-f markdown \
+	-t pdf \
 	$TOC \
-	-V "geometry:margin=.5in" \
+	--shift-heading-level-by=-1 \
+	--pdf-engine="pdflatex" \
+	-V "documentclass:article" \
+	-V "classoptions:11pt" \
+	-V "fontenc:T1" \
+	-V "geometry:margin=2cm,bindingoffset=6mm,twoside" \
 	-V "toc-title:Indice"
 
