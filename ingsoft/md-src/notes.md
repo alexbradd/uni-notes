@@ -236,3 +236,500 @@ allora si potrà decidere se usare l'implementazione fornita da `Macchina`,
 `MacchinaElettrica` o `MacchinaBenzina`. Il polimorfismo implica la necessità di
 un lookup dinamico dei metodi e degli attributi da parte del compilatore,
 compito che nel paradigma procedurale era delegato al programmatore.
+
+## UML
+
+Il modello è una descrizione astratta del sistema. Modellare il sistema aiuta
+gli analisti a capire le funzionalità del sistema. Diversi modelli presentano il
+sistema da diverse prospettive. UML è un linguaggi grafico di modellazione usato
+per il software. Sono definiti 3 tipi di diagrammi:
+
+1. Diagrammi di struttura: mostrano come i componenti sono strutturati
+   internamente
+2. Diagrammi di comportamento: mostrano come i componenti si comportano evolvono
+   nel tempo
+3. Diagrammi di interazione: mostrano come i vari componenti interagiscono tra
+   di loro
+
+### Diagrammi di casi d'uso
+
+Sono diagrammi di comportamento che descrivono i requisiti del sistema.
+Descrivono quali funzionalità devono essere offerte e chi le usa, senza
+affrontare la descrizione di come le funzionalità sono realizzate. I vari
+componenti possono interagire tra di loro con relazioni di "estensione" ed
+"inclusione".
+
+```{ .plantuml height=30% caption="Diagramma di caso d'uso in UML" }
+@startuml
+skinparam style strictuml
+left to right direction
+
+actor "Research associate" as associate
+actor "Professor" as prof
+actor "Assistant" as assistant
+
+package "Student administration" {
+  usecase "Query student data" as query
+  usecase "Create course" as course
+  usecase "Issue certificate" as cert
+  usecase "Publish task" as task
+}
+
+prof -|> associate
+assistant -|> associate
+
+associate -- query
+professor -- course
+professor -- cert
+assistant "0..1" -- cert
+assistant -- task
+
+@enduml
+```
+
+### Diagrammi di classe
+
+I diagrammi delle classi è una descrizione statica delle classi del nostro
+sistema. Una classe è composta da tre parti:
+
+1. Nome
+2. Attributi: lo stato; la sintassi per definire un attributo è la seguente:
+
+   ```txt
+   visibilita' ::= - | + | ~ | #
+   attributo   ::= visibilita' nome: tipo [molteplicita'] = default {proprieta'}
+   ```
+
+   Gli attributi statici (condivisi da tutte le istanze) sono sottolineati.
+
+3. Metodi: il comportamento; la sintassi per definire un metodo è la seguente:
+
+   ```txt
+   visibilita' ::= - | + | ~ | #
+   direzione   ::= out | in
+   parametro   ::= direzione nome: tipo = default
+   metodo      ::= visibilita' nome(parametro+): tipo {proprieta'}
+   ```
+
+Attributi e metodi hanno quattro impostazioni di visibilità: `+` pubblica, `-`
+privata, `~` friendly (pubblico ma solo per il modulo),`#` protected (come
+friendly ma anche per i sottotipi).
+
+La rappresentazione grafica è la seguente:
+
+```{ .plantuml height=10% caption="Classe in UML"}
+@startuml
+class Persona {
+  - nome: String
+  - cognome: String
+  - dataNascita: Date
+  - {static} numPersone: int
+  + siSposa(p: Persona) : boolean
+  + compieAnni(d: Date) : boolean
+}
+@enduml
+```
+
+Fra le classi sono definite delle associazioni. Una associazione è una relazione
+tra le classi con un nome (solitamente un verbo) in cui sono specificati i ruoli
+svolti dalle classi nell'associazione. Gli estremi di un associazione sono
+_attributi impliciti_, hanno una visibilità come gli attributi normali e possono
+avere anche molteplicità. Le associazioni possono essere bidirezionali (entrambi
+i membri guadagnano l'attributo implicito) oppure avere una direzione (solamente
+dall'origine vi è l'attributo implicito).
+
+```{ .plantuml height=30% caption="Associazioni in UML"}
+@startuml
+hide empty members
+class Persona {
+  - nome: String
+  - cognome: String
+  - anni: int
+}
+
+class Azienda {
+  - nome: String
+  - fatturato: int
+  - numDipendenti: int
+  + assume(p: Persona): int
+}
+
+class Banca
+
+Persona "-dipendenti 0..*" -- "-azienda 1" Azienda : lavora
+Persona "superiore 0..1" --- "subalterni 0..*" Persona : dirige
+Banca "banche 0..*" --> "clienti 0..*" Persona
+@enduml
+```
+
+Possiamo definire anche le classi associazione, ossia delle classi che
+definiscono delle proprietà dell'associazione tra due classi.
+
+```{ .plantuml height=15% caption="Classe associazione in UML" }
+@startuml
+left to right direction
+hide empty members
+
+class Studente
+class Corso
+
+class DatiCorso {
+  - voto: int
+  - frequenza: int
+  + votoMassimo(): int
+}
+
+Studente "1..*" -- "1..*" Corso
+(Studente, Corso) -- DatiCorso
+@enduml
+```
+
+Esistono alcune associazioni particolari che vengono identificate in modo
+particolare:
+
+1. Aggregazione: definisce una relazione _part-of_;
+2. Composizione: è una aggregazione forte, ossia le parti non esistono senza il
+   contenitore;
+3. Ereditarietà: qui si intende l'ereditarietà generalizzata.
+
+```{ .plantuml height=15% caption="Aggregazione in UML" }
+@startuml
+hide empty members
+
+class Automobile
+class Telaio
+class Motore
+class Ruota
+
+Telaio "1" --o "1" Automobile
+Motore "1" --o "1" Automobile
+Ruota  "4" --o "1" Automobile
+@enduml
+```
+
+```{ .plantuml height=5% caption="Composizione in UML" }
+@startuml
+hide empty members
+
+class Ruota
+class Automobile
+class Bicicletta
+
+Automobile *-right-> "4" Ruota
+Bicicletta *-left->  "2" Ruota
+@enduml
+```
+
+```{ .plantuml height=12% caption="Ereditarietà in UML" }
+@startuml
+left to right direction
+hide empty members
+
+class Child extends Mother
+class Child extends Father
+class Grandchild extends Child
+@enduml
+```
+
+Le classi possono essere astratte (senza istanze) e vengono indicate tramite il
+corsivo nel nome o la proprietà `{abstract}`. Le classi astratte possono
+contenere metodi astratti, ossia metodi che le classi figlie devono
+implementare. Se una classe ha almeno un metodo astratto essa è per forza
+astratta. Le interfacce sono simili alle classi astratte, ma hanno la
+restrizione di avere solo funzioni astratte e costanti. In Java, una classe può
+ereditare da solo una classe astratta ma può implementare infinite interfacce.
+
+```{ .plantuml height=35% caption="Classi astratte e interfacce in UML" }
+@startuml
+hide empty members
+
+class Printer
+
+interface Printable {
+  + print(): void
+}
+
+class Course implements Printable {
+  + name: String
+  + hours: int
+  + print(): void
+  + getCredits(): float
+}
+
+abstract class Person implements Printable {
+  + name: String
+  + address: String
+  + dob: Date
+  + ssNo: int
+  + print(): void
+}
+
+class Employee extends Person {
+  + acctNo: int
+}
+
+class Student extends Person {
+  + matNo: int
+  + print(): void
+}
+
+Printer .left> Printable : <<uses>>
+@enduml
+```
+
+In alcuni casi, possiamo usare anche una notazione alternativa (detta
+_lollipop_) per quanto riguarda le interfacce.
+
+```{ .plantuml height=30% caption="Notazione lollipop in UML" }
+@startuml
+class fig2 as "FiguraGeometrica" {
+  - vertici: List
+}
+
+class vec2 as "Vector" {
+  + add(o: Object): boolean
+  + det(index: int): Object
+}
+
+together {
+  class fig1 as "FiguraGeometrica" {
+    - vertici: List
+  }
+
+  interface List {
+    + add(o: Object): boolean
+    + det(index: int): Object
+  }
+
+  class vec1 as "Vector" {
+    + add(o: Object): boolean
+    + det(index: int): Object
+  }
+}
+
+
+fig1 .> List : <<uses>>
+List <|. vec1
+List -[hidden]--> fig2
+fig2 -right(0- vec2 : List
+note "Eqivalenti" as n1
+
+List .. n1
+n1 .. fig2
+@enduml
+```
+
+I pacchetti sono un meccanismo di strutturazione simile ad uno spazio di nomi.
+Sono un'associazione grafica di più classi e godono della proprietà di
+ereditarietà.
+
+### Diagrammi di sequenza
+
+È un diagramma di iterazione utilizzato per rappresentare gli scenari in termini
+di entità e messaggi scambiati.
+
+Il diagramma si suddivide in sequenze che contengono attori che interagiscono
+con il sistema. Lungo l'asse delle ascisse vengono rappresentati gli attori,
+mentre lungo l'asse delle ordinate il tempo. I messaggi sono indicati da delle
+frecce parallele all'asse delle ascisse. È possibile anche rappresentare la
+durata delle chiamate e la durata di vita degli oggetti. Ogni sequenza, o frame
+di interazione, può essere ripetuta oppure può essere eseguita
+condizionatamente.
+
+```{ .plantuml height=35% caption="Diagramma di sequenza in UML" }
+@startuml
+skinparam style strictuml
+autoactivate on
+
+-> Autonoleggio: prenota
+loop per ogni auto ordinata
+  opt se il cliente è registrato
+    Autonoleggio -> Cliente : preferenze
+    Cliente --> Autonoleggio
+  end
+  Autonoleggio -> Sede : disponibilità
+
+  alt se auto è disponibile
+    Sede -> Prenotazione **
+    Prenotazione -> Autovettura : associa
+    Autovettura --> Sede : associamento
+    Sede --> Autonoleggio
+  else
+    Sede --> Autonoleggio : non disponibile
+  end
+end
+@enduml
+```
+
+### Macchine a stati finiti
+
+In questo contesto, esse rappresentano il comportamento dei singoli oggetti di
+una classe in termini di eventi a cui gli oggetti sono sensibili, azioni
+prodotte e transizioni di stato. Le condizioni di transizione l'emissione di un
+evento oppure delle condizioni, funzioni booleane sui valori degli oggetti.
+
+```{ .plantuml caption="Macchina a stati finiti in UML" }
+@startuml
+hide empty description
+
+[*] --> Vuoto : crea
+Vuoto --> Elaborazione : aggiungi destinatario
+
+Elaborazione --> Elaborazione : aggiungi testo
+Elaborazione --> Bozza : memorizza
+Elaborazione --> Cancellato : cancella
+Elaborazione --> Spedito : spedisci [rete.stato = disponibile]
+Elaborazione --> Pronto : spedisci [rete.stato != disponibile]
+
+Bozza --> Elaborazione : seleziona
+
+Pronto --> Pronto : timeout [rete.stato != disponibile]
+Pronto --> Spedito : timeout [rete.stato = disponibile]
+
+Cancellato --> [*]
+Spedito --> [*]
+@enduml
+```
+
+Ogni stato può contenere attributi ed eseguire attività o emettere eventi in
+base al punto nel ciclo di vita, allo stato di entrata o a quello di uscita.
+
+```{ .plantuml height=20% caption="Stato UML completo" }
+@startuml
+state Nome : attributo: tipo = valore_iniziale
+Nome : do / attività0
+Nome : entry / attività1
+Nome : exit / attività2
+Nome : event1 / attività3
+
+Nome --> [*] : event2 [condizione1] / attività4
+Nome --> Nome : event3 [condizione2] / attività5
+@enduml
+```
+
+Uno stato può anche essere composto da vari sotto-stati. In questo caso viene
+detto macro-stato. I sotto-stati ereditano le transizioni dei loro super-stati.
+I macro-stati possono rappresentare 2 modelli di esecuzione:
+
+1. Esecuzione in sequenza (decomposizione `OR`): solo uno dei sotto-stati può
+   essere attivi in un certo istante
+2. Esecuzione in parallelo (decomposizione `AND`): sono uno stato per branch del
+   macro-stato può essere attivo in un certo istante
+
+```{ .plantuml height=30% caption="Decomposizione OR in UML" }
+@startuml
+state Warning : entry/visualizza
+state Attesa
+state Memorizzazione {
+   state Preparazione
+   state Salvataggio : do/memorizza
+   state Notifica
+
+   Preparazione -> Salvataggio
+   Salvataggio -> Notifica
+}
+
+[*] -> Attesa
+
+Warning --> Attesa
+Attesa --> Warning : scatto [non luce]
+
+Attesa --> Preparazione : scatto [luce]
+Notifica --> Attesa
+
+Attesa -> [*] : spegni
+Memorizzazione --> [*] : spegni
+@enduml
+```
+
+```{ .plantuml caption="Decomposizione AND in UML" }
+@startuml
+hide empty description
+
+state t as "Sul treno"
+state a as "Arrivato"
+
+state Seduto {
+   state l1 as "Legge"
+   state l2 as "Legge in modo distratto"
+   state o as "Origlia"
+   state lc as "Libro chiuso"
+
+   [*] -> l1
+   l1 -> l2 : interesse l1 --> lc : stazione vicina
+
+   l2 -> l1 : fine interesse
+   l2 -> o  : maggior interesse
+   l2 --> lc : stazione vicina
+
+   o --> lc : stazione vicina
+
+   lc -> [*]
+   ---
+   state m as "Ascolta musica"
+   state v as "Volume basso"
+   state ms as "Musica spenta"
+
+   [*] -> m
+
+   m -> v : interesse
+   m --> ms : stazione vicina
+
+   v -> m : fine interesse
+   v --> ms : stazione vicina
+
+   ms -> [*]
+}
+
+[*] -> t
+t -> Seduto : trova posto
+
+Seduto -> a
+a -> [*]
+@enduml
+```
+
+I macro-stati possono anche mantenere una "storia": quando l'esecuzione lascia
+uno stato con _history_ viene salvato l'ultimo visitato. Se si ha _deep history_
+viene salvato l'ultimo sotto-stato foglia visitato, mentre se si ha _shallow
+history_ viene salvato l'ultimo sotto-stato diretto. Una transizione che entra
+in uno stato con _history_ è come se entrasse nello stato salvato nella history.
+
+```{ .plantuml caption="Macro-stato con history" }
+@startuml
+hide empty description
+
+state inactive as "Study program inactive"
+state active as "Study program active" {
+   [*] -> bachelor
+   state bachelor as "Bachelor" {
+      state b1 as "Bachelor's degree"
+      state b2 as "Bachelor's degree completed"
+
+      [*] -> b1
+      b1 -> b2 : ended
+      b2 --> master : enroll for master's degree
+   }
+
+   state doctorate as "Doctorate"
+   doctorate -> [*] : ended
+
+   state master as "Master" {
+      state m1 as "Master's degree"
+      state m2 as "Master's degree completed"
+
+      [*] -> m1
+      m1 -> m2 : ended
+      m2 --> doctorate : enroll for doctorate
+   }
+
+   inactive --> [H*] : pay tuition fees
+}
+
+[*] --> inactive
+inactive --> [*] : leave university
+
+active -up-> inactive : new semester [tuition fees not paid]
+active --> [*] : leave university
+@enduml
+```
