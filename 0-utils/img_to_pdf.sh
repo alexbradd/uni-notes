@@ -1,11 +1,10 @@
 #! /bin/sh
 
-[ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
-[ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
-[ -x /usr/bin/convert ] || { echo "convert is required"; exit 1; }
-[ -x /usr/bin/exiftool ] || { echo "exiftool is required"; exit 1; }
-
-[ -x /usr/bin/qpdf ] || { echo "qpdf is required"; exit 1; }
+which gs >/dev/null 2>&1       || { echo "gs is required"; exit 1; }
+which realpath >/dev/null 2>&1 || { echo "realpath is required"; exit 1; }
+which convert >/dev/null 2>&1  || { echo "convert is required"; exit 1; }
+which exiftool >/dev/null 2>&1 || { echo "exiftool is required"; exit 1; }
+which qpdf >/dev/null 2>&1     || { echo "qpdf is required"; exit 1; }
 
 TMP_FILE_NAME="/tmp/$RANDOM.pdf"
 

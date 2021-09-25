@@ -1,7 +1,7 @@
 #! /bin/sh
 
-[ -x /usr/bin/pandoc ] || { echo "pandoc is required"; exit 1; }
-[ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
+which pandoc >/dev/null 2>&1   || { echo "pandoc is required"; exit 1; }
+which realpath >/dev/null 2>&1 || { echo "realpath is required"; exit 1; }
 
 TOC="--toc"
 case "$1" in

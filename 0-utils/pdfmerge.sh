@@ -1,6 +1,6 @@
 #! /bin/sh
 
-[ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
+which gs >/dev/null 2>&1 || { echo "gs is required"; exit 1; }
 
 parameters=()
 

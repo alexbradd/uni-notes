@@ -1,7 +1,7 @@
 #! /bin/sh
 
-[ -x /usr/bin/gs ] || { echo "gs is required"; exit 1; }
-[ -x /usr/bin/realpath ] || { echo "realpath is required"; exit 1; }
+which gs >/dev/null 2>&1       || { echo "gs is required"; exit 1; }
+which realpath >/dev/null 2>&1 || { echo "realpath is required"; exit 1; }
 
 if [ -z "$1" ] || [ "$1" = "--help" ] || [ "$1" = '-h' ]; then
 	echo "add_bookmarks.sh input bookmarks output"
