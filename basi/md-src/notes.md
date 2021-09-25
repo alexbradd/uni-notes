@@ -70,7 +70,7 @@ Definizione. _Grado di una relazione_
 : Diremo grado di una relazione il numero di attributi che contiene.
 
 Definizione. _Cardinalità di una relazione_
-: Diremo cardinalità di una relazione il numero di istanze che contiene
+: Diremo cardinalità di una relazione il numero di tuple contenuto nel corpo
 
 Più informalmente una relazione può essere vista come una tabella dove
 l'intestazione corrisponde agli attributi e le varie righe alle tuple.
@@ -90,7 +90,7 @@ Solitamente una singola relazione non è sufficiente  non è sufficiente a
 organizzare tutti i dati relativi ad una applicazione. Perciò i database sono
 solitamente formati da diverse relazioni che contengono valori comuni. Il
 modello relazionale viene detto _value-based_ poiché i riferimenti tra le varie
-tabelle avviene tramite i valori che appaiono nelle istanze. I modelli
+tabelle avviene tramite i valori che appaiono nelle tuple. I modelli
 precedenti rappresentavano queste relazioni tramite dei puntatori e venivano
 chiamati _pointer-based_. Rispetto ai sistemi _pointer-based_, il modello
 relazionale possiede numerosi vantaggi tra cui:
@@ -127,6 +127,14 @@ Definizione. _Istanza di un database (database)_
   \}$ è un set di relazioni $\mathbf{r} = \{r_1, \dots, r_n\}$ dove ogni $r_i$,
   $1 \leq i \leq n$, è una relazione con schema $R_i(X_i)$.
 
+La normalità di una relazione è una proprietà che affronteremo in dettagli più
+avanti. Per ora limitiamoci a definire la prima forma normale poiché noi
+lavoreremo con tabelle che soddisfano questa forma.
+
+Definizione. _Relazione in prima forma normale_
+: Una relazione si dice in prima forma normale se ogni tupla contiene solo
+  elementi atomici.
+
 ### Vincoli di integrità
 
 La struttura del modello relazione ci permette di organizzare le informazioni di
@@ -140,13 +148,13 @@ se rispetta tutti i vincoli specificati. Esistono diversi tipi di vincoli:
 1. Vincoli sui valori nulli: presenza di campi necessari;
 2. Vincoli di integrità referenziale;
 3. Vincoli di chiave;
-4. Vincoli generici sulle istanze.
+4. Vincoli generici sulle tuple.
 
 #### Vincoli di chiave
 
 Iniziamo con il definire il concetto di chiave. Intuitivamente, possiamo vedere
 la chiave come un insieme di attributi che identifica in modo univoco le varie
-istanze di una relazione. Più precisamente:
+tuple di una relazione. Più precisamente:
 
 Definizione. _Superchiave_
 : Un insieme di attributi $K$ è detto superchiave di un relazione $R$ se $R$ non
@@ -169,3 +177,114 @@ definita una chiave primaria (indicata sottolineandone gli attributi). Valori
 nulli per le chiavi primarie sono vietati mentre generalmente sono permessi per
 le altre. Inoltre, la maggior parte dei riferimenti tra relazioni usa le chiavi
 primarie.
+
+## Linguaggi di interrogazione
+
+I linguaggi di interrogazione, come abbiamo visto, ci permettono di accedere ai
+dati all'interno della base di dati. Esistono due tipi di linguaggi di
+interrogazione:
+
+1. Linguaggi formali: algebra relazionale, calcolo relazionale, datalog
+2. Linguaggi _commerciali_: SQL
+
+### Algebra relazionale
+
+Proposta inizialmente da Codd, è un linguaggio formale funzionale per formulare
+query (interrogazioni). È basato su 5 operazioni fondamentali: selezione,
+proiezione, unione, differenza e prodotto cartesiano.
+
+Definizione. _Relazioni compatibili_
+: Due relazioni si dicono compatibili se sono dello stesso grado e (nei sistemi)
+  i domini sono ordinatamente dello stesso tipo (anche il nome deve combaciare).
+
+Definizione. _Selezione_
+: Indicata $\sigma_\mathit{predicato} R$, la selezione restituisce una nuova
+  tabella senza nome con schema identico alla tabella di partenza e istanza le
+  tuple che soddisfano il predicato di selezione.
+
+Definizione. _Proiezione_
+: Indicata $\Pi_{a_i \ldots} R$, la proiezione restituisce una tabella senza
+  nome con schema contenente solo gli attributi specificati e istanza la
+  restrizione delle tuple sugli attributi selezionati. Formalmente la proiezione
+  elimina eventuali duplicati che si vanno a formare, in SQL invece è su
+  richiesta.
+
+Definizione. _Unione_
+: Indicata $R_1 \cup R_2$, l'unione è definita solo tra relazioni compatibili e
+  restituisce una tabella priva di nome con schema invariato e istanza l'unione
+  delle istanze dei due operandi.
+
+Definizione. _Differenza_
+: Indicata $R_1 \setminus R_2$, la differenza è definita solo tra relazioni
+  compatibili e restituisce una tabella priva di nome con schema invariato e
+  istanza la differenza delle tuple delle due relazioni.
+
+Definizione. _Prodotto cartesiano_
+: Indicato $R \times S$, il prodotto cartesiano restituisce una tabella priva di
+  nome con schema l'unione degli schemi degli operandi e istanza tutte le
+  possibili coppie di tuple degli operandi. Per rendere non ambigui gli
+  attributi con lo stesso nome, si può prefissare il nome della relazione, ad
+  esempio $R.a_1$ e $S.a_1$.
+
+Sono permessi anche i seguenti operatori non algebrici per rendere le
+espressioni algebriche più leggibili:
+
+1. Assegnamento $=$ o $\gets$: definisce una etichetta ad una selezione
+2. Ridenominazione $\rho_{a_1 \gets a_2} R$: permette di modificare i nome degli
+   attributi.
+
+Le operazioni sono associate a sinistra e la precedenza è analoga a quella
+dell'algebra elementare.
+
+#### Operazioni derivate
+
+Le operazioni derivate sono definite in base alle operazioni fondamentali. Esse
+sono abbreviazioni di operazioni molto comuni. Ne vederemo tre: intersezione,
+join (con le sue varianti) e divisione.
+
+Definizione. _Intersezione_
+: Indicata $R_1 \cap R_2$, equivale a:
+
+  $$R \setminus (R \setminus S)$$
+
+  L'intersezione è definita solo tra relazioni compatibili.
+
+Definizione. _Join_
+: Indicato $R \underset{\mathit{predicato}}{\Join} S$, equivale a:
+
+  $$\sigma_{predicato} (R \times S)$$
+
+  Esso restituisce una tabella priva di nome con schema pari alla concatenazione
+  degli schemi di $R$ e $S$ e istanza pari all'insieme ottenuto concatenando le
+  tuple di $R$ e $S$ che soddisfano il predicato.
+
+Definizione. _Equi-Join_
+: È un caso particolare di join, dove il predicato ammette solo confronti di
+  uguaglianza.
+
+Definizione. _Join naturale_
+: Equivale ad un equi-join di tutti gli attributi omonimi. Nella notazione, si
+  omette il predicato e nel risultato si eliminano le colonne ripetute.
+
+Definizione. _Semi-join_
+: Indicato con $R \underset{\mathit{predicato}}{\ltimes} S$, equivale a
+
+  $$\Pi_{R.\star} (R \underset{\mathit{predicato}}{\ltimes} S)$$
+
+Definizione. _Semi-join naturale_
+: Indicato $R \ltimes S$, equivale a:
+
+  $$\Pi_{R.\star} (R \Join S)$$
+
+Definizione. _Divisione_
+: Indicato $R \div S$, equivale a
+
+  $$
+    \Pi_{R \setminus S} R \setminus \Pi_{R \setminus S}
+      ((\Pi_{R \setminus S} R \times S) \setminus S)
+  $$
+
+  Con lo schema di $S$ contenuto in quello di $R$. Seleziona le tuple di $R$ che
+  contengono tutte le tuple di $S$
+
+Il join ha la stessa precedenza del prodotto cartesiano.
