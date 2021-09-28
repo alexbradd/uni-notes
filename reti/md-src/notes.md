@@ -33,7 +33,7 @@ Le proprietà delle due operazioni sono dedotte da assiomi:
 - $O$ è l'elemento neutro rispetto a $+$ e $I$ quello rispetto a $*$
 - Ogni elemento $x \in B$ ammette un elemento $x'$ complemento di $x$ tale che
   $(x+x') = I$ e $(x + x') = O$. Questo elemento è unico, perciò possiamo
-  definire $\neg x := x'$ (operazione complemento).
+  definire $'$ l'operatore unario di complemento.
 
 L'ordine delle operazioni viste è il consueto. Inoltre godono delle già viste
 proprietà (vedasi ACSO e LEA):
@@ -48,10 +48,10 @@ proprietà (vedasi ACSO e LEA):
 8. Consenso
 
    $$
-   \begin{align}
-     \text{Somma: } & a*b + \neg a*c + b*c = a*b + \neg a*c \\
-     \text{Prodotto: } & (a+b)*(\neg a+c)*(b+c) = (a+b)*(\neg a+c)
-   \end{align}
+   \begin{aligned}
+     \text{Somma: } & a*b + a'*c + b*c = a*b + a'*c \\
+     \text{Prodotto: } & (a+b)*(a'+c)*(b+c) = (a+b)*(a'+c)
+   \end{aligned}
    $$
 
 Definizione. _Principio di dualità_
@@ -66,7 +66,7 @@ Definizione. _Espressione Booleana_
   1. Sia gli elementi di $B$, chiamati costanti, che i letterali $x, y, z$ sono
      espressioni;
   2. Se $E_1$ e $E_2$ sono espressioni booleane anche $(E_1 + E_2)$, $(E_1 * E_2)$,
-     $(\neg E_1)$ lo sono;
+     $(E_1')$ lo sono;
   3. Non esistono altre espressioni booleane oltre a quelle che possono essere
      generate da un numero finito di applicazione delle due regole precedenti.
 
@@ -105,21 +105,21 @@ Teorema. _Teorema di espansione di Shannon_
   ha:
 
   $$
-  \begin{align}
-    f(x_1, x_2, \dots, x_n) & = \neg x_1 *f(0, x_2, \dots) +
+  \begin{aligned}
+    f(x_1, x_2, \dots, x_n) & = x_1' *f(0, x_2, \dots) +
       x_1* f(1, x_2, \dots) = \\
-      & = \neg x_2 *f(x_1, 0, \dots) + x_2* f(x_1, 1, \dots) = \dots
-  \end{align}
+    & = x_2' *f(x_1, 0, \dots) + x_2* f(x_1, 1, \dots) = \dots
+  \end{aligned}
   $$
 
   Dualmente si ha:
 
   $$
-  \begin{align}
-    f(x_1, x_2, \dots, x_n) & = (\neg x_1 + f(1, x_2, \dots)) *
+  \begin{aligned}
+    f(x_1, x_2, \dots, x_n) & = (x_1' + f(1, x_2, \dots)) *
       (x_1 + f(0, x_2, \dots)) = \\
-      & = (\neg x_2 + f(x_1, 1, \dots)) * (x_2 + f(x_1, 0, \dots)) = \dots
-  \end{align}
+      & = (x_2' + f(x_1, 1, \dots)) * (x_2 + f(x_1, 0, \dots)) = \dots
+  \end{aligned}
   $$
 
 Non è possibile, però, identificare un algoritmo che trasforma espressioni
@@ -140,13 +140,36 @@ Le metodologie di sintesi ottima sono tre:
 2. Il metodo di Quine-McCluskey
 3. Le euristiche per sintesi a due livelli
 
+Diamo inizialmente delle definizioni che useremo durante questo capitolo.
+
+Definizione. _ONset, OFFset e DCset_
+: Sia $f$ una generica funzione in $n$ variabili. Si definiscono ONset, DCset e
+  OFFset i seguenti insiemi:
+
+  $$
+    ONset = \{X_i | f(X_i) = 1\} \quad
+    DCset = \{X_i | f(X_i) = -\} \quad
+    OFFset = \{X_i | f(X_i) = 0\}
+  $$
+
+  Una notazione usata per indicare i mintermini di $f$ è la seguente:
+
+  $$
+    f(X) = ONset(\{\textit{configurazioni\ldots}\})
+  $$
+
+> Per indicare i mintermini di una funzione $f(a,b,c)$ che vale $1$ per
+> $\{0, 0, 1\}$, $\{0, 1, 0\}$ e $\{1, 0, 0\}$ possiamo scrivere
+> $f(a,b,c) = ONset(1,2,3)$: i numeri indicano la trasposizione in numeri binari
+> delle configurazioni ($001 = 1,\, 010 = 2,\, 100 = 3$).
+
 ### Metodo delle mappe di Karnaugh
 
 Un primo metodo per l'identificazione di forme minime a due livelli è applicare
 la seguente regola di riduzione:
 
 $$
-aZ + \neg aZ = Z
+aZ + a'Z = Z
 $$
 
 In cui $Z$ è un termine prodotto di $n-1$ variabili. Questo metodo può essere
@@ -169,14 +192,14 @@ metodo:
 tra due stati è il numero di bit che variano tra i due stati.
 
 Possiamo vedere la regola di riduzione come l'identificazione di configurazioni
-binarie associate ai termini prodotto che sono distanti 1 secondo Hamming. A
-tali configurazioni corrispondono coppie di mintermini in cui una sola variabile
-è naturale in un mintermine e complementata nell'altro:
+binarie associate ai termini prodotto che sono distanti una unità secondo
+Hamming. A tali configurazioni corrispondono coppie di mintermini in cui una
+sola variabile è naturale in un mintermine e complementata nell'altro:
 
-> $abc\neg d + a\neg b c\neg d$ può essere vista come due configurazioni:
+> $abcd' + ab'cd'$ può essere vista come due configurazioni:
 >
-> - $abc\neg d \equiv 1110$
-> - $a\neg b c\neg d \equiv 1010$
+> - $abcd' \equiv 1110$
+> - $ab'cd' \equiv 1010$
 >
 > I mintermini 1110 e 1010 sono ad una distanza di Hamming pari ad 1.
 
@@ -192,7 +215,7 @@ Definizione. _N-Cubi_
 
 Si può facilmente trasformare una tabella di verità e $n$ variabili in un
 n-cubo: basta segnare opportunamente le configurazioni per cui la funzione
-assume valore 1 o 0.
+assume valore `1` o `0`.
 
 La rappresentazione in uno spazio $n$-dimensionale non è maneggevole. Conviene
 perciò passare allo sviluppo nel piano degli n-cubi. Al cubo sviluppato nel
@@ -226,10 +249,10 @@ corrispondo a due configurazioni di variabili adiacenti.
 Definizione. *Implicante*
 : Un implicante è una funzione $p$ associata ad un termine prodotto di $m$
   letterali con $1 \leq m \leq n$ tale per cui $f \geq p$. Ciò significa che per
-  ogni 1 in $p$ ne corrisponde uno in $f$. Un mintermine è un implicante per cui
-  $m=n$.
+  ogni `1` in $p$ ne corrisponde uno in $f$. Un mintermine è un implicante per
+  cui $m=n$.
 
-Sostanzialmente gli implicanti sono dei raggruppamenti di 1 di variabili
+Sostanzialmente gli implicanti sono dei raggruppamenti di `1` di variabili
 adiacenti. Affinché esso sia una riduzione, esso deve avere dimensione pari (2,
 4 o 8). Esistono 2 tipi di implicanti:
 
@@ -238,7 +261,7 @@ Definizione. _Implicanti primi_
   raggruppamento di dimensione massima.
 
 Definizione. _Implicanti primi essenziali_
-: Un implicante primo che copre uno o più 1 non coperti da nessun altro
+: Un implicante primo che copre uno o più `1` non coperti da nessun altro
   implicante.
 
 Definizione. _Copertura_
@@ -258,8 +281,8 @@ selezioniamo il numero minore di implicanti primi tra gli uni rimasti.
 
 Ad ogni implicante selezionato è associato un termine prodotto. Esso è ottenuto
 identificando le variabili che non cambiano mai di valore e riportando ogni
-variabile in modo normale se il valore che essa assume è 1 e complementata se
-è 0. La riduzione sarà la somma dei termini prodotto associati ai vari
+variabile in modo normale se il valore che essa assume è `1` e complementata se
+è `0`. La riduzione sarà la somma dei termini prodotto associati ai vari
 implicanti.
 
 #### Condizioni di indifferenza
@@ -298,29 +321,223 @@ primi.
 
 Il numero di confronti può essere ottimizzato: non vale la pena confrontare i
 termini che hanno sicuramente diversi per più di un letterale. Costruiamo allora
-dei gruppi di mintermini/implicanti contenenti lo stesso numero di 1. Si
+dei gruppi di mintermini/implicanti contenenti lo stesso numero di `1`. Si
 comparano tra loro le configurazioni che appartengono a gruppi che differiscono
-per un solo 1.
+per un solo `1`.
 
 Per cercare la copertura si usa la cosiddetta tabella degli implicanti o tabella
 di copertura. Essa è una matrice binaria in cui le righe sono gli implicanti
 primi identificati e gli indici colonna sono i mintermini della funzione. Gli
-elementi della matrice sono pari a 1 quando l'implicante i-esimo copre il
-mintermine j-esimo, altrimenti 0. Si hanno vari criteri di scelta:
+elementi della matrice sono pari a `1` quando l'implicante i-esimo copre il
+mintermine j-esimo, altrimenti `0`. Definiamo l'insieme di copertura
+$\mathcal{C}(f) = \emptyset$. L'analisi della tabella può essere ricondotta al
+seguente algoritmo:
 
-1. **Criterio di essenzialità:** se una colonna contiene un solo 1 la riga che
-   gli corrisponde è relativa ad un implicante primo essenziale (riga
-   essenziale). La riga essenziale e le colonne da essa coperte vengono
-   eliminate.
-2. **Criterio di dominanza di riga:** quando un certo implicante copre tutti i
-   mintermini coperti da un altro implicante esso lo domina. In questo caso la
-   riga dell'implicante dominato viene eliminato.
-3. **Criterio di dominanza di colonna:** Un mintermine $i$-esimo domina un
-   mintermine $j$-esimo quando ogni implicante che copre $j$ copre anche $i$. In
-   questo caso il mintermine $i$ è eliminato dalla tabella.
+1. **Ricerca degli implicanti primi essenziali:** se una colonna contiene un
+   solo `1`, la riga corrisponde è quella di un implicante primo essenziale. La
+   riga dell'implicante e le colonne da essa coperte vanno eliminate dalla
+   tabella. L'implicante viene aggiunto all'insieme di copertura.
+2. **Dominanza di riga e colonna:** se vengono esauriti gli implicanti primi
+   essenziali, possiamo applicare i metodi di dominanza di riga e colonna per
+   tirarne fuori altri. Questi due metodi semplificano la tabella senza
+   modificare l'insieme di copertura:
 
-Gli implicanti corrispondenti alle righe eliminate vengono aggiunti all'insieme
-di copertura corrispondente alla copertura ottimale. Dopo aver eliminato tutte
-le righe eliminabili, la tabella ottenuta è ciclica. La scelta degli ultimi
-implicanti da questa richiede l'uso di altri criteri: _Branch and Bound_ o il
-metodo di Petrik.
+   1. **Criterio di dominanza di riga:** la riga $i$ domina la riga $j$ se
+      l'implicante $P_i$ copre tutti i mintermini che copre l'implicante $P_j$
+      più almeno uno. La riga dominata può essere rimossa dalla tabella.
+   2. **Criterio di dominanza di colonna:** la colonna $i$ domina la colonna $j$
+      se il mintermine $m_j$ è coperto dagli stessi implicanti da cui è coperto
+      $m_i$ più almeno uno. La colonna dominata può essere rimossa dalla
+      tabella.
+
+Alla fine dell'algoritmo si dovrebbe ottenere una tabella contenente un solo
+implicante (non è sempre vero come vedremo dopo) che verrà aggiunto all'insieme
+di copertura.
+
+#### Funzioni non completamente specificate
+
+L'estensione alle funzioni non completamente specificate richiede l'aggiunta di
+qualche regola:
+
+1. **Ricerca degli implicanti primi:** Nel passo relativo alla generazione degli
+   implicanti primi, le condizioni di indifferenza sono trattate come `1`;
+2. **Ricerca della copertura ottima:** Nella tabella di copertura compaiono,
+   come indici di colonna, solo i mintermini appartenenti all'ONset poiché sono
+   essi a vincolare la funzionalità. Il DCset è l'insieme dei termini che
+   rappresenta i gradi di libertà, perciò non è necessario sceglierli ma può
+   essere conveniente.
+
+#### Funzioni a più uscite
+
+Nel caso di funzioni a più uscite, una prima soluzione consiste nel minimizzare
+le funzioni singolarmente. Il risultato ottenuto dall'unione, però, non potrebbe
+essere ottimo poiché le funzioni potrebbero condividere alcuni implicanti.
+Questi implicanti condivisi possono non essere unici per le singole funzioni. In
+generale è necessario considerare sia gli implicanti primi delle singole
+funzioni che quelli ottenuti combinando in tutti i modi possibili le funzioni da
+minimizzare.
+
+L'estensione a funzioni a più uscite del metodo richiede delle modifiche ai vari
+passi:
+
+1. **Costruzione della tabella:** Si procede come nel caso scalare con la
+   differenza che si associa ad ogni mintermine un identificatore costituito da
+   tanti bit quante sono le funzioni considerate. Questo bit assumerà il valore
+   `1` se e solo se la funzione che ad esso corrisponde contiene tale mintermine
+   e `0` altrimenti.
+2. **Generazione di implicanti primi:** Si procede secondo le stesse modalità
+   del caso scalare. L'identificatore del nuovo implicante è ottenuto come AND
+   dei due identificatori. Se l'identificatore ottenuto è `00...0`, allora
+   l'espansione non è valida. Marcheremo l'indicatore (anche entrambi) che
+   coincide con il risultato dell'AND.
+3. **Tabella di copertura:** È ottenuta dalla giustapposizione delle tabelle
+   relative ad ogni funzione in cui si riportano solo i mintermini.
+4. **Identificazione della copertura ottima:** avremo un insieme di copertura
+   per ogni funzione Si applicano i criteri di scelta
+   come nel caso scalare:
+   1. **Essenzialità:** Se un implicante è essenziale per tutte le funzioni la
+      riga è eliminata insieme a tutte le colonne coperte. Se invece
+      l'implicante non è essenziale per tutte le funzioni la riga è mantenuta ed
+      è scelto solo per le funzioni in cui è essenziale. In queste ultime
+      vengono eliminate le sole colonne coperte. L'implicante viene ovviamente
+      aggiunto all'insieme di copertura della funzione corrispondente.
+   2. **Dominanza di riga:** Come nel caso scalare.
+   3. **Dominanza di colonna:** Come nel caso scalare; ha validità solo
+      all'interno della funzione.
+
+## Alee
+
+A causa dei ritardi differenti nell'attraversamento di porte logiche da parte
+dei segnali, si possono verificare malfunzionamenti transitori, costituiti da
+variazioni temporanee non corrette dal punto di vista logico, dei valori delle
+uscite al variare degli ingressi. La complessità del problema non è affrontabile
+se si vuole considerare ogni possibile variazione degli ingressi; diventa invece
+gestibile se ci si limita a considerare reti logiche funzionanti in modo
+fondamentale, ossia nelle quali un solo ingresso alla volta può variare il
+proprio valore e la rete deve avere tempo di assestarsi prima che avvenga una
+successiva variazione. Distinguiamo due tipi di malfunzionamento:
+
+1. Alee statiche: dati due ingressi $i_1$ e $i_2$ passati in sequenza con uscite
+   uguali $f = f(i_1) = f(i_2)$, l’uscita assume per un breve istante di tempo
+   nel passaggio tra i due ingressi il valore $f'$;
+2. Alee dinamiche.
+
+### Eliminazione di alee statiche
+
+L'eliminazione di alee statiche non si risolve inserendo ritardi nei circuiti,
+ma modificando il circuito. Il motivo dell'esistenza delle alee statiche è la
+presenza di più percorsi che collegano lo stesso ingresso attraverso porte `AND`
+all'uscita nei quali l'ingresso assumi valori diversi.
+
+Le alee vengono risolte aggiungendo degli implicanti ridondanti. Infatti
+osservando la mappa di Karnaugh di una funzione che soffre di alee statiche, si
+può osservare la presenza di `1` adiacenti non coperti dallo stesso implicante.
+Ovviamente la risoluzione di alee può comportare la non minimalità della
+sintesi.
+
+## Circuiti combinatori speciali
+
+Nella realizzazione di sistemi digitali complessi si ricorre spesso all'uso di
+un numero limitato di elementi di base con funzionalità be note. Vediamo alcuni
+di questi componenti.
+
+### Reti combinatorie di base
+
+#### Multiplexer
+
+Il multiplexer è una rete combinatoria in cui un segnale di selezione $s$
+permette di portare sull'uscita $y$ uno dei segnali d'ingresso $x_i$. Nel caso
+più semplice i segnali di ingresso sono due, $x_0$ e $x_1$ e il segnale $s$ è un
+singolo bit. La tabella di verità nel caso a due variabili è la seguente:
+
+| $s$ | $x_0$ | $x_1$ | $y$ |
+|:---:|:-----:|:-----:|:---:|
+| 0   | 0     | 0     | 0   |
+| 0   | 0     | 1     | 0   |
+| 0   | 1     | 0     | 1   |
+| 0   | 1     | 1     | 1   |
+| 1   | 0     | 0     | 0   |
+| 1   | 0     | 1     | 1   |
+| 1   | 1     | 0     | 0   |
+| 1   | 1     | 1     | 1   |
+
+E porta alla seguente sintesi:
+
+$$ y = s'x_0 + sx_1 $$
+
+Si può facilmente generalizzare ad un numero maggiore di ingressi: utilizzando
+$n$ segnali di selezione è possibile selezionare fino a $2^n$ ingressi. Una
+applicazione del multiplexer è legata alla sintesi di funzioni di molte
+variabili mediante la loro scomposizione secondo il teorema di Shannon.
+Consideriamo la funzione:
+
+$$
+  f(x_0, \dots, x_n) = x_0'x_1'f(0,0,\dots) + x_0'x_1f(0,1,\dots)
+    x_0x_1'f(1,0,\dots) + x_0x_1f(1,1,\dots)
+$$
+
+Si può vedere che questo tipo di scrittura ricalca quella del multiplexer usando
+$x_0$ e $x_1$ come ingressi di selezione.
+
+#### Demultiplexer
+
+Il demultiplexer è l'elemento che svolge la funzione duale rispetto al
+multiplexer. Nella sua versione più semplice, ha un ingresso dati $x$, un
+ingresso di selezione $s$ e due uscite $y_0$ e $y_1$. Il demultiplexer associa
+il valore $x$ alle uscite in base al valore del segnale di selezione. Come il
+suo duale, si può generalizzare ad un numero arbitrario di uscite.
+
+#### Decoder
+
+Un decoder è un elemento combinatorio dotato di $n$ ingressi $x_0,\ldots,x_n$ e
+di $2^n$ uscite $y_0, \ldots, y_{2^n -1}$. Tali uscite sono tutte uguali a zero
+ad eccezione di quella avente come indice il valore decimale corrispondente al
+vettore di bit in ingresso.
+
+Un decoder a 2 ingressi ha la seguente tabella di verità:
+
+| $x_0$ | $x_1$ | $y_0$ | $y_1$ | $y_2$ | $y_3$ |
+|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| 0     | 0     | 1     | 0     | 0     | 0     |
+| 0     | 1     | 0     | 1     | 0     | 0     |
+| 1     | 0     | 0     | 0     | 1     | 0     |
+| 1     | 1     | 0     | 0     | 0     | 1     |
+
+La sintesi fornisce la seguente funzione multivariabile:
+
+$$
+  y_0 = x_0'x_1' \quad
+  y_1 = x_0'x_1  \quad
+  y_2 = x_0 x_1' \quad
+  y_3 = x_0 x_1
+$$
+
+Si può quindi notare che le quattro funzioni trovate sono tutti i mintermini
+possibili di una funzione di due variabili $f(x_0, x_1)$. La proprietà di
+sintesi dei mintermini rende il decoder particolarmente adatto per circuiti che
+sintetizzano funzioni in prima forma canonica.
+
+#### Priority encoder
+
+Un priorità decoder è un elemento combiantorio dotato di $2^n$ ingressi
+$x_{2^n-1},\ldots,x_0$ e di $n + 1$ uscite $y_0,\ldots,y_{n-1}$ e $z$. L'uscita
+assume il valore `1` se e solo se tutti gli altri ingressi valgono `0`. Quando
+almeno uno degli ingressi ha valore `1`, allora le uscite $y_i$ sono la codifica
+binaria della posizione dell'uno più significativo nel vettore di ingresso e $z$
+vale 0.
+
+| $x_3$ | $x_2$ | $x_1$ | $x_0$ | $y_0$ | $y_1$ | $z$ |
+|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:---:|
+| 0     | 0     | 0     | 0     | -     | -     | 1   |
+| 0     | 0     | 0     | 1     | 0     | 0     | 0   |
+| 0     | 0     | 1     | -     | 0     | 1     | 0   |
+| 0     | 1     | -     | -     | 1     | 0     | 0   |
+| 1     | -     | -     | -     | 1     | 1     | 0   |
+
+La sintesi del componente restituisce le seguenti funzioni:
+
+$$
+  z = x_0'x_1'x_2'x_3' \quad
+  y_0 = x_2 + x_3 \quad
+  y_1 = x_1x_2' + x_3
+$$
