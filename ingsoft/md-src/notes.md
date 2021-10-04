@@ -733,3 +733,102 @@ active -up-> inactive : new semester [tuition fees not paid]
 active --> [*] : leave university
 @enduml
 ```
+
+## Il linguaggio Java
+
+Le classi vengono definite in file con estensione `.java` e avente lo stesso
+nome, una classe per file. All'interno della definizione di classe verranno
+definiti i relativi metodi e attributi. Poiché oramai sei grande, ecco una
+classe esempio per spiegare la base della sintassi.
+
+```java
+// Data.java
+
+// Commento linea
+/*
+ * Commento multilinea
+ */
+
+/*
+ * Tutti gli oggetti ereditano implicitamente da Object
+ */
+public class Data {
+
+  // private, public, protected e nulla per friendly
+  private int giorno;
+  private int mese;
+  private int anno;
+
+  /*
+   * Le variabili statiche non sono legate ad una istanza e sono accessibile
+   * tramite il tipo (Date.epochMonth). Devono essere sempre inizializzate
+   */
+  static public int epochMonth = 1970;
+
+  /*
+   * Se non fornisco un costruttore, java ne fornirà uno di default che
+   * inizializza tutti gli attributi al valore di default
+   */
+  public Data() {
+    giorno = 12;
+    mese = 12
+    anno = 2012;
+  }
+
+  public Data(int parGiorno, int parMese, int parAnno) {
+    giorno = parGiorno;
+    mese = parMese;
+    anno = parAnno;
+  }
+
+  public int getGiorno() {
+    return giorno;
+  }
+
+  public int getMese() {
+    return mese;
+  }
+
+  public int getAnno() {
+    return anno;
+  }
+
+  public void setGiorno(int parGiorno) {
+    giorno = parGiorno;
+  }
+
+  public void setMese(int mese) {
+    this.mese = mese;
+  }
+
+  public void setAnno(int anno) {
+    this.anno = anno;
+  }
+}
+
+// Test.java
+public class Test {
+
+  /* 
+   * Nota bene: un programma può avere diversi `main`. Non viene a crearsi
+   * ambiguità poiché al momento dell'esecuzione viene specificata la classe che
+   * contiene il punto d'entrata.
+   *
+   * I metodi statici, come gli attributi statici, sono legati alla classe e
+   * vengono invocati dal tipo (Test.main()). È ovvio che i metodi statici non
+   * hanno accesso agli attributi d'istanza ma hanno accesso ad altri attributi
+   * statici.
+   */
+  public static void main(String[] args) {
+    int x = 10;
+    Data d = new Data(); // creazione di un'istanza di Data
+    Data d1; // auto-inizializzato a null
+
+    int y = d.getGiorno();
+
+    for (String s: args) { // foreach su iterabile
+      ...
+    }
+  }
+}
+```
