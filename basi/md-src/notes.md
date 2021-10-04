@@ -288,3 +288,34 @@ Definizione. _Divisione_
   contengono tutte le tuple di $S$
 
 Il join ha la stessa precedenza del prodotto cartesiano.
+
+#### Ottimizzazione delle organizzazioni
+
+Possiamo ridurre le espressioni applicando alcune semplificazioni. Un modo utile
+per visualizzare le espressioni e le relative semplificazioni è visualizzare il
+tutto come un albero delle operazioni (vedi LEA).
+
+1. **Eliminazione dei prodotti cartesiani:** Possiamo sostituire un prodotto
+   cartesiano seguito da selezione con join.
+2. **Push della selezione rispetto al join:** Possiamo trasformare $\sigma_p (R
+   \Join_q S)$ in $(\sigma_p R) \Join_q S$. Questa semplificazione si può fare
+   se e solo se il predicato della selezione coinvolge solo attributi di $R$ (o
+   analogamente di $S$).
+3. **Push della proiezione rispetto al join:** Analogo al precedente,
+   trasformiamo $\Pi_L (R \Join_q S)$ in $\Pi_L (\Pi_{LR \cup JR} R \Join_q
+   \Pi_{LS \cup JS} S)$ dove $LR$ e $LS$ sono gli attributi di $R$ ed $S$
+   rispettivamente e $JR$ e $JS$ gli attributi di $R$ ed $S$ rispettivamente
+   coinvolti nel join.
+4. **Idempotenza della selezione:** $\sigma_{p \land q} R = \sigma_p (\sigma_q
+   R)$ Unendo questa regola con il push della selezione rispetto al join,
+   possiamo rimuovere la restrizione sugli attributi.
+5. **Idempotenza della proiezione:** $\Pi_L R = \Pi_L \Pi_{L'} R$ con $L
+   \subseteq L'$
+6. **Push della selezione rispetto all'unione:** $\sigma_p (R \cup S) = \sigma_p
+   R \cup \sigma_p S$
+7. **Push della selezione rispetto alla differenza:** $\sigma_p (R \setminus S)
+   = \sigma_p R \setminus \sigma_p S$
+8. **Push della proiezione con l'unione:** $\Pi_L (R \cup S) = \Pi_L R \cup
+   \Pi_L S$. Attenzione: la proiezioni non commuta con le altre operazioni
+   insiemistiche!
+9. **Distributività della join rispetto all'unione**
