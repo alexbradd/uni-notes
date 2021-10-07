@@ -1,5 +1,12 @@
 # Appunti di reti logiche
 
+**Premessa** le spiegazioni del Fornaciari (il professore), sono abbastanza
+incomplete e incomprensibili. Per una preparazione robusta ti conviene
+consultare il libro di testo ("Reti logiche" di Bolchini, Brandolese, Salice e
+Sciuto; Seconda edizione, Apogeo). Questi appunti sono solo una integrazione di
+tra quello che viene detto a lezione, a esercitazione e una breve revisione di
+questi ultimi.
+
 ## Aritmetica di Boole
 
 Lavorare con l'aritmetica binaria (booleana) ci permette di semplificare molto
@@ -329,9 +336,10 @@ Per cercare la copertura si usa la cosiddetta tabella degli implicanti o tabella
 di copertura. Essa è una matrice binaria in cui le righe sono gli implicanti
 primi identificati e gli indici colonna sono i mintermini della funzione. Gli
 elementi della matrice sono pari a `1` quando l'implicante i-esimo copre il
-mintermine j-esimo, altrimenti `0`. Definiamo l'insieme di copertura
-$\mathcal{C}(f) = \emptyset$. L'analisi della tabella può essere ricondotta al
-seguente algoritmo:
+mintermine j-esimo, altrimenti `0`. Ad ogni riga associamo un costo, che di
+solito considereremo pari al numero di letterali usati nell'implicante.
+Definiamo l'insieme di copertura $\mathcal{C}(f) = \emptyset$. L'analisi della
+tabella può essere ricondotta al seguente algoritmo:
 
 1. **Ricerca degli implicanti primi essenziali:** se una colonna contiene un
    solo `1`, la riga corrisponde è quella di un implicante primo essenziale. La
@@ -344,15 +352,19 @@ seguente algoritmo:
 
    1. **Criterio di dominanza di riga:** la riga $i$ domina la riga $j$ se
       l'implicante $P_i$ copre tutti i mintermini che copre l'implicante $P_j$
-      più almeno uno. La riga dominata può essere rimossa dalla tabella.
+      più almeno uno ed il costo di $P_i$ è minore o uguale al costo di $P_j$.
+      La riga dominata può essere rimossa dalla tabella.
    2. **Criterio di dominanza di colonna:** la colonna $i$ domina la colonna $j$
       se il mintermine $m_j$ è coperto dagli stessi implicanti da cui è coperto
       $m_i$ più almeno uno. La colonna dominata può essere rimossa dalla
       tabella.
 
-Alla fine dell'algoritmo si dovrebbe ottenere una tabella contenente un solo
-implicante (non è sempre vero come vedremo dopo) che verrà aggiunto all'insieme
-di copertura.
+Se un implicante viene scelto come essenziale dopo la prima iterazione, ossia
+dopo che è stata applicata almeno una dominanza, esso viene detto implicante
+primo essenziale secondario, altrimenti viene detto primario. Alla fine
+dell'algoritmo si dovrebbe ottenere una tabella contenente un solo implicante
+(non è sempre vero come vedremo dopo) che verrà aggiunto all'insieme di
+copertura.
 
 #### Funzioni non completamente specificate
 
@@ -398,9 +410,11 @@ passi:
    1. **Essenzialità:** Se un implicante è essenziale per tutte le funzioni la
       riga è eliminata insieme a tutte le colonne coperte. Se invece
       l'implicante non è essenziale per tutte le funzioni la riga è mantenuta ed
-      è scelto solo per le funzioni in cui è essenziale. In queste ultime
-      vengono eliminate le sole colonne coperte. L'implicante viene ovviamente
-      aggiunto all'insieme di copertura della funzione corrispondente.
+      è scelto solo per le funzioni in cui è essenziale con costo pari a 1 (solo
+      nel caso di costo come numero di letterali, nel caso di costo come numero
+      di implicanti viene posto a 0). In queste ultime vengono eliminate le sole
+      colonne coperte. L'implicante viene ovviamente aggiunto all'insieme di
+      copertura della funzione corrispondente.
    2. **Dominanza di riga:** Come nel caso scalare.
    3. **Dominanza di colonna:** Come nel caso scalare; ha validità solo
       all'interno della funzione.
@@ -519,12 +533,12 @@ sintetizzano funzioni in prima forma canonica.
 
 #### Priority encoder
 
-Un priorità decoder è un elemento combiantorio dotato di $2^n$ ingressi
+Un priority encoder è un elemento combinatorio dotato di $2^n$ ingressi
 $x_{2^n-1},\ldots,x_0$ e di $n + 1$ uscite $y_0,\ldots,y_{n-1}$ e $z$. L'uscita
-assume il valore `1` se e solo se tutti gli altri ingressi valgono `0`. Quando
-almeno uno degli ingressi ha valore `1`, allora le uscite $y_i$ sono la codifica
-binaria della posizione dell'uno più significativo nel vettore di ingresso e $z$
-vale 0.
+$z$ assume il valore `1` se e solo se tutti gli altri ingressi valgono `0`.
+Quando almeno uno degli ingressi ha valore `1`, allora le uscite $y_i$ sono la
+codifica binaria della posizione dell'uno più significativo nel vettore di
+ingresso e $z$ vale 0.
 
 | $x_3$ | $x_2$ | $x_1$ | $x_0$ | $y_0$ | $y_1$ | $z$ |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:---:|
@@ -541,3 +555,133 @@ $$
   y_0 = x_2 + x_3 \quad
   y_1 = x_1x_2' + x_3
 $$
+
+## Dispositivi programmabili
+
+Sono dispositivi hardware che mettono a disposizione componenti logici, come
+porte logiche, flip-flop e buffer, e linee di connessione. Si dicono
+programmabili in quanto i componenti disponibili possono essere connessi a
+seconda delle esigenze del progetto. Esistono molte tipologie di dispositivi
+programmabili tra cui:
+
+1. PAL, PLA, ROM, GAL
+2. CPDL
+3. FPGA
+
+Possiamo classificarli in base alla programmabilità e al tipo di connessioni:
+
+1. One-Time Programmable (OTP)
+2. Riprogrammabili
+3. Riconfigurabili
+4. A connessioni globali
+5. A connessioni locali e distribuite
+
+### OTP
+
+#### Fuse e antifuse
+
+Le linee del dispositivo sono prodotte in modo da essere sempre connesse. La
+programmazione consiste nel "bruciare" alcune connessioni in modo da mantenere
+solo quelle necessarie. La programmazione avviene mediante una tensione più
+elevata di quella normale di funzionamento.
+
+L'antifuse è il complementare: le linee del dispositivo sono prodotte in modo da
+essere sempre disconnesse.
+
+### Riprogrammabili
+
+#### E2PROM
+
+Le linee del dispositivo sono prodotte in modo da essere sempre disconnesse. La
+programmazione consiste nel depositare carica sul floating gate del transistor
+in modo da mantenerlo in conduzione.
+
+### Riconfigurabili
+
+#### SRAM
+
+Le linee del dispositivo sono prodotte in modo da essere sempre disconnesse. La
+programmazione consiste nel memorizzare un valore logico (`0` o `1`) in una
+cella di RAM statica.
+
+### Connessioni globali
+
+Alcuni tipi di dispositivi dispongono di linee di connessioni globali. La
+lunghezza delle linee è maggiore e di conseguenza lo sono i ritardi. Inoltre
+ogni linea è condivisa da molti elementi logici e può essere usata come uscita
+da solo uno di questi. La flessibilità è quindi limitata.
+
+I dispositivi di questo tipo sono il PAL, il PLA, il GAL e le relative
+estensioni.
+
+#### Logiche programmabili a 2 livelli
+
+Sono usate per realizzare funzioni a due livelli. Dispongono di un numero di
+ingressi e uscite fissi e di due "piani": il piano AND è usato per la
+costruzione dei mintermini mentre il piano OR è usato per la connessione dei
+mintermini.
+
+Ci sono 3 tipi principali:
+
+1. PLA: entrambi i piani programmabili;
+2. PAL: solo il piano AND è programmabile;
+3. ROM: solo il piano AND è programmabile tramite un decoder.
+
+##### PLA
+
+Consideriamo le seguenti funzioni:
+
+$$
+\begin{aligned}
+  f_1 & = ab + ac' + a'b'c \\
+  f_2 & = ab + ac + a'b'c
+\end{aligned}
+$$
+
+Possiamo riscriverle al seguente modo in SOP:
+
+$$
+\begin{aligned}
+  P_1 & = ab \\
+  P_2 & = ac \\
+  P_3 & = ac' \\
+  P_4 & = a'b'c \\
+  \\
+  f_1 &= P_1 + P_3 + P_4 \\
+  f_2 &= P_1 + P_2 + P_4
+\end{aligned}
+$$
+
+Una rappresentazione compatta sarà
+
+| Mintermine | `a` | `b` |
+|:----------:|:---:|:---:|
+| `11-`      | `1` | `0` |
+| `1-0`      | `1` | `0` |
+| `001`      | `1` | `0` |
+| `11-`      | `0` | `1` |
+| `1-1`      | `0` | `1` |
+| `001`      | `0` | `1` |
+
+I mintermini vengono programmati nel piano AND, mentre `a` e `b` vengono
+utilizzate per specificare quali connessioni vengono usate nel piano OR.
+
+##### PAL
+
+Poiché il piano OR è a connessioni fisse, possiamo rappresentare solo funzioni
+con un numero limitato di mintermini. Inoltre dobbiamo tener conto del fatto che
+non è possibile condividere mintermini tra le funzioni, quindi potremo dover
+introdurre duplicazioni.
+
+##### ROM
+
+Una memoria a sola lettura, o ROM, associa ad ogni indirizzo (ingresso) una
+parola (uscita). Le memorie ROM, grazie al decoder d'indirizzo, forniscono tutti
+i $2^n$ mintermini ottenibili dalle $n$ variabili di ingresso $x_i$.
+
+Gli ingressi del decoder saranno le variabili $x_i$ mentre le uscite sono tutti
+i mintermini costruiti a partire dalle variabili di ingresso.
+
+Da un punto vista più matematico, il decoder associa ad ogni tupla
+$(x_1,\dots,x_i)$ degli ingressi un'altra tupla $(f_1,\dots,f_i)$ contenente i
+valori che le varie funzioni assumono per $(x_1,\dots,x_i)$.
