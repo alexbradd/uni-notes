@@ -736,6 +736,8 @@ active --> [*] : leave university
 
 ## Il linguaggio Java
 
+### Le basi
+
 Le classi vengono definite in file con estensione `.java` e avente lo stesso
 nome, una classe per file. All'interno della definizione di classe verranno
 definiti i relativi metodi e attributi. Poiché oramai sei grande, ecco una
@@ -769,16 +771,14 @@ public class Data {
    * Se non fornisco un costruttore, java ne fornirà uno di default che
    * inizializza tutti gli attributi al valore di default
    */
-  public Data() {
-    giorno = 12;
-    mese = 12
-    anno = 2012;
-  }
-
   public Data(int parGiorno, int parMese, int parAnno) {
     giorno = parGiorno;
     mese = parMese;
     anno = parAnno;
+  }
+
+  public Data() {
+   this(12,12,2012);
   }
 
   public int getGiorno() {
@@ -832,3 +832,78 @@ public class Test {
   }
 }
 ```
+
+### Gli `enum`
+
+Si possono dichiarare tipi enumerati per modellare insiemi con cardinalità
+ridotta. Gli `enum` sono vere e proprie classi con un numero limitato di istanze
+possibili. Per confrontare due `enum` non c'è bisogno di effettuare confronto
+semantico tramite `equals()`, ma basta `==`. Una variabile enumerata può essere
+solo `null` o uno dei valori enumerati.
+
+```java
+enum Size { SMALL, MEDIUM, LARGE, X_LARGE };
+Size s = Size.MEDIUM;
+```
+
+A una classe enumerata si possono aggiungere costruttore, metodi e attributi che
+associano ulteriori informazioni alle costanti enumerate. I costruttori sono
+invocati solo quando vengono "costruite" le costanti. Non possono essere
+costruiti oggetti generici da classi enumerate.
+
+```java
+public enum Size {
+  SMALL("S"), MEDIUM("M"), LARGE("L"), X_LARGE("XL");
+
+  private String abbreviation;
+
+  private Size(String abbreviation) {
+    this.abbreviation = abbreviation;
+  }
+
+  public String getAbbreviation() {
+    return this.abbreviation;
+  }
+}
+```
+
+Tutte le classi enumerate, inoltre, offrono i seguenti metodi (per eredità):
+
+1. `static Enum valueOf(String name)`{.java} : Restituisce la costante enumerata
+   della classe indicata che ha quel nome.
+2. `String toString()`{.java}
+3. `Enum[] values()`{.java} : Restituisce un array contenente tutti i valori
+   possibili della classe.
+4. `String name()`{.java} : Restituisce il nome della costante enumerativa
+5. `int ordinal()`{.java} : Restituisce la posizione (a partire da 0) della
+   costante enumerativa.
+6. `int compareTo(...)`{.java}
+
+### Il boxing
+
+I tipi primitivi sono passati per valore. Alcune volte, però, potrebbe essere
+necessario ottenere un riferimento a questi. Java fornisce delle classi
+corrispondenti ad ogni tipo primitivo: `Integer`, `Character`, `Float`, `Long`,
+`Short` e `Double`. Un oggetto di tipo `Integer`, ad esempio, conterrà un solo
+`int` e sarà di tipo immutabile.
+
+```java
+Integer i, x;
+int y;
+
+i = new Integer(5); // un modo per inizializzare
+i = 5; // un altro modo. Viene effettuata la procedura di boxing
+x = i; // y e x puntano allo stesso oggetto
+y = i; // in y viene salvato il valore interno di i. Viene effettuato unboxing
+       // automatico
+```
+
+Con il termine "boxing" e il corrispettivo "unboxing" intendiamo il processo di
+mettere, figuratamente, un valore (in questo caso un primitivo) in un
+contenitore (un oggetto) e, analogamente, il processo inverso di estrarre questo
+valore dal proprio contenitore.
+
+Attenzione: i riferimenti a tipi primitivi sono oggetti veri e propri, anche se
+si può essere tentati di fare `x == y`, conviene lo stesso usare `equals()`
+poiché il compilatore potrebbe effettuare delle ottimizzazioni che rendono
+inconsistente il comportamento di `==`.
