@@ -319,3 +319,145 @@ tutto come un albero delle operazioni (vedi LEA).
    \Pi_L S$. Attenzione: la proiezioni non commuta con le altre operazioni
    insiemistiche!
 9. **Distributività della join rispetto all'unione**
+
+### Calcolo relazionale
+
+È una famiglia di linguaggi formali dichiarativi per formulare interrogazioni.
+I due tipi principali sono il calcolo relazionale delle tuple (TRC) e il calcolo
+relazionale dei domini (DRC). A sua volta il TRC può avere dichiarazioni di
+range o tuple arbitrarie. Noi vedremo il TRC con tuple arbitrarie.
+
+Le interrogazioni sono così strutturate: $\{t|p(t)\}$ con $t$ le tuple per le
+quali è vera $p(t)$. La formula $p(t)$ è costituita tramite atomi:
+
+- $t \in r$
+- $t[A] \textit{ COMP } k$
+- $t_1[A_1] \textit{ COMP } t_2[A_2]$
+
+Dove per $\mathit{COMP}$ intendiamo un connettivo logico. Valgono le solite
+equivalenze relative alle espressioni booleane.
+
+Esistono delle formule, tipo $\{t|t\notin r\}$ producono un risultato infinito.
+Riduciamo perciò il calcolo relazionale ai domini attivi
+
+Definizione. _Restrizione ai domini attivi_
+: Le tupe che soddisfano una formula possono essere composte solamente da valori
+  che compaiono esplicitamente nella formula o in tuple di relazioni menzionate
+  nella formula.
+
+Il calcolo relazione è equivalente all'algebra. Infatti è possibile tradurre
+tutte le operazioni fondamentali dalla prima al calcolo relazionale.
+
+1. Selezione: $\sigma_{A=1} r \equiv \{t|\exists t_1 \in r (t_1[A] = 1) \land
+   t = t_1\}$
+2. Proiezione: $\Pi_{AC} r \equiv \{t | \exists t_1 \in r (t[A,C] = t_1[A,C])\}$
+3. Prodotto cartesiano: $r(A,B,C) \times s(D,E,F) = \{t|\exists t_1 \in r, t_2
+   \in s (t[A,B,C] = t_1[A,B,C]) \land t[D,E,F]=t_2[D,E,F]\}$
+4. Unione: $r \cup s = \{t | (\exists t_1 \in r (t=t1) \lor (\exists t_2 \in s
+   (t=t_2)))\}$
+5. Differenza: $r \setminus s = \{t | (\exists t_1 \in r (t=t1) \land
+   \neg (\exists t_2 \in s (t=t_2)))\}$
+
+L'algebra relazione e la TRC hanno delle limitazioni sul tipo di interrogazioni
+che possiamo fare:
+
+1. Possiamo solo estrarre valori già esistenti, non calcolarne di nuovi;
+2. Interrogazioni inerentemente ricorsive come la chiusura transitiva.
+
+### Datalog
+
+Da "Prolog per basi di dati". È un linguaggio di programmazione logica
+dichiarativo basato su regole e fatti.
+
+#### Sintassi
+
+Il datalog si basa sulla definizione di fatti di base (o _ground facts_) che
+corrispondono alle tuple delle nostre tabelle.
+
+```datalog
+genitore(a, b)
+genitore(b, c)
+```
+
+Il significato delle espressioni sopra è "a è genitore di b" e "b è genitore di
+c" rispettivamente.
+
+Le regole, invece, definiscono come nuovi fatti verranno dedotti dai fatti base.
+La seguente espressione definisce 2 regole con il seguente significato:
+
+```datalog
+antenato(X,Y) :- genitore(X,Y)
+antenato(X,Y) :- genitore(X,Z), antenato(Z, Y)
+```
+
+1. `X` è un antenato di `Y` se `X` è genitore di `Y`
+2. `X` è un antenato di `Y` se `X` è genitore di un `Z` e questo `Z` è antenato
+   di `Y`
+
+Ogni regola è divisa in due parti: la testa (o LHS) e il corpo (o RHS). Una
+regola si può generalmente interpretare così:
+
+1. LHS è vero se RHS è verol
+2. THS è vero se, per ogni letterale di RHS, tutte le sue variabili sono
+   unificabili, ovvero sostituibili , con valori costanti che rendono vero il
+   letterale.
+
+Nella definizione di regole si possono usare operatori di confronto e funzioni
+aritmetiche.
+
+> Consideriamo il fatto: `padre(X,Y) :- Persona(X, _, 'M'), genitori(X,Y)`. Esso
+> è traducibile in algebra relazione con: $\mathit{padre} = \Pi_{1,5} \sigma_3
+> (\mathit{persona} \Join_{1=1} \mathit{genitori})$.
+
+Le query, o _goals_, sono così definite:
+
+```datalog
+?- antenato(a, X)
+```
+
+E considerando i precedenti fatti e regole ritornerebbe `b, c`.
+
+#### Valutazione delle query
+
+La valutazione parte da dei fatti "conosciuti" pari ai fatti del programma. Si
+procede enumerando ogni singola regola: se ogni atomo nel corpo della regola è
+nell'insieme dei fatti conosciuti, allora la testa viene aggiunta nella lista
+dei fatti noti. Il processo è ripetuto finché non si possono generare nuovi
+fatti.
+
+L'insieme dei fatti di base è detto database estensionale, mentre l'insieme dei
+predicati appartenenti al corpo delle regole è detto database intensionale.
+
+La valutazione di una query consiste nel cercare una tupla sull'intera base di
+dati e una sostituzione che unifichi le variabili. Le query che non contengono
+variabili restituiscono `true` o `false`.
+
+#### Il potere espressivo del datalog
+
+Il datalog senza negazione permette di rappresentare gli operatori di selezione,
+proiezione, prodotto cartesiano e unione dell'algebra:
+
+- **Selezione, Proiezione e prodotto cartesiano:** vedi precedente esempio
+- **Unione:** scriveremo più regole con la stessa testa.
+
+Per rappresentare la differenza serve la negazione:
+
+```datalog
+p(X,Y) :- r(X,Y), -s(X,Y)
+```
+
+La negazione, però, è un'operazione delicata in quanto può generale regole
+infinite. Per metteremo la negazione con la seguenti restrizioni:
+
+1. Tutte le variabili di un letterale negato devono comparire anche in
+   un letterale positivo del corpo della regola.
+2. Non ci devono essere cicli di dipendenza tra letterali negati.
+
+Abbiamo quindi raggiunto un livello di espressività almeno pari all'algebra
+relazionale. Il datalog, permette un livello di espressività ancora maggiore in
+quanto permette query ricorsive.
+
+```datalog
+antenato(X,Y) :- genitore(X,Y)
+antenato(X,Y) :- antenato(X,Z), genitore(Z,Y)
+```
