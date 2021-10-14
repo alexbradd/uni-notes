@@ -685,3 +685,7 @@ i mintermini costruiti a partire dalle variabili di ingresso.
 Da un punto vista più matematico, il decoder associa ad ogni tupla
 $(x_1,\dots,x_i)$ degli ingressi un'altra tupla $(f_1,\dots,f_i)$ contenente i
 valori che le varie funzioni assumono per $(x_1,\dots,x_i)$.
+
+## Circuiti sequenziali e macchine a stati finiti
+
+Fai prima a studiarteli dal libro bro (capitoli 6, 7, 8).
