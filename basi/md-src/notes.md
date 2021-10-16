@@ -397,7 +397,7 @@ antenato(X,Y) :- genitore(X,Z), antenato(Z, Y)
 Ogni regola è divisa in due parti: la testa (o LHS) e il corpo (o RHS). Una
 regola si può generalmente interpretare così:
 
-1. LHS è vero se RHS è verol
+1. LHS è vero se RHS è vero
 2. THS è vero se, per ogni letterale di RHS, tutte le sue variabili sono
    unificabili, ovvero sostituibili , con valori costanti che rendono vero il
    letterale.
@@ -461,3 +461,215 @@ quanto permette query ricorsive.
 antenato(X,Y) :- genitore(X,Y)
 antenato(X,Y) :- antenato(X,Z), genitore(Z,Y)
 ```
+
+## SQL
+
+Acronimo di _Structured Query Language_, si compone di due parti:
+
+1. DDL: definizioni di domini, tabelle, indici ecc.
+2. DML: linguaggio di query, di modifica e comandi transazionali.
+
+### Data definition
+
+#### Definizione degli schemi
+
+Uno schema è una collezione di oggetti: domini, tabelle, indici, asserzione
+ecc. Uno schema ha un nome e un proprietario.
+
+```txt
+create schema [NomeSchema] [[authorization] Autorizzazione] {DefinizioneElemento}
+```
+
+#### Domini
+
+I domini specificano i valori ammissibili per gli attributi. La definizione dei
+domini è analoga alla definizione dei tipi nei linguaggi di programmazione. Si
+dividono in due categorie:
+
+- Elementari: predefiniti dallo standard
+  1. Caratteri singoli o stringhe di lunghezza fissa:
+
+     ```txt
+     character [varying] [(Lunghezza)] [character set SetCaratteri]
+     ```
+
+     Si possono usare anche abbreviazioni come `char` e `varchar`.
+  2. Bit singoli o in sequenza:
+
+     ```txt
+     bit [varying] [(Lunghezza)]
+     ```
+
+     Anche qui, possiamo usare l'abbreviazione `varbit`.
+  3. Domini numerici:
+
+     ```txt
+     numeric [(Precisione [, Scala])]
+     decimal [(Precisione [, Scala])]
+     integer
+     smallint
+     ```
+
+  4. Domini numerici approssimati:
+
+     ```txt
+     float [(Precisione)]
+     real
+     double precision
+     ```
+
+  5. Istanti temporali:
+
+     ```txt
+     date(month, day, year)
+     time[(Precisione)] [with time zone] : (hour, minute, second)
+     timestamp[(Precisione)] [with time zone]
+     ```
+
+     Quando si specifica la timezone, si hanno due ulteriori campi:
+     `timezone_hour` e `timezione_minute`
+
+  6. Intervalli temporali:
+
+     ```txt
+     interval PrimaUnitàDiTempo [to UltimaUnitàDiTempo]
+     ```
+
+     Le unità di tempo sono divise in due gruppi: `year` e `month`; `day`,
+     `hour`, `minute`, `second`.
+
+- Definiti dall'utente. Ogni dominio è caratterizzato da un nome, dominio
+  elementare, valore di default e un insieme di vincoli
+
+  ```txt
+  create domain Nome as DominioElementare [Default] [Constraints]
+  ```
+
+  Per definire il valore di default usiamo:
+
+  ```txt
+  default <Valore | user | null>
+  ```
+
+  Dove `user` rappresenta il nome utente dell'utente che effettua il comando
+
+Il valore `null` appartiene a tutti i domini con il significato di valore non
+noto per vari motivi: il valore esiste ma è ignoto al database, il valore è
+inapplicabile o non si sa se il valore è inapplicabile o meno.
+
+#### Definizione di tabelle
+
+Una tabella SQL consiste di un insieme di attributi ed un insieme di vincoli:
+
+```txt
+create table NomeTabella
+( NomeAttr Dominio [Default] [Constraint]
+  {, NomeAttr Dominio [Default] [Constraint]}...)
+```
+
+I vincoli sono condizioni che devono essere verificate da ogni istanza della
+base di dati. I vincoli intra-relazionali sono:
+
+- `not null`
+- `primary key`: definisce una chiave primaria (implica `not null`). Nel caso
+  più attributi siano chiave primaria si può usare la seguente abbreviazione:
+
+  ```txt
+  primary key(Attributo {, Attributo})
+  ```
+
+  Nota bene: `Attr1 numeric 0 primary key, Attr2 numeric 0 primary key` è
+  diverso da `Attr1 numeric 0, Attr2 numeric 0, primary key(Attr1, Attr2)`
+
+- `unique`: simile a `primary key`, non implica `not null`
+- `check`: sarà affrontato dopo
+
+Le reazioni, invece, operano su una tabella interna in seguito a modifiche su
+una tabella esterna. Le violazioni delle relazioni tra tabelle possono essere
+introdotti da aggiornamenti o cancellazione di tuple. Le reazioni disponibili
+sono:
+
+- `cascade`: propaga la modifica
+- `set null`
+- `set default`
+- `no action`
+
+La reazione può dipendere dall'evento:
+
+```txt
+on <delete | update> <cascade, set null, set default, no action>
+```
+
+Gli attributi descritti come `foreign key` nella tabella figlia devono
+presentare valori presenti come valori di chiave nella tabella padre. Per
+mantenere l'integrità relazionali usiamo:
+
+- `references`: per un solo attributo, da specificare dopo il dominio
+- `foreign key(Attributo {, Attributo}) references...` per uno o più attributi
+
+Per velocizzare l'accesso ai dati, possiamo creare degli indici:
+
+```txt
+create [unique] index Nome on Tabella(Attributo)
+```
+
+#### Modifica degli schemi
+
+Gli schemi possono essere modificati dopo la loro creazione. Abbiamo a
+disposizione 2 comandi:
+
+- `alter <domain | table | column...>` modifica oggetti persistenti
+- `drop <schema | domain | table | view | assertion> Nome [restrict|cascade]`
+  cancella oggetti dallo schema
+  - `restrict`: impedisce il `drop` se gli oggetti comprendono istanze
+  - `cascade`: applica gli oggetti a tutti gli oggetti collegati
+
+#### I cataloghi
+
+Un catalogo contiene il dizionario dei dati, ovvero la descrizione relazionali e
+della struttura dei dati contenuti nel database. Ogni sistema ha una differente
+struttura. Lo standard ha definito due livelli:
+
+1. `Definition_schema`: composto da tabelle, non vincolante
+2. `Information_schema`: composto dalle viste, vincolante
+
+Nello `information_schema` compaiono viste come `domains`,
+`domains_constraints`, `tables`, `views`, `comlumns`. Ad esempio, la vista
+`columns` può avere uno schema con attributi `table_name`, `column_name` ecc.
+
+Il catalogo è normalmente riflessivo, ossia le strutture del catalogo sono
+definite nel catalogo stesso. Ogni comando del DDL viene quindi realizzato da
+opportuni comandi DML che operano sullo schema del catalogo. Ciò, però, non
+rende il DDL inutile.
+
+### Query semplici
+
+Le interrogazioni SQL sono dichiarative, l'utente specifica quale informazione è
+di interesse, ma non come estrarla dai dati. Le interrogazioni vengono tradotte
+dall'ottimizzatore nel linguaggio procedurale interno al DBMS.
+
+Per esprimere le query, usiamo 3 clausole in congiunzione: la clausola `select`,
+la clausola `from` e la clausola `where`. Ognuna di queste ha una sua sintassi
+particolare nella quale non entreremo nel dettaglio. Unite insieme formano.
+
+```txt
+select AttrExpr {, AttrExpr}
+from Tabella {, Tabella}
+[where Condizione]
+```
+
+In SQL i duplicati vengono mantenuti, per rimuoverli bisogna usare `select
+distinct`.
+
+Un confronto con `null` restituisce `unknown`. Per verificare se un attributo è
+nullo o no si usa `Attr is [not] null`.
+
+### Comandi di modifica
+
+Tutte le istruzioni di modifica possono operare su un insieme di tuple. Il
+comando può contenere una condizione, nella quale è possibile fare accesso ad
+altre tabelle,
+
+- `insert into Tabella [(Attributi...)] <values(Valori...) | select_query>`
+- `delete from Tabella [where Confizione]`
+- `update Tabella set Attr = <Expr | SQL | null | default>... [where Cond]`
