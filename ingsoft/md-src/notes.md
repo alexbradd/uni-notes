@@ -833,6 +833,9 @@ public class Test {
 }
 ```
 
+Non riporterò tutta la sintassi (eredità, interfacce, OOP base) ma solo alcune
+peculiarità o costrutti particolari.
+
 ### Gli `enum`
 
 Si possono dichiarare tipi enumerati per modellare insiemi con cardinalità
@@ -907,3 +910,96 @@ Attenzione: i riferimenti a tipi primitivi sono oggetti veri e propri, anche se
 si può essere tentati di fare `x == y`, conviene lo stesso usare `equals()`
 poiché il compilatore potrebbe effettuare delle ottimizzazioni che rendono
 inconsistente il comportamento di `==`.
+
+### Gestione delle eccezioni
+
+Un metodo deve poter segnalare l'impossibilità di produrre un risultato
+significativo o la propria terminazione scorretta. Possono esserci 4 possibilità
+per segnalare ciò:
+
+1. Termina il programma
+2. Restituire un valore convenzionale che segnala l'errore
+3. Portare il programma in uno stato scorretto
+4. Usare un metodo speciale predefinito per la gestione degli errori
+
+Il metodo utilizzato dai linguaggi OOP è quello delle eccezioni. Le eccezioni
+sono a loro volta oggetti speciali che possono essere sollevate dal chiamato e
+catturate dal chiamante.
+
+```java
+try {
+   x = x/y;
+} catch (DivisionByZeroException e) {
+   ...
+} finally {
+   ...
+}
+```
+
+Le eccezioni risalgono finché non raggiungono un blocco `catch` che le cattura
+oppure il `main`, dove causerà la terminazione. Il blocco `finally`, invece,
+viene eseguito in tutti i casi, sia se viene sollevata un'eccezione, sia se non
+viene sollevato nulla, sia se vengono catturate eccezioni.
+
+Il fatto che un metodo possa terminare sollevando un'eccezione va dichiarato
+nella sua interfaccia per mezzo della clausola `throws`:
+
+```java
+public int leggiInteroDaInput() throws IOException
+```
+
+Nota bene: non vanno dichiarate le eccezioni runtime, ad esempio
+`NullPointerException`. Le eccezioni runtime ereditano da `RuntimeException`,
+invece che da `Exception`, e vengono dette _unchecked_.
+
+Per sollevare un'eccezione esplicitamente si usa la parola chiave `throw`.
+
+```java
+if (mandelle)
+   throw new Exception();
+```
+
+Per definire nuove eccezioni basta semplicemente estendere `Exception` e
+ridefinire i due costruttori:
+
+```java
+public class MyException extends Exception {
+   public MyException() { super(); }
+   public MyException(String s) { super(s); }
+}
+```
+
+### Iteratori
+
+Per implementare un iteratore per una data collezione, è necessario definire una
+classe che implementa l'interfaccia `Iterable`. Una implementazione comune è la
+seguente:
+
+```java
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class MyCollection<T> implements Iterable {
+   ...
+
+   public Iterator<T> iterator() {
+      return new MyCollectionIterator<T>();
+   }
+
+   private class MyCollectionIterator implements Iterator<T> {
+      public T next() {
+         ...
+      }
+
+      public bool hasNext() {
+         ...
+      }
+   }
+}
+```
+
+### Annotazioni
+
+Le annotazioni sono strumenti che aggiungono informazioni aggiuntive sul nostro
+codice. Una di queste l'abbiamo già incontrata: `@Override`. Altre degne di nota
+sono `@Dreprecated` e `@SuppressWarnings(...)`.
