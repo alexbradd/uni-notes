@@ -26,9 +26,9 @@ artefatti legati ad un particolare prodotto:
 Saper programmare, purtroppo, non basta per essere un buon ingegnere del
 software:
 
-- un programmatore sviluppa un programma completo partendo da specifiche fornite
+- Un programmatore sviluppa un programma completo partendo da specifiche fornite
   da altri e lavora individualmente;
-- un ingegnere del software analizza i problemi e i domini applicativi, coglie i
+- Un ingegnere del software analizza i problemi e i domini applicativi, coglie i
   requisiti, sviluppa specifiche progetta componenti _riutilizzabili_ e lavora
   in (e talvolta coordina) un gruppo.
 
@@ -778,7 +778,7 @@ public class Data {
   }
 
   public Data() {
-   this(12,12,2012);
+    this(12,12,2012);
   }
 
   public int getGiorno() {
@@ -928,11 +928,11 @@ catturate dal chiamante.
 
 ```java
 try {
-   x = x/y;
+  x = x/y;
 } catch (DivisionByZeroException e) {
-   ...
+  ...
 } finally {
-   ...
+  ...
 }
 ```
 
@@ -964,8 +964,8 @@ ridefinire i due costruttori:
 
 ```java
 public class MyException extends Exception {
-   public MyException() { super(); }
-   public MyException(String s) { super(s); }
+  public MyException() { super(); }
+  public MyException(String s) { super(s); }
 }
 ```
 
@@ -980,21 +980,21 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class MyCollection<T> implements Iterable {
-   ...
+  ...
 
-   public Iterator<T> iterator() {
-      return new MyCollectionIterator<T>();
-   }
+  public Iterator<T> iterator() {
+    return new MyCollectionIterator<T>();
+  }
 
-   private class MyCollectionIterator implements Iterator<T> {
-      public T next() {
-         ...
-      }
+  private class MyCollectionIterator implements Iterator<T> {
+    public T next() {
+      ...
+    }
 
-      public bool hasNext() {
-         ...
-      }
-   }
+    public bool hasNext() {
+      ...
+    }
+  }
 }
 ```
 
@@ -1003,3 +1003,145 @@ public class MyCollection<T> implements Iterable {
 Le annotazioni sono strumenti che aggiungono informazioni aggiuntive sul nostro
 codice. Una di queste l'abbiamo già incontrata: `@Override`. Altre degne di nota
 sono `@Dreprecated` e `@SuppressWarnings(...)`.
+
+## I design pattern
+
+I problemi incontrati nello sviluppo di grossi progetti software sono spesso
+ricorrenti e prevedibili. I design pattern sono "schemi di soluzioni"
+riutilizzabili. Permettono quindi di non inventare da capo soluzioni ai problemi
+già risolti, ma di utilizzare dei mattoni di provata efficacia.
+
+I pattern che vedremo sono classificati in 3 tipi:
+
+1. Creazionali: Factory e Singleton
+2. Strutturali: Adapter, Decorator e Proxy
+3. Comportamentali: Iterator, Observer, State e Strategy
+
+### Factory
+
+Limitare le dipendenze delle classi è desiderabile perché permette di sostituire
+un'implementazione con un'altra. Una eccezione è la chiamata al costruttore: il
+codice utente che chiama il costruttore di una classe rimane vincolate a quella
+classe. Per questo esistono pattern per un'operazione semplice come la creazione
+di un oggetto: disaccoppiano il codice che fa uso di un tipo da quello che
+sceglie quale implementazione del tipo utilizzare.
+
+In Java le chiamate ai costrutti non sono personalizzabili. La soluzione è
+nascondere la creazione in un metodo detto _factory_: un metodo che restituisce
+un oggetto di una classe senza essere costruttore. Per implementare il pattern
+factory, bisogna rendere il costruttore `private` o `protected` e costruire un
+oggetto invocando metodo pubblico statico (il _factory method_).
+
+### Singleton
+
+A volte viene usata la definizione per istanziare un solo oggetto. Usare una
+normale classe con soli metodi statici non assicura che esista un solo esemplare
+della classe, se viene reso visibile il costruttore. In una classe singleton il
+costruttore è protetto o privato, un metodo statico fornisce l'accesso alla sola
+copia dell'oggetto.
+
+### Adapter
+
+Un software esistente usa una data interfaccia. Un altro software ne usa
+un'altra. Come è possibile combinarle senza cambiare il software? Basta usare un
+oggetto che implementa l'interfaccia del primo ed espone l'interfaccia del
+secondo.
+
+### Proxy
+
+Lo scopo del proxy è di proporre o addirittura evitare l'istanziazione di
+oggetti pesanti se non necessaria. Interponiamo un oggetto, proxy, con la
+stessa interfaccia dell'oggetto "pesante" di cui fa le veci. L'oggetto può fare
+preprocessing o a volte rispondere direttamente alle richieste se è in grado di
+farlo. I clienti dell'oggetto chiamano i metodi di un _Subject_, a sua volta
+super-classe del proxy
+
+### Observer
+
+Definisce due ruoli: il _Subject_ (chi è osservato) e lo _Observer_ (detto anche
+_Listener_). Più oggetti possono essere interessati ad essere informati quando
+un _Subject_ cambia stato. Il _Subject_ non dipende dal numero e tipo di
+osservatori, questi possono anche cambiare a runtime.
+
+### Strategy
+
+Il pattern Strategy è utile dove è necessario modificare dinamicamente gli
+algoritmi utilizzati da un'applicazione. Questo pattern permette la selezione a
+runtime di diversi algoritmi. I nostri algoritmi devono essere intercambiabili
+tra loro grazie ad una interfaccia comune. Il cliente dell'algoritmo non deve
+fare nessuna assunzione su quale sia la strategia istanziata in un particolare
+istante.
+
+### Decorator
+
+Il pattern Decorator consente di aggiungere nuove funzionalità ad oggetti già
+esistenti a runtime. Questo viene realizzato costruendo una nuova classe
+decoratore che "avvolge" l'oggetto originale passando l'oggetto originale come
+parametro al costruttore del decoratore. Il Decorator offre un'alternativa alle
+sottoclassi: permette l'aggiunta di funzionalità solo per determinati oggetti in
+un secondo momento, anche a runtime.
+
+### State
+
+Nel caso di classi mutabili, si può pensare ad implementazioni multiple, i cui
+oggetti cambiano dinamicamente configurazione a seconda dello stato. Le
+implementazioni multiple corrispondono a diversi stati in cui possono trovarsi
+gli esemplari del tipo astratto. Nel corso della vita dell'oggetto, possono
+essere utilizzate diverse implementazioni senza che l'utente se ne accorga.
+
+### Model View Controller (MVC)
+
+Il pattern è basato su tre ruoli principali:
+
+1. Il _model_ fornisce i metodi per accedere ai dati utili all'applicazione
+2. Il _view_ visualizza i dati contenuti nel _model_ e si occupa dell'iterazione
+   con utenti e agenti
+3. Il _controller_ riceve i comandi dell'utente (in genere attraverso il view) e
+   li attua modificando lo stato degli altri due componenti
+
+## Programmazione concorrente in Java
+
+Noi vedremo programmazione concorrente solo a livello di thread, non a livello
+di processo.
+
+Per definire un thread dobbiamo creare una classe che estende `Thread`. Per
+avviare il thread dovremo istanziare la classe e chiamare il metodo
+`start()` che creerà e avvierà il thread.
+
+```java
+class ListSorter extends Thread {
+  ...
+  public void run() {
+    ... // codice da eseguire
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    ...
+    ListSorter s = new ListSorter(l);
+    s.start();
+  }
+}
+```
+
+Un altro modo per costruire un thread è implementare direttamente l'interfaccia
+`Runnable` e poi passare il nostro `Runnable` alla classe `Thread`:
+
+```java
+class ListSorter implements Runnable {
+  ...
+  public void run() {
+    ... // codice da eseguire
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    ...
+    ListSorter s = new ListSorter(l);
+    Thread t = new Thread(s);
+    t.start();
+  }
+}
+```
