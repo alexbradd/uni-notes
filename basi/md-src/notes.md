@@ -673,3 +673,187 @@ altre tabelle,
 - `insert into Tabella [(Attributi...)] <values(Valori...) | select_query>`
 - `delete from Tabella [where Confizione]`
 - `update Tabella set Attr = <Expr | SQL | null | default>... [where Cond]`
+
+### Query con `join`
+
+Una semplice query che utilizza il predicato di join è:
+
+```sql
+select distinct Nome
+from Studente, Esame, Corso
+where Studente.Matr = Esame.Matr
+  and Corso.CodCorso = Esame.CodCorso
+  and Titolo like 'ge%' and Voto = 30
+```
+
+Esiste anche una sintassi che specifica esplicitamente il join nella clausola
+`from`:
+
+```txt
+select Attr {, Attr}
+from Tabella {[TipoJoin] join Tabella on Condizione}
+[where Condizione]
+```
+
+Il `join` può essere:
+
+- `Inner`: default, normalmente omesso;
+- `right`, `left`, `full` sono i join esterni:
+  - `right` preserva tutte le tupla del primo operando, estendendo con `null` le
+    tuple del primo che non hanno corrispondenza nel secondo;
+  - `left` è simmetrico al primo;
+  - `full` è l'unione tra i comportamenti di `left` e `right`: le tuple del
+    primo che non hanno corrispondenza nel secondo sono estese con `null` e
+    viceversa.
+
+Entrambe le sintassi, inoltre, ci permettono di ridefinire con un alias i membri
+del `join` aggiungendo `as Alias` dopo il nome. Ciò può tornare utile quando si
+deve usare la stessa tabella più di una volta all'interno della stessa query:
+
+```sql
+select X.Nome, X.MatrMgr, Y.Matr, Y.Nome
+from Impiegato as X, Impiegato as Y
+where X.MatrMgr = Y.Matr
+  and Y.nome = 'Giorgio'
+```
+
+### Query complesse
+
+Abbiamo 4 tipi diversi di query complesse:
+
+1. Query con ordinamento
+2. Query con aggregazioni
+3. Query con raggruppamento
+4. Query binarie
+5. Query nidificate
+
+#### Query·con·ordinamento
+
+L'ordinamento viene definito dalla clausola `order by` che compare in coda alla
+query. Come si può intuire, ordina le righe del risultato:
+
+```txt
+order by Attr [asc | desc] {, Attr·[asc·|·desc]}
+```
+
+#### Query con aggregazioni
+
+Le interrogazioni con funzioni aggregate non possono essere rappresentate in
+algebra. Il risultato di una query con funzioni aggregate dipende dalla
+valutazione del contenuto di un insieme di righe. Sono offerti 5 operatori
+aggregati:
+
+- `count`: restituisce il numero di righe o valori distinti escludendo i valori
+  nulli. Esempio:
+
+  ```sql
+  select count(*) from Ordine
+  ```
+
+- `<sum, max, min, avg>([distinct | all] Attr)`: esegue la somma, minimo,
+  massimo e media sugli attributi. L'opzione `distinct` considera una volta
+  ciascun valore, mentre l'opzione `all` considera tutti i valori diversi da
+  `null`.
+
+Nota bene: non si possono mischiare query di tupla con quelle aggregate!
+
+```sql
+-- Errore!
+select Data, max(Improto)
+from Ordine, Dettaglio
+where Ordine.CodOrd = Dettaglio.CodOrd and CodProd = 'ABC'
+
+-- Corretto!
+select max(Importo) as MaxImp, min(Importo) as MinImp from Ordine
+```
+
+#### Query con raggruppamento
+
+Nelle interrogazioni si possono applicare gli operatori aggregati a sottoinsiemi
+di righe. Si aggiungono le clausole `group by` (raggruppamento) e `having`
+(selezione dei gruppi).
+
+```sql
+-- Estrarre la somma degli importi degli ordini successivi al 10-6-97 per quei
+-- clienti che hanno emesso almeno 2 ordini
+select CodCli, sum(Importo)
+from Ordine
+where Data > 10-6-97
+group by CodCli
+having count(*) >= 2
+```
+
+Soltanto predicati che richiedono la valutazione di funzioni aggregate possono
+comparire nell'argomento della clausola `having`.
+
+Si può combinare ordinamento con raggruppamento:
+
+```txt
+select ... from ... [where ...] [group by ... [having ...]] [order by ...]
+```
+
+#### Query binarie (set queries)
+
+Le query binaria sono costruite concatenando due query SQL tramite operatori
+insiemistici:
+
+```txt
+SelectSQL { <union | intersect | except> [all] } SelectSQL
+```
+
+Dove `union` indica l'unione, `intersect` l'intersezione e `except` (anche
+`minus`) la differenza. I duplicati vengono eliminati a meno che non venga
+specificato `all`.
+
+#### Esempi
+
+Consideriamo lo schema:
+
+```txt
+Cliente(_NumC_, Nome, NumPat, ScadPat)
+Noleggio(_NumN_, NumC, Targa, DataI, OraI, DataF, OraF)
+Auto(_Targa_, Cambio, Posti, Tipo, Marca)
+```
+
+- Estrarre i clienti cui scade la patente durante il noleggio
+
+  ```sql
+  select Nome
+  from Cliente C join Noleggio N on C.NumC = N.NumC
+  where ScadPat between DataI and DataF
+  ```
+
+- Estrarre i clienti che hanno noleggiato auto Fiat oppure/e/e non VW
+
+  ```sql
+  select C.NumC, Nome
+  from Cliente C, Noleggio N, Auto A
+  where C.NumC = N.NumC and N.Targa = A.Targa and Marca = 'Fiat'
+  union -- intersect/except
+  select C.NumC, Nome
+  from Cliente C, Noleggio N, Auto A
+  where C.NumC = N.NumC and N.Targa = A.Targa and Marca = 'VW'
+  ```
+
+- Estrarre i clienti che hanno noleggiato più di 5 volte nel 2013
+
+  ```sql
+  select C.NumC, Nome
+  from Cliente C join Noleggio N on C.NumC = N.NumC
+  where (DataI >= 1.1.2013 and DataI <= 31.12.2013)
+    or (DataF·>=·1.1.2013·and·DataF·<=·31.12.2013)
+  group by NumC
+  having count(*) > 5
+  ```
+
+- Estrarre i clienti che hanno noleggiato più di 5 volte auto dello stesso tipo
+  nel 2013
+
+  ```sql
+  select C.NumC, Nome
+  from Cliente C join Noleggio N on C.NumC = N.NumC
+  where (DataI >= 1.1.2013 and DataI <= 31.12.2013)
+    or (DataF·>=·1.1.2013·and·DataF·<=·31.12.2013)
+  group by NumC, Tipo
+  having count(*) > 5
+  ```
