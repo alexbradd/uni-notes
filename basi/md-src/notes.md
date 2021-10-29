@@ -805,7 +805,7 @@ Dove `union` indica l'unione, `intersect` l'intersezione e `except` (anche
 `minus`) la differenza. I duplicati vengono eliminati a meno che non venga
 specificato `all`.
 
-#### Esempi
+##### Esempi
 
 Consideriamo lo schema:
 
@@ -857,3 +857,158 @@ Auto(_Targa_, Cambio, Posti, Tipo, Marca)
   group by NumC, Tipo
   having count(*) > 5
   ```
+
+#### Query nidificate
+
+Nella clausola where possono comparire predicati che confrontano un attributo
+con il risultato di una query SQL:
+
+```txt
+AttrExpr Operator <any | all> SelectSQL
+```
+
+- `any`: il predicato è vero se almeno una riga restituita dalla query
+  nidificata soddisfa il controllo
+- `all`: il predicato è vero se tutte le righe restituite dalla query soddisfano
+  il controllo
+- `Operator`: operatore di confronto
+
+Altri tipi di query nidificate sono:
+
+- `AttrExpr <in | not in> SelectSQL` con
+  - `in`: il predicato è vero se almeno una riga restituita dalla query è
+    presente nell'espressione
+  - `not in`: il predicato è vero se nessuna riga restituita dalla query è
+    presente nell'espressione
+- `<exists | not exists> SelectSQL` con:
+  - `exists`: il predicato è vero se la query possiede tuple
+  - `not exists`: il predicato è vero se la query non possiede tuple
+
+Le query possono essere nidificate anche su più livelli. Le query nidificate
+hanno accesso alle variabili definite nella query esterna.
+
+Il potere espressivo di alcune espressioni nidificate è equivalente a quello di
+alcuni operatori SQL:
+
+- `in`, `= any` e `exists` possono essere rese tramite `join` a meno
+  di duplicati
+- `not in`, `<> all` e `not exists` possono essere rese tramite al differenza
+- `<comparatore> any` può essere reso con un theta-join, a meno di duplicati
+- `<comparatore> all` può essere reso con raggruppamenti e estrazione di minimo
+  e massimo
+
+Le query nidificate possono anche essere utilizzate nelle modifiche:
+
+```sql
+update Ordine o
+  set TotPrezzi == (select sum(Qta) from Dettaglio D where D.CodOrd = O.CodOrd)
+```
+
+### Viste
+
+Le viste offrono la "visione" di tabelle virtuali, simile al database
+intensionale del datalog. La sintassi per la creazione di una vista è:
+
+```txt
+create view Nome [(Attributi)] as SelectSQL
+[with [local | cascaded] check option]
+```
+
+Possono a loro volta contenere nella definizione altre viste precedentemente
+definite, ma non vie può essere muta dipendenza. Le viste possono essere usate
+per formulare query complesse e sono talvolta necessarie per esprimere alcune
+query.
+
+Le viste possono essere:
+
+- semplici, ossia riconducibili a selezione e proiezione su una singola tabella
+- complesse, ossia viste che usino qualsiasi cosa vada oltre al selezione e la
+  proiezione
+
+Non è possibile modificare le tabelle di base tramite le viste complesse poiché
+l'interpretazione sarebbe ambigua. Le opzioni `check option` intervengono in
+caso di aggiornamento per verificare che la tupla inserita/modificata appartenga
+alla vista:
+
+- `local`: il controllo viene fatto solo rispetto alla vista su cui viene
+  invocato il comando
+- `cascaded`: il controllo viene fatto su tutte le viste coinvolte
+
+Le viste ricorsive sono permesse da SQL99 in poi:
+
+```sql
+create view recursive Raggiungibile (Orig, Dest, Costo) as
+( select Orig, Dest, Costo
+  from Volo where Orig = 'Milano'
+  union
+  select R.Orig, V.Dest, V.Costo + R.Costo
+  from Raggiungibile R join Volo V on R.Dest = V.Orig
+  where V.Dest not in select Dest from Raggiungibile )
+```
+
+### Controllo dell'accesso
+
+Ogni componente dello scehma può essere protetto. Il proprietario di una risorsa
+(il creatore) assegna privilegi (autorizzazioni) agli altri utenti. Un utente
+predefinito (`_system`) rappresenta l'amministratore di sistema e ha pieno
+accesso a tutte le risorse. Un privilegio è caratterizzato da: risorsa, l'utente
+che concede il privilegio, l'utente che riceve il privilegio, l'azione che viene
+consentita e la possibilità di passare il privilegio ad altri utenti. SQL offre
+6 tipi di privilegi:
+
+1. `insert`: inserire un nuovo oggetto nella risorsa
+2. `update`: modificare il contenuto della risorsa
+3. `delete`: cancellare un nuovo oggetto nella risorsa
+4. `select`: accedere al contenuto della risorsa in una query
+5. `references`: per costruire un vincolo di integrità referenziale che
+   coinvolge la risorsa
+6. `usage`: per usare la risorsa in una definizione di schema
+
+Per specificare tutti i privilegi si può usare `all privileges`. Per concedere
+un privilegio ad un utente si fa con:
+
+```txt
+grant <Privilegi | all privileges> on Risorsa to Utenti [with grant option]
+```
+
+Con `grant option` che specifica se deve essere garantita la possibilità di
+propagare il privilegio ad altri utenti. Per revocare un privilegio si usa:
+
+```txt
+revoke Privilegi on Risorsa from Utenti [restrict|cascade]
+```
+Tramite le viste è possibile gestire in modo ottimale la privacy. Per dimostrare
+ciò facciamo un esempio basato su un caso reale: gestione dei conti correnti.
+
+Abbiamo le seguenti due tabelle:
+
+```txt
+ContoCorrente(_NumConto_, Filiale, Cliente, CodFisc, DataApertura, Saldo)
+Transazione(_NumConto_, _Data_, _Progr_, Cusale, Ammontare)
+```
+
+Abbiamo 2 utenti: i funzionari e i cassieri. I funzionari hanno tutti i
+privilegi sui conti correnti e `select` sulle transazioni. Il cassiere può
+aggiornare e selezionare i conti e ha il controllo completo sulle transazioni.
+Inoltre, i cassieri delle altre filiali della banca hanno solo privilegio di
+`select`
+
+```sql
+create view Conto1 as
+( select *
+  from ContoCorrente
+  where Filiale = 1 )
+with check option
+create view Transazione1 as
+( select *
+  from Transazione
+  where Filiale = 1 )
+with check option
+
+grant all privileges on Conto1 to Funzionari1
+grant update(Saldo) on Conto1 to Cassieri1
+grant select on Conto1 to Cassieri1, Cassieri2, Cassieri3
+grant select on Transazione1 to Funzionari1
+grant all privileges on Transazione1 to Cassieri1
+grant select on Transazione1 to Cassieri2, Cassieri3
+```
