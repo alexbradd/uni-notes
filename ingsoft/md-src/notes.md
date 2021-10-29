@@ -1104,6 +1104,8 @@ Il pattern è basato su tre ruoli principali:
 Noi vedremo programmazione concorrente solo a livello di thread, non a livello
 di processo.
 
+### Classe Thread
+
 Per definire un thread dobbiamo creare una classe che estende `Thread`. Per
 avviare il thread dovremo istanziare la classe e chiamare il metodo
 `start()` che creerà e avvierà il thread.
@@ -1145,3 +1147,130 @@ class Main {
   }
 }
 ```
+
+### Liveness
+
+La liveness è un proprietà di un programma concorrente. Essa implica che il
+programma viene eseguito entro limiti accettabili di tempo. Le principali
+situazioni che danneggiano la liveness da evitare attraverso attenta
+progettazione sono deadlock, livelock e starvation.
+
+- **Deadlock**: due o più thread sono bloccati per sempre in mutua attesa.
+- **Starvation**: situazione in cui un thread ha difficoltà a guadagnare accesso
+  a una risorsa e ha difficoltà a procedere.
+- **Livelock**: genera una sequenza ciclica di operazioni inutili ai fini
+  dell'effettivo avanzamento della computazione.
+
+### Metodi e statement sincronizzati
+
+I metodi sincronizzati sono definiti dalla parola chiave `synchronized` e sono
+quei metodi che possono essere eseguiti solo da un thread alla volta.
+
+Java associa un _intrinsic lock_ (monitor) a ciascun oggetto. Quando un metodo
+`synchronized` viene chiamato se nessun metodo `synchronized` è in esecuzione
+l'oggetto viene bloccato e il metodo eseguito, altrimenti se l'oggetto è
+bloccato il task chiamante viene sospeso fino a quando il task bloccante libera
+il lock. Il lock viene liberato alla fine del metodo ma anche al lancio di
+un'eccezione. Inoltre i metodi `static synchronized` usano un diverso _intrinsic
+lock_ che fa riferimento all'oggetto classe e non all'istanza.
+
+I costruttori non possono essere synchronized. Solo i thread che crea l'oggetto
+ha accesso as esso mentre viene creato. Attenzione però a non far uscire un
+riferimento prematuro all'oggetto.
+
+Eventuali dati `final` possono essere letti con sicurezza anche da metodi non
+`synchronized`.
+
+Possiamo anche sincronizzare sincronizzare solo un solo alcuni statement:
+
+```java
+public void addName(String name) {
+  synchronized(this) { // oggetto da proteggere con lock
+    lastName = name;
+    nameCount++;
+  }
+  nameList.add(name);
+}
+```
+
+In questo modo si rilascia il lock all'oggetto prima di invocare un metodo che
+potrebbe a sua volta richiedere di attendere il rilascio di un lock. Ciò
+potrebbe generare potenziali problemi di liveness.
+
+La parola chiave `synchronized` non è considerata parte dell'interfaccia di un
+metodo ma un dettaglio implementativo. Ciò significa che non viene ereditata! Le
+sotto classi devono quindi essere esplicite quando fanno override.
+
+#### Precondizioni per metodi synchronized: guarded blocks
+
+Per mettere in stato di `WAITING` un thread si può chiamare il metodo `wait()`
+all'interno di un blocco sincronizzato. La `wait()` oltre a cambiare stato del
+thread rilascia il lock all'oggetto. Attenzione: lo stato `WAITING` è diverso
+dallo stato di `SLEEPING`, raggiunto tramite `Thread.sleep(ms)`.
+
+Per risvegliare uno dei thread nella coda di attesa si chiama `notify()`
+all'interno di un blocco sincronizzato. Nota bene: la `notify()` non implica il
+rilascio del lock da parte del chiamante, ma semplicemente modifica lo stato del
+primo thread della coda da `WAITING` a `READY`. Per risvegliare tutta la coda
+d'attesa si usa `notifyAll()`.
+
+Tutti i metodi visti in questa sezione funzionano solo se chiamati sull'oggetto
+che detiene il lock.
+
+```java
+// SBAGLIATO!!
+class ConsumerProducer {
+  ...
+  private Object cons = new Object();
+  private Object prod = new Object();
+
+  public synchronized void set (int d) {
+    while (!empty)
+      try {
+        prod.wait();
+      } catch (InterruptedException e) {}
+
+    cons.notify();
+    data = d;
+    empty = false;
+  }
+
+  public synchronized int get () {
+    while (!empty)
+      try {
+        cons.wait();
+      } catch (InterruptedException e) {}
+
+    prod.notify();
+    empty = true;
+    return data;
+  }
+}
+```
+
+### Oggetti Lock
+
+Il codice `synchronized` definisce un caso elementare di lock. Il pacchetto
+`java.util.concurrent.lock` ci permette delle funzionalità più avanzate tramite
+l'oggetto `Lock`. La funzionalità più importante è la possibilità di ritirarsi
+dalla richiesta di lock tramite due metodi:
+
+1. `tryLock()` esce immediatamente dall'attesa se il lock non è disponibile
+2. `lockInterruptibly()` esce se viene interrotto uno dei thread in attesa allo
+   stesso lock.
+
+### Esecutori
+
+La programmazione concorrente implementata con la classe `Thread` impone una
+stretta relazione tra il dover essere eseguito (interfaccia `Runnable`) e
+l'oggetto stesso. I due concetti possono, però, essere separati mediante
+l'interfaccia `Executor` che eseguono thread tramite thread pools e
+`fork()`/`join()`.
+
+Gli esecutori sono predefiniti e consentono una gestione efficiente che riduce
+l'overhead dovuto alla gestione dei thread. Sono definite 3 interfacce:
+`Executor`, `ExecutorService` e `ScheduledExecutorService`. Per far partire un
+esecutore ci basterà solamente chiamare `e.execute(r)`, evitando la creazione di
+un oggetto `Thread`. Le implementazioni dell'interfaccia `Executor` usano un
+pool di `Thread`, come ad esempio una a lunghezza fissa come quella di
+`FixedThreadPool`. I task saranno inviati al pool attraverso una coda.
