@@ -977,6 +977,7 @@ propagare il privilegio ad altri utenti. Per revocare un privilegio si usa:
 ```txt
 revoke Privilegi on Risorsa from Utenti [restrict|cascade]
 ```
+
 Tramite le viste è possibile gestire in modo ottimale la privacy. Per dimostrare
 ciò facciamo un esempio basato su un caso reale: gestione dei conti correnti.
 
@@ -1012,3 +1013,194 @@ grant select on Transazione1 to Funzionari1
 grant all privileges on Transazione1 to Cassieri1
 grant select on Transazione1 to Cassieri2, Cassieri3
 ```
+
+### Comandi transazionali
+
+Una unità elementare di esecuzione è incapsulata all'interno di due comandi:
+`begin transaction` e `end transaction`. Al suo interno, ogni possibile
+esecuzione prevede che sia eseguito esattamente una volta uno solo dei due
+comandi `commit work ...` o `rollback work ...`.
+
+```sql
+begin transaction;
+update Account
+  set Balance = Balance  10 where AccNum = 12202;
+update Account
+  set Balance = Balance  10 where AccNum = 42177;
+select Balance into A from Account where Accnum = 42177
+if (A >= 0) then
+  commit work
+else
+  rollback work;
+end transaction;
+```
+
+Una transazione ben formata ha la seguente forma:
+
+```txt
+begin transaction
+SQL
+commit work / rollback work
+NO SQL
+end transaction
+```
+
+La transazione è una operazione atomica che porta dallo stato iniziale a quello
+finale. Una transazione può assumere 3 comportamenti:
+
+1. `commit work`: successo
+2. `rollback work` o error precedente al commit: _undo_
+3. errore dopo il commit: _redo_
+
+```txt
+┌──────┐     ┌──────┐     ┌──────┐     ┌──────┐     ╔══════╗
+│  S0  │────→│  S1  │────→│  S2  │────→│  S3  │────→║  Sr  ║
+└──────┘     └─┬────┘     └─┬────┘     └─┬──┬─┘     ╚══════╝
+   ↑           │  ↑         │  ↑         │  │         ↑     
+   └───────────┘  └─────────┘  └─────────┘  └─────────┘     
+       Undo          Undo          Undo         Redo        
+
+```
+
+Una transazione, inoltre, deve rispettare i vincoli di integrità e non è
+influenzata dal comportamento di altre transazioni concorrenti. L'effetto delle
+transazioni che hanno fatto `commit` non verrà mai perso.
+
+### Qualità dei dati
+
+Un problema importante delle basi di dati è mantenere una alta qualità dei dati.
+In molte applicazioni reali i dati sono di scarsa qualità (tra il 5% e il 40% di
+dati scorretti). Per aumentare la qualità dei dati possiamo usare regole di
+integrità oppure modificare dati tramite programmi predefiniti (procedure e
+trigger).
+
+#### Vincoli di integrità generici
+
+I vincoli di integrità generici sono predicati che devono essere veri se
+valutati su istanze corrette (legali) della base di dati. Essi sono espressi in
+due modi: negli schemi delle tabelle o come asserzioni.
+
+La clausola `check` può essere usata per esprimere vincoli arbitrari nella
+definizione dell schema. La sintassi è: `check(Condizione)`. Per `Condizione` si
+intende qualcosa che può essere messo in una clausola `where` (comprese el query
+nidificate.
+
+```sql
+create table Magazzino as
+( CodProd   char(2) primary key,
+  QtaDisp   integer not null
+            check(QtaDisp > 0),
+  QtaRiord  integer not null,
+            check(QtaRiord > 10)
+  check(QtaDisp > QtaRiord))
+```
+
+Le asserzioni permettono la definizione di vincoli al di fuori della
+definizione delle tabelle. Sono utili per esprimere vincoli inter-relazionali.
+Una asserzione associa un nome a una clausola check:
+
+```txt
+create assertion Nome check(Condizione)
+```
+
+La verifica dei vincoli può essere di due tipi:
+
+1. `immediate`: la loro violazione annulla l'ultima modifica.
+2. `deferred`: la loro violazione annulla l'intera transazione.
+
+Ogni vincolo è definito di un tipo (normalmente `immediate`). L'applicazione può
+modificare a runtime il tipo dei vincoli tramite il comando `set constraint`
+
+#### Procedure
+
+Le procedure sono moduli di programma che svolgono una specifica attività di
+manipolazione dei dati. SQL-2 permette la definizione di procedure, ma solo in
+maniera molto limitata. La maggior parte dei sistemi offrono delle estensioni
+che permettono di scrivere procedure complesse (ad esempio Oracle PL/SQL) con
+strutture di controllo, variabili, eccezioni ecc.
+
+Le procedure appaiono in due contesti: dichiarazione (DDL) e invocazione (DML).
+Nell'architettura client-server le procedure sono normalmente invocante dal
+client e memorizzate ed eseguite dal server.
+
+```sql
+procedure Prelievo (Prod integer, Quant integer) is
+begin
+  Q1, Q2 integer;
+  X exception;
+
+  select QtaDisp, QtaRiord into Q1, Q2
+    from Magazzino
+    where CodProd = Prod
+  if Q1 < Quant then
+    raise(X);
+  update Magazzino
+    set QtaDisp = QtaDisp - Quant
+    where CodProd = Prof;
+  if Q1 - Quant < Q2 then
+    insert into riordino
+      values(Prod, sysdate, Q2)
+end;
+
+-- Interfaccia
+procedure Prelievo (Prod integer, Quant integer)
+
+-- Invocazione
+Prelievo(4, 150)
+```
+
+Le procedure permettono di modularizzare le applicazioni e aumentare
+l'efficienza, il controllo e il riuso. Le procedure però aumentalo la
+responsabilità dell'amministratore della base di dati in quanto si sposta
+conoscenza dalle applicazione allo schema della base di dati.
+
+#### Trigger
+
+Vengono dette basi di dati attive le basi di dati con componenti per la gestione
+di regole Evento-Condizione-Azione. Esse hanno un comportamento reattivo, in
+contrasto a quello passivo di default: esse non eseguono solo le transazione
+degli utenti ma anche le regole. Le regole sono simili alle procedure, ma
+l'invocazione è automatica. Nell'ambito dei DBMS commerciali si parla di
+trigger (standardizzati a partire da SQL-3).
+
+Intuitivamente quando si verifica un evento se la una condizione è soddisfatta
+viene eseguita l'azione. I trigger sono definiti con istruzioni DDL (`create
+trigger`) e sono caratterizzati da un evento (`insert, delete, update`), una
+condizione specificata da un predicato SQL e un'azione, ossia una sequenza di
+istruzioni SQL (o estensioni com PL/SQL). Ogni trigger fa riferimento ad una
+tabella (`target`).
+
+Esistono vari tipi di trigger:
+
+1. `for each row`: scatta tupla per tupla, sono definite in automatico due
+   variabili: `new` e `old` per rispettivamente la nuova e la vecchia tupla.
+2. `for each statement`: scatta una volta per ogni comando sulla tabella; le
+   variabili automatiche in questo caso daranno `new_table` e `old_table`.
+
+```sql
+create trigger GestioneRiordino
+  after update of QtaDisp on Magazzino
+  when (new.QtaDisp < new.QtaRiord)
+  for each row
+  X exception
+  begin
+    if new.QtaDisp < 0 then raise(X);
+    insert into Riordino
+      values(new.CodProd, sysdate, new.QtaRiord)
+  end
+```
+
+I trigger godono di alcune importanti proprietà:
+
+1. Terminazione: per ogni possibile stato iniziale e transazione, l'esecuzione
+   termina
+2. Confluenza: per ogni possibile stato iniziale e transazione, l'esecuzione
+   termina nello stesso stato.
+3. Identicità del comportamento: per ogni possible stato iniziale e transazione
+   l'esecuzione termina nello stesso stato e con gli stessi _side-effect_.
+
+I trigger possono risultare utili in molti ambiti. L'errata progettazione del
+trigger può portare ad effetti indesiderati e inoltre l'eccessiva proliferazione
+dei trigger rallenta il DBMS perché si devono controllare tutti i trigger che
+scattano sull'evento. Inoltre, poiché sono stati standardizzati così tardi
+(SQL-3), portano con sé limitazioni sulla portabilità tra vari DBMS.
