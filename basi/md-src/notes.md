@@ -1204,3 +1204,70 @@ trigger può portare ad effetti indesiderati e inoltre l'eccessiva proliferazion
 dei trigger rallenta il DBMS perché si devono controllare tutti i trigger che
 scattano sull'evento. Inoltre, poiché sono stati standardizzati così tardi
 (SQL-3), portano con sé limitazioni sulla portabilità tra vari DBMS.
+
+## Modellazione dei dati
+
+### Il modello _entity-relationship_
+
+Il modello _entity-relationship_ è stato introdotto da P. Chen e si è affermato
+come standard industriale di buona parte delle metodologie e degli strumenti per
+il progetto concettuale di basi di dati. Sono definite:
+
+1. L'entità è una classe di oggetti o di fatti rilevanti per l'applicazione.
+   Ogni entità è caratterizzata da un nome.
+2. Le relazioni (o associazione) rappresenta una aggregazione di entità di
+   interesse di interesse per l'applicazione. Ogni istanza di una associazione è
+   una ennupla tra istanze di entità. Anche ogni relazione è caratterizzata da
+   un nome.  Le associazioni possono anche essere ternarie: 3 entità possono
+   essere collegate da una sola associazione.
+3. Gli attributi rappresentano caratteristiche delle entità e delle associazioni
+   di interesse per l'applicazione. Ogni attributo è caratterizzato da un nome
+
+Una linea guida è la seguente: se il concetto è significativo per il contesto è
+un'entità; se il concetto è descrivibile tramite un dato elementare è un
+attributo; se il concetto definisce un legame tra entità è un'associazione.
+
+Per cardinalità si intende un vincolo sul numero di istanze di associazione cui
+ciascuna istanza di entità deve partecipare. Possiamo avere 3 tipi di
+associazioni in base alla cardinalità massima: uno-uno, uno-molti, molti-molti.
+Possiamo anche costruire delle auto-associazioni.
+
+Gli attributi possono avere valori scalari o multipli. Un attributo può essere
+anche composto. Anche gli attributi composti possono essere scalari o
+vettoriali. Un attributo che identifica in modo univoco ciascuna singola istanza
+di entità si dice identificatore. Anche un identificatore può essere composto.
+
+Le entità possono essere deboli, ossia l'esistenza delle loro istanze è
+dipendente dall'esistenza di istanze di un'altra entità forte.
+
+Una gerarchia di generalizzazione è un legame tra un'entità padre ed alcune
+entità figlie. Le entità figlie ereditalo le proprietà (attributi, relazioni,
+identificatori) dell'entità padre. Una gerarchia può essere:
+
+- Totale se ogni istanza dell'entità padre fa parte di una delle entità figlie.
+- Parziale se le istanze dell'entità padre possono far parte di una delle entità
+  figlie.
+- Esclusiva se ogni istanza dell'entità padre non può far parte di più di una
+  delle entità figlie.
+- Overlapping se ogni istanza dell'entità padre può far parte di più entità
+  figlie.
+
+### Il progetto di una base di dati
+
+Il progetto di una base di dati si inserisce nel ciclo di vita del sistema
+informativo. Noi non ci concentriamo su tutte le fasi del progetto, ma solo
+sulla progettazione degli schemi. La progettazione degli schemi a sua volta si
+suddivide in 3 fasi:
+
+1. La progettazione concettuale ha per scopo tradurre l'analisi dei requisiti in
+   una descrizione formale indipendente dal DBMS. La descrizione formale è
+   espressa tramite uno schema concettuale costruito utilizzando un modello
+   concettuale dei dati (ad esempio _entity relationship_).
+2. La progettazione logica ha per scopo tradurre lo schema concettuale in uno
+   schema logico, scelto all'interno dei modelli logici dei dati (gerarchico,
+   reticolare, relazionale, object-oriented o XML). Lo schema logico è
+   dipendente dal DBMS, ma non dallo specifico prodotto utilizzato.
+3. La progettazione fisica ha per scopo produrre un progetto fisico della base
+   di dati, cioè un progetto che ottenga prestazioni ottimali tramite scelta e
+   dimensionamento di strutture fisiche di accesso. Il progetto fisico viene
+   eseguito in modo differente su ciascun prodotto.
