@@ -1099,6 +1099,106 @@ Il pattern è basato su tre ruoli principali:
 3. Il _controller_ riceve i comandi dell'utente (in genere attraverso il view) e
    li attua modificando lo stato degli altri due componenti
 
+## Principi di progettazione
+
+### Principio open-closed
+
+Il principio open-closed dice che in generale un modulo deve essere aperto alle
+estensioni, ma chiuso alle modifiche. Le classi dovranno, quindi, essere scritte
+in modo che siano estendibili, senza che debbano essere modificate. Questo
+principio porta notevoli vantaggi in termini di manutenzione: se non modifico le
+classi, riduco la possibilità di introdurre errori.
+
+Un modo per fornire estensibilità è usare l'ereditarietà. L'estensibilità
+tramite eredità, però, è garantita solo se tutte le sottoclassi rispettano in
+contratto instaurato dalla superclasse. Questo viene detto principio di
+sostituzione di Liskov.
+
+Per creare oggetti che modificano il contratto di una classe ma ne riusano il
+codice si deve usare la composizione. In generale, si favorisce sempre la
+composizione rispetto all'ereditarietà poiché non abbiamo vincoli di contratto
+imposti dalla superclasse.
+
+### Principio di dependency inversion
+
+Il principio di dependency inversion ci impone la dipendenza da astrazioni, non
+da oggetti concreti. Per inversione si intende che le classi "in alto" nella
+gerarchia di ereditarietà non devono dipendere dalle classi "in basso".
+
+Una delle conseguenze della dependency inversion è il cosiddetto principio di
+"coding to an interface", ossia che ogni classe `C` che si ritiene possa essere
+estesa in futuro dovrebbe essere definita come sottotipo di un'interfaccia o di
+una classe astratta `A`. Tutte le volte che non è strettamente indispensabile
+riferirsi ad oggetti della classe concreta `C`, è meglio riferirsi ad oggetti
+con tipo `A`. In questo modo sarà più facile modificare il codice cliente per
+utilizzare invece di `C` altre classi concrete che sono sempre sottotipi di `A`.
+
+## Valutazione della qualità
+
+La correttezza funzionale di un progetto è fondamentale, ma possiamo adottare
+anche altre metriche, come la performance, la modificabilità e la stabilità.
+Possiamo valutare gli aspetti strutturali in un progetto studiando
+l'accoppiamento, la coesione e il principio open/closed.
+
+### L'accoppiamento (coupling)
+
+L'accoppiamento cattura il grado di interconnessione tra classi. Un altro grado
+di accoppiamento significa alta interfipendenza tra le classi e dipendenza di
+modifica della classe singola. Un basso accoppiamento è requisito fondamentale
+per creare un sistema comprensibile e modificabile. Nel mondo OOP abbiamo 3
+tipi di coupling: interaction, component e inheritance.
+
+1. Interaction coupling: si ha quando i metodi di una classe chiamano metodi di
+   altre classi. Le forme di interaction coupling da evitare sono: manipolare
+   direttamente le variabili di stato di altre classi e lo scambio di
+   informazioni attraverso variabili temporanee. Una forma che è accettabile, ma
+   non raccomandata è la comunicazione tra metodi tramite parametri.
+2. Component coupling: una class `A` è accoppiata ad un'altra classe `C` se
+   possiede attributi di tipo `C`, parametri di tipo `C` o metodi con variabili
+   locali di tipo `C`. Quando `A` è accoppiata a `C` essa è accoppiata anche a
+   tutte le sue sottoclassi. Il component coupling spesso implica interaction
+   coupling.
+3. Inheritance coupling: quando una classe è sottoclasse di un'altra. Discussa
+   già con il principio open/closed.
+
+### La coesione
+
+La coesione è un concetto intra-modulo. Essa si concentra sul perché gli
+elementi stanno nello stesso modulo. Anche qui abbiamo tre tipi di coesione:
+method, class e inheritance.
+
+1. Method cohesion: è la coesione all'interno di una singola funzione. La forma
+   migliore si ha quando una funzione implementa una singola azione chiaramente
+   definita.
+2. Class cohesion: una classe dovrebbe rappresentare un solo concetto e tutte le
+   proprietà dovrebbero contribuire alla sua rappresentazione. Più concetti sono
+   incapsulati nella stessa classe più la coesione diminuisce.
+3. Inheritance cohesion: maggiore è la coesione per ereditarietà più la
+   gerarchia viene usate per gestire generalizzazione/specializzazione e non
+   semplice riuso di codice.
+
+### Metriche
+
+È possibile definire delle misure, dette metriche, delle caratteristiche
+affrontate:
+
+1. Weighted Methods per Class (WMC)
+2. Depth of Inheritance Tree (DIT)
+3. Number of Children (NOC)
+4. Coupling Between Classes (CBC)
+5. Response For a Class (RFC)
+6. Lack of Cohesion in Methods (LCOM)
+
+### Consigli nella realizzazione
+
+1. Minimizzare l'interfaccia:
+    - Se non si ha un motivo per rendere un metodo pubblico, deve essere privato
+    - Evitare metodi di tipo setter se possibile
+    - Non bisogna creare un getter per ogni singolo campo intero della classe
+2. Scrivere metodi con meno parametri
+3. Evitare gli anti-pattern (soluzioni comuni ma sbagliate) come ad esempio le
+   classi Blob
+
 ## Programmazione concorrente in Java
 
 Noi vedremo programmazione concorrente solo a livello di thread, non a livello
@@ -1274,3 +1374,207 @@ esecutore ci basterà solamente chiamare `e.execute(r)`, evitando la creazione d
 un oggetto `Thread`. Le implementazioni dell'interfaccia `Executor` usano un
 pool di `Thread`, come ad esempio una a lunghezza fissa come quella di
 `FixedThreadPool`. I task saranno inviati al pool attraverso una coda.
+
+## Programmazione funzionale in Java
+
+### Classi anonime e funzioni lambda
+
+La programmazione funzionale è un altro paradigma di programmazione che
+favorisce l'espressione della computazione come applicazione di una o più
+funzioni sui dati. In questo caso le funzioni sono definite in senso matematico:
+niente side effects e deterministiche senza stato.
+
+Il principale metodo per implementare la programmazione funzionale è usare delle
+classi anonime, ossia delle classi senza nomi, che possono essere solo
+istanziate una volta e mai più riusate.
+
+```java
+Collections.sort(l, new Comparator<Persona>() {
+  @Override
+  public int compare(Persona p1, Persona p2) {
+    ...
+  }
+});
+```
+
+Java 8 offre della sintassi per supportare facilmente il pattern delle classi
+anonime. Le interfacce con un solo metodo sono definite _functional interfaces_.
+La nuova sintassi per definire il metodo di una _functional interface_ è la
+lambda expression.
+
+```java
+Comparator<Persona> c = (Persona p1, Persona p2) -> {
+  ...
+};
+
+Collections.sort(l, (Persona p1, Persona p2) -> {
+  ...
+});
+```
+
+L'input delle funzioni lambda è sempre immutabile (`final`) e il tipo può essere
+omesso. Le lambda con un solo statement hanno un return implicito e possono
+omettere le graffe, mentre se si ha più di un statement diventano obbligatorie
+graffe e return.
+
+Il pacchetto `java.utils.function` offre alcuni tipi e funzioni utili per la
+programmazione funzionale:
+
+- `Function<T, R>`: funzione con un argomento `T` e risultato `R`
+- `BiFunction<T, U, R>`: funzione con due argomenti di tipo `T` e `U` e
+  risultato `R`
+- `Consumer<T>`: funzione con un argomento di tipo `T` che non ritorna nessun
+  risultato
+- `Predicate<T>`: funzione con un argomento `T` che ritorna un booleano
+
+I tipi sopra sono ridefinite per i corrispettivi tipi primitivi, ad esempio
+`IntFunction<R>`.
+
+### Optional
+
+Il tipo `Optional<T>` nasconde il fatto che un elemento possa essere `null`.
+Possiamo usare i seguenti metodi:
+
+- `Optional.of(T val)`: crea un `Optional` con valore `val`;
+- `Optional.empty()`: crea un `Optional` vuoto;
+- `Optional.ifPresent(Consumer<T>)`: chiama la funzione se e solo se
+  l'`Optional` non è vuoto;
+- `Optional.flatMap(Function<T, Optional<U>>)`: se `Optional` è `empty`, ritorna
+  `empty`, altrimenti esegue la funzione;
+- `Optional.orElse(T val)`: se `Optional` non è vuoto ne ritorna il valore,
+  altrimenti ritorna `val`.
+
+```java
+public class Indirizzo {
+  final String via;
+  final Optional<String> commenti;
+
+  public Indirizzo (String via, String commenti) {
+    this.via = via;
+    this.commenti = Optional.of(commenti);
+  }
+
+  public Indirizzo(String via) {
+    this.via = via;
+    this.commenti = Optional.empty();
+  }
+
+  ...
+
+  public Optional<String> getCommenti() {
+    return commenti;
+  }
+}
+
+public class Persona {
+  final String nome;
+  final Optional<Indirizzo> indirizzo;
+
+  public Indirizzo (String nome, Indirizzo indirizzo) {
+    this.via = via;
+    this.indirizzo = Optional.of(indirizzo);
+  }
+
+  public Indirizzo(String nome) {
+    this.via = via;
+    this.indirizzo = Optional.empty();
+  }
+
+  ...
+
+  public Optional<Indirizzo> getIndirizzo() {
+    return indirizzo;
+  }
+}
+
+...
+  Optional<Persona> o = ...
+  String commenti = o
+    .flatMap(p -> p.getIndirizzo)
+    .flatMap(i -> p.getCommenti)
+    .orElse("no comment");
+...
+```
+
+Il pattern applicato con `Optional` è un pattern ricorrente nella programmazione
+funzionale chiamato composizione monadica. L'idea è di inglobare un valore in
+una struttura che permette di concatenare funzioni, mascherando alcuni aspetti.
+
+### Stream
+
+Gli stream permettono di concatenare funzioni che agiscono su una
+collection. Partendo da un `Collection<T>` il metodo `stream()` ritorna
+l'oggetto `Stream<T>`. L'interfaccia stream ci permette di modificare in modo
+interessante (e in modo funzionale) gli elementi di una collection con i
+seguenti metodi:
+
+- `forEach(Consumer<T>)`: prende in ingresso un `Consumer<T>` e lo esegue su
+  ogni elemento della collection;
+- `filter(Predicate<T>)`: prende in ingresso un `Predicate<T>` e ritorna uno
+  stream che contiene solo gli elementi per cui il predicato è vero;
+- `map(Function<T, U>)`: prende in ingresso una `Function<T, U>` e la applica ad
+  ogni elemento della stream, ottenendo una `Stream<U>`;
+- `distinct()`: rimuove i duplicati; `sort()`: ordina gli elementi tramite
+- ordine naturale (interi e stringhe) o un
+  `Comparator<T>`;
+- `flatMap(Function<T, Stream<U>>)`: applica `Function<T, Stream<U>>` a ogni
+  elemento dello stream, infine unisce tutti gli stream in unico stream;
+- `reduce`: la riduzione è un'operazione che permette di raccogliere un solo
+  valore a partire da uno stream (come `sum` o `average`). La riduzione può
+  anche essere implementata manualmente fornendo un valore iniziale e una
+  funzione che prende un risultato parziale e aggiunge il nuovo elemento al
+  risultato parziale (esempio `reduce(0, (a,b) -> a+b)`);
+- `collect(Supplier<R>, Accumulator<T, R>, Combiner<T, T, R>)`: analogo alla
+  reduce, non crea un nuovo valore per ogni elemento, ma modifica sempre il
+  medesimo valore. Nel caso delle strutture dati standard, esistono dei
+  _collectors_ predefiniti;
+
+Uno stream non memorizza i suoi elementi; essi possono essere generati on-demand
+o salvati in una collection. Le operazioni su stream non possono modificare lo
+stream a cu si applicano ma possono solo restituire nuovi stream che contengono
+i risultati. Inoltre le operazioni sono _lazy_ quando possibili, ossia sono
+eseguite solo quando il loro risultato è necessario.
+
+Java permette di analizzare gli elementi di uno stream in parallelo
+semplicemente invocando la funzione `parallel()`. Attenzione ai side effects
+nell'uso di parallel!
+
+```java
+// NO
+final List<Integer> result = new ArrayList<>();
+list.stream().parallel()
+  .map(x -> x.size())
+  .forEach(x -> result.add(x));
+
+// OK
+final List<Integer> result = list.stream().parallel()
+  .map(x -> x.size())
+  .collect(Collectors.toList())
+```
+
+### Closures
+
+Supponiamo di avere una funzione lambda che vogliamo usare molte volte. Come
+abbiamo visto, possiamo definirla un volta e riusarla successivamente:
+
+```java
+Predicate<String> pred = s -> s.startsWith("L");
+...
+list.stram().filter(pred)
+```
+
+E se volessimo generalizzare il nostro predicato in modo da usare qualsiasi
+carattere? Possiamo usare una chiusura, ossia uno snapshot dell'ambiente
+circostante alla lambda:
+
+```java
+public static Predicate<String> pred(String prefix) {
+  return s -> s.startsWith(prefix);
+}
+...
+list.stream().filter.filter(pred("X"));
+```
+
+L'unica limitazione che la closure ci impone è che le variabili dello scope
+esterno usate all'interno della lambda devono essere `final` o _effectively_
+`final`, ossia mai variate dopo la loro inizializzazione.
