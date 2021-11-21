@@ -1271,3 +1271,85 @@ suddivide in 3 fasi:
    di dati, cioè un progetto che ottenga prestazioni ottimali tramite scelta e
    dimensionamento di strutture fisiche di accesso. Il progetto fisico viene
    eseguito in modo differente su ciascun prodotto.
+
+#### Il progetto concettuale
+
+Le strategie di progetto possono essere "top-down" o "bottom-up". Queste ultime
+a loro volta possono essere a "macchia d'olio" o "miste".
+
+Nel progetto top-down si procede per raffinamenti a partire da una descrizione
+che comprende tutta la realtà d'interesse. Ciò rende il progetto più ordinato e
+razionale, ma la sua progettazione è più difficile poiché richiede visione
+d'insieme. Nella strategia top-down "pura" si costruisce uno schema iniziale e
+partire dalle specifiche. Da questo schema iniziale si arriva per raffinamenti
+successivi allo schema finale. I raffinamenti prevedono l'uso di trasformazioni
+elementari (primitive) che operano sul singolo concetto per descriverlo con
+maggio dettaglio.
+
+Nel progetto bottom-up si disegnano separatamente aspetti della realtà e poi li
+si integra costruendo un unico schema. Ciò permette di prendere decisioni
+differenti nell'affrontare i sotto-problem. Queste decisioni diverse potranno
+portare a conflitti.
+
+- La strategia a macchia d'olio nasce per accomodare i cambiamenti dei
+  requisiti. Le tecnica è adatta a tradurre pian piano una descrizione testuale
+  in un diagramma. Pur essendo bottom-up, il progettista analizza le specifiche
+  in modo "stratificato" e le aggiunge progressivamente ad un unico schema,
+  perciò i conflitti sono meno probabili.
+- La strategia mista è la più adatta di fronte a progetti ampi. Si suddividono
+  le specifiche in parti e si realizzano in top-down le varie parti per poi
+  integrarle con un approccio bottom-up. Questo "divide-and-conquer" permette a
+  più progettisti di lavorare sullo stesso schema. Il problema, come
+  nell'approccio top-down, sono i conflitti tra i vari sotto schemi. La
+  soluzione è lo sviluppo di un piccolo schema scheletro di soli concetti
+  principali in modo top-down e attenersi alle scelte presenti nello schema
+  scheletro in tutti gli altri schemi.
+
+La qualità di uno schema concettuale dipendono dalla sua completezza,
+correttezza, leggibilità, minimalità e auto-esplicatività:
+
+- Completezza e correttezza significa, ovviamente, rappresentare il modo
+  completo e corretto i requisiti. Per migliorare la completezza bisogna,
+  ovviamente, assicurarsi che i dati consentano di eseguire tutte le
+  applicazioni. Per la correttezza bisogna assicurarsi che sia possibile
+  popolare la base di dati anche con informazioni incomplete durante le fasi
+  iniziali.
+- La leggibilità si divide in leggibilità concettuale e grafica. Un modo per
+  aumentare la leggibilità è eliminare eventuali ridondanze rimuovendo relazioni
+  superflue senza perdere informazione. Nota: non sempre le ridondanze sono
+  inutili, alcune volte l'eliminazione di una ridondanza porta al'uso di join
+  complesse e meno immediatezza dello schema!
+- Auto-esplicatività significa fare in modo che lo schema rappresenti
+  esplicitamente il massimo di conoscenza sulla realtà.
+
+L'ultimo passo da svolgere dopo aver progettato lo schema concettuale ed essersi
+assicurato della sua qualità è il post-processing. Per post-processing si
+intende un insieme di "pulizia" dello schema:
+
+1. Verificare che tutte le entità abbiano un identificatore;
+2. Verificare che tutte le associazioni abbiano cardinalità ben definite;
+3. Verificare che le entità siano significative;
+4. Verificare che tutte le generalizzazioni siano utili.
+
+#### Progetto logico
+
+Lo schema entità-relazione descrive un dominio applicativo ad un dato livello di
+astrazione. Lo schema entità-relazione fornisce una buona descrizione sintetica
+e visiva ed è utile per rappresentare buona parte della semantica e mantenere
+una buona documentazione. Nel progetto logico, dobbiamo tradurre un modello E/R
+in un insieme di tabelle con `primary key` e `foreign key`. Per fare ciò
+possiamo eseguire le seguenti operazioni:
+
+1. **Eliminazione delle gerarchie**: possiamo seguire due approcci:
+   - Orizzontale: la gerarchia collassa in un'unica entità in corrispondenza del
+     padre (esempio: Persona - Maschio/Femmina)
+   - Verticale: si incorpora l'antenato comune nei figli (esempio: Persona -
+     Stendete/Professore)
+2. **Selezione delle chiavi primarie**: si sceglie come chiave primaria
+   l'identificatore più usato, purché semplice. Se la chiave primaria sarebbe
+   troppo complessa si introduce un codice. Gli identificatori esterni vanno
+   "importati".
+3. **Normalizzazione di attributi composti/multipli**: gli attributi composti
+   vanno resi semplici. Quelli multipli vanno gestiti con una entità separata.
+4. **Eliminazione di relazioni**: tradurre relazioni m-n, 1-n e 1-1 nei relativi
+   equivalenti utilizzabili nei DB.
