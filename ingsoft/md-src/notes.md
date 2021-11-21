@@ -1578,3 +1578,132 @@ list.stream().filter.filter(pred("X"));
 L'unica limitazione che la closure ci impone è che le variabili dello scope
 esterno usate all'interno della lambda devono essere `final` o _effectively_
 `final`, ossia mai variate dopo la loro inizializzazione.
+
+## Astrazioni nella progettazione del software
+
+Le astrazioni usate nella progettazione software che vedremo saranno:
+
+1. Astrazioni sulle operazioni: _Procedural abstractions_
+2. Astrazioni sui dati: _Abstract data type_
+3. Astrazioni sul controllo: iteratori
+4. Astrazioni da tipi individuali a famiglie di tipi
+
+Per astrarre nella progettazione possiamo usare diversi meccanismi:
+
+1. **Abstraction by parameterization**: generalizza moduli in modo che siano
+   utilizzabili su dati diversi passati tramite parametri
+2. **Abstraction by specification**: non importa come una funzione
+   è implementata, ma conta solo il comportamento. I vantaggi offerti sono la
+   località, la specifica può essere letta o scritta senza la necessità di
+   esaminare l'implementazione, e modificabilità, le funzioni possono essere
+   re-implementate senza danneggiare i clienti
+
+### Astrazioni procedurali
+
+Le astrazioni procedurali definiscono tramite una specifica un'operazione
+complessa su dati generici (o parametri). La specifica può essere data usando il
+linguaggio naturale oppure una semplice notazione matematica. Noi useremo la
+seconda tramite JML.
+
+Il contratto è il termine usato spesso per descrivere la specifica di astrazioni
+procedurali o interfacce di moduli.
+
+Un contratto può essere soddisfatto in molti modi. Ciò che cambia tra le varie
+implementazioni sono le proprietà non funzionali come efficienza e consumo di
+memoria.
+
+Ogni funzione deve avere definito una precondizione (`requires`) e una
+postcondizione (`ensures`). La precondizione di un metodo ci dice cosa deve
+essere vero per poterlo chiamare. La postcondizione normale ci dice che cosa
+deve essere vero quando il metodo ritorna normalmente; la postcondizione
+eccezionale ci dicono cosa è vero quando il metodo ritorna con un eccezione.
+
+#### JML
+
+Le specifiche JML sono contenute in annotazioni rappresentate con la seguente
+sintassi nei commenti:
+
+```java
+//@ ...
+
+/*@ ...
+  @ ...
+  @*/
+```
+
+Le asserzioni sono espressi booleane Java che non devono avere side-effect. Esse
+sono precedute da opportune keyword (`requires`, `ensures`...) e possono
+contenere alcuni operatori non Java: `a ==> b`, `a <== b`, `a <==> b`,
+`a <=!=> b`, `\old(E)`, `\result`, `\forall` ecc... Si possono scrivere
+asserzioni in linguaggio naturale usando `(*...*)`; hanno valore sempre `true`.
+
+```java
+//@ requires in >= 0;
+//@ ensures Math.abs(\result * \result - in) < 0.0001;
+public static float sqrt(float in);
+```
+
+Se l'oggetto è mutabile, ci si può riferire allo stato iniziale dell'oggetto
+usando `\old(expr)`.
+
+Per segnalare che un parametro può essere modificato si usa `assignable expr`.
+Se un metodo non ha side-effects si può usare `assignable \nothing`. Se
+`assignable` è omesso non si promette la mancanza di side-effects.
+
+```java
+//@ assignable a[*];
+//@ ensures (* a è una permutazione di \old(a) *) &&
+//@   (* a è ordinato per valori crescenti *)
+public static void sort(int[] a);
+```
+
+Il lancio di una eccezione viene descritto tramite l'asserzione
+`signals(exception) expr`. Cosa cambia tra una precondizione e una
+postcondizione eccezionale? Procedure con precondizioni non vuote vengono dette
+parziali, poiché hanno comportamento specificato solo per un subset di valori in
+ingresso. La presenza di molte procedure parziali può danneggiare la robustezza
+del programma poiché può mandarlo in uno stato inconsistente. Le eccezioni,
+invece, mandano in crash il programma se non gestite evitando stati
+inconsistenti. Perciò per metodi pubblici di classi pubbliche è buona norma
+gestire le precondizioni tramite eccezioni. In generale, però, non si lanciano
+eccezioni quando il chiamante può fare il controllo della precondizione multo
+meglio del chiamato o quando il controllo è molto difficile/inefficiente
+(esempio una binary search).
+
+Per parlare degli elementi di una collection si possono usare i metodi pubblici
+della collezione che non hanno side-effect, come ad esempio `equals`, `contains`,
+`containsAll`, `get` e `sublist`. Possiamo anche usare i soliti quantificatori
+matematici tramite `\forall` e `\exists`, funzioni quantificatrici come `\sum`,
+`\product`, `\min` e `\max`, e il quantificatore numerico `\num_of`:
+
+```txt
+//@ (\quant var; range; cond|operation)
+```
+
+### Abstract data types
+
+Creare un nuovo tipo di dato per cui siano stati specificati valori e operazioni
+possibili è anche detto data abstraction. Astraendo dai dettagli di
+rappresentazione dei valori e d'implementazione delle operazioni il resto del
+programma dipende solo dalla specifica del tipo e non dalla sua implementazione.
+
+La specifica di un ADT è l'unione di sintassi e semantica. La signature dei
+metodi, o l'interfaccia, definiscono solo la sintassi. Per la semantica, non
+basta specificare i metodi come se fossero procedural abstractions, perché
+questi agiscono sulle variabili di stato. Possiamo usare Java e JML per definire
+ADT.
+
+Nella specifica JML di un metodo pubblico (non statico) possono comparire solo
+gli elementi pubblici del metodo e della classe, in particolare i parametri
+formail, `\result`, ma anche metodi pubblici `pure` o attributi pubblici.
+Vengono detti metodi puri i metodi (non statici) dichiarati con la keyword JML
+`pure`. Essi non hanno effetti collaterali e possono chiamare solo altri metodi
+puri. Anche i costruttori possono essere dichiarati puri e possono inizializzare
+gli attributi dichiarati nella classe. I metodi puri sono anche detti
+_observers_ poiché possono solo osservare lo stato. I metodi che invece
+modificano lo stato sono detti _mutators_.
+
+```java
+//@ ensures (* \result è cardinalità di this *)
+public int /*@ pure @*/ size();
+```
