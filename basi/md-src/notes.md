@@ -1331,7 +1331,7 @@ intende un insieme di "pulizia" dello schema:
 3. Verificare che le entità siano significative;
 4. Verificare che tutte le generalizzazioni siano utili.
 
-#### Progetto logico
+#### Il progetto logico
 
 Lo schema entità-relazione descrive un dominio applicativo ad un dato livello di
 astrazione. Lo schema entità-relazione fornisce una buona descrizione sintetica
@@ -1353,3 +1353,145 @@ possiamo eseguire le seguenti operazioni:
    vanno resi semplici. Quelli multipli vanno gestiti con una entità separata.
 4. **Eliminazione di relazioni**: tradurre relazioni m-n, 1-n e 1-1 nei relativi
    equivalenti utilizzabili nei DB.
+
+#### Un altro approccio alla progettazione: la normalizzazione
+
+Quest'altro approccio è basato sui concetti di dipendenza funzionale e di forma
+normale. Parte dall'osservazione delle cosiddette anomalie, causate dalla
+ridondanza, senza passare per lo schema ER.
+
+Abbiamo visto nelle prime sezioni i vincoli di chiave, di integrità o di tupla.
+Essi fanno parte di una categoria più vasta di vincoli: le dipendenze
+funzionali.
+
+Definizione. _Dipendenza funzionale_
+: Dati due insiemi di attributi $X$ e $Y$, si dice he $X$ determina $Y$, o che
+$Y$ dipende da $X$ e si scrive $X \to Y$ se e solo se date due tuple
+distinte $t_1$ e $t_2$ se $t_1[X] = t_2[X]$ allora $t_1[Y] = t_2[Y]$.
+
+Definiamo, quindi, 3 tipi di anomalie. Consideriamo un'unica tabella con schema
+`(_Employee_, Salary, _Project_, Budget, Function)`
+
+1. Se lo stipendio di un dipendente cambia, dobbiamo modificare il valore di
+   tutte le corrispondenti tuple. Questa è detta anomalia di aggiornamento.
+2. Se un dipendente smette di lavorare su tutti i progetti ma non lascia la
+   società, tutte le corrispondenti tuple sono eliminate e così anche le
+   informazioni di base. Questo è nota come anomalia di cancellazione
+3. Se abbiamo informazioni su un nuovo dipendente, non le possiamo inserire fino
+   a che il dipendente sia assegnato ad un progetto, a meno di decidere di
+   inserire valori nulli. Ma questo non è possibile poiché `Project` è parte
+   della chiave. Questo è noto come anomalia di inserimento.
+
+Osservando la tabella sopra possiamo osservare che la la chiave primaria
+determina tutti gli altri attributi, ma valgono anche $employee \to
+salary$ e $project \to budget$.
+
+Definizione. _Dipendenza funzionale non banale_
+: Diciamo che una dipendenza funzionale $Y \to Z$ non è banale se nessun
+attributo in $Z$ compare come attributo in $Y$.
+
+Nell'esempio sopra $employee \to salary$ e $employee, project \to project$ non
+sono banali. In generale, una dipendenza funzionale causa anomalie se la
+relazione contiene informazioni eterogenee, ossia alcune informazioni
+corrispondenti alla chiave e altre ad attributi che non formano una chiave. La
+relazione si può decomporre in modo da ottenere tabelle contenti informazioni
+omogenee ottenendo 3 tabelle: `(Employee, Salary)`, `(Project, Budget)` e
+`(Employee, Project, Function)`.
+
+Definizione. _Forma normale di Boyce e Codd_
+: Una relazione $R$ è in forma normale di Boyce e Codd (BCNF) se per ogni
+dipendenza $X \to Y$ in $R$, $X$ contiene la chiave $K$ di $R$.
+
+È possibile che una relazione non in forma normale venga decomposta in due o più
+relazioni in forma normale. La decomposizione si può attuare effettuando
+proiezioni in modo tale da ottenere che ciascuna dipendenza funzionale definisca
+la chiave di una relazione separata.
+
+Quando la relazione originale è ricostruibile mediante `join` la decomposizione
+è corretta e si dice senza perdita. La decomposizione senza perdita è garantita
+se gli attributi comuni contengono una chiave per almeno una delle relazioni
+decomposte. Le decomposizioni possono essere con perdita se non si conservano le
+dipendenze. Una decomposizione conserva le dipendenze se ogni dipendenza
+funzionale dello schema originale coinvolge attributi che compaiono attributi
+che compaiono assieme negli schemi decomposti.
+
+Possono esistere dei casi in cui la BCNF non sia raggiungibile. Definiamo quindi
+una nuova forma normale, più debole della BCNF.
+
+Definizione. _Terza forma normale_
+: Una relazione $R$ è in terza forma normale se, per ogni dipendenza funzionale
+non banale $X \to Y$ definita su di essa almeno una delle seguenti condizioni è
+verificata: $X$ contiene una chiave di $R$; $Y$ è contenuto in almeno una chiave
+di $R$.
+
+La terza forma normale è sempre ottenibile.
+
+Esistono anche le la seconda e la prima forma normale:
+
+Definizione. _Prima forma normale_
+: Una relazione è in prima forma normale se e solo se ciascun attributo è
+definito su un dominio con valori atomici.
+
+Definizione. _Seconda forma normale_
+: Una relazione è in seconda forma normale se è in prima forma normale e tutti
+gli attributi non chiave dipendono funzionalmente dall'intera chiave. Questa
+normalizzazione elimina le dipendenze parziali.
+
+Definizione. _Terza forma normale (definizione alternativa)_
+: Una relazione è in terza forma normale se è in seconda forma normale e inoltre
+non contiene dipendenze transitive dalla chiava, ciò tutti gli attributi non
+chiave dipendono direttamente dalla chiave.
+
+La teoria della normalizzazione può essere usata per controllare la qualità
+degli schemi sia durante la progettazione concettuale che logica. L'analisi
+delle relazioni ottenute durante la progettazione logica può identificare
+problemi di inaccuratezza durante la progettazione concettuale. Le idee su cu si
+basa la normalizzazione possono essere utilizzate durante la progettazione
+concettuale per controllare la qualità degli elementi dello schema concettuale.
+
+#### Il progetto fisico
+
+Le basi di dati vengono memorizzate in file in memoria secondaria per motivi di
+dimensioni e persistenza. La pagina è l'unità di memorizzazione utilizzata per
+la memoria primaria, mentre il blocco per la secondaria.
+
+La struttura di un blocco dipende dal database utilizzato, ma generalmente ha la
+seguente struttura
+
+```txt
++--------------+-------------+-----------------+----+-----------+----------+--------------+--------------+
+| Block header | Page header | Page dictionary |    | Tuples... | Checksum | Page tralier | Block traler |
++--------------+-------------+-----------------+----+-----------+----------+--------------+--------------+
+                             ------->                   <--------
+                             Stack                          Stack
+```
+
+Le tuple di una stessa tabella saranno divise tra diversi blocchi. Le tuple
+vengono organizzate in modo sequenziale, solitamente ordinate in base alla data
+di inserimento.
+
+Gli indici sono una struttura ausiliaria per permettere l'accesso efficiente
+alle tuple di un database. Ha come input i valori di un attributo, o di una
+lista di attributi, detti _chiave dell'indice_. Solitamente le strutture per gli
+indici sono basate su tabelle di hash o su alberi B+. Per creare e distruggere
+indici si possono usare i seguenti comandi:
+
+```sql
+create [unique] index IndexName on TableName (AtrtibuteList)
+
+drop index IndexName
+```
+
+Delle linee guida per la creazione degli indici sono:
+
+- Non cerare indici se la tabella è piccola
+- Monti DBMS creano in modo automatico degli indici per le chiavi primarie e per
+  le chiavi `unique`
+- Può essere necessario aggiungere indici su attributi che compaiono in
+  predicati di selezione o `join` oppure su operazioni che richiedono
+  l'ordinamento
+- Evitare di aggiungere indici se la tabella viene aggiornata frequentemente
+- Evitare di aggiungere indici se in ogni caso per l'interrogazione occorre
+  estrarre una parte significativa delle tuple della tabella
+- Evitare di indicizzare attributi costituiti da lunghe stringhe di caratteri
+
