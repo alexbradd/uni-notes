@@ -1,0 +1,1 @@
+--incr --debug "typical" --relax --mt "8" -L "xil_defaultlib" -L "secureip" --snapshot "square_tb_func_synth" "xil_defaultlib.square_tb" -log "elaborate.log" 

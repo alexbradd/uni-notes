@@ -1,0 +1,12 @@
+
+{ 
+    crc :  9149519506140201146  , 
+    ccp_crc :  0  , 
+    cmdline : " --incr --debug typical --relax --mt 8 -L xil_defaultlib -L secureip --snapshot square_tb_func_synth xil_defaultlib.square_tb" , 
+    buildDate : "Oct 19 2021" , 
+    buildTime : "02:56:52" , 
+    linkCmd : "/usr/bin/gcc -Wa,-W  -O -fPIC  -m64  -Wl,--no-as-needed  -Wl,--unresolved-symbols=ignore-all  -o \"xsim.dir/square_tb_func_synth/xsimk\"   \"xsim.dir/square_tb_func_synth/obj/xsim_0.lnx64.o\" \"xsim.dir/square_tb_func_synth/obj/xsim_1.lnx64.o\" -L\"/var/home/breadyx/Xilinx/Vivado/2021.2/lib/lnx64.o\" -lrdi_simulator_kernel   -lrdi_simbridge_kernel" , 
+    aggregate_nets : 
+    [ 
+    ] 
+} 
