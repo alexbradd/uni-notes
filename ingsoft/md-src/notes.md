@@ -1695,7 +1695,7 @@ ADT.
 
 Nella specifica JML di un metodo pubblico (non statico) possono comparire solo
 gli elementi pubblici del metodo e della classe, in particolare i parametri
-formail, `\result`, ma anche metodi pubblici `pure` o attributi pubblici.
+forma il, `\result`, ma anche metodi pubblici `pure` o attributi pubblici.
 Vengono detti metodi puri i metodi (non statici) dichiarati con la keyword JML
 `pure`. Essi non hanno effetti collaterali e possono chiamare solo altri metodi
 puri. Anche i costruttori possono essere dichiarati puri e possono inizializzare
@@ -1707,3 +1707,95 @@ modificano lo stato sono detti _mutators_.
 //@ ensures (* \result è cardinalità di this *)
 public int /*@ pure @*/ size();
 ```
+
+La specifica di un'astrazione descrive un _oggetto astratto_. L'implementazione
+di una astrazione definisce _l'oggetto concreto_. I due oggetti sono differenti
+e non vanno confusi.
+
+#### Proprietà delle data abstractions
+
+Abbiamo velocemente introdotto due categorie di metodi: _observers_ e
+_mutators_. Approfondiamole e aggiungiamone delle altre:
+
+1. _creators_: producono nuovi oggetti da zero
+    - Sono costruttori, di solito puri. NB: non tutti i costruttori però sono
+    creatori
+2. _producers_: dati in input oggetti del proprio tipo creano oggetti del
+   proprio tipo
+    - Solitamente sono puri
+3. _mutators_: modificano oggetti del proprio tipo
+    - Non sono mai puri e non hanno dichiarazione `assignable` in JML
+4. _observers_: dati in input oggetti del proprio tipo restituiscono risultati
+   di altri tipi
+    - Tipicamente dichiarati come puri
+    - A volte sono combinati con i modificatori (ad esempio chooseAndRemove)
+
+Un tipo è adeguato se fornisce operazioni sufficienti perché il tipo possa
+essere utilizzato semplicemente ed efficientemente:
+
+- Se il tipo è mutabile deve definire almeno _creators_, _observers_ e
+  _mutators_
+- Se il tipo è immutabile deve avere almeno _creators_, _observers_ e
+  _producers_
+
+Il tipo deve essere totalmente popolato, ossia deve essere possibile ottenere
+convenientemente ogni possibile stato astratto usando _creators_, _producers_ e
+_mutators_. Non bisogna, però, includere troppe operazioni, sennò si rende
+troppo pesante l'astrazione. L'adeguatezza è, perciò, un concetto informale e
+dipendente dal contesto d'uso. Se il contesto è limitato basteranno, quindi,
+poche operazioni.
+
+Le proprietà astratte sono proprietà osservabili, con i metodi pubblici
+_observer_. Le proprietà astratte possono essere di due tipi:
+
+1. Evolutive: esprimono una relazione tra uno stato astratto osservabile e uno
+   futuro
+2. Invarianti: proprietà dei singoli stati astratti osservabili. In JML possono
+   essere specificati tramite `public invariant` e si possono usare solo
+   attributi e metodi pubblici della classe.
+
+Gli invarianti vanno rispettati da ogni metodo della specifica che modifica lo
+stato. È il progettista della specifica che deve assicurare che questa non violi
+gli invarianti prefissati.
+
+#### Implementazione di un ADT
+
+L'implementazione di un tipo deve fornire una rappresentazione per gli oggetti
+del tipo, cioè una struttura dati per rappresentarne (_rep_) i valori, e
+l'implementazione di tutte le operazioni.
+
+La scelta del _rep_ dipende da efficienza, semplicità e riuso di strutture dati
+esistenti.
+
+Definiamo funzione di astrazione una funzione che assegna ad ogni stato concreto
+al più uno stato astratto. Solitamente è una funzioni non iniettiva in quanto
+ogni stato concreto può essere associato allo stesso stato astratto. Per
+implementare una funzione d'astrazione si può usare un invariante dichiarato
+`private`, ossia che ha accesso anche agli attributi privati della classe,
+definendo una relazione tra le parti private e i metodi _observer_ della classe.
+
+La funzione di astrazione è tipicamente implementata in java tramite la funzione
+`toString()`: il metodo tipicamente restituisce una rappresentazione testuale
+del valore dell'oggetto.
+
+Non tutti gli oggetti concreti, però, sono rappresentazione "legali" degli
+oggetti astratti. Le rappresentazioni legali sono quelle per cui valgono tutte
+le ipotesi sottese all'implementazione. È detto _invariante di rappresentazione_
+un predicato booleano che è valido solo per oggetti legali. Di norma
+l'invariante di rappresentazione contiene solo riferimenti agli attributi
+privati della classe in quanto le relazioni fra un oggetto astratto (`public`) e
+il concreto (`private`) sono definite dalla funzione d'astrazione.
+
+#### Ragionare sulle data abstractions
+
+Scrivendo un programma, spiegandolo o leggendolo, si cerca di convincersi che
+sia corretto, ragionandovi. Fare ragionamenti sulle data abstractions è
+complicato: occorre considerare l'intera classe e non solo una singola
+procedura; il codice manipola il _rep_, ma ci si deve convincere che soddisfa la
+specifica degli oggetti astratti. Possiamo usare un approccio a due passaggi:
+
+1. Mostriamo che l'implementazione conserva l'invariante di rappresentazione
+2. Mostriamo che le operazioni sono corrette rispetto alla specifica
+   dell'astrazione, eventualmente utiulizzando l'invariante di rappresentazione
+   e le proprietà dell'astrazione.
+
