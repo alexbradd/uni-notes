@@ -1101,7 +1101,7 @@ Il pattern è basato su tre ruoli principali:
 
 ## Principi di progettazione
 
-### Principio open-closed
+### Principio open-closed e di sostituzione di Liskov
 
 Il principio open-closed dice che in generale un modulo deve essere aperto alle
 estensioni, ma chiuso alle modifiche. Le classi dovranno, quindi, essere scritte
@@ -1799,3 +1799,133 @@ specifica degli oggetti astratti. Possiamo usare un approccio a due passaggi:
    dell'astrazione, eventualmente utiulizzando l'invariante di rappresentazione
    e le proprietà dell'astrazione.
 
+### Estensione e principio di sostituzione di Liskov
+
+Armati dei nostri nuovi strumenti, come possiamo garantire che il contratto
+dell'estensione sia compatibile con quello della sopraclasse? Basta garantire le
+seguenti tre proprietà:
+
+1. Regola della segnatura: un sottotipo deve avere tutti i metodi del sopratipo
+   e le segnature dei metodi del sottotipo devono essere compatibili
+2. Regola dei metodi: le chiamate ai metodi del sottotipo devono comportarsi
+   come le chiamate ai metodi corrispondenti del sopratipo
+3. Regola delle proprietà: il sottotipo deve preservare tutti i `public
+   invariant` degli oggetti del sopratipo
+
+#### Regola della segnatura
+
+La regola della segnatura ci garantisce type-safety, ossia che ogni chiamata
+corretta per il sopratipo sia corretta anche per il sottotipo. Questa
+correttezza è verificabile staticamente.
+
+In Java la regola della segnatura è ristretta ulteriormente imponendo l'identità
+tra le segnatura invece della compatibilità. Una sottoclasse può, però,
+rimuovere delle eccezioni dalla segnatura.
+
+La regola della segnatura ci permette di definire dei tipi di trasformazioni tra
+tipi:
+
+1. Una trasformazione $P$ è covariante se per tutti i tipi $T$ e $S$, con $S
+   \leq T$, allora $P(S) \leq T(S)$.
+2. Una trasformazione $P$ è controvariante se per tutti i tipi $T$ e $S$, con $S
+   \leq T$, allora $T(S) \leq P(S)$.
+3. Negli altri casi $P$ è detta invariante.
+
+Per mantenere la type-safety garantitaci dalla regola della segnatura possiamo
+usare covarianza e controvarianza in questo modo: controvarianza per i parametri
+(impossibile da realizzare in Java a causa della restrizione della regola) e
+covarianza per i risultati.
+
+#### Regola dei metodi
+
+La regola dei metodi esprime una proprietà relativa al comportamento di un
+metodo. Ciò rende impossibile la sua verifica da parte del compilatore.
+
+Un metodo per garantire che la chiamata a un metodo del sottotipo abbia lo
+stesso effetto, basta che la specifica sia la stessa. Spesso, però, è necessario
+modificare la specifica nel sottotipo, perciò sono definite delle regole per
+garantire la compatibilità delle specifiche:
+
+1. Precondizione più debole: se la precondizione del metodo
+   ridefinito è più debole di quella del metodo originale, allora tutti i casi
+   in cui si chiamava il metodo originale si può chiamare anche il metodo
+   ridefinito:
+
+   $$ pre_{super} \implies pre_{sub} $$
+
+2. Postcondizione più forte: se rafforziamo la postcondizione, allora la
+   postcondizione originale sarà comunque verificata:
+
+   $$ post_{sub} \implies post_{super} $$
+
+In JML, una classe eredità le pre e postcondizioni dei metodi pubblici e
+protetti della superclasse e gli invarianti pubblici. Per ridefinire delle
+asserzioni bisogna prefissare il blocco con `also`:
+
+```java
+//@ requires var >= 10;
+//@ ensures \result >= 2;
+public int method(int param);
+
+...
+
+//@ also
+//@ requires var >= 5;
+//@ ensures \result >= 1;
+public int method(int param);
+```
+
+Le precondizioni della classe figlia sono messe in disgiunzione con quelle della
+classe antenato: le precondizioni sono indebolite. Le postcondizioni della
+classe figlia, invece, sono messe in congiunzione: le postcondizioni vengono
+rafforzate.
+
+Con la regola della postcondizione enunciata, dove non vale $pre_{super}$, può
+valere una $post_{sub}$ diversa o incompatibile con $post_{super}$. Rafforziamo
+perciò la regola della postcondizione in questo modo:
+
+$$
+  (pre_{super} \land post_{sub}) \implies post_{super} \equiv
+    pre_{super} \implies (post_{sub} \implies post_{super})
+$$
+
+La regola completa della postcondizione è sempre verificata in JML grazie al
+modo in cui sono unite le specifiche delle classi.
+
+Java permette di rimuovere delle eccezioni quando si ridefinisce un metodo, ciò
+però potrebbe violare la regola dei metodi! Possiamo eliminare un'eccezione solo
+se non è effettivamente utilizzata o il suo lancio è opzionale. Un esempio di
+un caso del genere è quando l'eccezione era usata per segnalare una condizione
+che non si può più verificare più.
+
+```java
+class Socket {
+  public int connect() throws CantConnectException;
+}
+
+class RetrySocket extends Socket {
+  public int connect();
+}
+```
+
+##### Addendum: forza e debolezza delle condizioni
+
+Si definisce una condizione più forte si un'altra se la prima è più restrittiva
+della seconda. Viceversa è definita la debolezza. In logica matematica la
+relazione di "forza" tra condizione è formalizzata dall'implicazione: $\alpha$ è
+più forte di $\beta$ se $\alpha \implies \beta$. La condizione più forte sarà
+`false` mentre la più debole `true`. Un modo intuitivo per pensare alla
+forza/debolezza di due condizioni è confrontare la cardinalità degli insiemi dei
+modelli: la condizione più forte è quella resa vera da meno valori. Le
+operazioni logiche modificano la forza della formula risultato in questo modo:
+
+1. Disgiunzione: $\alpha \implies (\alpha \lor \beta)$ (indebolisce)
+2. Congiunzione: $(\alpha \land \beta) \implies \alpha$ (rafforza)
+3. Implicazione: $\beta \implies (\alpha \implies \beta)$ (indebolisce)
+
+#### Regola delle proprietà
+
+Per dimostrare che si rispetta la regola delle proprietà occorre mostrare che
+tutti i metodi nuovi o ridefiniti, inclusi i costruttori, del sottotipo
+conservano le proprietà invarianti e le proprietà evolutive del sopratipo
+osservabili con i metodi pubblici _observer_ della sopraclasse.
