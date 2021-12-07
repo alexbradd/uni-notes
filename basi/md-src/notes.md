@@ -250,7 +250,7 @@ Definizione. _Intersezione_
   L'intersezione è definita solo tra relazioni compatibili.
 
 Definizione. _Join_
-: Indicato $R \underset{\mathit{predicato}}{\Join} S$, equivale a:
+: Indicato $R \underset{\mathit{predicato}}{\bowtie} S$, equivale a:
 
   $$\sigma_{predicato} (R \times S)$$
 
@@ -274,7 +274,7 @@ Definizione. _Semi-join_
 Definizione. _Semi-join naturale_
 : Indicato $R \ltimes S$, equivale a:
 
-  $$\Pi_{R.\star} (R \Join S)$$
+  $$\Pi_{R.\star} (R \bowtie S)$$
 
 Definizione. _Divisione_
 : Indicato $R \div S$, equivale a
@@ -298,11 +298,11 @@ tutto come un albero delle operazioni (vedi LEA).
 1. **Eliminazione dei prodotti cartesiani:** Possiamo sostituire un prodotto
    cartesiano seguito da selezione con join.
 2. **Push della selezione rispetto al join:** Possiamo trasformare $\sigma_p (R
-   \Join_q S)$ in $(\sigma_p R) \Join_q S$. Questa semplificazione si può fare
+   \bowtie_q S)$ in $(\sigma_p R) \bowtie_q S$. Questa semplificazione si può fare
    se e solo se il predicato della selezione coinvolge solo attributi di $R$ (o
    analogamente di $S$).
 3. **Push della proiezione rispetto al join:** Analogo al precedente,
-   trasformiamo $\Pi_L (R \Join_q S)$ in $\Pi_L (\Pi_{LR \cup JR} R \Join_q
+   trasformiamo $\Pi_L (R \bowtie_q S)$ in $\Pi_L (\Pi_{LR \cup JR} R \bowtie_q
    \Pi_{LS \cup JS} S)$ dove $LR$ e $LS$ sono gli attributi di $R$ ed $S$
    rispettivamente e $JR$ e $JS$ gli attributi di $R$ ed $S$ rispettivamente
    coinvolti nel join.
@@ -407,7 +407,7 @@ aritmetiche.
 
 > Consideriamo il fatto: `padre(X,Y) :- Persona(X, _, 'M'), genitori(X,Y)`. Esso
 > è traducibile in algebra relazione con: $\mathit{padre} = \Pi_{1,5} \sigma_3
-> (\mathit{persona} \Join_{1=1} \mathit{genitori})$.
+> (\mathit{persona} \bowtie_{1=1} \mathit{genitori})$.
 
 Le query, o _goals_, sono così definite:
 
