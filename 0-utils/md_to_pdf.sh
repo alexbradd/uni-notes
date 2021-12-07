@@ -42,10 +42,12 @@ pandoc "$INPUT" \
 	$TOC \
 	$ADDITIONAL_OPTS \
 	--shift-heading-level-by=-1 \
-	--pdf-engine="pdflatex" \
+	--pdf-engine="xelatex" \
 	-V "documentclass:article" \
 	-V "classoptions:11pt" \
-	-V "fontenc:T1" \
 	-V "geometry:margin=2cm,bindingoffset=6mm,twoside" \
-	-V "toc-title:Indice"
+	-V "toc-title:Indice" \
+  -V "mainfont:XITS" \
+  -V "mathfont:XITS Math" \
+  -V "monofont:DejaVu Sans Mono" \
 
