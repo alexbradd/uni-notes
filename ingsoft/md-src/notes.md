@@ -1929,3 +1929,47 @@ Per dimostrare che si rispetta la regola delle proprietà occorre mostrare che
 tutti i metodi nuovi o ridefiniti, inclusi i costruttori, del sottotipo
 conservano le proprietà invarianti e le proprietà evolutive del sopratipo
 osservabili con i metodi pubblici _observer_ della sopraclasse.
+
+## Programmazione distribuita
+
+### Socket TCP
+
+La programmazione socket su TCP viene eseguita tramite l'uso delle classi
+`Socket` e `ServerSocket`. La connessione è rappresentata da un'istanza della
+classe `Socket`: il client la crea tramite `new`, il server la riceve da
+`ServerSocket.accept()` che la ritorna appena un client esegue una richiesta di
+connessione.
+
+La comunicazione avviene tramite due stream di array di byte: un input stream di
+ottenuto tramite `Socket.getInputStream()` e un output stream ottenuto tramite
+`Socket.getOutputStream()`. Questi stream possono essere convertiti in stream
+testuali tramite `Scanner` e `PrintWriter` per rispettivamente input e output.
+
+La connessione viene chiusa tramite il metodo `Socket.close()`. Per
+`ServerSocket` la `close()` termina la `accept()` e lancia una `IOException`.
+
+### RMI
+
+Introduciamo della terminologia:
+
+1. **Oggetto remoto**: un oggetto i cui metodi possono essere invocati da una
+   JVM diversa da quella dove l'oggetto risiede.
+2. **Interfaccia remota**: interfaccia che dichiara quali sono i metodi che
+   possono essere invocati da una diversa JVM.
+3. **Server**: insieme di uno o più oggetti remoti che, implementando una o più
+   interfacce remote, offrono risorse a macchine esterne distribuite sulla rete.
+
+Il client colloquia con un proxy locale del server detto _stub_ che ne
+implementa l'interfaccia ed è capace di fare forward delle chiamate di metodo.
+Esiste il corrispettivo anche a lato server detto _skeleton_. Gli argomenti dei
+metodi subiranno un processo di serializzazione (marshalling) per poter essere
+trasmessi sulla rete.
+
+Il registro RMI (_registry_), si occupa di fornire al client lo stub richiesto:
+in fase di registrazione il server potrà fornire un nome canonico per il proprio
+oggetto remoto e il client potrà reperirlo tramite suddetto nome. Se client e
+server risiedono sulla stessa macchina, è possibile indicare al client il path
+locale per lo stub, s invece risiedono su macchine differenti è necessario
+utilizzare un server HTTP per permette al registro di spedire lo stub. Il
+registry girerà su un processo a parte e dovrà essere lanciato prima
+dell'esecuzione del nostro server.
