@@ -1,4 +1,6 @@
-public RecentContacts {
+// Si specifichino in JML i metodi add(), notifyInteraction() e remove()
+
+public class RecentContacts {
 
   //@ public invariant
   //@   (\forall int i; i >= 0 && i < size();

@@ -1,3 +1,5 @@
+// Si specifichi in JML i metodi put(), winner() e clear()
+
 public class Connect {
 
   //@ unchanged() ==
