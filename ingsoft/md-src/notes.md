@@ -1973,3 +1973,268 @@ locale per lo stub, s invece risiedono su macchine differenti è necessario
 utilizzare un server HTTP per permette al registro di spedire lo stub. Il
 registry girerà su un processo a parte e dovrà essere lanciato prima
 dell'esecuzione del nostro server.
+
+## Testing
+
+### Verifica e validazione
+
+Definiamo rigorosamente i termini che useremo:
+
+1. **Verifica**: assicurarsi che il software sia costruito correttamente (stiamo
+   rispettando la specifica?)
+2. **Validazione**: assicurarsi che il software faccia ciò che l'utente ha
+   relamente chiesto (stiamo costrurendo il prodotto giusto?)
+
+Al processo di verifica e validazione dovrà essere sottoposto ogni artefatto
+prodotto dallo sviluppo e anche l'attività di verifica stessa!
+
+Possiamo effettuare 2 tipi di verifiche: verifiche statiche e dinamiche:
+
+1. **Verifiche dinamiche** - Le verifiche dinamiche consistono principalmente nel
+   collaudo del software. Il sistema viene eseguito con dati di test e si
+   osserva il suo comportamento confrontandolo con i risultati attesi.
+2. **Verifiche statiche** - Le verifiche statiche sono test eseguiti a mano o
+   automaticamente su semilavorati non eseguibili.
+
+Le verifiche dinamiche non garantiscono l'assenza di errori (vedi API). Alcuni
+requisiti/semilavorati, inoltre, possono essere verificate solo con una delle
+due metodologie (ad esempio la performance e altre proprietà di runtime possono
+essere verificate solo tramite verifiche dinamiche e semilavorati non eseguibili
+possono essere verificati solo staticamente) perciò essere vanno usate
+congiuntamente.
+
+### Analisi statica
+
+Uno dei metodi per eseguire verifiche statiche è l'analisi statica, ossia un
+insieme di verifiche automatiche su documenti non eseguibili. L'analisi statica
+può generare informazione utilizzabile durante una eventuale ispezione umana del
+documento. Le sacre scritture di API ci rivelano che l'analisi automatica è
+molto limitata poiché molte proprietà dei programmi che vorremmo analizzare sono
+indecidibili. Perciò possiamo adottare 2 approcci per raggirare la limitazione
+dell'indecidibilità:
+
+1. Usare un **approccio rigoroso**, ossia segnaliamo solo gli errori certi,
+   tralasciando quelli possibili.
+2. Usare un **approccio pessimistico**, ossia segnalare tutti gli errori, anche
+   quelli possibili.
+
+Alcuni tipi di analisi statica sono il linting (ricerca di errori nella
+correttezza del programma come utilizzo di variabili non inizializzate o pezzi
+di codice irraggiungibile o inutilizzato) e model checking.
+
+### Analisi dinamica
+
+L'analisi dinamica, o testing, si applica al risultato finale dello sviluppo a
+programmi eseguibili e ha lo scopo di far emergere quanti più difetti possibile.
+Esistono diversi tipi di test, detti livelli di test, eseguiti in momenti
+diversi dello sviluppo e con obiettivi diversi:
+
+1. **Test di unità** - Si occupa di testare un singolo modulo, ossia la più
+   piccola unità del software. Generalmente è scritto da un solo programmatore o
+   un piccolo team che lo ha anche ideato poiché la qualità del test dipende
+   dalla sua esperienza e dalla conoscenza interna del modulo. Tipicamente viene
+   eseguito dal programmatore prima del rilascio.
+2. **Test di integrazione di sottosistema** - Corrispondente alla fase in cui è
+   disponibile il progetto dettagliato, si occupa di testare l'integrazione tra
+   i moduli di uno stesso sottosistema. In alcuni casi questa fase può essere
+   unita a quella del testing di unità.
+3. **Test di integrazione** - Corrispondente alla fase in cui è disponibile il
+   progetto di alto livello, si occupa di testare l'integrazione tra i vari
+   sottosistemi che formano il sistema. Viene effettuato da un gruppo di testing
+   apposito di cui tipicamente non fanno parte i programmatori. Le interfacce
+   dei moduli vengono testate una alla volta tramite _driver_ e _stub_ che sono
+   rispettivamente codice per chiamare le interfacce e codice per simulare
+   interfacce su cui dipende il sottosistema.
+4. **Test di sistema e di accettazione** - Corrispondente alla fase di specifica
+   del sistema software, si occupa di verificare che l'intero sistema funzioni
+   come specificato e come desidera l'utente. Viene detto test di sistema se
+   condotto dal produttore per verificare la qualità, test di accettazione se
+   condotto dal committente.
+
+   A volte non esiste un committente, perciò non si può parlare di test di
+   accettazione. In questo caso si usa il cosiddetto beta test: il sistema viene
+   rilasciato in prova ad un certo numero di utenti selezionati che lo provano e
+   segnalano eventuali errori. In contrasto si chiama alpha test il testing
+   effettuato dal produttore.
+5. **Test di non regressione** - Condotto post-release, server a verificare che
+   le caratteristiche positive consolidate da una versione precedente del
+   software persistano anche nelle versioni nuove.
+
+Il testing ha come compito quello di trovare eventuali difetti, non identificare
+il vero e proprio difetto che sta all'origine dei malfunzionamenti. Il testing
+deve essere ripetibile in modo da poter permettere un debugging.
+
+Come sappiamo da API, il testing non è capace di trovare tutti i difetti ma può
+solo limitarsi a trovarne il più possibile. Dobbiamo, perciò, adottare una
+strategia di testing che ci permetta di sfruttare intelligentemente le risorse
+per massimizzare la probabilità che un errore si verifichi se esso esiste.
+
+#### Testing black-box
+
+Esistono diverse modalità di testing possibili: si può decidere di collaudare un
+oggetto ignorando la sua organizzazione e il suo funzionamento interno, oppure
+possiamo cercare di sfruttare queste conoscenze. Il primo viene detto _black box
+testing_ mentre il secondo _white box testing_ o _testing strutturale_.
+
+Nel black box testing il programma è considerato una scatola nera, ossia
+osserveremo solo input e output. I casi di test sono scelti a partire da
+un'analisi delle specifiche dei requisiti: sceglieremo i dati in modo da
+sollecitare tutte le funzioni previste in tutte le condizioni di applicazione
+previste. Poiché esso dipende solo dalle specifiche, può essere programmato
+presto nella pipeline di sviluppo. Inoltre, affinché sia efficace, il testing
+black box richiede che le specifiche siano il più precise e formali possibili er
+rimuovere ogni ambiguità sul funzionamento.
+
+Esistono diverse tecniche per identificare i casi di test nella metodologia
+black box:
+
+1. **Testing guidato dalla sintassi** - È più utile per programmi che
+   intetpretano stringhe di testo secondo una grammatica formale. L'idea è usare
+   le stesse regole che il programma da testare usa per riconoscere le stringhe
+   per generare casi di test. Ovviamente la grammatica farà parte della
+   specifica.
+2. **Testing guidato dagli scenari d'uso** - È possibile derivare i casi di test
+   dalla specifica degli scenari d'uso (ad esempio UML Use Case diagram). Per
+   ogni caso d'uso si possono elencare tutti i possibili ingressi che lo
+   caratterizzano e provare il comportamento del programma a fronte di tali
+   casi.
+3. **Derivazione semiautomatica dalle specifiche** - Se vengono usati linguaggi
+   formali di specifica basati su logica temporale o FSA, è spesso possible
+   ricavare automaticamente casi di test con dati di input e dati di output
+   previsti.
+
+Il **testing guidato da boundary conditions** si basa sul concetto di classi di
+equivalenza, ossia degli insiemi di valori per il quale un programma si comporta
+in modo simile, e sull'assunzione che errori tipici si concentrino in prossimità
+del confine tra queste. È quindi opportuno aggiungere tra i vari casi di test
+alcuni casi che vanno a verificare una corretta implementazione per i casi
+limite.
+
+Un modo piuttosto comune per determinare un insieme minimo di casi di test si
+basa sull'utilizzo dei cosiddetti grafi causa-effetto. Questi grafi mettono in
+relazione dei fatti elementari, espressi come espressioni booleane, con i
+risultati attesi. Essi sono, inoltre, ricavabili dalle specifiche. Verrà
+assegnato ai nodi alle estremità (a sinistra gli input e a destra gli output) un
+significato preciso dipendente dalle specifiche. Conoscendo La dipendenza di un
+risultato dalla combinazione degli ingressi potremo stimolare il sistema
+esattamente con tale combinazione e verificare se il risultato reale coincide
+con quello atteso.
+
+![Grafo di causa-effetto](./img/cause-effect-graph.png)
+
+Talvolta risulta conveniente usare tabelle così organizzate:
+
+![Tabella equivalente ad un grafo causa-effetto](./img/cause-effect-graph-table.png)
+
+Il testing black box si può effettuare sempre purché siano note le specifiche.
+Tuttavia è particolarmente utile per test di modulo, d'integrazione e di
+sistema/accettazione.
+
+#### Testing strutturale
+
+Il testing strutturale (o _white box_), a differenza del testing black box,
+tiene conto della struttura interna del programma. I casi di test vengono
+infatti derivati da un'analisi diretta dell'implementazione. L'obiettivo è
+sollecitare tutte le parti del programma. L'applicazione di questa metodologia
+in modo esaustivo è un procedimento molto costoso, perciò di solito viene
+effettuato solo su regioni critiche del codice.
+
+Per il testing strutturale esistono diverse strategie, una più approfondita
+dell'altra. Più approfondita è la strategia, minore è la probabilità che non
+vengano rilevati errori.
+
+Il il primo criterio è quello di testare tutte le istruzioni di cui è composto
+il codice, detto **statement coverage**. L'insieme dei casi di test verrà quindi
+selezionato in modo che ogni istruzione venga eseguita almeno una volta. Lo
+statement coverage purtroppo non è abbastanza rigoroso da assicurare la mancanza
+di errori. Questa limitazione è dovuta alla possibilità di non affrontare alcuni
+dei rami del grafo di decisione.
+
+Per superare le limitazione dello statement coverage è stato introdotto il
+criterio di **edge coverage**. Questo criterio prevede che l'insieme di test
+debba essere definito in modo che ogni ramo del _control flow graph_, una
+semplificazione del diagramma di flusso del programma, venga attraversato almeno
+una volta. Per applicare il criterio dobbiamo prima costruire il control flow
+graph, abbreviato in CFG:
+
+1. Una sequenza di istruzioni semplici diventa semplicemente un arco del CFG.
+   Una sequenza di blocchi diventa un arco che collega i CFG corrispondenti ai
+   blocchi.
+2. Le istruzioni condizionali vengono espanse in due rami contenenti i CFG
+   corripondenti ai due rami `then` e `else` (se è presente). Alla fine i due
+   rami si ricongiungono in un nodo.
+3. Per rappresentare i cicli usiamo due rami, uno contiene il CFG del corpo del
+   ciclo e ricongiunge al nodo di partenza e l'altro ramo rappresenta l'uscita
+   dal ciclo.
+
+![CFG dei 3 blocchi condizionali fondamentali](./img/cfg-blocks.png)
+
+Purtroppo neanche la edge coverage basta per garantirci l'assenza di errori. Il
+problema in questo caso è dovuto al fatto che non distinguiamo come le
+condizioni vengano soddisfatte: `x < 0 || y > 0` può essere soddisfatta sia se
+`x < 0` oppure `y > 0`. Dobbiamo perciò espandere le condizioni composte e
+fornire a ciascuno degli atomi che la compongono un ramo. Questa espansione del
+criterio di edge coverage è detto di **edge and condition coverage**. Purtroppo
+non abbiamo ancora raggiunto la massima sicurezza contro gli errori: non stiamo
+assicurando di coprire ogni singolo cammino possibile. L'ultimo criterio, e
+anche il più costoso, è quello di **path coverage** e richiede, appunto, che
+l'insieme dei casi di test percorra ogni possibile cammino che porti dal nodo
+iniziale a quello finale una o più volte. Il numero di casi di test applicati
+con il path coverage esplode (servono $2^n$ casi di test per gestire $n$
+condizionali in serie) e quindi non è applicabile nella pratica. Nonostante ciò
+è l'unico dei criteri che può garantire l'assenza di errori.
+
+Abbiamo visto vari criteri di definizione dei casi di test, ognuno che assicura
+una sicurezza e una copertura maggiore a discapito del numero dei casi di test.
+In generale occorre individuare accuratamente le porzioni di codice critiche per
+la correttezza del sistema, solo per queste useremo testing strutturale con un
+livello di copertura desiderato. Il livello di copertura verrà stabilito tramite
+metriche adeguate non trattate.
+
+#### Test d'integrazione
+
+Nel test di integrazione vengono osservati i sistemi e i sottosistemi in
+composizione. Conviene che sia un testing di tipo black-box visto che si sta
+studiando solo l'integrazione dei componenti e non la loro struttura.
+
+Il testing strutturale fa uso di moduli placeholder: gli stub e i driver. Gli
+stub simulano l'interfaccia di un componente che non è ancora disponibile. I
+driver sono il complementare: simulano le chiamate di un utilizzatore non ancora
+implementato.
+
+Per eseguire testing d'integrazione abbiamo due strategie possibili:
+
+1. "Big bang" - Consiste nell'integrare tutti i componenti in una volta. Ciò
+   rende più difficoltoso il testing, soprattutto in progretti complessi dove il
+   numero di moduli e interfacce e numeroso.
+
+   La strategia "big bang" richiede numerosi stub e driver poiché i moduli
+   devono essere anche testati in isolamento prima dell'integrazione. Le
+   anomalie emergono solo dopo la pubblicazione di tutti i moduli. Inoltre viene
+   resa difficoltosa la localizzazione degli errori.
+2. Incrementale - Per ovviare ai problemi della strategia "big bang" si ricorre
+   ad un approccio incrementale: i moduli vengono testati man mano che vengono
+   scritti, integrandone un numero progressivamente maggiore.
+
+   Ci sono due possibili modi di procede:
+
+   1. Approccio bottom-up - Si sviluppano prima i moduli di più basso livello e
+      si testano con i driver necessari. Si procede poi verso l'alto,
+      introducendo ad ogni livello i nuovi moduli e i driver necessari.
+   2. Approccio top-down - Si sviluppano prima i moduli più di alto livello e si
+      testano con gli stub necessari. Si procede poi verso il basso,
+      introducendo ad ogni livello i nuovi moduli e gli stub necessari.
+
+   L'approccio incrementale richiede meno driver/stub rispetto all'approccio
+   "big bang" e grazie all'integrazione immediata dei moduli le anomalie possono
+   essere scoperte immediatamente. Il passo incrementale inoltre aiuta con la
+   localizzazione degli errori e permette ad alcuni moduli core di essere
+   testati il più a lungo possibile.
+
+#### Test delle interfacce
+
+L'ultima tipologia di test che vedremo è il test delle interfacce. Esso avviene
+quando si integrano più moduli per produrre sistemi più ampi. L'oggetto
+dell'analisi sarà il corretto utilizzo delle interfacce dei moduli, quindi il
+corretto passaggio dei parametri, l'utilizzo dell'interfaccia per lo scopo
+corretto, errori di sincronizzazione e violazione di vincoli real-time.
