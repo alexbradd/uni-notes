@@ -15,7 +15,9 @@ err_rm_tmp() {
 
 convert_to_tmp_pdf() {
 	input_folder="$(realpath $1)"
-	imgs="$(find $input_folder -maxdepth 1 -type f -iname *.png -or -iname *.jpeg -or -iname *.jpg)"
+  	imgs="$(find $input_folder \
+    -maxdepth 1 \
+    -type f -iname *.png -or -iname *.jpeg -or -iname *.jpg | sort)"
 	# ppi for 6th gen iPad (i take notes on that)
 	# if i'll feel like i'll add options to specify quality/density
 	convert $imgs -density 264 -compress jpeg -quality 90 "$TMP_FILE_NAME" ||
