@@ -2120,11 +2120,11 @@ risultato dalla combinazione degli ingressi potremo stimolare il sistema
 esattamente con tale combinazione e verificare se il risultato reale coincide
 con quello atteso.
 
-![Grafo di causa-effetto](./img/cause-effect-graph.png)
+![Grafo di causa-effetto](./img/cause-effect-graph.png){ width=50% }
 
 Talvolta risulta conveniente usare tabelle così organizzate:
 
-![Tabella equivalente ad un grafo causa-effetto](./img/cause-effect-graph-table.png)
+![Tabella equivalente ad un grafo causa-effetto](./img/cause-effect-graph-table.png){ width=40% }
 
 Il testing black box si può effettuare sempre purché siano note le specifiche.
 Tuttavia è particolarmente utile per test di modulo, d'integrazione e di
@@ -2167,7 +2167,7 @@ graph, abbreviato in CFG:
    ciclo e ricongiunge al nodo di partenza e l'altro ramo rappresenta l'uscita
    dal ciclo.
 
-![CFG dei 3 blocchi condizionali fondamentali](./img/cfg-blocks.png)
+![CFG dei 3 blocchi condizionali fondamentali](./img/cfg-blocks.png){ width=50% }
 
 Purtroppo neanche la edge coverage basta per garantirci l'assenza di errori. Il
 problema in questo caso è dovuto al fatto che non distinguiamo come le
