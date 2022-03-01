@@ -1,6 +1,6 @@
 # Bioinformatics notes
 
-## Molecular biology
+## Biological background
 
 ### DNA and RNA
 
@@ -47,3 +47,82 @@ structure) and quaternary structures.
 
 Proteins are involved in most tasks essential for life: structural, receptors,
 signalers enzymes and transcription factors.
+
+#### Protein synthesis
+
+Synthesis starts with transcription: one strand of DNA is copied into a reverse
+complementary RNA molecule (in prokaryotes mRNA, in eukaryotes pre-mRNA). DNA is
+transcribed by an enzyme: RNA polymerase. Transcription is aided by
+transcription factors bound on the promoter of the gene (transcription start
+site) or to a distante enhancer. In eukaryotes, the transcribed RNA is often
+spliced, before it is exported from the nucleus to the cytoplasm: introns are
+spliced out while exons remain to form mature mRNA. A 5'-cap and e 3' poly-A
+tail are often added to stabilize the molecule.
+
+mRNA transcripts are translated into proteins by ribosomes. Each amino acids
+corresponds to triplet of bases (codon) and are transported by tRNA that exposes
+the complementary triplet of bases of te codon. The first codon is always AUG,
+while coding stops with either UAA, UAG or UGA.
+
+### Viruses
+
+Viruses are organisms at the "edge of life". They need to exploit the host cell
+for replication. The genetic material may be DNA or RNA, single stranded or
+double stranded, linear or circular. Some viruses integrate genetic material
+into the host genome.
+
+The virus envelope/capsule may contain additional viral proteins.
+
+### Cellular signaling and metabolic processes
+
+An environmental signal binds to a receptor on the cell's surface. The receptor
+then stimulates a behaviour in the cell by the synthesis of some proteins.
+
+We can divide metabolic processes into two categories:
+
+1. Catabolic: breaking down of components;
+2. Anabolic: synthesis of new components.
+
+We will avoid specifics as it can get absurdly complicated.
+
+### Sanger Sequencing (low throughput)
+
+Developed by Fred Sanger, it's a really precise method with low throughput for
+sequencing DNA. It is based on sequencing by synthesis: start from single
+stranded DNA, reconstruct the reverse strand and check which bases you have to
+add to reconstruct it. The ingredients needed are:
+
+1. single stranded DNA template
+2. DNA primer
+3. DNA polymerase
+4. normal deoxynuclotide-triphosphate (dNTPs)
+5. chain terminating dideoxynuclotide-triphosphate (ddNTPs) marked with
+   fluorescence.
+
+We can make 4 experiments, one for each base: we add ddNTPs to the mixture and
+we observe how many sequences end with that specific nucleotide. We can then
+order strands by length (filtering) and observe the ending strand (separating by
+terminating base). At the end we can read in reverse the experiment results and
+generate the sequence.
+
+### Illumina Sequencing (high throughput)
+
+Illumina sequencing is most suited to shorter sequences and is divided in four
+basic steps:
+
+1. DNA & library preparation: make random DNA fragments and append adapters
+   - Fragment the genomic DNA
+   - Repair ends and add an A overhang
+   - Ligate adapters to DNA fragments
+   - Select ligated DNA
+2. Chip/flowcell preparation: attach fragments to surface and amplify
+3. Sequence: massively parallel DNA sequencing
+4. Analyze.
+
+### Nanopore sequencing (long read)
+
+Nanopore sequencing is a new method for reading longer sequences. It works by
+passing a strand of DNA through a microscopic pore one base at a time. For each
+pair you apply a voltage and observe the current through te nanopore. Each base
+has a different current. So by following current changes we can determine the
+sequence.
