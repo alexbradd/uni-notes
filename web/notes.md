@@ -143,3 +143,48 @@ mandata una risposta con codice 401 (Unauthorized) contenente lo header
 "authenticate" che istruisce il browser di mostrare il prompt per l'input delle
 credenziali. A causa della semplicità del meccanismo la sicurezza è spesso
 gestita dall'application server.
+
+## HTML
+
+HTML (Hypertext Markup Language) è uno dei pilastri del web. È un linguaggio di
+markup talmente semplice da poter essere usato da tutti. Per "markup" si intende
+la possibilità di inframezzare dei comandi in mezzo al contenuto per descriverne
+il layout. HTML è un derivato di SGML (Standard Generalized Markup Language),
+una tecnologia per definire linguaggi di markup. Della stessa famiglia fanno
+parte XHTML e XML.
+
+Di HTML vero e proprio ci sono 4 versioni. HTML 5, nonostante sia tecnicamente
+HTML, perde un po' lo spirito di markup di testo e diventa più una piattaforma
+per lo sviluppo di applicazioni web.
+
+Il contenuto è racchiuso all'interno di tag che definisce le proprietà ad esso
+associate.
+
+```html
+<!-- comment -->
+<tag attribute="value">content</tag>
+<self-closing-tag />
+```
+
+Il documento HTML è un documento ASCII con struttura generale:
+
+```html
+<hmtl>
+  <head> <!-- metadata -->
+    <title>Titolo del documento</title>
+  </head>
+  <body>
+    Document content
+  </body>
+</html>
+```
+
+Poiché HTML mischia contenuto, layout e presentazione in un solo documento, ciò
+ha reso difficile la separazione tra le tre. HTML 4 separa queste tre in 3
+parti: HTML (contenuto/struttura), CSS (presentazione), Javascript e DOM
+(comportamento). Per aiutare la definizione della struttura del documento HTML 4
+introduce un tag e un attributo fondamentale:
+
+1. tag `<div>`: permette la delimitazione arbitraria di porzioni di contenuto;
+2. attributo `class`: permette la classificazione di un tag HTML per permettere
+   l'assegnamento di attributi in modo selettivo.
