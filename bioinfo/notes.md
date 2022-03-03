@@ -119,10 +119,215 @@ basic steps:
 3. Sequence: massively parallel DNA sequencing
 4. Analyze.
 
-### Nanopore sequencing (long read)
+### Nanopore Sequencing (long read)
 
 Nanopore sequencing is a new method for reading longer sequences. It works by
 passing a strand of DNA through a microscopic pore one base at a time. For each
 pair you apply a voltage and observe the current through te nanopore. Each base
 has a different current. So by following current changes we can determine the
 sequence.
+
+### Single and paired end sequencing
+
+The DNA fragments inserted between the adapters are usually longer than the
+maximum read sequence length. We can either sequence only one end (single-end)
+of the fragment or both ends (paired-end). Paired-end sequencing can detect
+errors and mutations due to the fact that it reads both strands.
+
+## Genome assembly
+
+### Basics
+
+Genome assembly reconstructs the genome from short sequencing reads, while read
+mapping "maps" the reads to a known reference genome. Since sequencing is now
+cheap, can we sequence and _de novo_ assemble a large genome with the short
+reads of NGS protocols (50-250 bp)?
+
+> The process of puzzling together a complete genome sequence of an organism for
+> which "shotgun sequencing" has been performed is referred to as genome
+> assembly.
+
+There are two major classes of assembly algorithm: overlap-layout consensus
+(OLC) and de Brujin graphs (DBG). OLC was widely used back when sequencing was
+performed by low-throughput long-read methods; DBG-based methods have dominated
+since the introduction of NGS.
+
+### Modeling sequence data
+
+Let us consider an idealized genome that represents a long random sequence of
+four bases that does not contain repeats or other complex structure. Consider a
+simple and error free sequencing strategy: single-end, whole-genome sequencing
+(WGS). That is, we sample equal length fragments (the reads) with starting points
+randomly distributed across the genome. Thus, our "shotgun sequencing" can be
+compared to a process that samples bases from all genome positions at random.
+The chance that any particular base is sampled in a single read is very low.
+However we perform the sampling process a very large number of times.
+
+A nice model for this situation is the Poisson distribution. The Poisson
+distribution expresses the probability of a given number of events occurring in a
+fixed interval of time/space if these events are independent and identically
+distributed.
+
+$$ f(k, \lambda) = P(X = k) = \frac{e^{-\lambda}\lambda^k}{k!} $$
+
+Where $k$ refers to the number of reads that overlap a certain genomic position
+(coverage) and $\lambda$ is the mean sequencing depth, the average number of
+reads covering each base in the genome.
+
+The number of sequenced bases is $n_b = N cdot L$ (number of reads times the
+read length). Similarly the average coverage depth per base is $\lambda = n_b/G$
+with $G$ as the genome size.
+
+#### k-mers and genome length
+
+Lets introduce the concept of k-mers: a k-mer is a short subsequence of $k$
+nucleotides. In general there are $L - k + 1$ k-mers in a sequence of length $L$
+($L > k$). To know the total number of k-mers in our WGS data, since we have $N$
+reads, we can calculate it as such: $n_k = N \cdot (L - k +1)$. The coverage depth
+for k-mers is then $d_k = \frac{n_k}{G}$. The ratio between average coverage
+depths is then:
+
+$$ \frac{\lambda}{d_k} = \frac{n_b/G}{n_k/G} = \frac{L}{L-k+1} $$
+
+Using k-mers we can estimate the total genome size. The number of k-mers in the
+WGS reads can be directly counted. So the mean coverage depth of k-mers can be
+estimated from the peak value of the empirical k-mer coverage depth distribution
+curve.
+
+But how can we find the k-mer coverage depth distribution? Since we can assume
+k-mers to be from unique genome positions in most cases, we can the interpret
+the count (number of matches) of a specific k-mer as the coverage depth at that
+position. We the plot the distribution over all k-mers and identify the peak as
+the mean coverage depth.
+
+With this data in hand we can estimate the genome size to be:
+
+$$ G = \frac{n_k}{d_k} $$
+
+And we can estimate the average base coverage by:
+
+$$ \lambda = \frac{L}{L-k+1} cdot d_k $$
+
+So if we want to estimate the mean read required such that at least 99% of the
+genome is covered once we have
+
+$$
+\begin{aligned}
+  P(X > 0) &= 1 - e^{-\lambda} = 0.99 \\
+  lambda &= 4.605
+\end{aligned}
+$$
+
+Thus we need to sequence to an average depth of at least 4.6 to get at lest 99%
+of the genome covered at least once.
+
+### Contigs
+
+Now let us consider "contigs": combinations of overlapping reads that represent
+continuous sequence. The contigs are assumed to be the best possible
+representation of the original DNA sequence. However the actual locations of the
+contigs and their orientation to one another are unknown to us.
+
+The initial steps of genome assembly are basically an attempt to find contigs.
+The result of assembly is a set of contigs with gaps.
+
+In a genome of length $G$, a read of length $L$ can start anywhere (except at the
+ends of the chromosomes, we will ignore this). An approximation for the expected
+number of reads starting at a specific genomic location $i$ is
+$N_i = N/G$. The probability of reads to start in a given interval is
+(assuming Poisson distribution):
+
+$$ P(X > 0) = 1 - P(X = 0) = 1-e^{-\lambda} $$
+
+Now lets consider a nucleotide at position $i$. This nucleotide is in a gap
+between contigs if no read starts in the interval $[i-(L-1), i] = [i, i-L+1]$.
+This interval has length $L$ and thus the probability that no read starts in
+it is $e^{-\lambda}$. We can estimate the number of nucleotides in gaps across
+the entire assembly as $G cdot e^{-\lambda}$. Correspondingly, the number of
+nucleotides included in contigs is $G \cdot (1-e^{-\lambda})$. This means that
+the fraction of genome which will be covered by contigs depends on the
+"sequencing depth" (i.e. how much sequence data we produce and thus what
+per-base coverage we have).
+
+How many contigs can we obtain? Each contig has a unique rightmost read $R$. The
+probability that a given read is the rightmost read is the same as the
+probability that no other read start within that read: if the read starts at
+position $i$, this is the probability that no read start within $[i, i+L-1]$,
+which is $e^{-\lambda}$. The number of contigs must be equal to the number of
+rightmost reads. Since there are a total of $N$ reads, each of which with
+probability $e^{-\lambda}$ of being and $R$ read, the expected number of contigs
+is:
+
+$$ N \cdot e^{-\lambda} $$
+
+And the expected number of reads per contig is:
+
+$$ \frac{N}{Ne^{-\lambda}} = \frac{1}{e^{-\lambda}} $$
+
+The expected size of a contig can be calculated to be:
+
+$$ \frac{\left(1-e^{-\lambda}\right)G}{Ne^{-\lambda}} $$
+
+How much of an overlap is required to connect two reads in a contig? Let
+$\theta$ refer to the minimum portion of $L$ that is required to detect an
+overlap. This means that we will combine a group of reads to a contig if they
+are connected by overlaps of length grater than $\theta L$.
+
+Let us calculate the number of expected contigs taking into account $\theta$.
+We now need to calculate the probability that zero reads start in the leftmost
+portion of the interval $[i, i+L-1]$ ($(1-\theta)L$). Similarly to what we did
+before, we can calculate the expected number of reads that start in
+$(1-\theta)L$ to be $(1-\theta)\lambda=(1-\theta)LN/G$. The expected number of
+contigs is then $N$ times the probability that there are no reads starting in
+$(1-\theta)L$:
+
+$$ #\mathit{contigs} = Ne^{-(1-\theta)LN/G} $$
+
+This means that the expected number of contigs depends on the average coverage
+and the degree of overlap.
+
+The N50 measure is used to estimate the quality of a genome assembly. To
+calculate the N50 index we:
+
+1. Arrange the contigs from largest to smallest;
+2. Find the position where the contigs cover 50% of the total genome size;
+3. The length of the contig at this position is defined as the N50.
+
+The longer the better the assembly.
+
+### Graph-based genome assembly
+
+Our goal is to find an algorithm that will allow us to take a collection of short
+NGS sequence reads and to output a longer string representing the genome.
+
+#### Hamiltonian path based approach
+
+Lets start with a simple genome we sequenced. Lets say we have a function called
+`composition_k()` that takes a DNA sequence and returns a set of all k-mers
+contained in it. We do not know the original order of the k-mers in the genome.
+
+The challenge is reconstructing the original string with an unordered set of
+k-mers. Let us now put each of the k-mers into the nodes of a graph. To connect
+the nodes we can search for overlaps between k-mers. We connect the i-th k-mer
+with the j-th k-mer if `suffix(k-mer_i) = prefix(k-mer_j)`. We can extract the
+original string by walking a path that visits each node exactly once.
+
+A Hamiltonian path is a path in an undirected or directed graph that visits each
+vertex exactly once. If this path is a cycle, it is called a Hamiltonian cycle.
+
+Determining whether Hamiltonian graphs/cycles exist in a given graph is a
+NP-complete problem.
+
+#### De Brujin graph based approach
+
+Now let us consider the same simple genome and k-mers. However, instead of
+labelling the nodes with k-mers, let us label the edges. We will label the nodes
+with the $(k-1)$-mers suffixes and prefixes of the edge. Let us now merge
+identically labeled nodes in this graph whilst retaining the edges. The
+resulting graph is called a de Brujin graph. To reconstruct the original
+sequence we need to find a path that visits all edges once.
+
+An Eulerian path is a path that visits each edge exactly once.
+
+Determining whether Eulerian path are present in a given graph can be solve with
+efficient algorithms.
