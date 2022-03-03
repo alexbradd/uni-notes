@@ -188,3 +188,97 @@ introduce un tag e un attributo fondamentale:
 1. tag `<div>`: permette la delimitazione arbitraria di porzioni di contenuto;
 2. attributo `class`: permette la classificazione di un tag HTML per permettere
    l'assegnamento di attributi in modo selettivo.
+
+## CGI
+
+La Common Gateway Interface (CGI) è un'architettura per distribuire contenuto
+dinamico. CGI non è né un linguaggio di programmazione né un protocollo di
+comunicazione, ma è un'interfaccia tra il web server and le applicazioni che
+definisce delle variabili di comunicazione standard. L'interfaccia è
+implementata tramite un insieme di variabili d'ambiente. Un programma CGI (CGI
+script) può essere scritto in qualsiasi linguaggio.
+
+Per invocare un CGI script, il client specifica l'URI del programma da eseguire.
+Il programma deve essere deployato in una location specifica sul web server. Il
+server riconoscerà dall'URI che la richiesta risorsa è un eseguibile (i permessi
+vanno settati correttamente nel web server). Il web server, quindi, decodifica i
+parametri passati dal client e inizializza le opportune variabili. Il sever
+quindi lancia il programma in un nuovo processo. Il programma restituisce la
+risposta su `stdout`: prima viene scritto il `Content-type` heading (MIME type)
+e in seguito il body della risposta (markup HTML nel caso di `Content-type:
+text/html`). Il server infine completa la risposta HTTP e la manda al client.
+
+Il client può mandare parametri in due modi:
+
+1. Tramite una `GET` nella query string;
+2. Tramite una `POST` nel body. Le richieste `POST` possono essere mandate
+   tramite HTML con un form.
+
+Le variabili CGI sono divise per tipo: relative a server, richiesta e header.
+
+Variabili relative al server:
+
+- `SERVER_SOFTWARE=name/version`: nome e versione del server software
+- `SERVER_NAME`: hostname o IP del server
+- `GATEWAY_INTERFACE=CGI/version`: versione CGI supportata
+
+Variabili relative alla richiesta (le più importanti):
+
+- `REQUEST_METHOD`: metodo HTTP
+- `PATH_INFO`: informazioni sul path
+- `QUERY_STRING`: la query string
+- `CONTENT_TYPE`: il `Content-type` della richiesta
+- `CONTENT_LENGTH`: lunghezza del content
+
+Gli header HTTP della richiesta sono accessibili come variabili con prefisso
+`HTTP_`.
+
+CGI è un'architettura obsoleta con problemi di sicurezza e performance:
+
+1. Quando il server riceve una richiesta viene creato un nuovo processo
+   (resource intensive); ciò implica anche che il programma CGI non può
+   comunicare con il web server.
+2. Il processo CGI viene terminato quando il programma termina. Ciò impedisce il
+   riuso di risorse tra chiamate consecutive.
+3. Esposizione del layout fisico del server.
+
+## Servlet
+
+Java servlet è un'altra architettura per la generazione dinamica di contenuto.
+
+Un servlet è piccolo applicativo inseribile nel nostro application server per
+aggiungere funzionalità. Un servlet container è un componente dell'application
+server che interagisce con i servlet. Esso è responsabile della gestione del
+lifecycle dei servlet, del mapping delle richieste HTTP sui servlet e
+dell'implementazione di oggetti "utility" per semplificare lo sviluppo.
+
+Tutti i servlet sono gestiti tramite thread separati all'interno dello stesso
+processo persistente sull'application server. Una singola istanza viene create
+per ogni servlet in memoria. Ogni singola richiesta al servlet corrisponde ad un
+thread. Attenzione quindi va posta ai dati salvati nel servlet: sono disponibili
+ad ogni richiesta e l'accesso non è thread-safe.
+
+I servlet usano classi e interfacce contenute in:
+
+- `javax.servlet`: contiene classe a supporto di servlet generici
+  (protocol-independent)
+- `javax.servlet.http`: aggiunge funzionalità specifica a HTTP
+
+Tutte le servlet implementano l'interfaccia `javax.servlet.Servlet`:
+`javax.servlet.GenericServlet` è protocol-independent, mentre
+`javax.servlet.http.HttpServlet` è un servlet HTTP.
+
+- `GenericServlet` definisce il metodo `service()` che gestisce le richieste e
+  prende in input un oggetto richiesta e un risposta.
+- `HttpServlet` definisce `doGet()` e `doPost()` per gestire richieste `GET` e
+  `POST` rispettivamente. Il metodo `service()` gestisce il setup e il dispatch
+  di tutti i metodi `doXXX()`. NON bisogna sovrascrivere `service()`.
+
+Il lifecycle delle servlet è il seguente:
+
+1. Inizializzazione: quando il server viene avviato, il metodo `init()` del
+   server viene chiamato.
+2. Gestione richieste: quando una richiesta viene catturata dal server, il
+   metodo `service()` (e relativi) vengono invocati e gestiscono la richiesta.
+3. Distruzione: quando il server viene fermato, la funzione `destroy()` viene
+   invocata e la garbage collection viene effettuata.
