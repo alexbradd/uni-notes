@@ -331,3 +331,72 @@ An Eulerian path is a path that visits each edge exactly once.
 
 Determining whether Eulerian path are present in a given graph can be solve with
 efficient algorithms.
+
+Some post-processing we can do to the graph is "compress" it: we can collapse
+unambiguous edges.
+
+#### Existence of Eulerian cycles and paths
+
+Do we have a way to check if a graph can have an Eulerian path or cycle? Yes, we
+need to look at the degree of each node: the degree of a node is the number of
+edges in ad out of it. The two conditions are:
+
+1. When the degree of all vertices is even, the graph is traversable (there is a
+   Eulerian cycle). For directed graphs, we need all vertices to have the same
+   number of incoming and outgoing edges.
+2. When there are exactly two nodes of odd degree, there is a Eulerian path
+   starting at one of the odd vertices. In directed graphs we need to have only
+   two vertices that have respectively:
+
+   $$
+     \begin{aligned}
+       \mathit{degree}_{in} - \mathit{degree}_{out} &= 1 \\
+       \mathit{degree}_{in} - \mathit{degree}_{out} &= -1
+     \end{aligned}
+   $$
+
+   All other vertices will need to have the same number of incoming and outgoing
+   vertices.
+
+#### Finding Eulerian paths
+
+For undirected graphs, we start at one of the two veritces with odd degree. For
+directed graphs we start at the vertex with one more outgoing edge and we will
+end at the ne with one more incoming edge. If the graph has a Eulerian cycle,
+you can find it with the same algorithm.
+
+We will use Hierholzer's algorithm:
+
+```txt
+tpath <= Stack() # temporary
+epath <= Stack() # eulerian path starting at epath.top() and ending at
+                 # epath.bottom()
+v <= chooseSuitableStart()
+tpath.push(v)
+
+do
+  u <= tpath.top()
+  if allOutgoingEdgesVisitedFrom(u) then
+    u <= tpath.pop()
+    epath.push(u)
+  else
+    e <= selectRandomOutgoingFrom(u)
+    tpath.push(e.end)
+    u.outgoingEdges.remove(e);
+while (!tpath.empty())
+```
+
+### Practical problems
+
+1. How do we choose a value for $k$ in real-life? The answer is "big enough":
+   the k-mers should be big enough to be unique in the genome. However, memory
+   usage for computation grows $\mathcal{O}(nk)$: for about $3 \times 10^0$
+   nucleotides with $k=27$ requires about 20 GB of memory to store the nodes
+   alone! Plus, we are completely ignoring the problem of repeating
+   patterns/structures.
+2. Sequencing errors: there is a high number of erroneous k-mers due to
+   sequencing errors, with only few copies each. Therefore we need to remove
+   low-frequency k-mers in preprocessing.
+3. Repetitive regions.
+4. Strand ambiguity: each read, and hence the k-mers, could be from either the
+   forward or the reverse strand.
