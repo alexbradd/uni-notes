@@ -282,3 +282,59 @@ Il lifecycle delle servlet è il seguente:
    metodo `service()` (e relativi) vengono invocati e gestiscono la richiesta.
 3. Distruzione: quando il server viene fermato, la funzione `destroy()` viene
    invocata e la garbage collection viene effettuata.
+
+Ogni web application è legata and un `ServletContext` che definisce la visione
+del singolo servlet dell'applicazione che lo contiene. Quindi il context
+permette al singolo servlet di ottenere URL a risorse e di settare attributi che
+altri servlet nella stessa applicazione possono accedere. Ogni context ha una
+root che è l'endpoint al quale è deployata l'applicazione.
+
+Di solito il path del context rispecchia una cartella fisica salvata sul server.
+Una applicazione può essere deployata in modalità 'unpacked', dove ogni file e
+directory esiste separatamente, o 'packed'. Quando deployata come packed,
+l'applicazione è un singolo file `WAR` e il nome del file è di default la root
+del context.
+
+Le risorse accessibili dall'applicazione segue una struttura standard:
+
+- La root contiene l'HTML/JSP, JS, CSS, immagini organizzati in subdirectory
+- La cartella `WEB-INF` contiene risorse non accessibili dai client:
+  - `web.xml`: file che descrive i servlet e vari componenti
+  - `classes`: contiene i file `class` generati da java
+  - `lib`: directory contenenti `JAR` richiesti dall'applicazione
+
+A differenza di CGI, Java servlet non espone l'effettiva location degli script,
+ma invece fa un mapping tra l'URL della richiesta e un URL pattern dichiarato
+dalle server (ovviamente ogni servlet deve avere un pattern unico).
+
+```txt
+                              servlet path
+                                   V
+https://www.myserver.com/catalog/garden/abc
+                            ^            ^
+                   context path         PathInfo
+```
+
+Le regole di definizione dei mapping sono le seguenti:
+
+1. Una stringa che inizia con `/` e finisce con `/*` è usato come mapping per il
+   path della richiesta
+2. Una stringa che inizia con `*` è usata come mapping per le estensioni di una
+   risorsa nell'URL della richiesta
+3. Una string vuota mappa al context root
+4. Una stringa che contiene solo `/` indica il servlet di default
+   dell'applicazione
+5. Qualsiasi altra stringa è usata per un match completo
+
+Il server matchera l'URI tranne context path e query string della richiesta ai
+servlet mapping come segue:
+
+1. Se un match esatto viene trovato, si seleziona quel servlet;
+2. Si percorre il percorso directory per directory e si seleziona il servlet con
+   il match più lungo;
+3. Se l'ultimo segmento dell'url contiene un'estensione e un servlet che
+   gestisce quell'estensione esiste, viene selezionato;
+4. Si usa la servlet di default.
+
+Il mapping `/*` ha la proprietà di sovrascrivere tutti i mapping e gestire tutte
+le richieste.
