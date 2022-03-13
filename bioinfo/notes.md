@@ -174,7 +174,7 @@ Where $k$ refers to the number of reads that overlap a certain genomic position
 (coverage) and $\lambda$ is the mean sequencing depth, the average number of
 reads covering each base in the genome.
 
-The number of sequenced bases is $n_b = N cdot L$ (number of reads times the
+The number of sequenced bases is $n_b = N \cdot L$ (number of reads times the
 read length). Similarly the average coverage depth per base is $\lambda = n_b/G$
 with $G$ as the genome size.
 
@@ -206,7 +206,7 @@ $$ G = \frac{n_k}{d_k} $$
 
 And we can estimate the average base coverage by:
 
-$$ \lambda = \frac{L}{L-k+1} cdot d_k $$
+$$ \lambda = \frac{L}{L-k+1} \cdot d_k $$
 
 So if we want to estimate the mean read required such that at least 99% of the
 genome is covered once we have
@@ -214,7 +214,7 @@ genome is covered once we have
 $$
 \begin{aligned}
   P(X > 0) &= 1 - e^{-\lambda} = 0.99 \\
-  lambda &= 4.605
+  \lambda &= 4.605
 \end{aligned}
 $$
 
@@ -243,7 +243,7 @@ Now lets consider a nucleotide at position $i$. This nucleotide is in a gap
 between contigs if no read starts in the interval $[i-(L-1), i] = [i, i-L+1]$.
 This interval has length $L$ and thus the probability that no read starts in
 it is $e^{-\lambda}$. We can estimate the number of nucleotides in gaps across
-the entire assembly as $G cdot e^{-\lambda}$. Correspondingly, the number of
+the entire assembly as $G \cdot e^{-\lambda}$. Correspondingly, the number of
 nucleotides included in contigs is $G \cdot (1-e^{-\lambda})$. This means that
 the fraction of genome which will be covered by contigs depends on the
 "sequencing depth" (i.e. how much sequence data we produce and thus what
@@ -281,7 +281,7 @@ $(1-\theta)L$ to be $(1-\theta)\lambda=(1-\theta)LN/G$. The expected number of
 contigs is then $N$ times the probability that there are no reads starting in
 $(1-\theta)L$:
 
-$$ #\mathit{contigs} = Ne^{-(1-\theta)LN/G} $$
+$$ \#\mathit{contigs} = Ne^{-(1-\theta)LN/G} $$
 
 This means that the expected number of contigs depends on the average coverage
 and the degree of overlap.
