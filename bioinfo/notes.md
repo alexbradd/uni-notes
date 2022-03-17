@@ -400,3 +400,149 @@ while (!tpath.empty())
 3. Repetitive regions.
 4. Strand ambiguity: each read, and hence the k-mers, could be from either the
    forward or the reverse strand.
+
+### Sequence alignment
+
+Information is encoded in living cells mostly in the form of "sequences":
+DNA/RNA sequences and protein sequences. Biological function largely depends on
+the 3D structure of large molecules, but many characteristics and functions can
+be inferred from the 1D structure.
+
+#### Strings and alphabets
+
+Lets recall the notions of alphabet and string:
+
+- An alphabet is a finite set of symbols $\Sigma$
+- A string over an alphabet $\Sigma$ is any finite sequence of symbols from
+  $\Sigma$. The empty string is denoted as $\epsilon$
+- A sequence is a set of elements ordered  so that they can be
+  labeled/enumerated with positive integers
+
+The DNA/RNA alphabet has 4 letters (the bases), the protein alphabet has a
+20-letter alphabet, one letter for each amino acid.
+
+The set of all strings of any length is $\Sigma^\star$ (the Kleene closure).
+Strings can be concatenated, reversed etc. A substring $s$ of a string $t$ is a
+string so that $t = usv$ such that $u$ and $v$ exists (also empty). A string on
+length $n$ has $1+\frac{n(n+1)}{2}$. A string $s = uv$ is said to be a rotation
+of $t$ if $t = vu$. The number of rotation of a string is equal to its length.
+
+### Comparisons of biological sequences
+
+We need to define suitable measures of distance or similarity, as well as
+efficient algorithms to compute them. The measures should reflect as much as
+possible the different ways in which the sequence can be similar or different,
+and the processes or factors underlying the similarities and differences:
+evolution of sequences, errors in data production (sequencing data), errors made
+by the cells during DNA replication.
+
+The hamming distance between two strings of equal length is the number of
+positions at which the corresponding symbols are different. It is not a good
+measure for dissimilarity, but we can formalize "substitutions" in otherwise
+identical sequences.
+
+The edit distance is a way of quantifying how dissimilar two strings of
+different lengths are to one another by counting the minimum number of
+operations required to transform one string into the other. Different
+definitions use differente string operations, we will use the Levenshtein
+distance which permits these operations: removal, insertion and substitution of
+a character in the string. We can formally define the edit distance (from now on
+we use edit distance interchangeably with Levenshtein distance) with recursion
+as:
+
+$$
+lev(a,b) =
+\begin{cases}
+  |a| \quad \mathit{if } |b| = 0, \\
+  |b| \quad \mathit{if } |a| = 0, \\
+  lev(tail(a), tail(b)) \quad \mathit{if } a[0] = b[0], \\
+  1 + min
+  \begin{cases}
+    lev(tail(a), b) \\
+    lev(a, tail(b)) \\
+    lev(tail(a), tail(b))
+  \end{cases}
+  \quad \mathit{otherwirse}
+\end{cases}
+$$
+
+Where:
+
+- $tail(x)$ is the string $x$ without its first character
+- $x[n]$ is the n-th character of the string $x$
+- In the minimum term:
+  - First element corresponds to a deletion/removal of a character from $a$
+  - Second element corresponds to an insertion of a character to $a$
+  - Third corresponds to a replacement/substitution.
+
+From the mathematical definition, it is evident that calculating the edit
+distance implies solving a minimization problem. In theory, the number of
+solutions is infinite, however in practice we would not need to test all of them
+because any solution with more than $max(|a|, |b|)$ operation can be excluded,
+se we could discard partial solutions as soon as we exceed this number of
+operations.
+
+Can we exploit the edit distance to fully "align" two sequences with respect to
+their similarities and differences? Let's use dynamic programming and find an
+algorithm to compute the edit distance between two strings.
+
+1. Denote as $E(a,b)$ the edit distance between two string $a$ and $b$
+2. For every string $a$, we have $E(a, \epsilon) = |a|$
+3. Let $a=a_1a_2 \ldots a_n$ be a string of length $|a| = n$ and $b=b_1b_2
+   \ldots b_m$ a string of length $|b| = m$. We denote the prefixes of length
+   $i$ of $a$ and $b$ respectively $a(i)$ and $b(j)$
+4. To compute the edit distance $E(a,b)$ between $a$ and $b$, let's first assume
+   that for given $i$ and $j$ we (somehow) computed:
+   - $E(a(i-1), b(j-1))$
+   - $E(a(i), b(j-1))$
+   - $E(a(i-1), b(j))$
+5. It can be proven that the following is true:
+
+   $$
+     E(a(i), b(j)) = min
+     \begin{cases}
+       1+E(a(i), b(j-1)) \\
+       1+E(a(i-1), b(j)) \\
+       \begin{cases}
+         E(a(i-1), b(j-1)) \quad \text{if } a_i = b \\
+         1 + E(a(i-1), b(j-1)) \quad \text{if } a_i \neq b
+       \end{cases}
+     \end{cases}
+   $$
+
+This is a recursive definition: we can initially set $i = n$ and $j= m$. Thus,
+to compute $E(a, b)$, we can start with:
+
+$$
+  E(a(1), \epsilon) = 1 \quad
+  E(\epsilon, b(1)) = 1 \quad
+  E(a(1), b(1)) = \begin{cases}
+    0 \quad \text{if } a_i = b \\
+    1 \quad \text{if } a_i \neq b
+  \end{cases}
+$$
+
+We can then prepare a matrix with $|a| + 1$ rows and $|b| + 1$ columns, each
+row/column labeled with on character from $a$ and $b$ respectively. The first
+row/column are labeled with a gap (-). We can use this table, for each $i$ and
+$j$, the edit distance for the prefixes $a(i)$ and $b(j)$. Our solution will be
+in the $(n;m)$ cell.
+
+To compute what changes are optimal, we need to backtrack from the previous
+computation. We start, from $(n, m)$ and we move to the adjacent cells which
+has the minimum number of steps. Moving diagonally with no increase of cost
+means we have a match, moving diagonally with an increased score means a
+mismatch/substitution and lastly moving horizontally/vertically means we have a
+gap.
+
+For a more efficient backtracking, we keep track of what choice we mad every
+time we fill a cell in the starting computation. Every cell will now have a
+number of pointers to the previous cells.
+
+Each step of the computation takes constant time. In the worst case there is no
+overlap between the two sequences, meaning the alignment will have a length of
+$|a| + |b| = n+m$ symbols. Thus the complexity of backtracking is
+$\mathcal{O}(n+m)$ and the overall complexity is dominated by the construction
+of the table: $\mathcal{O}(nm)$.
+
+The overall efficiency of this algorithm is $\mathcal{O}(nm)$.
