@@ -436,10 +436,16 @@ and the processes or factors underlying the similarities and differences:
 evolution of sequences, errors in data production (sequencing data), errors made
 by the cells during DNA replication.
 
+#### Global sequence alignment
+
+##### Hamming distance
+
 The hamming distance between two strings of equal length is the number of
 positions at which the corresponding symbols are different. It is not a good
 measure for dissimilarity, but we can formalize "substitutions" in otherwise
 identical sequences.
+
+##### Edit distance
 
 The edit distance is a way of quantifying how dissimilar two strings of
 different lengths are to one another by counting the minimum number of
@@ -545,4 +551,117 @@ $|a| + |b| = n+m$ symbols. Thus the complexity of backtracking is
 $\mathcal{O}(n+m)$ and the overall complexity is dominated by the construction
 of the table: $\mathcal{O}(nm)$.
 
-The overall efficiency of this algorithm is $\mathcal{O}(nm)$.
+It is possible that for a single edit distance, more backtracking options could
+be available. From an algorithmic point of view, every backtracking valid.
+However, the best solutions depends of the likeliness of the probability of the
+modification in our problem/model! Thus, we need to add some weighting.
+
+##### Weighted edit distance
+
+Let's reformulate the minimization problem: given two strings $a$ and $b$ on an
+alphabet $\Sigma$, the edit distance $E(a,b)$ can be also defined as the
+minimum-weight series of edit operations that transforms $a$ into $b$.
+
+$$
+ E(a(i), b(j)) = min
+ \begin{cases}
+   w_{id}+E(a(i), b(j-1)) \\
+   w_{id}+E(a(i-1), b(j)) \\
+   \begin{cases}
+     E(a(i-1), b(j-1)) \quad \text{if } a_i = b \\
+     w(a_i, b_j) + E(a(i-1), b(j-1)) \quad \text{if } a_i \neq b
+   \end{cases}
+ \end{cases}
+$$
+
+This definition requires the definition of a weight matrix that defines the
+likeliness of each change for each letter.
+
+##### Sequence similarity
+
+Until now, we calculated the distance between two strings. Now, we need to
+define a measure and a way to calculate similarity.
+
+One simple way, is to use a "percent identity": after alignment, we determine
+the percentage of the alignment which does not indicate an edit operation. The
+percent identity may differ between different alignments even when they have the
+same edit distance.
+
+One better method, is finding the "longest common subsequence". For subsequence
+we mean a string derived by deleting some, all or no characters from the
+original string. We can see each subsequence as the result of applying a binary
+mask to a string. This means that we have a total of $2^n$ subsequences. An
+algorithm for solving the LCS problem is:
+
+1. Let $a$ and $b$ be two strings with $|a|=n$ and $|b|=m$.
+2. Let $LCS(a,b)$ be the length of the longest common subsequence.
+3. We can compute $LCS(a,b)$ using:
+
+   $$
+    LCS(a(i), b(j)) = max
+    \begin{cases}
+      LCS(a(i), b(j-1)) \\
+      LCS(a(i-1), b(j)) \\
+      \begin{cases}
+        1 + LCS(a(i-1), b(j-1)) \quad \text{if } a_i = b \\
+        LCS(a(i-1), b(j-1)) \quad \text{if } a_i \neq b
+      \end{cases}
+    \end{cases}
+   $$
+
+   This is very similar to computing the edit distance. We setup the table
+   similarly and then backtrack to reconstruct the longest substring: we find a
+   character/symbol belonging to the solution every time we have a diagonal move
+   with a score increased by 1.
+
+##### Combining distance and similarity
+
+We have seen two symmetrical approaches for comparing sequences/strings. We can
+then define a measure for similarity such that "differences" have a negative
+effect" and conserved letters have a positive effect.
+
+We can combine the distance measure with the similarity measure as follows:
+
+$$
+ E(a(i), b(j)) = max
+ \begin{cases}
+   w_d+E(a(i), b(j-1)) \\
+   w_d+E(a(i-1), b(j)) \\
+   \begin{cases}
+     w_m + E(a(i-1), b(j-1)) \quad \text{if } a_i = b \\
+     w_s + E(a(i-1), b(j-1)) \quad \text{if } a_i \neq b
+   \end{cases}
+ \end{cases}
+$$
+
+Where $w_d < 0$ is the gap penalty for insertions/deletions, $w_s < 0$ is the
+negative mismatch penalty for substitutions and $w_m > 0$ is the positive match
+score. Since this is also similar to the calculation of edit distance and LCS,
+similar methods apply:
+
+1. Prepare a matrix with cells $(0,0) = 0$ and $(i,0) = i \cdot w_d$ and $(0,j)
+   = j \cdot w_d$
+2. Fill the cells as usual
+3. Traceback and slignment
+
+Knowing the weights used during the calculation, we can extract the final score
+from the alignment: each column of the alignment represents a match or an edit
+operation; associate each column with its score and sum them.
+
+This algorithm is called the Needleman-Wunsch algorithm. This algorithm is used
+for (and also called) global sequence alignment.
+
+##### Note about gap penalties
+
+We can have different models of gap penalties:
+
+1. Linear gap penalty: the total gap penalty is linear to the number of gaps;
+2. Constant gap penalty: the total gap penalty is constant;
+3. Affine gap penalty: combines the two previous methods by defining:
+   - Constant gap opening penalty: penalty for opening a gap
+   - Linear gap extension penalty: penalty for extending the length of an
+     existing gap by 1
+
+   Usually we have a greater gap opening penalty than extension.
+
+
