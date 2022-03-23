@@ -338,3 +338,47 @@ servlet mapping come segue:
 
 Il mapping `/*` ha la proprietà di sovrascrivere tutti i mapping e gestire tutte
 le richieste.
+
+## JDBC
+
+JDBC è un modo per connettere un'applicazione ad un database. La API di JDBC è
+composta dai seguenti componenti:
+
+1. `DriverManager`: colui che gestisce il caricamento dei driver e la creazione
+   della connessione al DB.
+2. `Driver`: interfaccia che gestisce la comunicazione con il DB
+3. `Connection`: connessione al DB
+4. `Statement`: query al DB
+5. `ResultSet`: risultato di una query al DB
+6. `SQLException`: gestisce gli eventuali errori lanciati dal DB
+
+Tutti i componenti sono contenuti in `java.sql` e `javax.sql`.
+
+Il workflow base di JDBC in una servlet è: connessione al DB, preparazione ed
+esecuzione della query, processo del risultato, disconnessione dal database.
+Poiché la connessione può essere usata da più servlet, essa è una risorsa
+condivisa. I parametri della connessione vengono definiti a livello di
+applicazione, tramite context parameters. Una soluzione più avanzata è usare una
+connection pool. Tutte le risorse allocate nel `init()`, vanno deallocate nel
+`destroy()`!
+
+Le query da mandare al DB vengono preparate tramite un `PreparedStatement`. Si
+chiama così poiché sono 'preparate':
+
+1. Viene prima mandato uno "statement template" al DB;
+2. Il DB compila il template e lo salva senza eseguirlo;
+3. In futuro, l'applicazione effettuerà il binding dei parametri del template
+   con i valori effettivi e la query è eseguita.
+
+Una query preparata può essere eseguita ripetutamente senza essere ricompilata,
+aumentando notevolmente le prestazioni del piano di accesso dati.
+
+Attenzione particolare va posta sul binding dei parametri del template:
+ATTENZIONE ALLA SQL INJECTION! Sempre effettuare sanitizing delle query.
+
+In fase di modifica, è opportuno, prima di eseguire la modifica, disabilitare la
+feature di `autoCommit` e effettuare il commit delle modifiche manualmente, per
+evitare che operazioni che potrebbero fallire lascino la base di dati in uno
+stato inconsistente. Di default, infatti, ogni query è gestita in una
+transazioni a sé stante, disabilitare questa feature ci permette di costruire a
+mano una transazione, tramite `commit()` e `rollback()`.
