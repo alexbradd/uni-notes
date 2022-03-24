@@ -664,4 +664,83 @@ We can have different models of gap penalties:
 
    Usually we have a greater gap opening penalty than extension.
 
+##### Simplifying
 
+By defining a substitution matrix $\theta$, we can simplify our calculations.
+Given an alphabet $\Sigma$, the substitution matrix is a
+$|\Sigma|\times|\Sigma|$ matrix which gives for every pair of symbols in the
+alphabet the weight of the substitution in the alignment. The matrix is
+symmetrical.
+
+$$
+ E(a(i), b(j)) = max
+ \begin{cases}
+   w_d+E(a(i), b(j-1)) \\
+   w_d+E(a(i-1), b(j)) \\
+   \sigma(a_j, b_j) + E(a(i-1), b(j-1))
+ \end{cases}
+$$
+
+##### Uses of global alignment
+
+Global sequence alignment is the de facto standard for comparing biological
+sequences related by evolution. However, differente types of macromolecules
+evolve at different speeds: protein-coding genes evolve faster than proteins.
+Also, within a genome some regions tendo to be conserved by evolution. Thus in
+many cases an evolutionary relationship can be identified for only part of the
+sequences but not globally.
+
+#### Local sequence alignment
+
+Local sequence alignment identifies similar region within two sequences, without
+requiring full alignment.
+
+Let $a, b$ be two string over $\Sigma$, let $\sigma(s_i, s_j)$ be a substitution
+matrix for $\Sigma$ and let $w_d$ the gap penalty. Our problem is the following:
+"Find two substrings, one from $a$ and one from $b$ that produce the alignment
+with the maximum possible score".
+
+If two sequences are not identical, there must be operations with negative
+score. This brings two special cases:
+
+1. Since negative scores are possible, if there is no pair of substrings with an
+   alignment score greater than 0, then the best solutions is $\epsilon$
+2. If we have no negative scores in the global alignment then the best solution
+   would be the full global alignment.
+
+Since two substrings with maximum alignment need not be of the same length, we
+need to compare and align all possible pairs of substrings from $a$ and $b$.
+This means that naively enumerating all possible substrings would require to
+compute $\mathcal{O}(n^2m^2)$.
+
+##### Smith-Waterman algorithm
+
+This algorithm guarantees to find the best solution. It is based on the dynamic
+programming matrix we used before: it already contains scores which potentially
+consider all possible substring pairs.
+
+How can we identify which possible sub-path has the highest increase in score?
+We can let cell $(i,j)$ contain the maximum alignment score of all substring
+pairs which end at position $i$ and $j$ respectively not from the beginning, but
+from an arbitrary place $(a,b)$. We can achieve this by adding a new choice for
+each step:
+
+$$
+ M(a(i), b(j)) = max
+ \begin{cases}
+  0 \\
+   w_d+M(a(i), b(j-1)) \\
+   w_d+M(a(i-1), b(j)) \\
+   \sigma(a_j, b_j) + M(a(i-1), b(j-1))
+ \end{cases}
+$$
+
+Computing a value for a cell is equivalent to extending an alignment. But if all
+possible extensions lead to a negative score, then it's better to "reset"
+everything and start a new alignment. This implies that when the choice is 0, no
+traceback pointer will be associated with the cell.
+
+To apply the algorithm we do as before: we initialize the matrix with zeroes. We
+put a traceback pointer only when score is greater than 0; one the table is
+complete, we start in the cell with the highest positive score in the entire
+matrix and we traceback.

@@ -382,3 +382,16 @@ evitare che operazioni che potrebbero fallire lascino la base di dati in uno
 stato inconsistente. Di default, infatti, ogni query è gestita in una
 transazioni a sé stante, disabilitare questa feature ci permette di costruire a
 mano una transazione, tramite `commit()` e `rollback()`.
+
+## Templating
+
+Fino ad adesso le servlet hanno dovuto scrivere tutto il loro contenuto a mano,
+incluso l'HTML. Includere HTML nel codice delle servlet rende molto difficile e
+brutto il codice interno delle servlet, oltre che mischiare presentazione e
+comportamento.
+
+La soluzione è ribaltare la situazione: inseriremo del codice all'interno di un
+template. Il codice viene eseguito dal server e il risultato dell'esecuzione
+viene iniettato dentro un template. Il concetto di template è quello di una
+pseudo-pagina dove viene inserito tutto il contenuto statico e nel quale viene
+iniettato il codice effettivo.
