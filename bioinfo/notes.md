@@ -744,3 +744,8 @@ To apply the algorithm we do as before: we initialize the matrix with zeroes. We
 put a traceback pointer only when score is greater than 0; one the table is
 complete, we start in the cell with the highest positive score in the entire
 matrix and we traceback.
+
+This algorithm can generate multiple optimal solution. We can report only one of
+them or all of them. Once we have found the best local alignment, we can iterate
+by finding the second "best" score in cells which haven't been used for previous
+alignments and trace back to find the second best.
