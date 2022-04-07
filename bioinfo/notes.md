@@ -401,14 +401,14 @@ while (!tpath.empty())
 4. Strand ambiguity: each read, and hence the k-mers, could be from either the
    forward or the reverse strand.
 
-### Sequence alignment
+## Sequence alignment
 
 Information is encoded in living cells mostly in the form of "sequences":
 DNA/RNA sequences and protein sequences. Biological function largely depends on
 the 3D structure of large molecules, but many characteristics and functions can
 be inferred from the 1D structure.
 
-#### Strings and alphabets
+### Strings and alphabets
 
 Lets recall the notions of alphabet and string:
 
@@ -749,3 +749,119 @@ This algorithm can generate multiple optimal solution. We can report only one of
 them or all of them. Once we have found the best local alignment, we can iterate
 by finding the second "best" score in cells which haven't been used for previous
 alignments and trace back to find the second best.
+
+## Read mapping
+
+Considering DNA sequencing data, reference-based assembly follows the goal of
+finding the differences between an individual's genome and the reference genome
+for corresponding species, rather than characterizing the genome of that species
+in the first place. This requires reads to be aligned/mapped to the reference
+genome.
+
+Why not use de novo assembly? De novo assembly algorithms are  demanding and
+error-prone. We would like to leverage our knowledge of the human genome. 
+
+One approach is using local-sequence alignment. We would have $\matchcal{O}(LG)$
+complexity where $L$ is the read length and $G$ the number of bases. The problem
+is that we'd need to do this for each read, that requires a huge matrix due to
+the size of the human genome, Plus for NGS this means hundreds of millions of
+times.
+
+Faster algorithms are based on preprocessing of the text to build a substring
+index. Using the resulting data, occurrences of a pattern can be found quickly.
+
+A substring index is a data structure which gives substring search in a text or
+collection of text in sublinear time. String searching algorithms identify the
+positions where one or multiple strings are found as substrings of a larger
+string. In the following discussion of string searching we will assume that the
+search pattern matches perfectly to a substring int the full text
+
+### Tries
+
+A trie is a multi-way tree structure useful for storing strings over an
+alphabet. A trie is defined as the smallest tree over an alphabet such that:
+
+1. Each edge of the trie is labelled with one character $c \in \Sigma$
+2. A node has at most one outgoing edge labelled for each $c \in \Sigam$
+3. Each key is "spelled out" along some path starting at the root.
+
+We can then construct a trie from the reads and "slide" the trie down the genome
+once.
+
+We define $\$$ as a symbol that is lexicographically less than every other
+symbol and represents the end of a sequence. The $\$$ enforces a lexicographic
+rul that we know from dictionaries: "over" comes before "overture". The
+terminator also ensures that no suffix will be considered as a prefix of anny
+other suffix.
+
+Using a trie this way we now use $\mathcal{O}(L'G)$ for matching ($L'$ is the
+maximum length of any read) and $\mathcal{O}(n_b)$ for trie construction ($n_b$
+is the total length of the reads).
+
+### Suffix trees and arrays
+
+In the previous "method" we made a trie out of the reads and slid this tries
+across our genome to search for matches.
+
+Lets create now a trie where each path from the root to a leaf represents a
+suffix, and each suffix is represented as a path from the root to a leaf. Each
+substring is a prefix of some suffix of a string $T$. Thus to search for a
+substring, start at the root and follow the edges labeled with the characters of
+our substring. If at some point there is no outgoing edge for the next character
+of the substring, the our read is not a substring of $T$.
+
+Using this data structure, we can also easily find:
+
+1. how many times does $S$ occur in $T$: $S$ occurs the same number of time as
+   the number of leaf nodes rooted at the ending node
+2. what is the longest repeated substring $S$ of $T$: the deepest node with 2
+   or more children.
+
+An algorithm for constructing a suffix trie is:
+
+```txt
+T += $
+root = {}
+for i = 1 to i == length(T) do
+  n = root
+  for c in T[i:]
+    if c notin n then
+      n[c] = {}
+    end if
+    n = n[c]
+  end for
+end for
+return root
+```
+
+Lets analyze the size complexity of the suffix tree. A suffix trie has depth
+equal to the length of the longest suffix plus 1 an breadth equal to the maximum
+number of suffixes. The worst case is $\mathcal{O}(m^2)}$. This is too big to be
+practical.
+
+We can optimize the suffix trie into a suffix tree. We can:
+
+1. combine non-branching paths into a single edge with a string label
+2. replace the string label with $\mathcal{O}(1)$ references to the original
+   string
+
+Doing things this way we have reduced the number of nodes to $\mathcal{O}(m)$.
+However the length of the edge labels is still $\mathcal{O}(m^2)$. Searching in
+a suffix tree also is reduced to $\mathcal{O}(n+k)$ where $n$ is the length of
+the substring and $k$ is the number of matches in the string.
+
+We can optimize further: instead of saving the labels, we can simply store the
+offset length of the original labels in the original string. This makes the
+edges $\mathcal{O}(1)$. Additionally we can store the offset of the full suffix
+in the leaves.
+
+It may be useful to build a combined suffix tree from more than one input
+string. Instead of using one termination character, we use $k$ different
+termination characters, one for each input string. Each leaf will be labeled
+with two integers to identify the input string from which the suffix originates
+and the position of the suffix within that string, also each edge is
+additionally labeled with an integer to identify the input string. The
+generalized suffix tree provides the best solution to different problems related
+to string comparison: longest common substring problem, longest plaindrome
+substring, longest reverse complementary pair of substring in a DNA sequence and
+others.
