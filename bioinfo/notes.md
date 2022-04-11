@@ -984,3 +984,44 @@ This high level overview glosses over 3 important issues:
    way of deducing it.
 3. We still need a way of figuring out at what position the matches occur in
    $T$.
+
+For the first two issues, we can construct a tally table consisting of the
+pre-calculated number of each specific character is $L$ up to every row.
+
+| F      | L      | a   | b   | c   | d   | r   |
+|:------:|:------:|:---:|:---:|:---:|:---:|:---:|
+| $\$_0$ | $a_0$  | 1   | 0   | 0   | 0   | 0   |
+| $a_0$  | $r_0$  | 1   | 0   | 0   | 0   | 1   |
+| $a_1$  | $d_0$  | 1   | 0   | 0   | 1   | 1   |
+| $a_2$  | $\$_0$ | 1   | 0   | 0   | 1   | 1   |
+| $a_3$  | $r_1$  | 1   | 0   | 0   | 1   | 2   |
+| $a_4$  | $c_0$  | 1   | 0   | 1   | 1   | 2   |
+| $b_0$  | $a_1$  | 2   | 0   | 1   | 1   | 2   |
+| $b_1$  | $a_2$  | 3   | 0   | 1   | 1   | 2   |
+| $c_0$  | $a_3$  | 4   | 0   | 1   | 1   | 2   |
+| $d_0$  | $a_4$  | 5   | 0   | 1   | 1   | 2   |
+| $r_0$  | $b_0$  | 5   | 1   | 1   | 1   | 2   |
+| $r_1$  | $b_1$  | 5   | 2   | 1   | 1   | 2   |
+
+In general we can subtract one from the tally table to obtain the zero based
+$B$-rank. For example, let's say we search for $abra$; after we found the range
+of rows $[i;j]$ that start with $a$, we can simply look at the number of $r$ at
+$i-1$ and at $j$ to know that preceding characters are $r_0$ and $r_1$.
+
+A problem with the tally table is its space complexity:
+$\mathcal{O}(|T|\cdot |\Sigma|)$ integers. We can mitigate this by storing every
+$k$-th row. This means that for a hit on a non stored index, we need to start
+form the nearest "checkpoint" and count the occurrences of that letter from the
+checkpoint to the queried index.
+
+For issue 3, we can exploit that a sorted suffix array is equivalent to the BWM.
+For instance, if we used our searching algorithm and landed on a character, we
+can lookup the corresponding index in the suffix array to get starting index in
+the original string. Like with the tally table, for space efficiency, we will
+store only each $k$-th _value in the original string_ (not row of the suffix
+array). When we hit an unsaved row, we simply continue reconstructing the prefix
+until we hit a saved row. We then subtract from that prefix the amount of
+characters we "extended" our prefix.
+
+> Note that the fact that we are storing each $k$-th value ensures that we need
+> at most $k-1$ hops to retrieve the index we are looking for.
