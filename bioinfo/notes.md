@@ -759,9 +759,9 @@ in the first place. This requires reads to be aligned/mapped to the reference
 genome.
 
 Why not use de novo assembly? De novo assembly algorithms are  demanding and
-error-prone. We would like to leverage our knowledge of the human genome. 
+error-prone. We would like to leverage our knowledge of the human genome.
 
-One approach is using local-sequence alignment. We would have $\matchcal{O}(LG)$
+One approach is using local-sequence alignment. We would have $\mathcal{O}(LG)$
 complexity where $L$ is the read length and $G$ the number of bases. The problem
 is that we'd need to do this for each read, that requires a huge matrix due to
 the size of the human genome, Plus for NGS this means hundreds of millions of
@@ -782,7 +782,7 @@ A trie is a multi-way tree structure useful for storing strings over an
 alphabet. A trie is defined as the smallest tree over an alphabet such that:
 
 1. Each edge of the trie is labelled with one character $c \in \Sigma$
-2. A node has at most one outgoing edge labelled for each $c \in \Sigam$
+2. A node has at most one outgoing edge labelled for each $c \in \Sigma$
 3. Each key is "spelled out" along some path starting at the root.
 
 We can then construct a trie from the reads and "slide" the trie down the genome
@@ -798,7 +798,7 @@ Using a trie this way we now use $\mathcal{O}(L'G)$ for matching ($L'$ is the
 maximum length of any read) and $\mathcal{O}(n_b)$ for trie construction ($n_b$
 is the total length of the reads).
 
-### Suffix trees and arrays
+### Suffix tries and trees
 
 In the previous "method" we made a trie out of the reads and slid this tries
 across our genome to search for matches.
@@ -836,7 +836,7 @@ return root
 
 Lets analyze the size complexity of the suffix tree. A suffix trie has depth
 equal to the length of the longest suffix plus 1 an breadth equal to the maximum
-number of suffixes. The worst case is $\mathcal{O}(m^2)}$. This is too big to be
+number of suffixes. The worst case is $\mathcal{O}(m^2)$. This is too big to be
 practical.
 
 We can optimize the suffix trie into a suffix tree. We can:
@@ -862,6 +862,125 @@ with two integers to identify the input string from which the suffix originates
 and the position of the suffix within that string, also each edge is
 additionally labeled with an integer to identify the input string. The
 generalized suffix tree provides the best solution to different problems related
-to string comparison: longest common substring problem, longest plaindrome
+to string comparison: longest common substring problem, longest palindrome
 substring, longest reverse complementary pair of substring in a DNA sequence and
 others.
+
+The problem with suffix tries is that although they have $\mathcal{O}(n)$ size
+complexity, they have a very high "hidden constant", making them unpractical.
+
+### Suffix arrays
+
+The suffix array, at least in its simplest incarnation, requires only 4 bytes
+per character of the input sequence. A naive implementation of the suffix array
+basically manipulates an array of pointers to the various suffixes.
+
+Naively, to construct a suffix array we first identify all the suffixes and keep
+track of their indexes. We then sort lexicographically the string (remember,
+$\$$ comes before any strings). Ordering highlights repeated suffixes.
+
+Using suffix arrays efficiently solves the problem of finding the longest
+repeated suffix: we simply scan through the list to find neighbours with the
+longest common prefix.
+
+The Manber-Myers algorithm is an algorithm that efficiently creates new suffix
+arrays. It divided into 2 steps:
+
+1. First we sort the array using only the first character of the suffixes
+2. Recursive phase: given an array of suffixes sorted on the first $2^{i-1}$,
+   we create an array of suffixes sorted on the first $2^i$.
+
+### Burrows Wheeler Transform
+
+The BWT applies a reversible transformation to a block of input text. Thew
+transformation does not itself compress the data, but reorders it to make it
+easy to compress with simple algorithms.
+
+To create a Burrows Wheeler matrix we do:
+
+1. form all rotations of the input text $T$
+2. sort the rotated strings lexicographically
+
+The BWT of $T$ is simply the last column of our matrix. Since the BWT contains a
+lot of runs of the same identical characters, we can use run-length compression
+to shorten it.
+
+We can write an algorithm to create $BWT(T)$ from the suffix array of the same
+string by noting that position $i$ of the BWT corresponds to the character that,
+int the original string, is just left of the $i$-th suffix in the array. We
+can now construct the BWT as follows:
+
+$$
+BWT(T)[i] = \begin{cases}
+  T[SA[i] - 1] \quad SA[i] > 0 \\
+  \$ \quad SA[i] = 0
+\end{cases}
+$$
+
+If we want to get the original string back, we would need to reverse the
+compression procedure and get the original string back from the BWT. The
+reversibility of the BWT depends on the LF mapping property.
+
+> LF mapping property:
+>
+> For any character, the $T$-ranking of characters in the first (F) column of
+> the BW matrix is in the same order as the same characters in the last (L)
+> column.
+>
+> For $T$-ranking we mean the number of times that an identical character has
+> preceeded it in $T$.
+
+Additionally, we introduce the $B$-ranking, calculated in a similarly to the
+$T$-ranking: it is the number of times the same character has occurred in given
+column before. The $B$-ranking is like a cumulative count of the characters.
+Since it's just a relabeling of identical characters, the same character in the
+string has the same the same ranking in the F and L columns.
+
+Observing the $B$-rankings of the LF columns, we can note that:
+
+1. F is made of chunks of identical characters with ascending $B$-ranks
+2. In L the $B$-ranks of any character are arranged in ascending order.
+
+During the reversing process we will exploit the cumulative index property of
+the BW matrix: for each character in L, its index is equal to the sum of the
+max $B$-rank of previous characters plus one, and the character's own b-rank.
+So for example in $a_0r_0d_0\$_0r_1c_0a_1a_2a_3a_4b_0b_1$ we can calculate the
+index of $c_0$ to be $(0 + 1)_\$ + (5 + 1)_a + (1 + 1)_b + 0_c = 8$.
+
+For reconstructing the original string, we will be working backwards. Starting
+from the BWT, we first construct the F column lexicographically sorting L. Then,
+starting at the first character of F:
+
+1. Prepend that character to our result
+2. We know that the last character that precedes our current L character is the
+   one with the same index in L.
+3. Using the cumulative index property we jump to the precedent in F.
+4. We repeat from step 1 until the we hit $\$$.
+
+#### FM index
+
+The "Full-Text index in Minute space" index uses the BWT and some auxiliary data
+structure to generate a fast end efficient index for searching small patterns
+within a larger string $T$.
+
+The main data structures of the FM index are the F and L columns of the BW
+matrix. The F column is represented as an array of integer containing the number
+of occurrences of that letter. The L column is also compressed.
+
+A high-level overview of a possible substring search algorithm is the following:
+
+1. Starting with the last character of our prefix $P$, we get the chunk of F
+   corresponding to our current letter.
+2. We look in L to find the chuck corresponding to the precedent of the current
+   letter. Using the $B$-rank if the letters in we can find the position of this
+   chunk in F
+3. We repeat from 1 until we either: consume all the prefix or have a mismatch.
+
+This high level overview glosses over 3 important issues:
+
+1. How do we efficiently find the preceding character? In the worst case we
+   would have to scan all the L column.
+2. We do not want to store the $B$-ranks of the character, so we have to find a
+   way of deducing it.
+3. We still need a way of figuring out at what position the matches occur in
+   $T$.
