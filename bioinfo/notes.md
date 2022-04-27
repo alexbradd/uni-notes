@@ -1025,3 +1025,110 @@ characters we "extended" our prefix.
 
 > Note that the fact that we are storing each $k$-th value ensures that we need
 > at most $k-1$ hops to retrieve the index we are looking for.
+
+### Burrows-Wheeler aligner (bwa)
+
+It is a genomic aligner based on the BWT/FM index. We will see the algorithms
+for exact matching (BWT based) and inexact matching.
+
+#### Exact matching
+
+Since all occurrences of a substring appear next to each other in the suffix
+array, we can see a substring as a suffix array interval: first is the position
+at which the suffix first appears and last is the position at which the suffix
+no longer matches. The notation used is $[\underline(R), \overline{R}(W)]$.
+
+The bwa uses a similar methods for calculating the SA interval of a query to the
+one we have already seen, however it uses a slightly different notation.
+
+The calculation can be done iteratively from the end of $W$:
+
+$$
+\begin{aligned}
+  \underline{R}(W_k) &= \underline{R}(a_kW_{k+1}) \\
+    &= C(a_k) + Occ(a_k, \underline{R}(W_{k+1}) - 1) + 1 \\
+  \overline{R}(W_k) &= \overline{R}(a_kW_{k+1}) \\
+    &= C(a_k) + Occ(a_k, \overline{R}(W_{k+1}) - 1) + 1
+\end{aligned}
+$$
+
+Where:
+
+- $W_k$ is the suffix of $W$ with $0<k<m-1$
+- $a_k$ is the k-th character of $W$
+- $C(a_k)$ is the number of chars in $T[0, n-2]$ that are lexicographically
+  smaller than $a_k$
+- $Occ(a_k, i)$ is the number of occurrences of $a_k$ in $BWT[0, 1]$
+
+The base case is $W_m = \epsilon$, $\underline{R}(\epsilon) = 0$ and
+$\overline{R}(\epsilon) = |T| - 1$.
+
+We can pre-calculate a bunch of values used:
+
+1. We can pre-calculate $C(a)$ for each letter and store it in an array. This is
+   equivalent to calculating $F$, but cumulatively.
+2. We can calculate $Occ(a,i)$, the number of occurrences of $a$ in the
+   $BWT[0,i]$. This is equivalent to the tally table
+
+#### Inexact matching
+
+Let $W$ a search word and $T$ an input text with $|W| = m$ and $|T| = n$, $n>m$.
+Let $d(a,b)$ be a distance measure for two strings $a$ and $b$ and $d_{max}$ the
+threshold for the allowed maximum distance. Let $T^p = T[p..p+(m-1)]$ be the
+substring of $T$ having length $m$.
+
+How can we find if at least one $T^p$ exists such that $d(W, T^p) \leq d_{max}$?
+If we can, how many $p$ with $0 < p < n-m$ exists such that $d(W, T^p) \leq
+d_{max}$? Can we list all $p$ for which the aforementioned condition holds?
+Alternatively, can we find the best match regardless of distance and report a
+"mapping quality"?
+
+First, let's introduce the brute-force way using a prefix trie. A prefix trie of
+a string in equivalent to a suffix trie, however a path from root to leaf given
+a unique prefix. It is identical to the suffix trie of the reverse of a string.
+We can use DFS and allow for $d_{max}$ mismatches.
+
+The overall algorithm is:
+
+```txt
+fun InexactSearch(W, z)
+  CalcualateD(W)
+  return InexRecur(W, |W| - 1, z, 1, |T| - 1)
+
+# Precalcualtes lower bounds of the number mismatches
+fun CalcualteD(W)
+  z = 0
+  j = 0
+  for i = 0 to |W| - 1 do
+    if W[j..i] is not a substring of T then
+      z = z + 1
+      j = i + 1
+    end if
+    D(i) = z
+  end for
+  return D
+
+# Returns the SA intervals of substrings in T that match W[0..i] with no more 
+# than z differences.
+# Assume that W[i+1] already matches the SA in [k..l]
+fun InexRecur(W, i, z, k, l)
+  if z < D(i) then            # already more than the maximum of allowed errors
+    return empty set
+  end if
+  if i < 0 then               # if i < 0 we recursed unitl the end
+    return {k, l}             # we return the SA interval found
+  end if
+  I = empty set               # the current interval
+  for each b in {a,c,g,t} do
+    k = C(b) + O(b, k-1) + 1  # like in exact matching
+    l = C(b) + O(b, l) + 1    # link in exact matching
+    if k < l then             # is interval empty?
+      if b = W[i] then        # if we match, decrement i and recurse
+        I = I join InexRecur(W, i -1, z, k, l)
+      else                    # otherwise, decrement both i and z and recurse
+        I = I join InexRecur(W, i - 1, z - 1, k, l)
+      end if
+    end if
+  end for
+  return I
+```
