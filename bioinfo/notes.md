@@ -1132,3 +1132,8 @@ fun InexRecur(W, i, z, k, l)
   end for
   return I
 ```
+
+## Multiple sequence alignment
+
+See prof. Pavesi's slides: 12/05 s.y. 20-21
+
